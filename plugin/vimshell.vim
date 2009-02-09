@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 Feb 2009
+" Last Modified: 09 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -31,6 +31,7 @@
 "   4.7:
 "     - Improved vimshell#switch_shell.
 "     - Implemented one command.
+"     - Implemented ev command.
 "   4.6:
 "     - Implemented h command.
 "     - Implemented VimShell buffer current directory.

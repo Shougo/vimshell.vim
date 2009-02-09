@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 Feb 2009
+" Last Modified: 09 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -664,6 +664,12 @@ function! s:highlight_escape_sequence()"{{{
     endwhile
     let @" = register_save
 endfunction"}}}
+
+" VimShell utility functions.
+function! vimshell#print_line(string)
+    call append(line('.'), a:string)
+    normal! j
+endfunction
 
 function! vimshell#insert_command()"{{{
     let l:in = input('Command name completion: ', expand('<cword>'), 'shellcmd')

@@ -57,8 +57,7 @@ function! vimshell#internal#one#execute(line, program, arguments, is_interactive
             call s:execute_oneliner(l:program, join(l:arguments[1:]), "-e '.*'", '')
         else
             " Error.
-            call append(line('.'), printf('Not found one liner command settings "%s".', l:program))
-            normal! j
+            call vimshell#print_line(printf('Not found one liner command settings "%s".', l:program))
             return
         endif
     else
