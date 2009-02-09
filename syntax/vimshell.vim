@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 27 Jan 2009
+" Last Modified: 08 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -24,9 +24,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.7, for Vim 7.0
+" Version: 2.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   2.8:
+"     - Improved VimShellArguments color on Windows.
+"     - Improved VimShellString.
 "   2.7:
 "     - Improved VimShellPrompt color on console.
 "     - Improved VimShellDirectory color.
@@ -72,14 +75,14 @@ syn match   VimShellVariable          '$[[:digit:]*@#?$!-]\+' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
 syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
 if has('win32') || ('win64')
-    syn match   VimShellArguments         '[[:blank:]]/[?[:alnum:]]\+' contained
+    syn match   VimShellArguments         '[[:blank:]]/[?:,_[:alnum:]]\+' contained
     syn match   VimShellDirectory         '[/~]\=\([.-]\|\f\)\+[/\\]\([.-]\|\f\)*'
     syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
 else
     syn match   VimShellDirectory         '[/~]\=\([.-]\|\f\)\+/\([.-]\|\f\)*'
     syn match   VimShellLink              '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
-execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\h[[:alpha:]_.-]*\\(\[[:blank:]]\\|\\n\\)' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments"
+execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\h[[:alpha:]_.-]*\\(\[[:blank:]]\\|\\n\\)' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString"
 syn match VimShellExe '|[[:blank:]]*[[:alpha:]_.-]\+' contained contains=VimShellSpecial,VimShellArguments
 syn match VimShellExe ';[[:blank:]]*[[:alpha:]_.-]\+' contained contains=VimShellSpecial,VimShellArguments
 execute "syn region   VimShellLine start='" . g:VimShell_Prompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial"

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 27 Jan 2009
+" Last Modified: 07 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -25,35 +25,67 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.5, for Vim 7.0
+" Version: 4.7, for Vim 7.0
 "=============================================================================
 
 function! vimshell#switch_shell(split_flag)"{{{
-    if expand('%:p:t') == 'VimShell'
+    if getbufvar(bufnr('%'), '&filetype') == 'vimshell'
         echo 'Already there.'
-    elseif bufexists('VimShell')
-        if a:split_flag
-            let l:num = bufwinnr('VimShell')
-            if l:num < 0
-                sbuffer VimShell
-                setfiletype vimshell
-            else
-                " Switch window.
-                execute l:num 'wincmd w'
-            endif
-        else
-            buffer VimShell
+        return
+    endif
+
+    " Search VimShell window.
+    let l:cnt = 1
+    while l:cnt <= winnr('$')
+        if getwinvar(l:cnt, '&filetype') == 'vimshell'
+            let l:current = getcwd()
+
+            execute l:cnt . 'wincmd w'
+
+            " Change current directory.
+            let b:vimshell_save_dir = l:current
+            execute 'lcd ' . l:current
+
+            " Enter insert mode.
+            startinsert!
+            set iminsert=0 imsearch=0
+
+            call s:print_prompt()
+            return
         endif
 
-        " Enter insert mode.
-        startinsert!
-        set iminsert=0 imsearch=0
+        let l:cnt += 1
+    endwhile
 
-        call s:print_prompt()
-    else
-        " Create window.
-        call vimshell#create_shell(a:split_flag)
-    endif
+    " Search VimShell buffer.
+    let l:cnt = 1
+    while l:cnt <= bufnr('$')
+        if getbufvar(l:cnt, '&filetype') == 'vimshell'
+            let l:current = getcwd()
+
+            if a:split_flag
+                execute 'sbuffer' . l:cnt
+            else
+                execute 'buffer' . l:cnt
+            endif
+
+            " Change current directory.
+            let b:vimshell_save_dir = l:current
+            execute 'lcd ' . l:current
+
+            " Enter insert mode.
+            startinsert!
+            set iminsert=0 imsearch=0
+
+            call s:print_prompt()
+            return
+        endif
+
+        let l:cnt += 1
+    endwhile
+
+    " Create window.
+    call vimshell#create_shell(a:split_flag)
 endfunction"}}}
 
 function! vimshell#create_shell(split_flag)"{{{
@@ -74,6 +106,9 @@ function! vimshell#create_shell(split_flag)"{{{
     setlocal noswapfile
     let &l:omnifunc = 'vimshell#history_complete'
     setfiletype vimshell
+
+    " Save current directory.
+    let b:vimshell_save_dir = getcwd()
 
     " Load history.
     if !filereadable(g:VimShell_HistoryPath)
@@ -112,6 +147,7 @@ function! vimshell#create_shell(split_flag)"{{{
                     \ 'view' : 's:special_view',
                     \ 'vimsh' : 's:special_vimsh',
                     \ 'histdel' : 's:special_histdel',
+                    \ 'h' : 's:special_h',
                     \}
     endif
     if !exists('w:vimshell_directory_stack')
@@ -290,38 +326,13 @@ function s:process_execute(line, program, arguments, is_interactive, has_head_sp
         endif"}}}
     elseif l:program =~ '^!'"{{{
         if l:program == '!!' && a:is_interactive
-            if len(s:hist_buffer) >= 2
-                if get(s:hist_buffer, 0) =~ '^!!'
-                    " Delete from history.
-                    call remove(s:hist_buffer, 0)
-                endif
-
-                " Previous command execution.
-                if !empty(l:arguments)
-                    " Join arguments.
-                    let l:line = s:hist_buffer[0] . ' ' . l:arguments
-                else
-                    let l:line = s:hist_buffer[0]
-                endif
-                if a:has_head_spaces
-                    " Don't append history.
-                    call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:line))
-                else
-                    call setline(line('.'), g:VimShell_Prompt . l:line)
-                endif
-                call vimshell#process_enter()
-                return 1
-
-            else
-                " Delete command.
-                call setline(line('.'), g:VimShell_Prompt)
-                echo 'Not found in history.'
-
-                " Enter insert mode.
-                startinsert!
-                set iminsert=0 imsearch=0
-                return 1
+            " Previous command execution.
+            if get(s:hist_buffer, 0) =~ '^!!'
+                " Delete from history.
+                call remove(s:hist_buffer, 0)
             endif
+
+            return s:special_h('h 0', 'h', '0', a:is_interactive, a:has_head_spaces)
         elseif l:program =~ '!\d\+$' && a:is_interactive
             " History command execution.
             if get(s:hist_buffer, 0) =~ '^!\d\+'
@@ -329,34 +340,7 @@ function s:process_execute(line, program, arguments, is_interactive, has_head_sp
                 call remove(s:hist_buffer, 0)
             endif
 
-            let l:num = str2nr(l:program[1:])
-            if len(s:hist_buffer) > l:num
-                if !empty(l:arguments)
-                    " Join arguments.
-                    let l:line = s:hist_buffer[l:num] . ' ' . l:arguments
-                else
-                    let l:line = s:hist_buffer[l:num]
-                endif
-
-                if a:has_head_spaces
-                    " Don't append history.
-                    call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:line))
-                else
-                    call setline(line('.'), g:VimShell_Prompt . l:line)
-                endif
-
-                call vimshell#process_enter()
-                return 1
-            else
-                " Delete command.
-                call setline(line('.'), g:VimShell_Prompt)
-                echo 'Not found in history.'
-
-                " Enter insert mode.
-                startinsert!
-                set iminsert=0 imsearch=0
-                return 1
-            endif
+            return s:special_h('h' . str2nr(l:program[1:]), 'h', str2nr(l:program[1:]), a:is_interactive, a:has_head_spaces)
         else
             " Shell execution.
             execute printf('%s %s', l:program, l:arguments)
@@ -485,6 +469,8 @@ function! s:special_vimsh(line, program, arguments, is_interactive, has_head_spa
             normal! j
         endif
     endif
+
+    return 0
 endfunction"}}}
 function! s:special_histdel(line, program, arguments, is_interactive, has_head_spaces)"{{{
     if get(s:hist_buffer, 0) =~ '^histdel'
@@ -510,6 +496,43 @@ function! s:special_histdel(line, program, arguments, is_interactive, has_head_s
     else
         call append(line('.'), 'Arguments required.')
         normal! j
+    endif
+endfunction"}}}
+function! s:special_h(line, program, arguments, is_interactive, has_head_spaces)"{{{
+    if get(s:hist_buffer, 0) =~ '^h\s' || get(s:hist_buffer, 0) == 'h'
+        " Delete from history.
+        call remove(s:hist_buffer, 0)
+    endif
+
+    let l:args = split(a:arguments)
+    if empty(l:args)
+        let l:num = 0
+    else
+        let l:num = str2nr(l:args[0])
+    endif
+
+    if len(s:hist_buffer) > l:num
+        if !empty(a:arguments[1:])
+            " Join arguments.
+            let l:line = s:hist_buffer[l:num] . ' ' . join(l:args[1:], ' ')
+        else
+            let l:line = s:hist_buffer[l:num]
+        endif
+
+        if a:has_head_spaces
+            " Don't append history.
+            call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:line))
+        else
+            call setline(line('.'), g:VimShell_Prompt . l:line)
+        endif
+
+        call vimshell#process_enter()
+        return 1
+    else
+        " Error.
+        call append(line('.'), 'Not found in history.')
+        normal! j
+        return 0
     endif
 endfunction"}}}
 "}}}
@@ -652,13 +675,29 @@ function! vimshell#insert_command()"{{{
     endif
 endfunction"}}}
 
+function! vimshell#save_current_dir()"{{{
+    let l:current_dir = getcwd()
+    execute 'lcd ' . b:vimshell_save_dir
+    let b:vimshell_save_dir = l:current_dir
+endfunction"}}}
+function! vimshell#restore_current_dir()"{{{
+    let l:current_dir = getcwd()
+    if l:current_dir != b:vimshell_save_dir
+        execute 'lcd ' . b:vimshell_save_dir
+        let b:vimshell_save_dir = l:current_dir
+    endif
+endfunction"}}}
+
 augroup VimShell"{{{
-    au!
-    au Filetype vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    au Filetype vimshell imap <buffer><silent> <CR> <ESC><CR>
-    au Filetype vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
-    au Filetype vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
-    au Filetype vimshell inoremap <buffer> <C-p> <C-o>:<C-u>call vimshell#insert_command()<CR>
+    autocmd!
+    autocmd Filetype vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
+    autocmd Filetype vimshell imap <buffer><silent> <CR> <ESC><CR>
+    autocmd Filetype vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
+    autocmd Filetype vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
+    autocmd Filetype vimshell inoremap <buffer> <C-p> <C-o>:<C-u>call vimshell#insert_command()<CR>
+    autocmd Filetype vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
+    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir() | endif
+    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir() | endif
 augroup end"}}}
 
 " Global options definition."{{{

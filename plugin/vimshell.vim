@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 27 Jan 2009
+" Last Modified: 07 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -25,9 +25,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.5, for Vim 7.0
+" Version: 4.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   4.7:
+"     - Improved vimshell#switch_shell.
+"     - Implemented one command.
+"   4.6:
+"     - Implemented h command.
+"     - Implemented VimShell buffer current directory.
+"     - History execution was implemented with h command.
+"     - Change VimShell current directory when vimshell#switch_shell.
 "   4.5:
 "     - Fixed popd and history bugs.
 "     - Implemented history arguments.
