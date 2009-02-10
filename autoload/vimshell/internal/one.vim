@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.1:
 "     - Supported grep.
+"     - Fixed error on Unix.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -58,11 +59,10 @@ function! vimshell#internal#one#execute(line, program, arguments, is_interactive
         else
             " Error.
             call vimshell#print_line(printf('Not found one liner command settings "%s".', l:program))
-            return
         endif
     else
         " This command is Windows only.
-        execute printf('silent read! %s %s', a:program, join(l:arguments[1:]))
+        execute printf('silent read! %s', a:arguments))
     endif
 endfunction
 
