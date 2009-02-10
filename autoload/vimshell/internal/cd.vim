@@ -51,7 +51,8 @@ function! vimshell#internal#cd#execute(line, program, arguments, is_interactive,
         let l:arguments = $HOME
     else
         " Filename escape.
-        let l:arguments = escape(a:arguments, "*?[]{}`$\\%#&'\"|!<>+")
+        "let l:arguments = escape(a:arguments, "*?[]{}`$\\%#&'\"|!<>+")
+        let l:arguments = a:arguments
     endif
     execute 'lcd ' . l:arguments
 endfunction

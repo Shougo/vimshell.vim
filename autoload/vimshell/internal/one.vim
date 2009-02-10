@@ -62,12 +62,17 @@ function! vimshell#internal#one#execute(line, program, arguments, is_interactive
         endif
     else
         " This command is Windows only.
-        execute printf('silent read! %s', a:arguments))
+        execute printf('silent read! %s', a:arguments)
     endif
 endfunction
 
 function! s:execute_oneliner(program, arguments, liner_option, file_option)
     let l:liner = matchstr(a:arguments, a:liner_option)
+
+    if empty(l:liner)
+        execute printf('silent read! %s %s', a:program, a:arguments)
+        return
+    endif
 
     let l:forward = match(a:arguments, a:liner_option)
     let l:forward_args = (l:forward == 0)?  '' : a:arguments[: l:forward-1]

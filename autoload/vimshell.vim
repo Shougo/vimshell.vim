@@ -225,6 +225,9 @@ function! vimshell#process_enter()"{{{
     " Delete prompt string.
     let l:line = substitute(l:escaped, g:VimShell_Prompt, '', '')
 
+    " Delete comment.
+    let l:line = substitute(l:line, '#.*$', '', '')
+
     " Not append history if starts spaces or dups.
     if l:line !~ '^\s' && (empty(s:hist_buffer) || l:line != s:hist_buffer[0])
         let l:now_hist_size = getfsize(g:VimShell_HistoryPath)
@@ -282,6 +285,12 @@ function s:process_execute(line, program, arguments, is_interactive, has_head_sp
         let l:line = l:program . ' ' . l:arguments
     endif"}}}
 
+    " Check environment variable."{{{
+    if l:program =~ '^\s*\$\w\+$'
+        let l:program = eval(l:program)
+        call vimshell#print_line(l:program)
+    endif"}}}
+
     " Special commands.
     if empty(l:program) && a:is_interactive"{{{
         " Ignore empty command line.
@@ -291,9 +300,10 @@ function s:process_execute(line, program, arguments, is_interactive, has_head_sp
         startinsert!
         set iminsert=0 imsearch=0
         return 1"}}}
-    elseif l:program =~ '^\h\w*='"{{{
+    elseif l:program =~ '^\w*=' "{{{
         " Variables substitution.
-        execute 'silent let $' . l:program"}}}
+        execute 'silent let $' . l:program
+        "}}}
     elseif l:line =~ '&\s*$'"{{{
         " Background execution.
         if l:line =~ '^shell\s*&'
@@ -360,10 +370,8 @@ function s:process_execute(line, program, arguments, is_interactive, has_head_sp
         " Directory.
         " Change the working directory like zsh.
 
-        " Filename escape.
-        let l:arguments = escape(a:program, "\\*?[]{}`$%#&'\"|!<>+")
-
-        execute 'lcd ' . l:arguments
+        " Call internal cd command.
+        call vimshell#internal#cd#execute('cd'. l:program, 'cd', l:program, a:is_interactive, a:has_head_spaces, {})
         "}}}
     else"{{{
         " External commands.
