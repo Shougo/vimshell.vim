@@ -79,10 +79,10 @@ syn region   VimShellVariable  start=+${+ end=+}+ contained
 syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
 if has('win32') || ('win64')
     syn match   VimShellArguments         '[[:blank:]]/[?:,_[:alnum:]]\+' contained
-    syn match   VimShellDirectory         '[/~]\=\([.-]\|\f\)\+[/\\]\([.-]\|\f\)*'
+    syn match   VimShellDirectory         '[/~]\=\f\+[/\\]\f*'
     syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
 else
-    syn match   VimShellDirectory         '[/~]\=\([.-]\|\f\)\+/\([.-]\|\f\)*'
+    syn match   VimShellDirectory         '[/~]\=\f\+/\f*'
     syn match   VimShellLink              '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\h[[:alpha:]_.-]*\\(\[[:blank:]]\\|\\n\\)' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"

@@ -40,9 +40,9 @@
 "=============================================================================
 
 function! vimshell#internal#history#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
-    if get(a:other_info.hist_buffer, 0) =~ '^history'
+    if get(g:vimshell#hist_buffer, 0) =~ '^history'
         " Delete from history.
-        call remove(a:other_info.hist_buffer, 0)
+        call remove(g:vimshell#hist_buffer, 0)
     endif
 
     let l:cnt = 0
@@ -52,15 +52,14 @@ function! vimshell#internal#history#execute(line, program, arguments, is_interac
         " Default max value.
         let l:max = 20
     else
-        let l:max = len(a:other_info.hist_buffer)
+        let l:max = len(g:vimshell#hist_buffer)
     endif
-    if l:max >= len(a:other_info.hist_buffer)
+    if l:max >= len(g:vimshell#hist_buffer)
         " Overflow.
-        let l:max = len(a:other_info.hist_buffer)
+        let l:max = len(g:vimshell#hist_buffer)
     endif
-
     while l:cnt < l:max
-        call append(line('.'), printf('%3d: %s', l:cnt, a:other_info.hist_buffer[l:cnt]))
+        call append(line('.'), printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
         normal! j
         let l:cnt += 1
     endwhile
