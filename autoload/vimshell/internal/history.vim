@@ -59,8 +59,7 @@ function! vimshell#internal#history#execute(line, program, arguments, is_interac
         let l:max = len(g:vimshell#hist_buffer)
     endif
     while l:cnt < l:max
-        call append(line('.'), printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
-        normal! j
+        call vimshell#print_line(printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
         let l:cnt += 1
     endwhile
 endfunction

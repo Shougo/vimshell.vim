@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 11 Feb 2009
+" Last Modified: 18 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -25,12 +25,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 4.9, for Vim 7.0
+" Version: 5.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.0:
+"     - Return previous buffer when call vimshell#switch_shell on vimshell.
+"     - Implemented vimshell#error_line.
+"     - Error when iexe execute without python interface.
 "   4.9:
 "     - Implemented exit command.
 "     - Implemented hide command.
+"     - Added g:VimShell_SmartCase option.
 "   4.8:
 "     - Implemented comment.
 "     - Not escape when cd command.
@@ -73,6 +78,7 @@
 "   4.0:
 "     - Implemented shell background execution.
 "     - Added g:VimShell_UseCkw option.
+"   Ver.3.9 ~ 1.0"{{{
 "   3.9:
 "     - Implemented background execution on Linux.
 "     - Improved print prompt.
@@ -146,7 +152,7 @@
 "   2.0:
 "     - Implemented syntax highlight.
 "   1.0:
-"     - Initial version.
+"     - Initial version."}}}
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{

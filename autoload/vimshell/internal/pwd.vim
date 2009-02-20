@@ -24,9 +24,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Use vimshell#print_line.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -42,6 +44,5 @@
 function! vimshell#internal#pwd#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
     " Print the working directory.
 
-    call append(line('.'), getcwd())
-    normal! j
+    call vimshell#print_line(getcwd())
 endfunction

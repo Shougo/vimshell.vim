@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Jan 2009
+" Last Modified: 25 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -24,9 +24,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Use vimshell#error_line.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -43,9 +45,8 @@ function! vimshell#internal#popd#execute(line, program, arguments, is_interactiv
     " Pop directory.
 
     if empty(w:vimshell_directory_stack)
-        " Error
-        call append(line('.'), 'Directory stack is empty.')
-        normal! j
+        " Error.
+        call vimshell#error_line('Directory stack is empty.')
         return
     endif
 
@@ -56,15 +57,13 @@ function! vimshell#internal#popd#execute(line, program, arguments, is_interactiv
         " Default pop value.
         let l:pop = 1
     else
-        " Error
-        call append(line('.'), 'Error arguments.')
-        normal! j
+        " Error.
+        call vimshell#error_line('Error arguments.')
         return
     endif
     if l:pop >= len(w:vimshell_directory_stack)
         " Overflow.
-        call append(line('.'), 'Not found in directory stack.')
-        normal! j
+        call vimshell#error_line('Not found in directory stack.')
         return
     endif
 

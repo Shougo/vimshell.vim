@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 10 Feb 2009
+" Last Modified: 14 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -27,8 +27,14 @@
 " Version: 2.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.0:
+"     - Added VimShellErrorHidden.
+"     - Added VimShellError.
 "   2.9:
 "     - Implemented VimShellComment.
+"     - Improved VimShellDirectory.
+"     - Added VimShellSpecial.
+"     - Improved VimShellConstants.
 "   2.8:
 "     - Improved VimShellArguments color on Windows.
 "     - Improved VimShellString.
@@ -64,14 +70,20 @@ execute 'syn match VimShellPrompt ' . "'".g:VimShell_Prompt."'"
 syn region   VimShellString   start=+'+ end=+'+ contained
 syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted
 syn region   VimShellString   start=+`+ end=+`+ contained
+syn region   VimShellError   start=+!!!+ end=+\n+ contains=VimShellErrorHidden
+syn match   VimShellErrorHidden            '!!!' contained
 syn match   VimShellComment   '#.*$' contained
-syn match   VimShellConstants         '\(^\|[[:blank:]]\)[[:digit:]]\+\([[:blank:]]\|$\)\([[:blank:]]*[[:digit:]]\+\)*'
+syn match   VimShellConstants         '[+-]\=\<\d\+\>'
+syn match   VimShellConstants         '[+-]\=\<0x\x\+\>'
+syn match   VimShellConstants         '[+-]\=\<0\o\+\>'
+syn match   VimShellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
+syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\>'
 syn match   VimShellExe               '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+\*\([[:blank:]]\|\n\)'
 syn match   VimShellSocket            '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+=\([[:blank:]]\|\n\)'
 syn match   VimShellDotFiles          '\(^\|[[:blank:]]\)\.[[:alnum:]_.-]\+\([[:blank:]]\|\n\)'
 syn match   VimShellArguments         '[[:blank:]]-\=-[[:alnum:]-]\+=\=' contained
 syn match   VimShellQuoted            '\\.' contained
-syn match   VimShellSpecial           '[|<>;&]' contained
+syn match   VimShellSpecial           '[|<>;&;]' contained
 syn match   VimShellSpecial           '!!\|!\d*' contained
 syn match   VimShellVariable          '$[$[:alnum:]]\+' contained
 syn match   VimShellVariable          '$[[:digit:]*@#?$!-]\+' contained
@@ -110,5 +122,7 @@ hi def link VimShellDirectory Preproc
 hi def link VimShellSocket Constant
 hi def link VimShellLink Comment
 hi def link VimShellDotFiles Identifier
+hi def link VimShellError Error
+hi def link VimShellErrorHidden Ignore
 
 let b:current_syntax = "vimshell"

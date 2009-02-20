@@ -1,9 +1,8 @@
 "=============================================================================
-" FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" FILE: interactive.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 15 Feb 2009
 " Usage: Just source this file.
-"        source vimshell.vim
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,39 +23,66 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.01, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.2:
-"     - Use vimshell#print_line.
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
-"   1.0:
+"   1.01:
+"     - Compatible Windows and Linux.
+"   1.00:
 "     - Initial version.
-""}}}
+" }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
 "     - Nothing.
 ""}}}
 " Bugs"{{{
-"     -
+"     - Nothing.
 ""}}}
 "=============================================================================
-
-function! vimshell#internal#alias#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
-    if a:arguments =~ '^\h\w*'
-        let l:pos = matchend(a:arguments, '^\h\w*=')
-        if l:pos > 0
-            " Define alias.
-            let b:vimshell_alias_table[a:arguments[:l:pos-2]] = a:arguments[l:pos :]
-        elseif has_key(b:vimshell_alias_table, a:arguments[:l:pos])
-            " View alias.
-            call vimshell#print_line(b:vimshell_alias_table[a:arguments[:l:pos]])
-        endif
-    else
-        " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(printf('%s=%s', alias, b:vimshell_alias_table[alias])
-        endfor
-    endif
+"
+function! interactive#async_callback(res)
+    call append(line('$'), split(a:res, "\n"))
+    redraw
 endfunction
+if has('win32') || has('win64')
+    " For Windows.
+    function! interactive#run(command) " {{{
+        let g:async_command=a:command
+
+python << EOP
+import vim
+import thread
+import nt as os
+
+def run():
+    command = vim.eval('g:async_command')
+    fr = os.popen(command, 'r')
+    result = fr.read()
+    fr.close()
+    vim.eval("interactive#async_callback('" + result + "')")
+
+thread.start_new_thread(run, ())
+EOP
+    endfunction
+    " }}}
+else
+    " For Linux.
+    function! interactive#run(command) " {{{
+        let g:async_command=a:command
+
+python << EOP
+import vim
+import thread
+import commands
+
+def run():
+    command = vim.eval('g:async_command')
+    result = commands.getoutput(command)
+    vim.eval("interactive#async_callback('" + result + "')")
+
+thread.start_new_thread(run, ())
+EOP
+    endfunction
+    " }}}
+endif
+" vim: foldmethod=marker

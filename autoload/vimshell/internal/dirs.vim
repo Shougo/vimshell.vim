@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: dirs.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Jan 2009
+" Last Modified: 15 Feb 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -24,9 +24,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Use vimshell#print_line.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -57,8 +59,7 @@ function! vimshell#internal#dirs#execute(line, program, arguments, is_interactiv
     endif
 
     while l:cnt < l:max
-        call append(line('.'), printf('%2d: %s', l:cnt, w:vimshell_directory_stack[l:cnt]))
-        normal! j
+        call vimshell#print_line(printf('%2d: %s', l:cnt, w:vimshell_directory_stack[l:cnt]))
         let l:cnt += 1
     endwhile
 endfunction

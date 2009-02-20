@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: one.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 09 Feb 2009
+" Last Modified: 15 Feb 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Use vimshell#error_line.
 "   1.1:
 "     - Supported grep.
 "     - Fixed error on Unix.
@@ -58,7 +60,7 @@ function! vimshell#internal#one#execute(line, program, arguments, is_interactive
             call s:execute_oneliner(l:program, join(l:arguments[1:]), "-e '.*'", '')
         else
             " Error.
-            call vimshell#print_line(printf('Not found one liner command settings "%s".', l:program))
+            call vimshell#error_line(printf('Not found one liner command settings "%s".', l:program))
         endif
     else
         " This command is Windows only.
