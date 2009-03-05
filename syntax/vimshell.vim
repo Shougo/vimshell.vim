@@ -1,9 +1,8 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Feb 2009
+" Last Modified: 19 Feb 2009
 " Usage: Just source this file.
-"        source vimshell.vim
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 2.9, for Vim 7.0
+" Version: 3.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.1:
+"     - Optimized pattern.
 "   3.0:
 "     - Added VimShellErrorHidden.
 "     - Added VimShellError.
@@ -78,9 +79,9 @@ syn match   VimShellConstants         '[+-]\=\<0x\x\+\>'
 syn match   VimShellConstants         '[+-]\=\<0\o\+\>'
 syn match   VimShellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
 syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\>'
-syn match   VimShellExe               '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+\*\([[:blank:]]\|\n\)'
-syn match   VimShellSocket            '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+=\([[:blank:]]\|\n\)'
-syn match   VimShellDotFiles          '\(^\|[[:blank:]]\)\.[[:alnum:]_.-]\+\([[:blank:]]\|\n\)'
+syn match   VimShellExe               '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
+syn match   VimShellSocket            '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
+syn match   VimShellDotFiles          '\(^\|[[:blank:]]\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
 syn match   VimShellArguments         '[[:blank:]]-\=-[[:alnum:]-]\+=\=' contained
 syn match   VimShellQuoted            '\\.' contained
 syn match   VimShellSpecial           '[|<>;&;]' contained
@@ -97,9 +98,8 @@ else
     syn match   VimShellDirectory         '[/~]\=\f\+/\f*'
     syn match   VimShellLink              '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
-execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\h[[:alpha:]_.-]*\\(\[[:blank:]]\\|\\n\\)' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
-syn match VimShellExe '|[[:blank:]]*[[:alpha:]_.-]\+' contained contains=VimShellSpecial,VimShellArguments
-syn match VimShellExe ';[[:blank:]]*[[:alpha:]_.-]\+' contained contains=VimShellSpecial,VimShellArguments
+execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\f*[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+syn match VimShellExe '[|;][[:blank:]]*\f\+' contained contains=VimShellSpecial,VimShellArguments
 execute "syn region   VimShellLine start='" . g:VimShell_Prompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 if has('gui_running')
