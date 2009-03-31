@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 26 Jan 2009
+" Last Modified: 11 Mar 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.2:
@@ -51,8 +51,7 @@ function! vimshell#internal#cd#execute(line, program, arguments, is_interactive,
         let l:arguments = $HOME
     else
         " Filename escape.
-        "let l:arguments = escape(a:arguments, "*?[]{}`$\\%#&'\"|!<>+")
         let l:arguments = a:arguments
     endif
-    execute 'lcd ' . l:arguments
+    lcd `=fnamemodify(l:arguments, ':p')`
 endfunction

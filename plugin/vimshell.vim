@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Feb 2009
+" Last Modified: 31 Mar 2009
 " Usage: Just source this file.
 "        source vimshell.vim
 " License: MIT license  {{{
@@ -25,9 +25,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.0, for Vim 7.0
+" Version: 5.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.1:
+"     - Improved key-mappings and autocmd.
+"     - Implemented command line stack.
 "   5.0:
 "     - Return previous buffer when call vimshell#switch_shell on vimshell.
 "     - Implemented vimshell#error_line.
@@ -173,6 +176,8 @@ nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shel
 nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0)<CR>
 nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0)<CR>
 nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
+nnoremap <silent> <Plug>(vimshell_insert_command_completion)  :<C-u>call vimshell#insert_command_completion()<CR>
+nnoremap <silent> <Plug>(vimshell_push_current_line)  :<C-u>call vimshell#push_current_line()<CR>
 nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
 nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
 nmap <silent> <Leader>sh     <Plug>(vimshell_switch)

@@ -155,6 +155,9 @@ function! vimshell#create_shell(split_flag)"{{{
         call s:special_vimsh('vimsh ' . g:VimShell_VimshrcPath, 'vimsh', g:VimShell_VimshrcPath, 0, 0)
         let b:vimshell_loaded_vimshrc = 1
     endif
+    if !exists('w:vimshell_commandline_stack')
+        let w:vimshell_commandline_stack = []
+    endif
 
     call vimshell#print_prompt()
 
@@ -163,21 +166,28 @@ endfunction"}}}
 
 function! vimshell#print_prompt()"{{{
     let l:escaped = escape(getline('.'), "\'")
+    echo w:vimshell_commandline_stack
     " Search prompt
+    if empty(w:vimshell_commandline_stack)
+        let l:new_prompt = g:VimShell_Prompt
+    else
+        let l:new_prompt = w:vimshell_commandline_stack[-1]
+        call remove(w:vimshell_commandline_stack, -1)
+    endif
     if match(l:escaped, g:VimShell_Prompt) < 0
         " Prompt not found
         if !empty(l:escaped)
             " Insert prompt line.
-            call append(line('.'), g:VimShell_Prompt)
+            call append(line('.'), l:new_prompt)
             normal! j
         else
             " Set prompt line.
-            call setline(line('.'), g:VimShell_Prompt)
+            call setline(line('.'), l:new_prompt)
         endif
         normal! $
     else
         " Insert prompt line.
-        call append(line('.'), g:VimShell_Prompt)
+        call append(line('.'), l:new_prompt)
         normal! j$
     endif
     let &modified = 0
@@ -277,7 +287,7 @@ function! vimshell#process_enter()"{{{
     call vimshell#start_insert()
 endfunction"}}}
 
-function s:execute_command(line, program, arguments, is_interactive, has_head_spaces)"{{{
+function! s:execute_command(line, program, arguments, is_interactive, has_head_spaces)"{{{
     let l:line = a:line
     let l:program = a:program
     let l:arguments = a:arguments
@@ -707,7 +717,7 @@ function! s:highlight_escape_sequence()"{{{
     let @" = register_save
 endfunction"}}}
 
-" VimShell utility functions.
+" VimShell utility functions."{{{
 function! vimshell#print_line(string)
     call append(line('.'), a:string)
     normal! j
@@ -720,9 +730,9 @@ function! vimshell#start_insert()
     " Enter insert mode.
     startinsert!
     set iminsert=0 imsearch=0
-endfunction
+endfunction"}}}
 
-function! vimshell#insert_command()"{{{
+function! vimshell#insert_command_completion()"{{{
     let l:in = input('Command name completion: ', expand('<cword>'), 'shellcmd')
     " For ATOK X3.
     set iminsert=0 imsearch=0
@@ -745,16 +755,28 @@ function! vimshell#restore_current_dir()"{{{
     endif
 endfunction"}}}
 
+function! vimshell#push_current_line()"{{{
+    " Check current line.
+    if match(getline('.'), g:VimShell_Prompt) < 0
+        return
+    endif
+
+    call add(w:vimshell_commandline_stack, getline('.'))
+
+    " Set prompt line.
+    call setline(line('.'), g:VimShell_Prompt)
+endfunction"}}}
+
 augroup VimShell"{{{
     autocmd!
-    autocmd Filetype vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    autocmd Filetype vimshell imap <buffer><silent> <CR> <ESC><CR>
-    autocmd Filetype vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
-    autocmd Filetype vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
-    autocmd Filetype vimshell inoremap <buffer> <C-p> <C-o>:<C-u>call vimshell#insert_command()<CR>
-    autocmd Filetype vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir() | endif
-    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir() | endif
+    autocmd BufAdd vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
+    autocmd BufAdd vimshell imap <buffer><silent> <CR> <ESC><CR>
+    autocmd BufAdd vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
+    autocmd BufAdd vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
+    autocmd BufAdd vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
+    autocmd BufAdd vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
+    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
+    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
 augroup end"}}}
 
 " Global options definition."{{{

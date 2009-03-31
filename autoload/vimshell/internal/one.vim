@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: one.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Feb 2009
+" Last Modified: 12 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Supported '-n' and '-p' arguments in ruby.
+"     - Occur error when no arguments.
 "   1.2:
 "     - Use vimshell#error_line.
 "   1.1:
@@ -47,6 +50,12 @@ function! vimshell#internal#one#execute(line, program, arguments, is_interactive
     " Convert oneliner command.
     if has('win32') || has('win64')
         let l:arguments = split(a:arguments)
+        if len(l:arguments) == 0
+            " Arguments required.
+            call vimshell#error_line('Arguments required.')
+            return
+        endif
+
         let l:program = l:arguments[0]
 
         if l:program =~ '\a*awk$' || l:program == 'sed' || l:program =~ '\a*grep$'
@@ -80,8 +89,19 @@ function! s:execute_oneliner(program, arguments, liner_option, file_option)
     let l:forward_args = (l:forward == 0)?  '' : a:arguments[: l:forward-1]
     let l:backward_args = a:arguments[matchend(a:arguments, a:liner_option) :]
 
+    let l:program_lines = [l:liner[match(a:liner_option, "'")+1 : -2]]
+    if a:program == 'ruby' &&
+                \(l:forward_args == '-p' || l:forward_args == '-n')
+        call insert(l:program_lines, 'while gets')
+        if l:forward_args == '-p'
+            call add(l:program_lines, 'print $_')
+        endif
+        call add(l:program_lines, 'end')
+        let l:forward_args = ''
+    endif
+
     let l:tmpfile = tempname()
-    call writefile([l:liner[match(a:liner_option, "'")+1 : -2]], l:tmpfile)
+    call writefile(l:program_lines, l:tmpfile)
 
     execute printf('silent read! %s %s %s %s %s', a:program, l:forward_args, a:file_option, l:tmpfile, l:backward_args)
 
