@@ -1,9 +1,8 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 26 Jan 2009
+" Last Modified: 31 Mar 2009
 " Usage: Just source this file.
-"        source vimshell.vim
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Supported vimshell Ver.3.2.
 "   1.2:
 "     - Improved on Windows.
 "   1.1:
@@ -43,24 +44,25 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#ls#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
+function! vimshell#internal#ls#execute(program, args, fd, other_info)
+    let l:arguments = join(a:args, ' ')
     if has('win32') || has('win64')
         " For Windows.
-        if empty(a:arguments)
+        if empty(l:arguments)
             silent execute 'read! ls.exe -FC'
-        elseif a:arguments =~ '|'
-            silent execute printf('read! ls.exe %s', a:arguments)
+        elseif l:arguments =~ '|'
+            silent execute printf('read! ls.exe %s', l:arguments)
         else
-            silent execute printf('read! ls.exe -FC %s', a:arguments)
+            silent execute printf('read! ls.exe -FC %s', l:arguments)
         endif
     else
         " For Linux.
-        if empty(a:arguments)
+        if empty(l:arguments)
             silent execute 'read! ls -FC'
-        elseif a:arguments =~ '|'
-            silent execute printf('read! ls %s', a:arguments)
+        elseif l:arguments =~ '|'
+            silent execute printf('read! ls %s', l:arguments)
         else
-            silent execute printf('read! ls -FC %s', a:arguments)
+            silent execute printf('read! ls -FC %s', l:arguments)
         endif
     endif
 endfunction

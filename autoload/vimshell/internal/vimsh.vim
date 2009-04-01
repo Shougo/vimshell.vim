@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" FILE: vimsh.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 31 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
@@ -23,15 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"   1.2:
-"     - Use vimshell#print_line.
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -44,21 +38,34 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#alias#execute(program, args, fd, other_info)
-    let l:arguments = join(a:args, ' ')
-    if l:arguments =~ '^\h\w*'
-        let l:pos = matchend(l:arguments, '^\h\w*=')
-        if l:pos > 0
-            " Define alias.
-            let b:vimshell_alias_table[l:arguments[:l:pos-2]] = l:arguments[l:pos :]
-        elseif has_key(b:vimshell_alias_table, l:arguments[:l:pos])
-            " View alias.
-            call vimshell#print_line(b:vimshell_alias_table[l:arguments[:l:pos]])
-        endif
+function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
+    " Create new vimshell or execute script.
+    if empty(a:args)
+        call vimshell#print_prompt()
+        call vimshell#create_shell(0)
+        return 1
     else
-        " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(printf('%s=%s', alias, b:vimshell_alias_table[alias])
-        endfor
+        " Filename escape.
+        let l:filename = escape(join(a:args, ' '), "\\*?[]{}`$%#&'\"|!<>+")
+
+        if filereadable(l:filename)
+            let l:scripts = readfile(l:filename)
+
+            for script in l:scripts
+                " Delete head spaces.
+                let l:program = (empty(script))? '' : split(script)[0]
+                let l:arguments = substitute(script, '^\s*' . l:program . '\s*', '', '')
+                let l:fd = {}
+                let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0 }
+
+                call vimshell#execute_command(l:program, split(l:arguments), l:fd, l:other_info)
+                normal! j
+            endfor
+        else
+            " Error.
+            call vimshell#error_line(printf('Not found the script "%s".', l:filename))
+        endif
     endif
+
+    return 0
 endfunction

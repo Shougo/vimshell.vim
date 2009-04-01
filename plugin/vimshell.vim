@@ -2,9 +2,8 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Mar 2009
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
-"        source vimshell.vim
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,9 +24,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.1, for Vim 7.0
+" Version: 5.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.2:
+"     - Plugin interface changed.
+"     - Converted special commands into internal commands.
+"     - Deleted quick match.
 "   5.1:
 "     - Improved key-mappings and autocmd.
 "     - Implemented command line stack.
@@ -182,6 +185,46 @@ nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
 nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
 nmap <silent> <Leader>sh     <Plug>(vimshell_switch)
 nmap <silent> <Leader>sc     <Plug>(vimshell_create)
+"}}}
+
+augroup VimShellAutoCmd"{{{
+    autocmd!
+    autocmd FileType *vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
+    autocmd FileType *vimshell imap <buffer><silent> <CR> <ESC><CR>
+    autocmd FileType *vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
+    autocmd FileType *vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
+    autocmd FileType *vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
+    autocmd FileType *vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
+
+    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
+    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
+augroup end"}}}
+
+" Global options definition."{{{
+if !exists('g:VimShell_Prompt')
+    let g:VimShell_Prompt = 'VimShell% '
+endif
+if !exists('g:VimShell_HistoryPath')
+    let g:VimShell_HistoryPath = $HOME.'/.vimshell_hist'
+endif
+if !exists('g:VimShell_HistoryMaxSize')
+    let g:VimShell_HistoryMaxSize = 1000
+endif
+if !exists('g:VimShell_VimshrcPath')
+    let g:VimShell_VimshrcPath = $HOME.'/.vimshrc'
+endif
+if !exists('g:VimShell_IgnoreCase')
+    let g:VimShell_IgnoreCase = 1
+endif
+if !exists('g:VimShell_SmartCase')
+    let g:VimShell_SmartCase = 0
+endif
+if !exists('g:VimShell_MaxHistoryWidth')
+    let g:VimShell_MaxHistoryWidth = 40
+endif
+if !exists('g:VimShell_UseCkw')
+    let g:VimShell_UseCkw = 0
+endif
 "}}}
 
 command! -nargs=0 VimShell call vimshell#switch_shell(0)

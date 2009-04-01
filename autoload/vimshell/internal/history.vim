@@ -1,9 +1,8 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Jan 2009
+" Last Modified: 31 Jan 2009
 " Usage: Just source this file.
-"        source vimshell.vim
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Supported vimshell Ver.3.2.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -39,16 +40,17 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#history#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
+function! vimshell#internal#history#execute(program, args, fd, other_info)
     if get(g:vimshell#hist_buffer, 0) =~ '^history'
         " Delete from history.
         call remove(g:vimshell#hist_buffer, 0)
     endif
 
     let l:cnt = 0
-    if a:arguments =~ '^\d\+$'
-        let l:max = str2nr(a:arguments)
-    elseif empty(a:arguments)
+    let l:arguments = join(a:args, ' ')
+    if l:arguments =~ '^\d\+$'
+        let l:max = str2nr(l:arguments)
+    elseif empty(l:arguments)
         " Default max value.
         let l:max = 20
     else

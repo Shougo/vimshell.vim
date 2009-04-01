@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Feb 2009
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.0, for Vim 7.0
+" Version: 5.2, for Vim 7.0
 "=============================================================================
 function! vimshell#switch_shell(split_flag)"{{{
     if getbufvar(bufnr('%'), '&filetype') == 'vimshell'
@@ -84,10 +84,10 @@ function! vimshell#switch_shell(split_flag)"{{{
 endfunction"}}}
 
 function! vimshell#create_shell(split_flag)"{{{
-    let l:bufname = 'VimShell'
+    let l:bufname = 'vimshell'
     let l:cnt = 2
     while bufexists(l:bufname)
-        let l:bufname = printf('[%d]VimShell', l:cnt)
+        let l:bufname = printf('[%d]vimshell', l:cnt)
         let l:cnt += 1
     endwhile
 
@@ -134,16 +134,8 @@ function! vimshell#create_shell(split_flag)"{{{
     if !exists('s:special_func_table')
         " Initialize table.
         let s:special_func_table = {
-                    \ 'exit' : 's:special_exit',
-                    \ 'hide' : 's:special_hide',
                     \ 'command' : 's:special_command',
                     \ 'internal' : 's:special_internal',
-                    \ 'vim' : 's:special_vim',
-                    \ 'view' : 's:special_view',
-                    \ 'vimsh' : 's:special_vimsh',
-                    \ 'histdel' : 's:special_histdel',
-                    \ 'h' : 's:special_h',
-                    \ 'iexe' : 's:special_iexe',
                     \}
     endif
     if !exists('w:vimshell_directory_stack')
@@ -152,11 +144,13 @@ function! vimshell#create_shell(split_flag)"{{{
     endif
     " Load rc file.
     if filereadable(g:VimShell_VimshrcPath) && !exists('b:vimshell_loaded_vimshrc')
-        call s:special_vimsh('vimsh ' . g:VimShell_VimshrcPath, 'vimsh', g:VimShell_VimshrcPath, 0, 0)
+        let l:fd = {}
+        let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0 }
+        call vimshell#internal#vimsh#execute('vimsh', [g:VimShell_VimshrcPath], l:fd, l:other_info)
         let b:vimshell_loaded_vimshrc = 1
     endif
-    if !exists('w:vimshell_commandline_stack')
-        let w:vimshell_commandline_stack = []
+    if !exists('b:vimshell_commandline_stack')
+        let b:vimshell_commandline_stack = []
     endif
 
     call vimshell#print_prompt()
@@ -166,13 +160,12 @@ endfunction"}}}
 
 function! vimshell#print_prompt()"{{{
     let l:escaped = escape(getline('.'), "\'")
-    echo w:vimshell_commandline_stack
     " Search prompt
-    if empty(w:vimshell_commandline_stack)
+    if empty(b:vimshell_commandline_stack)
         let l:new_prompt = g:VimShell_Prompt
     else
-        let l:new_prompt = w:vimshell_commandline_stack[-1]
-        call remove(w:vimshell_commandline_stack, -1)
+        let l:new_prompt = b:vimshell_commandline_stack[-1]
+        call remove(b:vimshell_commandline_stack, -1)
     endif
     if match(l:escaped, g:VimShell_Prompt) < 0
         " Prompt not found
@@ -267,14 +260,15 @@ function! vimshell#process_enter()"{{{
         let s:hist_size = getfsize(g:VimShell_HistoryPath)
     endif
 
-    let l:has_head_spaces = (l:line =~ '^\s\+')
     " Delete head spaces.
     let l:line = substitute(l:line, '^\s\+', '', '')
     let l:program = (empty(l:line))? '' : split(l:line)[0]
-    let l:arguments = substitute(l:line, '^' . l:program . '\s*', '', '')
+    let l:args = split(substitute(l:line, '^' . l:program . '\s*', '', ''))
+    let l:fd = {}
+    let l:other_info = { 'has_head_spaces' : l:line =~ '^\s\+', 'is_interactive' : 1 }
 
     " Interactive execute.
-    let l:skip_prompt = s:execute_command(l:line, l:program, l:arguments, 0, l:has_head_spaces)
+    let l:skip_prompt = vimshell#execute_command(l:program, l:args, l:fd, l:other_info)
 
     if l:skip_prompt
         " Skip prompt.
@@ -287,19 +281,16 @@ function! vimshell#process_enter()"{{{
     call vimshell#start_insert()
 endfunction"}}}
 
-function! s:execute_command(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    let l:line = a:line
+function! vimshell#execute_command(program, args, fd, other_info)"{{{
+    let l:line = printf('%s %s', a:program, join(a:args, ' '))
     let l:program = a:program
-    let l:arguments = a:arguments
+    let l:arguments = a:args
 
     " Check alias."{{{
     if has_key(b:vimshell_alias_table, l:program) && !empty(b:vimshell_alias_table[l:program])
         let l:alias = split(b:vimshell_alias_table[l:program])
         let l:program = l:alias[0]
-        if len(l:alias) > 1
-            " Join arguments.
-            let l:arguments = join(l:alias[1:], ' ') . ' ' . l:arguments
-        endif
+        let l:arguments = l:alias[1:]
         let l:line = l:program . ' ' . l:arguments
     endif"}}}
 
@@ -362,28 +353,27 @@ function! s:execute_command(line, program, arguments, is_interactive, has_head_s
                 call remove(g:vimshell#hist_buffer, 0)
             endif
 
-            return s:special_h('h 0', 'h', '0', a:is_interactive, a:has_head_spaces)
-        elseif l:program =~ '!\d\+$' && a:is_interactive
+            return s:special_h('h', '0', a:fd, a:other_info)
+        elseif l:program =~ '!\d\+$' && a:other_info.is_interactive
             " History command execution.
             if get(g:vimshell#hist_buffer, 0) =~ '^!\d\+'
                 " Delete from history.
                 call remove(g:vimshell#hist_buffer, 0)
             endif
 
-            return s:special_h('h' . str2nr(l:program[1:]), 'h', str2nr(l:program[1:]), a:is_interactive, a:has_head_spaces)
+            return s:special_h('h', str2nr(l:program[1:]), a:fd, a:other_info)
         else
             " Shell execution.
-            execute printf('%s %s', l:program, l:arguments)
+            execute printf('%s %s', l:program, join(l:arguments, ' '))
         endif"}}}
     elseif has_key(s:special_func_table, l:program)"{{{
         " Other special commands.
-        execute printf('let l:skip_prompt = %s(l:line, l:program, l:arguments, a:is_interactive, a:has_head_spaces)', 
+        execute printf('let l:skip_prompt = %s(l:program, l:arguments, a:fd, a:other_info)', 
                     \ s:special_func_table[l:program])
         return l:skip_prompt"}}}
     elseif has_key(s:internal_func_table, l:program)"{{{
         " Internal commands.
-        let l:other_info = { 'hist_buffer': g:vimshell#hist_buffer }
-        execute printf('return %s(l:line, l:program, l:arguments, a:is_interactive, a:has_head_spaces, l:other_info)', 
+        execute printf('return %s(l:program, l:arguments, a:fd, a:other_info)', 
                     \ s:internal_func_table[l:program])
         "}}}
     elseif isdirectory(l:program)"{{{
@@ -391,11 +381,11 @@ function! s:execute_command(line, program, arguments, is_interactive, has_head_s
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        call vimshell#internal#cd#execute('cd'. l:program, 'cd', l:program, a:is_interactive, a:has_head_spaces, {})
+        call vimshell#internal#cd#execute('cd', l:program, a:fd, a:other_info)
         "}}}
     else"{{{
         " External commands.
-        silent execute printf('read! %s %s', l:program, l:arguments)
+        silent execute printf('read! %s %s', l:program, join(l:arguments, ' '))
     endif
     "}}}
 
@@ -403,185 +393,25 @@ function! s:execute_command(line, program, arguments, is_interactive, has_head_s
 endfunction"}}}
 
 " Special functions."{{{
-function! s:special_exit(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    " Exit vimshell.
-    if a:is_interactive
-        let vimsh_buf = bufnr('%')
-        " Switch buffer.
-        buffer #
-        execute 'bdelete!'. vimsh_buf
-        return 1
-    else
-        " Return prompt line.
-        return 0
-    endif
-endfunction"}}}
-function! s:special_hide(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    " Exit vimshell.
-    if a:is_interactive
-        " Insert prompt line.
-        call vimshell#print_prompt()
-        buffer #
-        return 1
-    else
-        return 0
-    endif
-endfunction"}}}
-function! s:special_command(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    execute 'silent read! ' . a:arguments
+function! s:special_command(program, args, fd, other_info)"{{{
+    execute 'silent read! ' . join(a:arguments, ' ')
     return 0
 endfunction"}}}
-function! s:special_internal(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    if !empty(a:arguments)
-        let l:program = split(a:arguments)[0]
-        let l:arguments = substitute(a:arguments, '^' . l:program . '\s*', '', '')
+function! s:special_internal(program, args, fd, other_info)"{{{
+    if !empty(a:args)
+        let l:program = a:args[0]
+        let l:arguments = a:args[1:]
         if has_key(s:internal_func_table, l:program)
             " Internal commands.
-            let l:other_info = { 'hist_buffer': g:vimshell#hist_buffer }
-            execute printf('call %s(a:arguments, l:program, l:arguments, a:is_interactive, a:has_head_spaces, l:other_info)', 
+            execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
                         \ s:internal_func_table[l:program])
-            execute 'silent read! ' . l:arguments
+            execute 'silent read! ' . join(l:arguments, ' ')
         else
             " Error.
             call vimshell#error_line(printf('Not found internal command "%s".', l:program))
         endif
     endif
     return 0
-endfunction"}}}
-function! s:special_vim(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    " Edit file.
-
-    call vimshell#print_prompt()
-
-    " Filename escape
-    let l:arguments = escape(a:arguments, "\\*?[]{}`$%#&'\"|!<>+")
-
-    if empty(l:arguments)
-        new
-    else
-        split
-        execute 'edit ' . l:arguments
-    endif
-
-    return 1
-endfunction"}}}
-function! s:special_view(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    " View file.
-
-    call vimshell#print_prompt()
-
-    " Filename escape
-    let l:arguments = escape(a:arguments, "\\*?[]{}`$%#&'\"|!<>+")
-
-    if empty(l:arguments)
-        call append(line('.'), 'Filename required.')
-        normal! j
-    else
-        split
-        execute 'edit ' . l:arguments
-        setlocal nomodifiable
-    endif
-endfunction"}}}
-function! s:special_vimsh(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    if empty(a:arguments)
-        call vimshell#print_prompt()
-        call vimshell#create_shell(0)
-        return 1
-    else
-        " Filename escape.
-        let l:filename = escape(a:arguments, "\\*?[]{}`$%#&'\"|!<>+")
-
-        if filereadable(l:filename)
-            let l:scripts = readfile(l:filename)
-
-            for script in l:scripts
-                " Delete head spaces.
-                let l:line = substitute(script, '^\s\+', '', '')
-                let l:program = (empty(script))? '' : split(script)[0]
-                let l:arguments = substitute(script, '^' . l:program . '\s*', '', '')
-
-                call s:execute_command(l:line, l:program, l:arguments, 0, 0)
-                normal! j
-            endfor
-        else
-            " Error.
-            call vimshell#error_line(printf('Not found the script "%s".', l:filename))
-        endif
-    endif
-
-    return 0
-endfunction"}}}
-function! s:special_histdel(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    if get(g:vimshell#hist_buffer, 0) =~ '^histdel'
-        " Delete from history.
-        call remove(g:vimshell#hist_buffer, 0)
-    endif
-
-    if !empty(a:arguments)
-        let l:del_hist = {}
-        for d in split(a:arguments)
-            let l:del_hist[d] = 1
-        endfor
-
-        let l:new_hist = []
-        let l:cnt = 0
-        for h in g:vimshell#hist_buffer
-            if !has_key(l:del_hist, l:cnt)
-                call add(l:new_hist, h)
-            endif
-            let l:cnt += 1
-        endfor
-        let g:vimshell#hist_buffer = l:new_hist
-    else
-        call append(line('.'), 'Arguments required.')
-        normal! j
-    endif
-endfunction"}}}
-function! s:special_h(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    if get(g:vimshell#hist_buffer, 0) =~ '^h\s' || get(g:vimshell#hist_buffer, 0) == 'h'
-        " Delete from history.
-        call remove(g:vimshell#hist_buffer, 0)
-    endif
-
-    let l:args = split(a:arguments)
-    if empty(l:args)
-        let l:num = 0
-    else
-        let l:num = str2nr(l:args[0])
-    endif
-
-    if len(g:vimshell#hist_buffer) > l:num
-        if !empty(a:arguments[1:])
-            " Join arguments.
-            let l:line = g:vimshell#hist_buffer[l:num] . ' ' . join(l:args[1:], ' ')
-        else
-            let l:line = g:vimshell#hist_buffer[l:num]
-        endif
-
-        if a:has_head_spaces
-            " Don't append history.
-            call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:line))
-        else
-            call setline(line('.'), g:VimShell_Prompt . l:line)
-        endif
-
-        call vimshell#process_enter()
-        return 1
-    else
-        " Error.
-        call vimshell#error_line('Not found in history.')
-        return 0
-    endif
-endfunction"}}}
-function! s:special_iexe(line, program, arguments, is_interactive, has_head_spaces)"{{{
-    if has('python')
-        call interactive#run(a:arguments)
-        return 1
-    else
-        " Error.
-        call vimshell#error_line('Vim must have python interface.')
-        return 0
-    endif
 endfunction"}}}
 "}}}
 
@@ -617,62 +447,6 @@ function! vimshell#history_complete(findstart, base)"{{{
 
     " Restore options.
     let &l:ignorecase = l:ignorecase_save
-
-    if g:VimShell_QuickMatchEnable
-        " Append numbered list.
-        if match(l:cur_keyword_str, '\d$') >= 0
-            " Get numbered list.
-            let l:numbered = get(s:prev_numbered_list, str2nr(matchstr(l:cur_keyword_str, '\d$')))
-            if type(l:numbered) == type({})
-                call insert(l:complete_words, l:numbered)
-            endif
-
-            " Get next numbered list.
-            if match(l:cur_keyword_str, '\d\d$') >= 0
-                let l:num = str2nr(matchstr(l:cur_keyword_str, '\d\d$'))-10
-                if l:num >= 0
-                    unlet l:numbered
-                    let l:numbered = get(s:prepre_numbered_list, l:num)
-                    if type(l:numbered) == type({})
-                        call insert(l:complete_words, l:numbered)
-                    endif
-                endif
-            endif
-        endif
-
-        " Check dup.
-        let l:dup_check = {}
-        let l:num = 0
-        let l:numbered_words = []
-        for history in l:complete_words[:g:VimShell_QuickMatchMaxLists]
-            if !empty(history.word) && !has_key(l:dup_check, history.word)
-                let l:dup_check[history.word] = 1
-
-                call add(l:numbered_words, history)
-            endif
-            let l:num += 1
-        endfor
-
-        " Add number.
-        let l:num = 0
-        let l:abbr_pattern_d = '%2d: %.' . g:VimShell_MaxHistoryWidth . 's'
-        for history in l:numbered_words
-            let history.abbr = printf(l:abbr_pattern_d, l:num, history.word)
-
-            let l:num += 1
-        endfor
-        let l:abbr_pattern_n = '    %.' . g:VimShell_MaxHistoryWidth . 's'
-        for history in l:complete_words[g:VimShell_QuickMatchMaxLists :]
-            let history.abbr = printf(l:abbr_pattern_n, history.word)
-        endfor
-
-        " Append list.
-        let l:complete_words = extend(l:numbered_words, l:complete_words)
-
-        " Save numbered lists.
-        let s:prepre_numbered_list = s:prev_numbered_list[10:g:VimShell_QuickMatchMaxLists-1]
-        let s:prev_numbered_list = l:complete_words[:g:VimShell_QuickMatchMaxLists-1]
-    endif
 
     return l:complete_words
 endfunction"}}}
@@ -761,55 +535,10 @@ function! vimshell#push_current_line()"{{{
         return
     endif
 
-    call add(w:vimshell_commandline_stack, getline('.'))
+    call add(b:vimshell_commandline_stack, getline('.'))
 
     " Set prompt line.
     call setline(line('.'), g:VimShell_Prompt)
 endfunction"}}}
-
-augroup VimShell"{{{
-    autocmd!
-    autocmd BufAdd vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    autocmd BufAdd vimshell imap <buffer><silent> <CR> <ESC><CR>
-    autocmd BufAdd vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
-    autocmd BufAdd vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
-    autocmd BufAdd vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
-    autocmd BufAdd vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
-    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
-    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
-augroup end"}}}
-
-" Global options definition."{{{
-if !exists('g:VimShell_Prompt')
-    let g:VimShell_Prompt = 'VimShell% '
-endif
-if !exists('g:VimShell_HistoryPath')
-    let g:VimShell_HistoryPath = $HOME.'/.vimshell_hist'
-endif
-if !exists('g:VimShell_HistoryMaxSize')
-    let g:VimShell_HistoryMaxSize = 1000
-endif
-if !exists('g:VimShell_VimshrcPath')
-    let g:VimShell_VimshrcPath = $HOME.'/.vimshrc'
-endif
-if !exists('g:VimShell_IgnoreCase')
-    let g:VimShell_IgnoreCase = 1
-endif
-if !exists('g:VimShell_SmartCase')
-    let g:VimShell_SmartCase = 0
-endif
-if !exists('g:VimShell_MaxHistoryWidth')
-    let g:VimShell_MaxHistoryWidth = 40
-endif
-if !exists('g:VimShell_QuickMatchEnable')
-    let g:VimShell_QuickMatchEnable = 1
-endif
-if !exists('g:VimShell_QuickMatchMaxLists')
-    let g:VimShell_QuickMatchMaxLists = 50
-endif
-if !exists('g:VimShell_UseCkw')
-    let g:VimShell_UseCkw = 0
-endif
-"}}}
 
 " vim: foldmethod=marker

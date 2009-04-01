@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: one.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Mar 2009
+" Last Modified: 31 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.4:
+"     - Supported vimshell Ver.3.2.
 "   1.3:
 "     - Supported '-n' and '-p' arguments in ruby.
 "     - Occur error when no arguments.
@@ -46,34 +48,34 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#one#execute(line, program, arguments, is_interactive, has_head_spaces, other_info)
+function! vimshell#internal#one#execute(program, args, fd, other_info)
     " Convert oneliner command.
     if has('win32') || has('win64')
-        let l:arguments = split(a:arguments)
-        if len(l:arguments) == 0
+        if empty(a:args)
             " Arguments required.
             call vimshell#error_line('Arguments required.')
             return
         endif
 
-        let l:program = l:arguments[0]
+        let l:program = a:args[0]
+        let l:arguments = join(a:args[1:])
 
         if l:program =~ '\a*awk$' || l:program == 'sed' || l:program =~ '\a*grep$'
             " AWK and sed.
-            call s:execute_oneliner(l:program, join(l:arguments[1:]), "'.*'", '-f')
+            call s:execute_oneliner(l:program, l:arguments, "'.*'", '-f')
         elseif l:program == 'python'
             " Python.
-            call s:execute_oneliner(l:program, join(l:arguments[1:]), "-c '.*'", '')
+            call s:execute_oneliner(l:program, l:arguments, "-c '.*'", '')
         elseif l:program == 'ruby' || l:program == 'perl'
             " Perl and Ruby.
-            call s:execute_oneliner(l:program, join(l:arguments[1:]), "-e '.*'", '')
+            call s:execute_oneliner(l:program, l:arguments, "-e '.*'", '')
         else
             " Error.
             call vimshell#error_line(printf('Not found one liner command settings "%s".', l:program))
         endif
     else
         " This command is Windows only.
-        execute printf('silent read! %s', a:arguments)
+        execute printf('silent read! %s', join(a:args, ' '))
     endif
 endfunction
 

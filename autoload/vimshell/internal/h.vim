@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Mar 2009
+" FILE: h.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 01 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,15 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"   1.2:
-"     - Use vimshell#print_line.
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -44,21 +38,39 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#alias#execute(program, args, fd, other_info)
-    let l:arguments = join(a:args, ' ')
-    if l:arguments =~ '^\h\w*'
-        let l:pos = matchend(l:arguments, '^\h\w*=')
-        if l:pos > 0
-            " Define alias.
-            let b:vimshell_alias_table[l:arguments[:l:pos-2]] = l:arguments[l:pos :]
-        elseif has_key(b:vimshell_alias_table, l:arguments[:l:pos])
-            " View alias.
-            call vimshell#print_line(b:vimshell_alias_table[l:arguments[:l:pos]])
-        endif
+function! vimshell#internal#h#execute(program, args, fd, other_info)
+    " Execute from history.
+    if get(g:vimshell#hist_buffer, 0) =~ '^h\s' || get(g:vimshell#hist_buffer, 0) == 'h'
+        " Delete from history.
+        call remove(g:vimshell#hist_buffer, 0)
+    endif
+
+    if empty(a:args)
+        let l:num = 0
     else
-        " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(printf('%s=%s', alias, b:vimshell_alias_table[alias])
-        endfor
+        let l:num = str2nr(a:args[0])
+    endif
+
+    if len(g:vimshell#hist_buffer) > l:num
+        if !empty(a:args[1:])
+            " Join arguments.
+            let l:line = g:vimshell#hist_buffer[l:num] . ' ' . join(a:args[1:], ' ')
+        else
+            let l:line = g:vimshell#hist_buffer[l:num]
+        endif
+
+        if a:other_info.has_head_spaces
+            " Don't append history.
+            call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:line))
+        else
+            call setline(line('.'), g:VimShell_Prompt . l:line)
+        endif
+
+        call vimshell#process_enter()
+        return 1
+    else
+        " Error.
+        call vimshell#error_line('Not found in history.')
+        return 0
     endif
 endfunction
