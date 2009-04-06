@@ -44,14 +44,14 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
     call vimshell#print_prompt()
 
     " Filename escape
-    let l:arguments = `=(join(a:args, ' ')`
+    let l:arguments = join(a:args, ' ')
 
     if empty(l:arguments)
         call append(line('.'), 'Filename required.')
         normal! j
     else
         split
-        execute 'edit ' . l:arguments
+        edit `=l:arguments`
         setlocal nomodifiable
     endif
 endfunction

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 01 Apr 2009
+" Last Modified: 03 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.2, for Vim 7.0
+" Version: 5.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.4:
+"     - Fixed alias, cd, histdel bug.
+"   5.3:
+"     - Improved autocmds.
+"     - Refactoring plugin call.
 "   5.2:
 "     - Plugin interface changed.
 "     - Converted special commands into internal commands.
@@ -186,19 +191,6 @@ nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
 nmap <silent> <Leader>sh     <Plug>(vimshell_switch)
 nmap <silent> <Leader>sc     <Plug>(vimshell_create)
 "}}}
-
-augroup VimShellAutoCmd"{{{
-    autocmd!
-    autocmd FileType *vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    autocmd FileType *vimshell imap <buffer><silent> <CR> <ESC><CR>
-    autocmd FileType *vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
-    autocmd FileType *vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
-    autocmd FileType *vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
-    autocmd FileType *vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
-
-    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
-    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
-augroup end"}}}
 
 " Global options definition."{{{
 if !exists('g:VimShell_Prompt')

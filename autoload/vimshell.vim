@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 01 Apr 2009
+" Last Modified: 03 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -291,7 +291,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         let l:alias = split(b:vimshell_alias_table[l:program])
         let l:program = l:alias[0]
         let l:arguments = l:alias[1:]
-        let l:line = l:program . ' ' . l:arguments
+        let l:line = l:program . ' ' . join(l:arguments)
     endif"}}}
 
     " Eval environment variable."{{{
@@ -368,13 +368,11 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         endif"}}}
     elseif has_key(s:special_func_table, l:program)"{{{
         " Other special commands.
-        execute printf('let l:skip_prompt = %s(l:program, l:arguments, a:fd, a:other_info)', 
-                    \ s:special_func_table[l:program])
-        return l:skip_prompt"}}}
+        return call(s:special_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
+        "}}}
     elseif has_key(s:internal_func_table, l:program)"{{{
         " Internal commands.
-        execute printf('return %s(l:program, l:arguments, a:fd, a:other_info)', 
-                    \ s:internal_func_table[l:program])
+        return call(s:internal_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
         "}}}
     elseif isdirectory(l:program)"{{{
         " Directory.
@@ -540,5 +538,19 @@ function! vimshell#push_current_line()"{{{
     " Set prompt line.
     call setline(line('.'), g:VimShell_Prompt)
 endfunction"}}}
+
+augroup VimShellAutoCmd"{{{
+    autocmd!
+    autocmd FileType *vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
+    autocmd FileType *vimshell imap <buffer><silent> <CR> <ESC><CR>
+    autocmd FileType *vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
+    autocmd FileType *vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
+    autocmd FileType *vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
+    autocmd FileType *vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
+
+    autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
+    autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
+augroup end"}}}
+
 
 " vim: foldmethod=marker
