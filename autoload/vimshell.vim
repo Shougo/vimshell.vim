@@ -539,15 +539,15 @@ function! vimshell#push_current_line()"{{{
     call setline(line('.'), g:VimShell_Prompt)
 endfunction"}}}
 
+function! vimshell#previous_prompt()"{{{
+    call search(g:VimShell_Prompt, 'bWe')
+endfunction"}}}
+function! vimshell#next_prompt()"{{{
+    call search(g:VimShell_Prompt, 'We')
+endfunction"}}}
+
 augroup VimShellAutoCmd"{{{
     autocmd!
-    autocmd FileType *vimshell nmap <buffer><silent> <CR> <Plug>(vimshell_enter)
-    autocmd FileType *vimshell imap <buffer><silent> <CR> <ESC><CR>
-    autocmd FileType *vimshell nnoremap <buffer><silent> q :<C-u>hide<CR>
-    autocmd FileType *vimshell inoremap <buffer> <C-j> <C-x><C-o><C-p>
-    autocmd FileType *vimshell imap <buffer> <C-p> <C-o><Plug>(vimshell_insert_command_completion)
-    autocmd FileType *vimshell imap <buffer> <C-z> <C-o><Plug>(vimshell_push_current_line)
-
     autocmd BufEnter * if &filetype == 'vimshell' | call vimshell#save_current_dir()
     autocmd BufLeave * if &filetype == 'vimshell' | call vimshell#restore_current_dir()
 augroup end"}}}
