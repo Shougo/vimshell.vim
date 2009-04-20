@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Apr 2009
+" Last Modified: 20 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.5, for Vim 7.0
+" Version: 5.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.6:
+"     - Escape prompt when prompt search.
+"     - Fixed auto cd error.
 "   5.5:
 "     - Created ftplugin/vimshell.vim
 "     - Added command vimshell_previous_prompt and vimshell_next_prompt.

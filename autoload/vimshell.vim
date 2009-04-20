@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 03 Apr 2009
+" Last Modified: 14 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.2, for Vim 7.0
+" Version: 5.6, for Vim 7.0
 "=============================================================================
 function! vimshell#switch_shell(split_flag)"{{{
     if getbufvar(bufnr('%'), '&filetype') == 'vimshell'
@@ -379,7 +379,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        call vimshell#internal#cd#execute('cd', l:program, a:fd, a:other_info)
+        call vimshell#internal#cd#execute('cd', [l:program], a:fd, a:other_info)
         "}}}
     else"{{{
         " External commands.
@@ -540,10 +540,10 @@ function! vimshell#push_current_line()"{{{
 endfunction"}}}
 
 function! vimshell#previous_prompt()"{{{
-    call search(g:VimShell_Prompt, 'bWe')
+    call search('^' . substitute(escape(g:VimShell_Prompt, '"\.^$*[]'), "'", "''", 'g'), 'bWe')
 endfunction"}}}
 function! vimshell#next_prompt()"{{{
-    call search(g:VimShell_Prompt, 'We')
+    call search('^' . substitute(escape(g:VimShell_Prompt, '"\.^$*[]'), "'", "''", 'g'), 'We')
 endfunction"}}}
 
 augroup VimShellAutoCmd"{{{

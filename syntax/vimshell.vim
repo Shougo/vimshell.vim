@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Feb 2009
+" Last Modified: 15 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.1, for Vim 7.0
+" Version: 3.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.3:
+"     - Added keywords.
+"   3.2:
+"     - Supports exponential digits.
 "   3.1:
 "     - Optimized pattern.
 "   3.0:
@@ -78,7 +82,7 @@ syn match   VimShellConstants         '[+-]\=\<\d\+\>'
 syn match   VimShellConstants         '[+-]\=\<0x\x\+\>'
 syn match   VimShellConstants         '[+-]\=\<0\o\+\>'
 syn match   VimShellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
-syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\>'
+syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
 syn match   VimShellExe               '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
 syn match   VimShellSocket            '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
 syn match   VimShellDotFiles          '\(^\|[[:blank:]]\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
@@ -90,6 +94,8 @@ syn match   VimShellVariable          '$[$[:alnum:]]\+' contained
 syn match   VimShellVariable          '$[[:digit:]*@#?$!-]\+' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
 syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
+syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history iexe ls nop one popd pwd shell view vim vimsh  contained
+syn keyword  vimshSpecial         command internal contained
 if has('win32') || ('win64')
     syn match   VimShellArguments         '[[:blank:]]/[?:,_[:alnum:]]\+' contained
     syn match   VimShellDirectory         '[/~]\=\f\+[/\\]\f*'
