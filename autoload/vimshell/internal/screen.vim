@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vimsh.vim
+" FILE: screen.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2009
+" Last Modified: 29 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -38,34 +38,12 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
-    " Create new vimshell or execute script.
-    if empty(a:args)
-        call vimshell#print_prompt()
-        call vimshell#create_shell(0)
-        return 1
+function! vimshell#internal#screen#execute(program, args, fd, other_info)
+    " Execute program in screen.
+    if &term =~ "^screen"
+        silent execute printf('!screen %s', substitute(l:line, '&\s*$', '', ''))
     else
-        " Filename escape.
-        let l:filename = escape(join(a:args, ' '), "\\*?[]{}`$%#&'\"|!<>+")
-
-        if filereadable(l:filename)
-            let l:scripts = readfile(l:filename)
-
-            for script in l:scripts
-                " Delete head spaces.
-                let l:program = (empty(script))? '' : split(script)[0]
-                let l:arguments = substitute(script, '^\s*' . l:program . '\s*', '', '')
-                let l:fd = {}
-                let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 }
-
-                call vimshell#execute_command(l:program, split(l:arguments), l:fd, l:other_info)
-                normal! j
-            endfor
-        else
-            " Error.
-            call vimshell#error_line(printf('Not found the script "%s".', l:filename))
-        endif
+        " Error.
+        call vimshell#error_line('Not in screen.')
     endif
-
-    return 0
 endfunction

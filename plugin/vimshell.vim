@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 20 Apr 2009
+" Last Modified: 29 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.6, for Vim 7.0
+" Version: 5.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.7:
+"     - Implemented g:VimShell_ExecuteFileList.
+"     - Refactoring.
+"     - Added screen, bg internal command.
 "   5.6:
 "     - Escape prompt when prompt search.
 "     - Fixed auto cd error.
@@ -224,6 +228,9 @@ if !exists('g:VimShell_MaxHistoryWidth')
 endif
 if !exists('g:VimShell_UseCkw')
     let g:VimShell_UseCkw = 0
+endif
+if !exists('g:VimShell_ExecuteFileList')
+    let g:VimShell_ExecuteFileList = {}
 endif
 "}}}
 
