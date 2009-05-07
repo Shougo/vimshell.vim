@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 Apr 2009
+" Last Modified: 07 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.7, for Vim 7.0
+" Version: 5.8, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -138,14 +138,14 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         return vimshell#internal#bg#execute('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
         "}}}
     elseif l:program =~ '^!'"{{{
-        if l:program == '!!' && a:is_interactive
+        if l:program == '!!' && a:other_info.is_interactive
             " Previous command execution.
             if get(g:vimshell#hist_buffer, 0) =~ '^!!'
                 " Delete from history.
                 call remove(g:vimshell#hist_buffer, 0)
             endif
 
-            return s:special_h('h', '0', a:fd, a:other_info)
+            return vimshell#internal#h#execute('h', '0', a:fd, a:other_info)
         elseif l:program =~ '!\d\+$' && a:other_info.is_interactive
             " History command execution.
             if get(g:vimshell#hist_buffer, 0) =~ '^!\d\+'
@@ -153,7 +153,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
                 call remove(g:vimshell#hist_buffer, 0)
             endif
 
-            return s:special_h('h', str2nr(l:program[1:]), a:fd, a:other_info)
+            return vimshell#internal#h#execute('h', str2nr(l:program[1:]), a:fd, a:other_info)
         else
             " Shell execution.
             execute printf('%s %s', l:program, join(l:arguments, ' '))
@@ -166,12 +166,12 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Internal commands.
         return call(s:internal_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
         "}}}
-    elseif isdirectory(l:program)"{{{
+    elseif isdirectory(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''))"{{{
         " Directory.
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        call vimshell#internal#cd#execute('cd', [l:program], a:fd, a:other_info)
+        call vimshell#internal#cd#execute('cd', split(l:line), a:fd, a:other_info)
         "}}}
     else"{{{
         let l:ext = fnamemodify(l:program, ':e')
@@ -264,7 +264,7 @@ function! vimshell#process_enter()"{{{
     " Delete head spaces.
     let l:line = substitute(l:line, '^\s\+', '', '')
     let l:program = (empty(l:line))? '' : split(l:line)[0]
-    let l:args = split(substitute(l:line, '^' . l:program . '\s*', '', ''))
+    let l:args = split(l:line)[1:]
     let l:fd = {}
     let l:other_info = { 'has_head_spaces' : l:line =~ '^\s\+', 'is_interactive' : 1, 'is_background' : 0 }
 

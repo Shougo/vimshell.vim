@@ -26,6 +26,8 @@
 " Version: 1.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.5:
+"     - Implemented exchange ~ into $HOME.
 "   1.4:
 "     - Fixed error.
 "   1.3:
@@ -54,7 +56,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
         let l:arguments = $HOME
     else
         " Filename escape.
-        let l:arguments = join(a:args, ' ')
+        let l:arguments = substitute(join(a:args, ' '), '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
     endif
     lcd `=fnamemodify(l:arguments, ':p')`
 endfunction

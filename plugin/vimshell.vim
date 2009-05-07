@@ -27,6 +27,10 @@
 " Version: 5.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.8:
+"     - Fixed !! error.
+"     - Implemented filename completion.
+"     - Implemented exchange ~ into $HOME.
 "   5.7:
 "     - Implemented g:VimShell_ExecuteFileList.
 "     - Refactoring.
