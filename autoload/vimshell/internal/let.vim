@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: screen.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 May 2009
+" FILE: let.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" Last Modified: 11 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.1:
-"     - Fixed error.
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -40,21 +38,18 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#screen#execute(program, args, fd, other_info)
-    " Execute program in screen.
-    if &term =~ "^screen"
-        silent execute printf('!screen %s', join(a:args))
-    elseif has('win32') || has('win64')
-        if g:VimShell_UseCkw
-            " Use ckw.
-            silent execute printf('!start ckw -e %s %s %s', &shell, &shellcmdflag, join(a:args))
-        else
-            silent execute printf('!start %s', join(a:args))
-        endif
-    else
-        " For *nix.
-
-        " Background execute.
-        call system(join(a:args) . '&')
+function! vimshell#internal#let#execute(program, args, fd, other_info)
+    if len(a:args) < 1
+        call vimshell#error_line('Arguments required.')
+        return
     endif
+
+    let l:result = matchlist(join(a:args), '^\(\$\?\h\w*\)\s*=\s*\(.*\)$')
+    if empty(l:result) || l:result[1] == ''
+        call vimshell#error_line('Wrong variable name.')
+        return
+    endif
+    let l:var_name = l:result[1]
+    let l:val = l:result[2]
+    execute printf('let %s = %s', l:var_name, l:val)
 endfunction

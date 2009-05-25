@@ -9,4 +9,6 @@ nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
 nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
 
 " Filename completion.
-inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : "\<C-x>\<C-f>"
+inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete') ? 
+            \ neocomplcache#manual_filename_complete() : "\<C-x>\<C-f>"
+

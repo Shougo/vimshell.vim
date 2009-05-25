@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 Apr 2009
+" Last Modified: 23 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,9 +24,20 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.7, for Vim 7.0
+" Version: 5.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.11:
+"     - Added VimShellExecute and VimShellInteractive commands.
+"   5.10:
+"     - Implemented iexe.
+"     - Improved bg.
+"     - Improved print_prompt().
+"     - Use neocomplcache#manual_filename_complete().
+"   5.9:
+"     - Fixed background execution.
+"     - Fixed auto_cd bug.
+"     - Fixed error in screen command.
 "   5.8:
 "     - Fixed !! error.
 "     - Implemented filename completion.
@@ -239,6 +250,8 @@ endif
 "}}}
 
 command! -nargs=0 VimShell call vimshell#switch_shell(0)
+command! -nargs=+ -complete=shellcmd VimShellExecute call vimshell#internal#bg#vimshell_bg(split(<q-args>))
+command! -nargs=+ -complete=shellcmd VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(split(<q-args>))
 
 let g:loaded_vimshell = 1
 
