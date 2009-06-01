@@ -277,6 +277,12 @@ vimprocを使って実装中です。ようやくLinuxでは動作するよう�
 出力を取るためにはEnterを押す必要があったりと、若干癖がありますが、
 Vimから様々なインタプリタを動作させることができるのは驚きです。
 
+Ver.5.12より、
+let g:VimShell_EnableInteractive = 1
+と設定しないと非同期実行が出来なくなりました。
+その代わり、通常のプログラム実行時にもvimprocが使われるようになります。
+特にWindowsでは動作が安定化するので、設定しておくことをおすすめします。
+
 --------------------------------
 独自のカレントディレクトリ
 
@@ -312,8 +318,15 @@ Windowsでいうファイルの関連づけになります。zshにも似たよ�
 --------------------------------
 プロンプト移動
 
-Normal modeで<C-p>, <C-n>を押すと、プロンプトを移動できます。
+Normal modeで<C-p>, <C-n>を押すと、プロンプト間を移動できます。
 コマンドの履歴を参照するときに便利です。
+
+--------------------------------
+出力の削除
+
+Normal modeで<C-d>を押すと、前のプロンプトまでの出力を削除できます。
+Emacsのシェルモードを参考に実装しました。
+あまりに出力が長くなってしまったときに活用してください。
 
 --------------------------------
 キーバインド等のカスタマイズ
@@ -332,6 +345,9 @@ let g:VimShell_ExecuteFileList['rb'] = 'ruby'
 let g:VimShell_ExecuteFileList['pl'] = 'perl'
 let g:VimShell_ExecuteFileList['py'] = 'python'
 
+let g:VimShell_EnableInteractive = 1
+let g:VimShell_EnableSmartCase = 1
+
 if has('win32') || has('win64') 
     " Display user name on Windows.
     let g:VimShell_Prompt = $USERNAME."% "
@@ -342,8 +358,17 @@ else
     " Display user name on Linux.
     let g:VimShell_Prompt = $USER."% "
 
-    call vimshell#set_execute_file('bmp,jpg,png,gif', 'eog')
+    call vimshell#set_execute_file('bmp,jpg,png,gif', 'bg eog')
+    call vimshell#set_execute_file('mp3,m4a,ogg', 'bg amarok')
+    let g:VimShell_ExecuteFileList['zip'] = 'zipinfo'
+    call vimshell#set_execute_file('tgz,gz', 'gzcat')
+    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 endif
+
+" !: vimshell interactive execute.
+nnoremap !  :<C-u>VimShellInteractive<Space>
+" &: vimshell background execute.
+nnoremap &  :<C-u>VimShellExecute<Space>
 
 プロンプトをユーザ名にしているだけで、後は凝った設定はしてないです。
 neocomplcacheでは、ヒストリファイルを辞書として使用してます。
@@ -387,6 +412,7 @@ http://twitter.com/ShougoMatsu
 --------------------------------
 更新履歴
 
+2009/05/30      Ver.5.12に対応。
 2009/05/23      Ver.5.11に対応。
 2009/05/7       Ver.5.8に対応。
 2009/03/7       やっつけで作成。

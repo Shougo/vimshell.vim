@@ -52,7 +52,7 @@ function! s:lib.write(str, ...)
 endfunction
 
 function! s:lib.popen2(args)
-  let [pid, fd_stdin, fd_stdout] = self.api.vp_pipe_open(2, a:args)
+  let [pid, fd_stdin, fd_stdout] = self.api.vp_pipe_open(2, s:getfilename(a:args))
   let proc = {}
   let proc.pid = pid
   let proc.stdin = self.fdopen(fd_stdin, self.api.vp_pipe_close, self.api.vp_pipe_read, self.api.vp_pipe_write)
@@ -61,7 +61,7 @@ function! s:lib.popen2(args)
 endfunction
 
 function! s:lib.popen3(args)
-  let [pid, fd_stdin, fd_stdout, fd_stderr] = self.api.vp_pipe_open(3, a:args)
+  let [pid, fd_stdin, fd_stdout, fd_stderr] = self.api.vp_pipe_open(3, s:getfilename(a:args))
   let proc = {}
   let proc.pid = pid
   let proc.stdin = self.fdopen(fd_stdin, self.api.vp_pipe_close, self.api.vp_pipe_read, self.api.vp_pipe_write)
@@ -87,14 +87,13 @@ function! s:lib.fdopen(fd, f_close, f_read, f_write)
 endfunction
 
 function! s:lib.ptyopen(args)
-  let [pid, fd, ttyname] = self.api.vp_pty_open(&winwidth, &winheight, a:args)
+  let [pid, fd, ttyname] = self.api.vp_pty_open(&winwidth, &winheight, s:getfilename(a:args))
 
   let proc =  self.fdopen(fd, self.api.vp_pty_close, self.api.vp_pty_read, self.api.vp_pty_write)
   let proc.pid = pid
   let proc.ttyname = ttyname
   return proc
 endfunction
-
 
 
 "-----------------------------------------------------------
@@ -127,7 +126,21 @@ function! s:lib.list2hd(lis)
   return join(map(a:lis, 'printf("%02X", v:val)'), "")
 endfunction
 
+function! s:getfilename(args)
+    if a:args[0] !~ '^[./]'
+        if has('win32') || has('win64')
+            let l:path = substitute($PATH, ';', ',', 'g')
+            let l:args = insert(a:args[1:], split(globpath(l:path, a:args[0].'.*'), '\n')[0])
+        else
+            let l:path = substitute($PATH, ':', ',', 'g')
+            let l:args = insert(a:args[1:], split(globpath(l:path, a:args[0]), '\n')[0])
+        endif
+    else
+        let l:args = a:args
+    endif
 
+    return l:args
+endfunction
 
 "-----------------------------------------------------------
 " LOW LEVEL API

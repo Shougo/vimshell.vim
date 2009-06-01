@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 May 2009
+" Last Modified: 30 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,72 +24,100 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.11, for Vim 7.0
+" Version: 5.13, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.13 :
+"     - Added command vimshell_delete_previous_prompt.
+"
+"   5.12 Changed command behaivior:
+"     - Added g:VimShell_EnableInteractive option.
+"     - Changed command behaivior.
+"     - Added exe command.
+"     - Convert encoding for system().
+"     - Fixed name conversion.
+"     - Added g:VimShell_SplitHeight option.
+"
 "   5.11:
 "     - Added VimShellExecute and VimShellInteractive commands.
+"
 "   5.10:
 "     - Implemented iexe.
 "     - Improved bg.
 "     - Improved print_prompt().
 "     - Use neocomplcache#manual_filename_complete().
+"
 "   5.9:
 "     - Fixed background execution.
 "     - Fixed auto_cd bug.
 "     - Fixed error in screen command.
+"
 "   5.8:
 "     - Fixed !! error.
 "     - Implemented filename completion.
 "     - Implemented exchange ~ into $HOME.
+"
 "   5.7:
 "     - Implemented g:VimShell_ExecuteFileList.
 "     - Refactoring.
 "     - Added screen, bg internal command.
+"
 "   5.6:
 "     - Escape prompt when prompt search.
 "     - Fixed auto cd error.
+"
 "   5.5:
 "     - Created ftplugin/vimshell.vim
 "     - Added command vimshell_previous_prompt and vimshell_next_prompt.
+"
 "   5.4:
 "     - Fixed alias, cd, histdel bug.
+"
 "   5.3:
 "     - Improved autocmds.
 "     - Refactoring plugin call.
+"
 "   5.2:
 "     - Plugin interface changed.
 "     - Converted special commands into internal commands.
 "     - Deleted quick match.
+"
 "   5.1:
 "     - Improved key-mappings and autocmd.
 "     - Implemented command line stack.
+"
 "   5.0:
 "     - Return previous buffer when call vimshell#switch_shell on vimshell.
 "     - Implemented vimshell#error_line.
 "     - Error when iexe execute without python interface.
+"
 "   4.9:
 "     - Implemented exit command.
 "     - Implemented hide command.
 "     - Added g:VimShell_SmartCase option.
+"
 "   4.8:
 "     - Implemented comment.
 "     - Not escape when cd command.
 "     - Eval environment variables.
+"
 "   4.7:
 "     - Improved vimshell#switch_shell.
 "     - Implemented one command.
 "     - Implemented ev command.
+"
 "   4.6:
 "     - Implemented h command.
 "     - Implemented VimShell buffer current directory.
 "     - History execution was implemented with h command.
 "     - Change VimShell current directory when vimshell#switch_shell.
+"
 "   4.5:
 "     - Fixed popd and history bugs.
 "     - Implemented history arguments.
 "     - Implemented internal command.
 "     - Improved syntax color.
+"
 "   4.4:
 "     - Changed s:alias_table into b:vimshell_alias_table.
 "     - Interpret cd of no argument as cd $HOME
@@ -97,20 +125,24 @@
 "     - Improved ls on Windows.
 "     - Load ~/.vimshrc on init.
 "     - Improved escape.
+"
 "   4.3:
 "     - Implemented zsh like cd.
 "     - Make built-in command autoload.
 "     - Optimized special commands.
 "     - Implemented popd, dirs command.
+"
 "   4.2:
 "     - Implemented alias command.
 "     - Implemented VimShell script.
 "     - Optimized vimshell#process_enter.
+"
 "   4.1:
 "     - Implemented history command.
 "     - Implemented histdel command.
 "     - Implemented nop command.
 "     - Ignore empty command line.
+"
 "   4.0:
 "     - Implemented shell background execution.
 "     - Added g:VimShell_UseCkw option.
@@ -213,6 +245,7 @@ nnoremap <silent> <Plug>(vimshell_insert_command_completion)  :<C-u>call vimshel
 nnoremap <silent> <Plug>(vimshell_push_current_line)  :<C-u>call vimshell#push_current_line()<CR>
 nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_delete_previous_prompt)  :<C-u>call vimshell#delete_previous_prompt()<CR>
 nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
 nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
 nmap <silent> <Leader>sh     <Plug>(vimshell_switch)
@@ -246,6 +279,12 @@ if !exists('g:VimShell_UseCkw')
 endif
 if !exists('g:VimShell_ExecuteFileList')
     let g:VimShell_ExecuteFileList = {}
+endif
+if !exists('g:VimShell_EnableInteractive')
+    let g:VimShell_EnableInteractive = 0
+endif
+if !exists('g:VimShell_SplitHeight')
+    let g:VimShell_SplitHeight = 30
 endif
 "}}}
 

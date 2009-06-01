@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 May 2009
+" Last Modified: 26 May 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.8, for Vim 7.0
+" Version: 5.12, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -36,7 +36,16 @@ endfunction"}}}
 
 " Special functions."{{{
 function! s:special_command(program, args, fd, other_info)"{{{
-    execute 'silent read! ' . join(a:args, ' ')
+    let l:program = a:args[0]
+    let l:arguments = a:args[1:]
+    if has_key(s:internal_func_table, l:program)
+        " Internal commands.
+        execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
+                    \ s:internal_func_table[l:program])
+    else
+        call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
+    endif
+
     return 0
 endfunction"}}}
 function! s:special_internal(program, args, fd, other_info)"{{{
@@ -52,12 +61,12 @@ function! s:special_internal(program, args, fd, other_info)"{{{
             " Internal commands.
             execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
                         \ s:internal_func_table[l:program])
-            execute 'silent read! ' . join(l:arguments, ' ')
         else
             " Error.
             call vimshell#error_line(printf('Not found internal command "%s".', l:program))
         endif
     endif
+
     return 0
 endfunction"}}}
 "}}}
@@ -100,7 +109,11 @@ endfunction"}}}
 
 " VimShell plugin utility functions."{{{
 function! vimshell#execute_command(program, args, fd, other_info)"{{{
-    let l:line = printf('%s %s', a:program, join(a:args, ' '))
+    if empty(a:args)
+        let l:line = a:program
+    else
+        let l:line = printf('%s %s', a:program, join(a:args, ' '))
+    endif
     let l:program = a:program
     let l:arguments = a:args
 
@@ -180,7 +193,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             return vimshell#execute_command(g:VimShell_ExecuteFileList[l:ext], insert(l:arguments, l:program), a:fd, a:other_info)
         else
             " External commands.
-            silent execute printf('read! %s %s', l:program, join(l:arguments, ' '))
+            call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
         endif
     endif
     "}}}
@@ -282,17 +295,53 @@ function! vimshell#process_enter()"{{{
     call vimshell#start_insert()
 endfunction"}}}
 
+function! vimshell#print(string)
+    if a:string == ''
+        return
+    endif
+
+    " Convert encoding for system().
+    if has('win32') || has('win64')
+        let l:string = iconv(a:string, 'cp932', &encoding) 
+    else
+
+        "let l:string = iconv(a:string, 'utf-8', &encoding) 
+        let l:string = a:string
+    endif
+
+    if l:string =~ '\r[[:print:]]'
+        " Set line.
+        for line in split(l:string, '\r\n\|\n')
+            call append(line('$'), '')
+
+            for l in split(line, '\r')
+                call setline(line('$'), l)
+                redraw
+            endfor
+        endfor
+    else
+        for line in split(l:string, '\r\n\|\r\|\n')
+            call append(line('$'), line)
+        endfor
+    endif
+
+    " Set cursor.
+    normal! G
+endfunction
 function! vimshell#print_line(string)
-    call append(line('.'), a:string)
+    call append(line('$'), a:string)
     normal! j
 endfunction
 function! vimshell#error_line(string)
-    call append(line('.'), '!!!'.a:string.'!!!')
+    call append(line('$'), '!!!'.a:string.'!!!')
     normal! j
 endfunction
 function! vimshell#print_prompt()"{{{
     let l:escaped = escape(getline('.'), "\'")
     " Search prompt
+    if !exists('b:vimshell_commandline_stack')
+        let b:vimshell_commandline_stack = []
+    endif
     if empty(b:vimshell_commandline_stack)
         let l:new_prompt = g:VimShell_Prompt
     else
@@ -303,16 +352,16 @@ function! vimshell#print_prompt()"{{{
         " Prompt not found
         if !empty(l:escaped)
             " Insert prompt line.
-            call append(line('.'), l:new_prompt)
+            call append(line('$'), l:new_prompt)
             normal! j
         else
             " Set prompt line.
-            call setline(line('.'), l:new_prompt)
+            call setline(line('$'), l:new_prompt)
         endif
         normal! $
     else
         " Insert prompt line.
-        call append(line('.'), l:new_prompt)
+        call append(line('$'), l:new_prompt)
         normal! j$
     endif
     let &modified = 0
@@ -355,9 +404,13 @@ function! vimshell#next_prompt()"{{{
     call search('^' . substitute(escape(g:VimShell_Prompt, '"\.^$*[]'), "'", "''", 'g'), 'We')
 endfunction"}}}
 function! vimshell#switch_shell(split_flag)"{{{
-    if getbufvar(bufnr('%'), '&filetype') == 'vimshell'
-        "echo 'Already there.'
-        buffer #
+    if &filetype == 'vimshell'
+        if winnr('$') != 1
+            close
+        else
+            buffer #
+        endif
+
         return
     endif
 
@@ -390,6 +443,7 @@ function! vimshell#switch_shell(split_flag)"{{{
 
             if a:split_flag
                 execute 'sbuffer' . l:cnt
+                execute 'resize' . winheight(0)*g:VimShell_SplitHeight / 100
             else
                 execute 'buffer' . l:cnt
             endif
@@ -410,6 +464,22 @@ function! vimshell#switch_shell(split_flag)"{{{
     " Create window.
     call vimshell#create_shell(a:split_flag)
 endfunction"}}}
+function! vimshell#delete_previous_prompt()"{{{
+    let l:prompt = substitute(escape(g:VimShell_Prompt, '"\.^$*[]'), "'", "''", 'g')
+    if getline('.') =~ l:prompt
+        let l:next_line = line('.')
+        normal! 0
+    else
+        let [l:next_line, l:next_col] = searchpos('^' . l:prompt, 'Wn')
+    endif
+    let [l:prev_line, l:prev_col] = searchpos('^' . l:prompt, 'bWn')
+    echo printf('%s,%s', l:next_line, l:prev_line)
+    if l:next_line - l:prev_line > 1
+        execute printf('%s,%sdelete', l:prev_line+1, l:next_line-1)
+        call append(line('.')-1, "* Output was deleted *")
+    endif
+    normal! $
+endfunction"}}}
 
 function! vimshell#create_shell(split_flag)"{{{
     let l:bufname = 'vimshell'
@@ -421,6 +491,7 @@ function! vimshell#create_shell(split_flag)"{{{
 
     if a:split_flag
         execute 'split +setfiletype\ vimshell ' . l:bufname
+        execute 'resize' . winheight(0)*g:VimShell_SplitHeight / 100
     else
         execute 'edit +setfiletype\ vimshell ' . l:bufname
     endif
