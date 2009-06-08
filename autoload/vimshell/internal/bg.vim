@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,20 +23,25 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.5:
-"     - Improved autocmd.
-"   1.4:
-"     - Split nicely.
+"   1.6: Use interactive.
+"
+"   1.5: Improved autocmd.
+"
+"   1.4: Split nicely.
+"
 "   1.3:
 "     - Use g:VimShell_EnableInteractive option.
 "     - Use utls/process.vim.
+"
 "   1.2:
 "     - Use vimproc.
+"
 "   1.1:
 "     - Fixed in *nix.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -126,8 +131,8 @@ function! s:init_bg(args, is_interactive)"{{{
     setlocal noswapfile
 
     " Set variables.
-    let b:proc = l:proc
-    let b:sub = l:sub
+    let b:vimproc = l:proc
+    let b:subproc = l:sub
 
     if s:background_programs <= 0
         autocmd vimshell_bg CursorHold * call s:check_bg()
@@ -136,9 +141,9 @@ function! s:init_bg(args, is_interactive)"{{{
     autocmd vimshell_bg BufDelete <buffer>       call s:on_exit()
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
-    nnoremap <buffer><silent><CR>       :<C-u>call vimshell#utils#process#execute_out()<CR>
+    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_out()<CR>
 
-    call vimshell#utils#process#execute_out()
+    call interactive#execute_out()
 
     return 1
 endfunction"}}}
@@ -154,7 +159,7 @@ function! s:on_exit()
         autocmd! vimshell_bg CursorHold
     endif
 
-    call vimshell#utils#process#exit()
+    call interactive#exit()
 endfunction
 
 function! s:check_bg()"{{{
@@ -164,7 +169,7 @@ function! s:check_bg()"{{{
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber) && string(getbufvar(l:bufnumber, 'sub')) != ''
             execute 'buffer ' . l:bufnumber
-            call vimshell#utils#process#execute_out()
+            call interactive#execute_out()
         endif
         let l:bufnumber += 1
     endwhile

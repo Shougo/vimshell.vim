@@ -1,6 +1,6 @@
 "=============================================================================
-" FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" FILE: gcd.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
@@ -23,21 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.4:
-"     - Optimized parse.
-"
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.2:
-"     - Use vimshell#print_line.
-"
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
-"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -50,20 +38,15 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#alias#execute(program, args, fd, other_info)
+function! vimshell#internal#gcd#execute(program, args, fd, other_info)
+    " Change the global working directory.
+
     if empty(a:args)
-        " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(printf('%s=%s', alias, b:vimshell_alias_table[alias]))
-        endfor
-    elseif len(a:args) == 1
-        if has_key(b:vimshell_alias_table, a:args[0])
-            " View alias.
-            call vimshell#print_line(b:vimshell_alias_table[a:args[0]])
-        endif
+        " Move to same directory.
+        let l:arguments = getcwd()
     else
-        " Define alias.
-        let l:arguments = join(a:args[1:])
-        let b:vimshell_alias_table[a:args[0]] = l:arguments
+        " Filename escape.
+        let l:arguments = substitute(join(a:args, ' '), '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
     endif
+    let b:vimshell_save_dir = l:arguments
 endfunction

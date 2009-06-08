@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: let.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 11 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Optimized parse.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -39,17 +42,10 @@
 "=============================================================================
 
 function! vimshell#internal#let#execute(program, args, fd, other_info)
-    if len(a:args) < 1
+    if len(a:args) < 2
         call vimshell#error_line('Arguments required.')
         return
     endif
 
-    let l:result = matchlist(join(a:args), '^\(\$\?\h\w*\)\s*=\s*\(.*\)$')
-    if empty(l:result) || l:result[1] == ''
-        call vimshell#error_line('Wrong variable name.')
-        return
-    endif
-    let l:var_name = l:result[1]
-    let l:val = l:result[2]
-    execute printf('let %s = %s', l:var_name, l:val)
+    execute printf('let %s = %s', a:args[0], a:args[1])
 endfunction

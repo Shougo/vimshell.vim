@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: process.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,16 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.4: Improved output.
+"
 "   1.3:
 "     - Implemented inout in Linux.
 "     - Improved output.
+"
 "   1.2:
 "     - Implemented cancel input in Linux.
+"
 "   1.1:
 "     - Improved output.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -44,6 +49,13 @@
 "     -
 ""}}}
 "=============================================================================
+
+let s:password_regex = 
+            \'^\s*Password:' . '\|'     "  su, ssh, ftp
+            \. 'password:' . '\|'       "  ???, seen this somewhere
+            \. 'Password required'      "  other ftp clients
+
+let s:last_out = ''
 
 if has('win32') || has('win64')
     function! vimshell#utils#process#execute_inout(is_interactive)"{{{
@@ -84,13 +96,7 @@ if has('win32') || has('win64')
                 endtry
             endif
 
-            let l:read = b:sub.stdout.read(-1, 1000)
-            while l:read != ''
-                call vimshell#print(l:read)
-                redraw
-
-                let l:read = b:sub.stdout.read(-1, 1000)
-            endwhile
+            call vimshell#utils#process#execute_out()
         endif
 
         if b:sub.stdout.eof
@@ -108,8 +114,13 @@ if has('win32') || has('win64')
         endif
 
         if !b:sub.stdout.eof
-            call vimshell#print(b:sub.stdout.read(-1, 0))
-            redraw
+            let l:read = b:sub.stdout.read(-1, 200)
+            while l:read != ''
+                call vimshell#print(l:read)
+                redraw
+
+                let l:read = b:sub.stdout.read(-1, 200)
+            endwhile
         endif
 
         if b:sub.stdout.eof
@@ -142,7 +153,7 @@ else
             try
                 if l:in =~ ""
                     call b:sub.write(l:in)
-                    call vimshell#print(b:sub.read(-1, 1000))
+                    call vimshell#utils#process#execute_out()
 
                     call vimshell#utils#process#exit()
                     return
@@ -153,13 +164,7 @@ else
                 call b:sub.close()
             endtry
 
-            let l:read = b:sub.read(-1, 1000)
-            while l:read != ''
-                call vimshell#print(l:read)
-                redraw
-
-                let l:read = b:sub.read(-1, 1000)
-            endwhile
+            call vimshell#utils#process#execute_out()
         endif
 
         if b:sub.eof
@@ -176,10 +181,13 @@ else
             return
         endif
 
-        if !b:sub.eof
-            call vimshell#print(b:sub.read(-1, 1000))
+        let l:read = b:sub.read(-1, 200)
+        while l:read != ''
+            call vimshell#print(l:read)
             redraw
-        endif
+
+            let l:read = b:sub.read(-1, 200)
+        endwhile
 
         if b:sub.eof
             call vimshell#utils#process#exit()
@@ -192,8 +200,13 @@ else
         endif
 
         if !b:sub.stdout.eof
-            call vimshell#print(b:sub.stdout.read(-1, 0))
-            redraw
+            let l:read = b:sub.stdout.read(-1, 200)
+            while l:read != ''
+                call vimshell#print(l:read)
+                redraw
+
+                let l:read = b:sub.stdout.read(-1, 200)
+            endwhile
         endif
 
         if b:sub.stdout.eof
@@ -212,6 +225,8 @@ function! vimshell#utils#process#exit()"{{{
         call append(line('$'), '*Exit*')
         normal! G
     endif
+
+    let s:last_out = ''
 
     unlet b:sub
     unlet b:proc

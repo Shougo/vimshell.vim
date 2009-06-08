@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
+"   1.1: Use interactive.
+"
+"   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -44,12 +45,12 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         call s:init_process(a:args, a:other_info.is_interactive)
 
         if has('win32') || has('win64')
-            while exists('b:sub')
-                call vimshell#utils#process#execute_out()
+            while exists('b:subproc')
+                call interactive#execute_out()
             endwhile
         else
-            while exists('b:sub')
-                call vimshell#utils#process#execute_pipe_out()
+            while exists('b:subproc')
+                call interactive#execute_pipe_out()
             endwhile
         endif
     else
@@ -88,6 +89,6 @@ function! s:init_process(args, is_interactive)
     endtry
 
     " Set variables.
-    let b:proc = l:proc
-    let b:sub = l:sub
+    let b:vimproc = l:proc
+    let b:subproc = l:sub
 endfunction

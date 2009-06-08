@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 30 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,11 @@
 " ChangeLog: "{{{
 "   5.13 :
 "     - Added command vimshell_delete_previous_prompt.
+"     - Fixed lcd escape bug.
+"     - Deleted process.vim.
+"     - Deleted ! execution.
+"     - Added gcd command.
+"     - Optimized parse in alias and let commands.
 "
 "   5.12 Changed command behaivior:
 "     - Added g:VimShell_EnableInteractive option.

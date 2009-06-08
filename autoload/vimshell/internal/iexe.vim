@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,22 +23,24 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.5:
-"     - Improved autocmd.
-"   1.4:
-"     - Split nicely.
+"   1.6: Use interactive.
+"
+"   1.5: Improved autocmd.
+"
+"   1.4: Split nicely.
+"
 "   1.3:
 "     - Use g:VimShell_EnableInteractive option.
 "     - Use utls/process.vim.
-"   1.2:
-"     - Implemented background execution.
-"   1.1:
-"     - Use vimproc.
-"   1.0:
-"     - Initial version.
+"
+"   1.2: Implemented background execution.
+"
+"   1.1: Use vimproc.
+"
+"   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -82,17 +84,17 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     if a:other_info.is_background
         call s:init_bg(l:proc, l:sub, a:args, a:other_info.is_interactive)
-        call vimshell#utils#process#execute_inout(0)
+        call interactive#execute_inout(0)
 
         return 1
     else
         " Set variables.
-        let b:proc = l:proc
-        let b:sub = l:sub
+        let b:vimproc = l:proc
+        let b:subproc = l:sub
 
-        while exists('b:sub')
-            call vimshell#utils#process#execute_out()
-            call vimshell#utils#process#execute_inout(1)
+        while exists('b:subproc')
+            call interactive#execute_out()
+            call interactive#execute_inout(1)
         endwhile
 
         return 0
@@ -119,20 +121,20 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     setlocal noswapfile
 
     " Set variables.
-    let b:proc = a:proc
-    let b:sub = a:sub
+    let b:vimproc = a:proc
+    let b:subproc = a:sub
 
-    nnoremap <buffer><silent><CR>       :<C-u>call vimshell#utils#process#execute_inout(0)<CR>
-    inoremap <buffer><silent><CR>       <ESC>:<C-u>call vimshell#utils#process#execute_inout(0)<CR>
+    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_inout(0)<CR>
+    inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_inout(0)<CR>
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
     augroup vimshell_iexe
         autocmd BufDelete <buffer>   call s:on_exit()
-        autocmd CursorHold <buffer>  call vimshell#utils#process#execute_out()
+        autocmd CursorHold <buffer>  call interactive#execute_out()
     augroup END
 
-    call vimshell#utils#process#execute_out()
-    call vimshell#utils#process#execute_out()
+    call interactive#execute_out()
+    call interactive#execute_out()
 
     return 1
 endfunction"}}}
@@ -142,6 +144,6 @@ function! s:on_exit()
         autocmd! * <buffer>
     augroup END
 
-    call vimshell#utils#process#exit()
+    call interactive#exit()
 endfunction
 

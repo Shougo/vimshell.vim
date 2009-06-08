@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 26 May 2009
+" Last Modified: 05 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.12, for Vim 7.0
+" Version: 5.13, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -120,6 +120,11 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     " Check alias."{{{
     if has_key(b:vimshell_alias_table, l:program) && !empty(b:vimshell_alias_table[l:program])
         let l:alias = split(b:vimshell_alias_table[l:program])
+        if l:alias[0] == l:program
+            call vimshell#error_line(printf('Recursive alias "%s" detected.', l:program))
+            return 0
+        endif
+
         let l:program = l:alias[0]
         let l:arguments = l:alias[1:]
         let l:line = l:program . ' ' . join(l:arguments)
@@ -150,27 +155,6 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Background execution.
         return vimshell#internal#bg#execute('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
         "}}}
-    elseif l:program =~ '^!'"{{{
-        if l:program == '!!' && a:other_info.is_interactive
-            " Previous command execution.
-            if get(g:vimshell#hist_buffer, 0) =~ '^!!'
-                " Delete from history.
-                call remove(g:vimshell#hist_buffer, 0)
-            endif
-
-            return vimshell#internal#h#execute('h', '0', a:fd, a:other_info)
-        elseif l:program =~ '!\d\+$' && a:other_info.is_interactive
-            " History command execution.
-            if get(g:vimshell#hist_buffer, 0) =~ '^!\d\+'
-                " Delete from history.
-                call remove(g:vimshell#hist_buffer, 0)
-            endif
-
-            return vimshell#internal#h#execute('h', str2nr(l:program[1:]), a:fd, a:other_info)
-        else
-            " Shell execution.
-            execute printf('%s %s', l:program, join(l:arguments, ' '))
-        endif"}}}
     elseif has_key(s:special_func_table, l:program)"{{{
         " Other special commands.
         return call(s:special_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
@@ -212,7 +196,7 @@ function! vimshell#process_enter()"{{{
             normal! G$
             call vimshell#start_insert()
         else
-            echo "Not on the command line."
+            echohl WarningMsg | echo "Not on the command line." | echohl None
             normal! G$
         endif
         return
@@ -424,7 +408,7 @@ function! vimshell#switch_shell(split_flag)"{{{
 
             " Change current directory.
             let b:vimshell_save_dir = l:current
-            execute 'lcd ' . l:current
+            lcd `=fnamemodify(l:current, ':p')`
 
             call vimshell#start_insert()
 
@@ -450,7 +434,7 @@ function! vimshell#switch_shell(split_flag)"{{{
 
             " Change current directory.
             let b:vimshell_save_dir = l:current
-            execute 'lcd ' . l:current
+            lcd `=fnamemodify(l:current, ':p')`
 
             call vimshell#start_insert()
 
@@ -552,6 +536,11 @@ function! vimshell#create_shell(split_flag)"{{{
         let b:vimshell_commandline_stack = []
     endif
 
+    " Set environment variables.
+    let $TERM = "dumb"
+    let $TERMCAP = "COLUMNS=" . winwidth(0)
+    let $VIMSHELL = 1
+
     call vimshell#print_prompt()
 
     call vimshell#start_insert()
@@ -561,13 +550,13 @@ endfunction"}}}
 
 function! s:save_current_dir()"{{{
     let l:current_dir = getcwd()
-    execute 'lcd ' . b:vimshell_save_dir
+    lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
     let b:vimshell_save_dir = l:current_dir
 endfunction"}}}
 function! s:restore_current_dir()"{{{
     let l:current_dir = getcwd()
     if l:current_dir != b:vimshell_save_dir
-        execute 'lcd ' . b:vimshell_save_dir
+        lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
         let b:vimshell_save_dir = l:current_dir
     endif
 endfunction"}}}
