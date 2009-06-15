@@ -127,19 +127,33 @@ function! s:lib.list2hd(lis)
 endfunction
 
 function! s:getfilename(args)
-    if a:args[0] !~ '^[./]'
+    let l:PATH_SEPARATOR = (has('win32') || has('win64')) ? '/\\' : '/'
+    let l:pattern = printf('[/~]\?\f\+[%s]\f*$', l:PATH_SEPARATOR)
+    if a:args[0] =~ l:pattern
+        let l:args = a:args
+    else
+        " Command search.
         if has('win32') || has('win64')
-            let l:path = substitute($PATH, ';', ',', 'g')
-            let l:args = insert(a:args[1:], split(globpath(l:path, a:args[0].'.*'), '\n')[0])
+            let l:path = substitute($PATH, '\\\?;', ',', 'g')
+            for ext in ['', '.bat', '.cmd', '.exe']
+                let l:files = globpath(l:path, a:args[0].ext)
+                if !empty(l:files)
+                    break
+                endif
+            endfor
+            let l:args = insert(a:args[1:], split(l:files, '\n')[0])
         else
-            let l:path = substitute($PATH, ':', ',', 'g')
+            let l:path = substitute($PATH, '/\?:', ',', 'g')
             let l:args = insert(a:args[1:], split(globpath(l:path, a:args[0]), '\n')[0])
         endif
-    else
-        let l:args = a:args
     endif
 
-    return l:args
+    " Convert encoding for system().
+    if has('win32') || has('win64')
+        return map(l:args, "iconv(v:val, &encoding, 'cp932')")
+    else
+        return map(l:args, "iconv(v:val, &encoding, 'utf-8')")
+    endif
 endfunction
 
 "-----------------------------------------------------------
@@ -223,9 +237,9 @@ endfunction
 
 function! s:lib.api.vp_pipe_open(npipe, argv)
   if has("win32")
-    let cmdline = ""
+    let cmdline = ''
     for arg in a:argv
-      let cmdline .= '"' . substitute(arg, '"', '""', 'g') . '" '
+      let cmdline .= '"' . substitute(arg, '"', '\\"', 'g') . '" '
     endfor
     let [pid; fdlist] = self.libcall("vp_pipe_open", [a:npipe, cmdline])
   else

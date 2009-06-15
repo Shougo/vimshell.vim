@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2009
+" Last Modified: 13 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.13, for Vim 7.0
+" Version: 5.14, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -174,7 +174,9 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         let l:ext = fnamemodify(l:program, ':e')
         if !empty(l:ext) && has_key(g:VimShell_ExecuteFileList, l:ext)
             " Execute file.
-            return vimshell#execute_command(g:VimShell_ExecuteFileList[l:ext], insert(l:arguments, l:program), a:fd, a:other_info)
+            let l:execute = split(g:VimShell_ExecuteFileList[l:ext])[0]
+            let l:arguments = extend(split(g:VimShell_ExecuteFileList[l:ext])[1:], insert(l:arguments, l:program))
+            return vimshell#execute_command(l:execute, l:arguments, a:fd, a:other_info)
         else
             " External commands.
             call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
@@ -261,8 +263,19 @@ function! vimshell#process_enter()"{{{
     " Delete head spaces.
     let l:line = substitute(l:line, '^\s\+', '', '')
     let l:program = (empty(l:line))? '' : split(l:line)[0]
-    let l:args = split(l:line)[1:]
-    let l:fd = {}
+
+    try
+        let l:args = s:get_args(substitute(l:line, '^'.l:program, '', ''))
+    catch /^Quote/
+        call vimshell#error_line('Quote error.')
+        call vimshell#print_prompt()
+        call s:highlight_escape_sequence()
+
+        call vimshell#start_insert()
+        return
+    endtry
+
+    let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
     let l:other_info = { 'has_head_spaces' : l:line =~ '^\s\+', 'is_interactive' : 1, 'is_background' : 0 }
 
     " Interactive execute.
@@ -279,6 +292,62 @@ function! vimshell#process_enter()"{{{
     call vimshell#start_insert()
 endfunction"}}}
 
+function! s:get_args(string)"{{{
+    let l:i = 0
+    let l:max = len(a:string)
+    let l:list = []
+    let l:arg = ''
+    let l:text = ''
+    while l:i <= l:max
+        if a:string[l:i] == "'"
+            let l:end = matchend(a:string, "'\\zs[^']*'", l:i)
+            if l:end == -1
+                throw 'Quote error.'
+            endif
+            let l:arg .= a:string[l:i+1 : l:end-2]
+            let l:i = l:end
+        elseif a:string[l:i] == '"'
+            let l:end = matchend(a:string, '"\zs[^"]*"', l:i)
+            if l:end == -1
+                throw 'Quote error.'
+            endif
+            let l:arg .= a:string[l:i+1 : l:end-2]
+            let l:i = l:end
+        elseif a:string[l:i] != ' '
+            let l:text .= a:string[l:i]
+            let l:i += 1
+        else
+            let l:arg .= s:eval_text(l:text)
+            if l:arg != ''
+                call add(l:list, l:arg)
+                let l:arg = ''
+                let l:text = ''
+            endif
+
+            let l:i += 1
+        endif
+    endwhile
+
+    let l:arg .= s:eval_text(l:text)
+    if l:arg != ''
+        call add(l:list, l:arg)
+    endif
+
+    return l:list
+endfunction"}}}
+
+function! s:eval_text(text)"{{{
+    let l:string = ''
+    if a:text =~ '\\\@<![*?]'
+        let l:string = join(split(escape(glob(a:text), ' '), '\n'))
+        echomsg l:string
+    else
+        let l:string = substitute(a:text, '\\\([*?${}]\)', '\1', 'g')
+    endif
+
+    return l:string
+endfunction"}}}
+
 function! vimshell#print(string)
     if a:string == ''
         return
@@ -288,9 +357,7 @@ function! vimshell#print(string)
     if has('win32') || has('win64')
         let l:string = iconv(a:string, 'cp932', &encoding) 
     else
-
-        "let l:string = iconv(a:string, 'utf-8', &encoding) 
-        let l:string = a:string
+        let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
     if l:string =~ '\r[[:print:]]'
@@ -360,13 +427,37 @@ endfunction
 
 " VimShell key-mappings function."{{{
 function! vimshell#insert_command_completion()"{{{
-    let l:in = input('Command name completion: ', expand('<cword>'), 'shellcmd')
-    " For ATOK X3.
-    set iminsert=0 imsearch=0
+    " Set function.
+    let &l:omnifunc = 'vimshell#smart_omni_completion'
+    call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
+endfunction"}}}
+function! vimshell#smart_omni_completion(findstart, base)"{{{
+    if a:findstart
+        " Get cursor word.
+        let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
 
-    if !empty(l:in)
-        execute 'normal! ciw' . l:in
+        return match(l:cur_text, '\h\w*$')
     endif
+
+    " Save option.
+    let l:ignorecase_save = &ignorecase
+
+    " Complete.
+    if g:VimShell_SmartCase && a:base =~ '\u'
+        let &ignorecase = 0
+    else
+        let &ignorecase = g:VimShell_IgnoreCase
+    endif
+
+    let l:complete_words = s:get_complete_words(a:base)
+
+    " Restore option.
+    let &ignorecase = l:ignorecase_save
+
+    " Restore option.
+    let &l:omnifunc = 'vimshell#history_complete'
+
+    return l:complete_words
 endfunction"}}}
 
 function! vimshell#push_current_line()"{{{
@@ -563,7 +654,6 @@ endfunction"}}}
 
 function! s:highlight_escape_sequence()"{{{
     let register_save = @"
-    "while search('\[[0-9;]*m', 'c')
     while search("\<ESC>\\[[0-9;]*m", 'c')
         normal! dfm
 
@@ -599,6 +689,43 @@ function! s:highlight_escape_sequence()"{{{
         endif
     endwhile
     let @" = register_save
+endfunction"}}}
+
+function! s:get_complete_words(cur_keyword_str)"{{{
+    let l:ret = []
+    let l:pattern = printf('v:val =~ "^%s"', a:cur_keyword_str)
+
+    for keyword in filter(keys(b:vimshell_alias_table), l:pattern)
+        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Alias]', 'icase' : 1 }
+        call add(l:ret, l:dict)
+    endfor 
+
+    for keyword in filter(keys(s:special_func_table), l:pattern)
+        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Special]', 'icase' : 1 }
+        call add(l:ret, l:dict)
+    endfor 
+
+    for keyword in filter(keys(s:internal_func_table), l:pattern)
+        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Internal]', 'icase' : 1 }
+        call add(l:ret, l:dict)
+    endfor 
+
+    if len(a:cur_keyword_str) > 1
+        " External commands.
+        if has('win32') || has('win64')
+            let l:path = substitute($PATH, '\\\?;', ',', 'g')
+        else
+            let l:path = substitute($PATH, '/\?:', ',', 'g')
+        endif
+
+        for keyword in map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
+                    \'executable(v:val)'), 'fnamemodify(v:val, ":t")')
+            let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Command]', 'icase' : 1 }
+            call add(l:ret, l:dict)
+        endfor 
+    endif
+
+    return l:ret
 endfunction"}}}
 
 augroup VimShellAutoCmd"{{{

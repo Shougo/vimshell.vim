@@ -2,8 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2009
-" Usage: Just source this file.
+" Last Modified: 14 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,9 +23,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.13, for Vim 7.0
+" Version: 5.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.14 :
+"     - Implemented echo.
+"     - Implemented wildcard.
+"     - Executable one liner in Windows.
+"     - Improved command search.
+"     - Implemented command completion.
+"     - Fixed g:VimShell_ExecuteFileList bug.
+"
 "   5.13 :
 "     - Added command vimshell_delete_previous_prompt.
 "     - Fixed lcd escape bug.
@@ -52,6 +59,7 @@
 "     - Improved print_prompt().
 "     - Use neocomplcache#manual_filename_complete().
 "
+"   Ver.5.9 ~ 4.0"{{{
 "   5.9:
 "     - Fixed background execution.
 "     - Fixed auto_cd bug.
@@ -150,7 +158,7 @@
 "
 "   4.0:
 "     - Implemented shell background execution.
-"     - Added g:VimShell_UseCkw option.
+"     - Added g:VimShell_UseCkw option."}}}
 "   Ver.3.9 ~ 1.0"{{{
 "   3.9:
 "     - Implemented background execution on Linux.

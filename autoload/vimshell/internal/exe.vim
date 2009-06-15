@@ -54,18 +54,20 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             endwhile
         endif
     else
-        let l:program = a:args[0]
-        let l:args = join(a:args[1:])
+        let l:cmdline = ''
+        for arg in a:args
+            let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
+        endfor
 
-        if l:args !~ '[<|]'
+        if l:cmdline !~ '[<|]'
             let l:null = tempname()
             call writefile([], l:null)
 
-            silent execute printf('read! %s %s < %s', l:program, l:args, l:null)
+            silent execute printf('read! %s < %s', l:cmdline, l:null)
 
             call delete(l:null)
         else
-            silent execute printf('read! %s %s', l:program, l:args)
+            silent execute printf('read! %s %s', l:cmdline)
         endif
     endif
 
