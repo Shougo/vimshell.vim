@@ -47,7 +47,7 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
 
     if empty(w:vimshell_directory_stack)
         " Error.
-        call vimshell#error_line('Directory stack is empty.')
+        call vimshell#error_line(a:fd, 'Directory stack is empty.')
         return
     endif
 
@@ -60,12 +60,12 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
         let l:pop = 1
     else
         " Error.
-        call vimshell#error_line('Error arguments.')
+        call vimshell#error_line(a:fd, 'Error arguments.')
         return
     endif
     if l:pop >= len(w:vimshell_directory_stack)
         " Overflow.
-        call vimshell#error_line('Not found in directory stack.')
+        call vimshell#error_line(a:fd, 'Not found in directory stack.')
         return
     endif
 

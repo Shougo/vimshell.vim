@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Jun 2009
+" Last Modified: 18 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,9 +23,17 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.14, for Vim 7.0
+" Version: 5.15, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.15 :
+"     - Fixed for ATOK X3.
+"     - Improved error catch.
+"     - Implemented redirection.
+"     - Implemented /dev/null virtual device.
+"     - Implemented special functions.
+"     - Improved let and ev.
+"
 "   5.14 :
 "     - Implemented echo.
 "     - Implemented wildcard.
@@ -254,8 +262,8 @@ nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shel
 nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0)<CR>
 nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0)<CR>
 nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
-nnoremap <silent> <Plug>(vimshell_insert_command_completion)  :<C-u>call vimshell#insert_command_completion()<CR>
-nnoremap <silent> <Plug>(vimshell_push_current_line)  :<C-u>call vimshell#push_current_line()<CR>
+inoremap <silent> <Plug>(vimshell_insert_command_completion)  <ESC>:<C-u>call vimshell#insert_command_completion()<CR>a<C-x><C-o>
+inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#push_current_line()<CR>
 nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_delete_previous_prompt)  :<C-u>call vimshell#delete_previous_prompt()<CR>

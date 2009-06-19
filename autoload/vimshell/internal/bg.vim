@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2009
+" Last Modified: 17 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
+" Version: 1.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.7: Improved error catch.
+
 "   1.6: Use interactive.
 "
 "   1.5: Improved autocmd.
@@ -86,7 +88,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
         return vimshell#internal#iexe#execute(a:args[0], a:args[1:], a:fd, l:other_info)
     elseif g:VimShell_EnableInteractive
         " Background execute.
-        return s:init_bg(a:args, a:other_info.is_interactive)
+        return s:init_bg(a:fd, a:args, a:other_info.is_interactive)
     else
         " Execute in screen.
         return vimshell#internal#screen#execute(a:args[0], a:args[1:], a:fd, l:other_info)
@@ -94,21 +96,21 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
-    call vimshell#internal#bg#execute('bg', a:args, {}, {'is_interactive' : 0, 'is_background' : 1})
+    call vimshell#internal#bg#execute('bg', a:args, {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 endfunction"}}}
 
-function! s:init_bg(args, is_interactive)"{{{
+function! s:init_bg(fd, args, is_interactive)"{{{
     let l:proc = proc#import()
 
     try
         if has('win32') || has('win64')
-            let l:sub = l:proc.popen2(a:args)
+            let l:sub = l:proc.popen3(a:args)
         else
             let l:sub = l:proc.ptyopen(a:args)
         endif
-    catch
+    catch 'list index out of range'
         if a:is_interactive
-            call vimshell#error_line(printf('File: "%s" is not found.', a:args[0]))
+            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
         else
             echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
         endif
@@ -133,6 +135,17 @@ function! s:init_bg(args, is_interactive)"{{{
     " Set variables.
     let b:vimproc = l:proc
     let b:subproc = l:sub
+    let b:proc_fd = a:fd
+
+    " Input from stdin.
+    if b:proc_fd.stdin != ''
+        if has('win32') || has('win64')
+            call b:subproc.stdin.write(vimshell#read(a:fd))
+            call b:subproc.stdin.close()
+        else
+            call b:subproc.write(vimshell#read(a:fd))
+        endif
+    endif
 
     if s:background_programs <= 0
         autocmd vimshell_bg CursorHold * call s:check_bg()

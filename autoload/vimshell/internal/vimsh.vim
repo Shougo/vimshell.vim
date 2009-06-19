@@ -55,7 +55,7 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
                 " Delete head spaces.
                 let l:program = (empty(script))? '' : split(script)[0]
                 let l:arguments = substitute(script, '^\s*' . l:program . '\s*', '', '')
-                let l:fd = {}
+                let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
                 let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 }
 
                 call vimshell#execute_command(l:program, split(l:arguments), l:fd, l:other_info)
@@ -63,7 +63,7 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
             endfor
         else
             " Error.
-            call vimshell#error_line(printf('Not found the script "%s".', l:filename))
+            call vimshell#error_line(a:fd, printf('Not found the script "%s".', l:filename))
         endif
     endif
 

@@ -70,7 +70,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
         return 1
     else
         " Error.
-        call vimshell#error_line('Not found in history.')
+        call vimshell#error_line(a:fd, 'Not found in history.')
         return 0
     endif
 endfunction

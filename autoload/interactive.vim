@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2009
+" Last Modified: 18 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.20, for Vim 7.0
+" Version: 1.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.21: Implemented redirection.
+"
 "   1.20: Independent from vimshell.
 "
 "   1.11: Improved autocmd.
@@ -60,7 +62,7 @@ if has('win32') || has('win64')
             return
         endif
 
-        if !b:subproc.stdout.eof
+        if !b:subproc.stdout.eof || !b:subproc.stderr.eof
             if b:subproc.stdin.fd > 0
                 if a:is_interactive
                     let l:in = input('Input: ')
@@ -81,7 +83,7 @@ if has('win32') || has('win64')
                     if l:in =~ ""
                         call b:subproc.stdin.close()
                     else
-                        call b:subproc.stdin.write(l:in . "\<CR>")
+                        call b:subproc.stdin.write(l:in . "\<CR>\<LF>")
                     endif
 
                     if a:is_interactive
@@ -116,14 +118,23 @@ if has('win32') || has('win64')
         if !b:subproc.stdout.eof
             let l:read = b:subproc.stdout.read(-1, 200)
             while l:read != ''
-                call s:print_buffer(l:read)
+                call s:print_buffer(b:proc_fd, l:read)
                 redraw
 
                 let l:read = b:subproc.stdout.read(-1, 200)
             endwhile
         endif
+        if !b:subproc.stderr.eof
+            let l:read = b:subproc.stderr.read(-1, 200)
+            while l:read != ''
+                call s:error_buffer(b:proc_fd, l:read)
+                redraw
 
-        if b:subproc.stdout.eof
+                let l:read = b:subproc.stderr.read(-1, 200)
+            endwhile
+        endif
+
+        if b:subproc.stdout.eof && b:subproc.stderr.eof
             call interactive#exit()
         endif
     endfunction"}}}
@@ -158,7 +169,7 @@ else
                     call interactive#exit()
                     return
                 elseif l:in != ''
-                    call b:subproc.write(l:in . "\<CR>")
+                    call b:subproc.write(l:in . "\<LF>")
                 endif
             catch
                 call b:subproc.close()
@@ -185,7 +196,7 @@ else
 
         let l:read = b:subproc.read(-1, 200)
         while l:read != ''
-            call s:print_buffer(l:read)
+            call s:print_buffer(b:proc_fd, l:read)
             redraw
 
             let l:read = b:subproc.read(-1, 200)
@@ -204,14 +215,23 @@ else
         if !b:subproc.stdout.eof
             let l:read = b:subproc.stdout.read(-1, 200)
             while l:read != ''
-                call s:print_buffer(l:read)
+                call s:print_buffer(b:proc_fd, l:read)
                 redraw
 
                 let l:read = b:subproc.stdout.read(-1, 200)
             endwhile
         endif
+        if !b:subproc.stderr.eof
+            let l:read = b:subproc.stderr.read(-1, 200)
+            while l:read != ''
+                call s:error_buffer(b:proc_fd, l:read)
+                redraw
 
-        if b:subproc.stdout.eof
+                let l:read = b:subproc.stderr.read(-1, 200)
+            endwhile
+        endif
+
+        if b:subproc.stdout.eof && b:subproc.stderr.eof
             call interactive#exit()
         endif
     endfunction"}}}
@@ -234,8 +254,18 @@ function! interactive#exit()"{{{
     unlet b:vimproc
 endfunction"}}}
 
-function! s:print_buffer(string)
+function! s:print_buffer(fd, string)"{{{
     if a:string == ''
+        return
+    endif
+
+    if a:fd.stdout != ''
+        if a:fd.stdout != '/dev/null'
+            " Write file.
+            let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
+            call writefile(l:file, a:fd.stdout)
+        endif
+
         return
     endif
 
@@ -243,9 +273,7 @@ function! s:print_buffer(string)
     if has('win32') || has('win64')
         let l:string = iconv(a:string, 'cp932', &encoding) 
     else
-
-        "let l:string = iconv(a:string, 'utf-8', &encoding) 
-        let l:string = a:string
+        let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
     if l:string =~ '\r[[:print:]]'
@@ -266,7 +294,49 @@ function! s:print_buffer(string)
 
     " Set cursor.
     normal! G
-endfunction
+endfunction"}}}
+
+function! s:error_buffer(fd, string)"{{{
+    if a:string == ''
+        return
+    endif
+
+    if a:fd.stderr != ''
+        if a:fd.stdout != '/dev/null'
+            " Write file.
+            let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
+            call writefile(l:file, a:fd.stderr)
+        endif
+
+        return
+    endif
+
+    " Convert encoding for system().
+    if has('win32') || has('win64')
+        let l:string = iconv(a:string, 'cp932', &encoding) 
+    else
+        let l:string = iconv(a:string, 'utf-8', &encoding) 
+    endif
+
+    if l:string =~ '\r[[:print:]]'
+        " Set line.
+        for line in split(l:string, '\r\n\|\n')
+            call append(line('$'), '')
+
+            for l in split(line, '\r')
+                call setline(line('$'), '!!! '.l.' !!!')
+                redraw
+            endfor
+        endfor
+    else
+        for line in split(l:string, '\r\n\|\r\|\n')
+            call append(line('$'), '!!! '.line.' !!!')
+        endfor
+    endif
+
+    " Set cursor.
+    normal! G
+endfunction"}}}
 
 " Command functions.
 
@@ -280,7 +350,7 @@ function! interactive#read(args)"{{{
 
     try
         if has('win32') || has('win64')
-            let l:sub = l:proc.popen2(a:args)
+            let l:sub = l:proc.popen3(a:args)
         else
             let l:sub = l:proc.ptyopen(a:args)
         endif
@@ -293,6 +363,7 @@ function! interactive#read(args)"{{{
     " Set variables.
     let b:vimproc = l:proc
     let b:subproc = l:sub
+    let b:proc_fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
 
     augroup interactive
         autocmd CursorHold <buffer>     call interactive#execute_out()

@@ -53,7 +53,7 @@ function! vimshell#internal#one#execute(program, args, fd, other_info)
     if has('win32') || has('win64')
         if empty(a:args)
             " Arguments required.
-            call vimshell#error_line('Arguments required.')
+            call vimshell#error_line(a:fd, 'Arguments required.')
             return
         endif
 
@@ -71,7 +71,7 @@ function! vimshell#internal#one#execute(program, args, fd, other_info)
             call s:execute_oneliner(l:program, l:arguments, "-e '.*'", '')
         else
             " Error.
-            call vimshell#error_line(printf('Not found one liner command settings "%s".', l:program))
+            call vimshell#error_line(a:fd, printf('Not found one liner command settings "%s".', l:program))
         endif
     else
         " This command is Windows only.

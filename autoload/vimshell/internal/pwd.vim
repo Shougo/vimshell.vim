@@ -45,5 +45,5 @@
 function! vimshell#internal#pwd#execute(program, args, fd, other_info)
     " Print the working directory.
 
-    call vimshell#print_line(getcwd())
+    call vimshell#print_line(a:fd, getcwd())
 endfunction

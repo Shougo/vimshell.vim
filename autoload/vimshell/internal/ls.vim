@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 26 May 2009
+" Last Modified: 17 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,17 +23,24 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.4, for Vim 7.0
+" Version: 1.5, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.5:
+"     - Optimized.
+"
 "   1.4:
 "     - Use exe command.
+"
 "   1.3:
 "     - Supported vimshell Ver.3.2.
+"
 "   1.2:
 "     - Improved on Windows.
+"
 "   1.1:
 "     - Added -FC option.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -47,25 +54,17 @@
 "=============================================================================
 
 function! vimshell#internal#ls#execute(program, args, fd, other_info)
-    let l:arguments = join(a:args, ' ')
-    if has('win32') || has('win64')
-        " For Windows.
-        if empty(l:arguments)
-            let l:command = 'ls.exe -FC'
-        elseif l:arguments =~ '|'
-            let l:command = printf('ls.exe %s', l:arguments)
-        else
-            let l:command = printf('ls.exe -FC %s', l:arguments)
-        endif
-    else
-        " For Linux.
-        if empty(l:arguments)
-            let l:command = 'ls -FC'
-        elseif l:arguments =~ '|'
-            let l:command = printf('ls %s', l:arguments)
-        else
-            let l:command = printf('ls -FC %s', l:arguments)
-        endif
+    let l:arguments = a:args
+
+    if a:fd.stdout == ''
+        call insert(l:arguments, '-FC')
     endif
-    call vimshell#internal#exe#execute('exe', split(l:command), a:fd, a:other_info)
+
+    if has('win32') || has('win64')
+        call insert(l:arguments, 'ls.exe')
+    else
+        call insert(l:arguments, 'ls')
+    endif
+
+    call vimshell#internal#exe#execute('exe', l:arguments, a:fd, a:other_info)
 endfunction

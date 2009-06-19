@@ -39,7 +39,7 @@
 
 function! vimshell#internal#echo#execute(program, args, fd, other_info)"{{{
     " Echo arguments.
-    call vimshell#print_line(join(a:args))
+    call vimshell#print_line(a:fd, join(a:args))
 
     return 0
 endfunction"}}}

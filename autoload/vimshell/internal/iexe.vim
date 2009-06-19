@@ -68,13 +68,13 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     try
         if has('win32') || has('win64')
-            let l:sub = l:proc.popen2(a:args)
+            let l:sub = l:proc.popen3(a:args)
         else
             let l:sub = l:proc.ptyopen(a:args)
         endif
-    catch
+    catch 'list index out of range'
         if a:other_info.is_interactive
-            call vimshell#error_line(printf('File: "%s" is not found.', a:args[0]))
+            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
         else
             echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
         endif
@@ -91,6 +91,17 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         " Set variables.
         let b:vimproc = l:proc
         let b:subproc = l:sub
+        let b:proc_fd = a:fd
+
+        " Input from stdin.
+        if b:proc_fd.stdin != ''
+            if has('win32') || has('win64')
+                call b:subproc.stdin.write(vimshell#read(a:fd))
+                call b:subproc.stdin.close()
+            else
+                call b:subproc.write(vimshell#read(a:fd))
+            endif
+        endif
 
         while exists('b:subproc')
             call interactive#execute_out()
@@ -102,7 +113,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
-    call vimshell#internal#iexe#execute('iexe', a:args, {}, {'is_interactive' : 0, 'is_background' : 1})
+    call vimshell#internal#iexe#execute('iexe', a:args, {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 endfunction"}}}
 
 function! s:init_bg(proc, sub, args, is_interactive)"{{{
@@ -123,6 +134,17 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     " Set variables.
     let b:vimproc = a:proc
     let b:subproc = a:sub
+    let b:proc_fd = a:fd
+
+    " Input from stdin.
+    if b:proc_fd.stdin != ''
+        if has('win32') || has('win64')
+            call b:subproc.stdin.write(vimshell#read(a:fd))
+            call b:subproc.stdin.close()
+        else
+            call b:subproc.write(vimshell#read(a:fd))
+        endif
+    endif
 
     nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_inout(0)<CR>
     inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_inout(0)<CR>
@@ -133,7 +155,6 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
         autocmd CursorHold <buffer>  call interactive#execute_out()
     augroup END
 
-    call interactive#execute_out()
     call interactive#execute_out()
 
     return 1

@@ -61,7 +61,7 @@ function! vimshell#internal#history#execute(program, args, fd, other_info)
         let l:max = len(g:vimshell#hist_buffer)
     endif
     while l:cnt < l:max
-        call vimshell#print_line(printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
+        call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
         let l:cnt += 1
     endwhile
 endfunction

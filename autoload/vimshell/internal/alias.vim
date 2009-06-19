@@ -54,12 +54,12 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
     if empty(a:args)
         " View all aliases.
         for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(printf('%s=%s', alias, b:vimshell_alias_table[alias]))
+            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
         endfor
     elseif len(a:args) == 1
         if has_key(b:vimshell_alias_table, a:args[0])
             " View alias.
-            call vimshell#print_line(b:vimshell_alias_table[a:args[0]])
+            call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
         endif
     else
         " Define alias.

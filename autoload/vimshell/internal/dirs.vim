@@ -62,7 +62,7 @@ function! vimshell#internal#dirs#execute(program, args, fd, other_info)
     endif
 
     while l:cnt < l:max
-        call vimshell#print_line(printf('%2d: %s', l:cnt, w:vimshell_directory_stack[l:cnt]))
+        call vimshell#print_line(a:fd, printf('%2d: %s', l:cnt, w:vimshell_directory_stack[l:cnt]))
         let l:cnt += 1
     endwhile
 endfunction

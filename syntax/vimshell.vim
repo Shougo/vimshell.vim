@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Apr 2009
+" Last Modified: 13 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,33 +26,46 @@
 " Version: 3.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.4:
+"     - Improved quote and error.
+"
 "   3.3:
 "     - Added keywords.
+"     - Improved environment variables.
+"     - Improved quote.
+"
 "   3.2:
 "     - Supports exponential digits.
+"
 "   3.1:
 "     - Optimized pattern.
+"
 "   3.0:
 "     - Added VimShellErrorHidden.
 "     - Added VimShellError.
+"
 "   2.9:
 "     - Implemented VimShellComment.
 "     - Improved VimShellDirectory.
 "     - Added VimShellSpecial.
 "     - Improved VimShellConstants.
+"
 "   2.8:
 "     - Improved VimShellArguments color on Windows.
 "     - Improved VimShellString.
+"
 "   2.7:
 "     - Improved VimShellPrompt color on console.
 "     - Improved VimShellDirectory color.
 "     - Added VimShellDotFiles color.
 "     - Improved VimShellVariable color.
 "     - Improved VimShellArguments color.
+"
 "   2.6:
 "     - Improved VimShellSpecial color.
 "     - Improved VimShellExe color.
 "     - Improved VimShellSocket color.
+"
 "   2.5:
 "     - Improved prompt color when non gui.
 ""}}}
@@ -72,10 +85,10 @@ elseif exists("b:current_syntax")
 endif
 
 execute 'syn match VimShellPrompt ' . "'".g:VimShell_Prompt."'"
-syn region   VimShellString   start=+'+ end=+'+ contained
-syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted
-syn region   VimShellString   start=+`+ end=+`+ contained
-syn region   VimShellError   start=+!!!+ end=+\n+ contains=VimShellErrorHidden
+syn region   VimShellString   start=+'+ end=+'+ oneline
+syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
+syn region   VimShellString   start=+`+ end=+`+ oneline
+syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
 syn match   VimShellErrorHidden            '!!!' contained
 syn match   VimShellComment   '#.*$' contained
 syn match   VimShellConstants         '[+-]\=\<\d\+\>'
@@ -91,10 +104,10 @@ syn match   VimShellQuoted            '\\.' contained
 syn match   VimShellSpecial           '[|<>;&;]' contained
 syn match   VimShellSpecial           '!!\|!\d*' contained
 syn match   VimShellVariable          '$[$[:alnum:]]\+' contained
-syn match   VimShellVariable          '$[[:digit:]*@#?$!-]\+' contained
+syn match   VimShellVariable          '$\%(\d\+\|[*@#?$!-]\)' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
 syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
-syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history iexe ls nop one popd pwd shell view vim vimsh  contained
+syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history gcd iexe ls nop one popd pwd shell view vim vimsh  contained
 syn keyword  vimshSpecial         command internal contained
 if has('win32') || ('win64')
     syn match   VimShellArguments         '[[:blank:]]/[?:,_[:alnum:]]\+' contained

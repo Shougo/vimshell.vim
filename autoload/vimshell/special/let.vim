@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: ev.vim
+" FILE: let.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 11 May 2009
+" Last Modified: 18 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,9 +27,11 @@
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.2:
-"     - Save result.
+"     - Implemented special commands.
+"
 "   1.1:
-"     - Supported vimshell Ver.3.2.
+"     - Optimized parse.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -42,11 +44,26 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#ev#execute(program, args, fd, other_info)
-    " Evaluate arguments.
-    if !exists('s:ev_result')
-        let s:ev_result = 0
+function! vimshell#special#let#execute(program, args, fd, other_info)
+    let l:args = join(a:args)
+
+    if l:args !~ '^$\h\w*'
+        call vimshell#error_line(a:fd, 'Wrong syntax.')
+        return
     endif
-    let s:ev_result = eval(substitute(join(a:args), '\$\$', s:ev_result, 'g'))
-    call vimshell#print_line(string(s:ev_result))
+
+    if l:args =~ '^$\zs\l\w*'
+        " User variable.
+        let l:varname = printf("b:vimshell_variables['%s']", matchstr(l:args, '^$\zs\l\w*'))
+    elseif l:args =~ '^$\u\w*'
+        " Environment variable.
+        let l:varname = matchstr(l:args, '^$\u\w*')
+    endif
+
+    let l:expression = l:args[match(l:args, '^$\h\w*\zs') :]
+    while l:expression =~ '$\l\w*'
+        let l:expression = substitute(l:expression, '$\l\w*', printf("b:vimshell_variables['%s']", matchstr(l:expression, '$\zs\l\w*')), '')
+    endwhile
+
+    execute 'let ' . l:varname . l:expression
 endfunction

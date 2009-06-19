@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2009
+" Last Modified: 17 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2: Improved error catch.
+"
 "   1.1: Use interactive.
 "
 "   1.0: Initial version.
@@ -42,7 +44,7 @@
 function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
     " Execute command.
     if g:VimShell_EnableInteractive
-        call s:init_process(a:args, a:other_info.is_interactive)
+        call s:init_process(a:fd, a:args, a:other_info.is_interactive)
 
         if has('win32') || has('win64')
             while exists('b:subproc')
@@ -59,30 +61,38 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
         endfor
 
-        if l:cmdline !~ '[<|]'
+        " Set redirection.
+        if a:fd.stdin != ''
+            let l:stdin = '<' . a:fd.stdin
+        else
             let l:null = tempname()
             call writefile([], l:null)
 
-            silent execute printf('read! %s < %s', l:cmdline, l:null)
+            let l:stdin = '<' . l:null
+        endif
 
-            call delete(l:null)
+        if a:fd.stdout != ''
+            silent execute printf('!%s %s %s', l:cmdline, l:stdin, '>' . a:fd.stdout)
         else
-            silent execute printf('read! %s %s', l:cmdline)
+            silent execute printf('read! %s %s', l:cmdline, l:stdin)
+        endif
+
+        if a:fd.stdin == ''
+            call delete(l:null)
         endif
     endif
 
     return 0
 endfunction"}}}
 
-function! s:init_process(args, is_interactive)
+function! s:init_process(fd, args, is_interactive)
     let l:proc = proc#import()
 
     try
-        let l:sub = l:proc.popen2(a:args)
-        call l:sub.stdin.close()
-    catch
+        let l:sub = l:proc.popen3(a:args)
+    catch 'list index out of range'
         if a:is_interactive
-            call vimshell#error_line(printf('File: "%s" is not found.', a:args[0]))
+            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
         else
             echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
         endif
@@ -93,4 +103,11 @@ function! s:init_process(args, is_interactive)
     " Set variables.
     let b:vimproc = l:proc
     let b:subproc = l:sub
+    let b:proc_fd = a:fd
+
+    " Input from stdin.
+    if b:proc_fd.stdin != ''
+        call b:subproc.stdin.write(vimshell#read(a:fd))
+    endif
+    call b:subproc.stdin.close()
 endfunction

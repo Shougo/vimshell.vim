@@ -45,12 +45,7 @@ function! vimshell#internal#screen#execute(program, args, fd, other_info)
     if &term =~ "^screen"
         silent execute printf('!screen %s', join(a:args))
     elseif has('win32') || has('win64')
-        if g:VimShell_UseCkw
-            " Use ckw.
-            silent execute printf('!start ckw -e %s %s %s', &shell, &shellcmdflag, join(a:args))
-        else
-            silent execute printf('!start %s', join(a:args))
-        endif
+        silent execute printf('!start %s', join(a:args))
     else
         " For *nix.
 
