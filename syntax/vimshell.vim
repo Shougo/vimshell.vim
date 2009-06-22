@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Jun 2009
+" Last Modified: 21 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.3, for Vim 7.0
+" Version: 3.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   3.4:
 "     - Improved quote and error.
+"     - Supports system variables.
 "
 "   3.3:
 "     - Added keywords.
@@ -103,8 +104,9 @@ syn match   VimShellArguments         '[[:blank:]]-\=-[[:alnum:]-]\+=\=' contain
 syn match   VimShellQuoted            '\\.' contained
 syn match   VimShellSpecial           '[|<>;&;]' contained
 syn match   VimShellSpecial           '!!\|!\d*' contained
-syn match   VimShellVariable          '$[$[:alnum:]]\+' contained
+syn match   VimShellVariable          '$\h\w*' contained
 syn match   VimShellVariable          '$\%(\d\+\|[*@#?$!-]\)' contained
+syn match   VimShellVariable          '$$\h\w*' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
 syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
 syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history gcd iexe ls nop one popd pwd shell view vim vimsh  contained

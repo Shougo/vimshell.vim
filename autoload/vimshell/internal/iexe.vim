@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2009
+" Last Modified: 21 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
+" Version: 1.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.7: Refactoringed.
+"     - Get status. 
+"
 "   1.6: Use interactive.
 "
 "   1.5: Improved autocmd.
@@ -82,31 +85,40 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         return
     endtry
 
+    if exists('b:vimproc_sub')
+        " Delete zombee process.
+        call interactive#exit()
+    endif
+
     if a:other_info.is_background
         call s:init_bg(l:proc, l:sub, a:args, a:other_info.is_interactive)
+    endif
+
+    " Set variables.
+    let b:vimproc = l:proc
+    let b:vimproc_sub = l:sub
+    let b:vimproc_fd = a:fd
+
+    " Input from stdin.
+    if b:vimproc_fd.stdin != ''
+        if has('win32') || has('win64')
+            call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
+            call b:vimproc_sub.stdin.close()
+        else
+            call b:vimproc_sub.write(vimshell#read(a:fd))
+        endif
+    endif
+
+    if a:other_info.is_background
         call interactive#execute_inout(0)
 
         return 1
     else
-        " Set variables.
-        let b:vimproc = l:proc
-        let b:subproc = l:sub
-        let b:proc_fd = a:fd
-
-        " Input from stdin.
-        if b:proc_fd.stdin != ''
-            if has('win32') || has('win64')
-                call b:subproc.stdin.write(vimshell#read(a:fd))
-                call b:subproc.stdin.close()
-            else
-                call b:subproc.write(vimshell#read(a:fd))
-            endif
-        endif
-
-        while exists('b:subproc')
+        while exists('b:vimproc_sub')
             call interactive#execute_out()
             call interactive#execute_inout(1)
         endwhile
+        let b:vimshell_system_variables['status'] = b:vimproc_status
 
         return 0
     endif
@@ -131,21 +143,6 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
 
-    " Set variables.
-    let b:vimproc = a:proc
-    let b:subproc = a:sub
-    let b:proc_fd = a:fd
-
-    " Input from stdin.
-    if b:proc_fd.stdin != ''
-        if has('win32') || has('win64')
-            call b:subproc.stdin.write(vimshell#read(a:fd))
-            call b:subproc.stdin.close()
-        else
-            call b:subproc.write(vimshell#read(a:fd))
-        endif
-    endif
-
     nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_inout(0)<CR>
     inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_inout(0)<CR>
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
@@ -156,8 +153,6 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     augroup END
 
     call interactive#execute_out()
-
-    return 1
 endfunction"}}}
 
 function! s:on_exit()
@@ -166,5 +161,6 @@ function! s:on_exit()
     augroup END
 
     call interactive#exit()
+    let b:vimshell_system_variables['status'] = b:vimproc_status
 endfunction
 

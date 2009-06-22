@@ -27,7 +27,8 @@
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.7: Improved error catch.
-
+"     - Get status. 
+"
 "   1.6: Use interactive.
 "
 "   1.5: Improved autocmd.
@@ -100,6 +101,11 @@ function! vimshell#internal#bg#vimshell_bg(args)"{{{
 endfunction"}}}
 
 function! s:init_bg(fd, args, is_interactive)"{{{
+    if exists('b:vimproc_sub')
+        " Delete zombee process.
+        call interactive#exit()
+    endif
+
     let l:proc = proc#import()
 
     try
@@ -134,16 +140,16 @@ function! s:init_bg(fd, args, is_interactive)"{{{
 
     " Set variables.
     let b:vimproc = l:proc
-    let b:subproc = l:sub
-    let b:proc_fd = a:fd
+    let b:vimproc_sub = l:sub
+    let b:vimproc_fd = a:fd
 
     " Input from stdin.
-    if b:proc_fd.stdin != ''
+    if b:vimproc_fd.stdin != ''
         if has('win32') || has('win64')
-            call b:subproc.stdin.write(vimshell#read(a:fd))
-            call b:subproc.stdin.close()
+            call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
+            call b:vimproc_sub.stdin.close()
         else
-            call b:subproc.write(vimshell#read(a:fd))
+            call b:vimproc_sub.write(vimshell#read(a:fd))
         endif
     endif
 
@@ -173,6 +179,8 @@ function! s:on_exit()
     endif
 
     call interactive#exit()
+
+    let b:vimshell_system_variables['status'] = b:vimproc_status
 endfunction
 
 function! s:check_bg()"{{{

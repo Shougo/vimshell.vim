@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Jun 2009
+" Last Modified: 21 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,9 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.15, for Vim 7.0
+" Version: 5.16, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.16 :
+"     - Implemented back quote and vim quote.
+"     - Implemented double quote escape.
+"     - Implemented expand home directory.
+"     - Fixed stdin redirection bug.
+"     - Get status.
+"
 "   5.15 :
 "     - Fixed for ATOK X3.
 "     - Improved error catch.

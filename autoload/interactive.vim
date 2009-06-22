@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2009
+" Last Modified: 21 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.21, for Vim 7.0
+" Version: 1.22, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.22: Refactoringed.
+"     - Get status.
+"     - Kill zombee process.
+"
 "   1.21: Implemented redirection.
 "
 "   1.20: Independent from vimshell.
@@ -58,12 +62,12 @@ let s:last_out = ''
 
 if has('win32') || has('win64')
     function! interactive#execute_inout(is_interactive)"{{{
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
         endif
 
-        if !b:subproc.stdout.eof || !b:subproc.stderr.eof
-            if b:subproc.stdin.fd > 0
+        if !b:vimproc_sub.stdout.eof || !b:vimproc_sub.stderr.eof
+            if b:vimproc_sub.stdin.fd > 0
                 if a:is_interactive
                     let l:in = input('Input: ')
                 else
@@ -81,9 +85,9 @@ if has('win32') || has('win64')
 
                 try
                     if l:in =~ ""
-                        call b:subproc.stdin.close()
+                        call b:vimproc_sub.stdin.close()
                     else
-                        call b:subproc.stdin.write(l:in . "\<CR>\<LF>")
+                        call b:vimproc_sub.stdin.write(l:in . "\<CR>\<LF>")
                     endif
 
                     if a:is_interactive
@@ -92,16 +96,16 @@ if has('win32') || has('win64')
                         redraw
                     endif
                 catch
-                    call b:subproc.stdin.close()
+                    call b:vimproc_sub.stdin.close()
                 endtry
             endif
 
             call interactive#execute_out()
         endif
 
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
-        elseif b:subproc.stdout.eof
+        elseif b:vimproc_sub.stdout.eof
             call interactive#exit()
         elseif !a:is_interactive
             call append(line('$'), '> ')
@@ -111,40 +115,40 @@ if has('win32') || has('win64')
     endfunction"}}}
 
     function! interactive#execute_out()"{{{
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
         endif
 
-        if !b:subproc.stdout.eof
-            let l:read = b:subproc.stdout.read(-1, 200)
+        if !b:vimproc_sub.stdout.eof
+            let l:read = b:vimproc_sub.stdout.read(-1, 200)
             while l:read != ''
-                call s:print_buffer(b:proc_fd, l:read)
+                call s:print_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = b:subproc.stdout.read(-1, 200)
+                let l:read = b:vimproc_sub.stdout.read(-1, 200)
             endwhile
         endif
-        if !b:subproc.stderr.eof
-            let l:read = b:subproc.stderr.read(-1, 200)
+        if !b:vimproc_sub.stderr.eof
+            let l:read = b:vimproc_sub.stderr.read(-1, 200)
             while l:read != ''
-                call s:error_buffer(b:proc_fd, l:read)
+                call s:error_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = b:subproc.stderr.read(-1, 200)
+                let l:read = b:vimproc_sub.stderr.read(-1, 200)
             endwhile
         endif
 
-        if b:subproc.stdout.eof && b:subproc.stderr.eof
+        if b:vimproc_sub.stdout.eof && b:vimproc_sub.stderr.eof
             call interactive#exit()
         endif
     endfunction"}}}
 else
     function! interactive#execute_inout(is_interactive)"{{{
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
         endif
 
-        if !b:subproc.eof
+        if !b:vimproc_sub.eof
             if a:is_interactive
                 let l:in = input('Input: ')
             else
@@ -163,24 +167,24 @@ else
 
             try
                 if l:in =~ ""
-                    call b:subproc.write(l:in)
+                    call b:vimproc_sub.write(l:in)
                     call interactive#execute_out()
 
                     call interactive#exit()
                     return
                 elseif l:in != ''
-                    call b:subproc.write(l:in . "\<LF>")
+                    call b:vimproc_sub.write(l:in . "\<LF>")
                 endif
             catch
-                call b:subproc.close()
+                call b:vimproc_sub.close()
             endtry
 
             call interactive#execute_out()
         endif
 
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
-        elseif b:subproc.eof
+        elseif b:vimproc_sub.eof
             call interactive#exit()
         elseif !a:is_interactive
             call append(line('$'), '> ')
@@ -190,59 +194,67 @@ else
     endfunction"}}}
 
     function! interactive#execute_out()"{{{
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
         endif
 
-        let l:read = b:subproc.read(-1, 200)
+        let l:read = b:vimproc_sub.read(-1, 200)
         while l:read != ''
-            call s:print_buffer(b:proc_fd, l:read)
+            call s:print_buffer(b:vimproc_fd, l:read)
             redraw
 
-            let l:read = b:subproc.read(-1, 200)
+            let l:read = b:vimproc_sub.read(-1, 200)
         endwhile
 
-        if b:subproc.eof
+        if b:vimproc_sub.eof
             call interactive#exit()
         endif
     endfunction"}}}
 
     function! interactive#execute_pipe_out()"{{{
-        if !exists('b:subproc')
+        if !exists('b:vimproc_sub')
             return
         endif
 
-        if !b:subproc.stdout.eof
-            let l:read = b:subproc.stdout.read(-1, 200)
+        if !b:vimproc_sub.stdout.eof
+            let l:read = b:vimproc_sub.stdout.read(-1, 200)
             while l:read != ''
-                call s:print_buffer(b:proc_fd, l:read)
+                call s:print_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = b:subproc.stdout.read(-1, 200)
+                let l:read = b:vimproc_sub.stdout.read(-1, 200)
             endwhile
         endif
-        if !b:subproc.stderr.eof
-            let l:read = b:subproc.stderr.read(-1, 200)
+        if !b:vimproc_sub.stderr.eof
+            let l:read = b:vimproc_sub.stderr.read(-1, 200)
             while l:read != ''
-                call s:error_buffer(b:proc_fd, l:read)
+                call s:error_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = b:subproc.stderr.read(-1, 200)
+                let l:read = b:vimproc_sub.stderr.read(-1, 200)
             endwhile
         endif
 
-        if b:subproc.stdout.eof && b:subproc.stderr.eof
+        if b:vimproc_sub.stdout.eof && b:vimproc_sub.stderr.eof
             call interactive#exit()
         endif
     endfunction"}}}
 endif
 
 function! interactive#exit()"{{{
-    if !exists('b:subproc')
+    if !exists('b:vimproc_sub')
         return
     endif
 
-    let [l:cond, l:status] = b:vimproc.api.vp_waitpid(b:subproc.pid)
+    " Get status.
+    let [l:cond, l:status] = b:vimproc.api.vp_waitpid(b:vimproc_sub.pid)
+    echo [l:cond, l:status]
+    if l:cond != 'exit'
+        " Kill process.
+        " 9 == SIGKILL
+        call b:vimproc.api.vp_kill(b:vimproc_sub.pid, 9)
+    endif
+    let b:vimproc_status = eval(l:status)
     if &filetype != 'vimshell'
         call append(line('$'), '*Exit*')
         normal! G
@@ -250,8 +262,9 @@ function! interactive#exit()"{{{
 
     let s:last_out = ''
 
-    unlet b:subproc
     unlet b:vimproc
+    unlet b:vimproc_sub
+    unlet b:vimproc_fd
 endfunction"}}}
 
 function! s:print_buffer(fd, string)"{{{
@@ -362,8 +375,8 @@ function! interactive#read(args)"{{{
 
     " Set variables.
     let b:vimproc = l:proc
-    let b:subproc = l:sub
-    let b:proc_fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+    let b:vimproc_sub = l:sub
+    let b:vimproc_fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
 
     augroup interactive
         autocmd CursorHold <buffer>     call interactive#execute_out()

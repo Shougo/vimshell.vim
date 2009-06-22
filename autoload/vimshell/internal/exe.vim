@@ -27,6 +27,7 @@
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.2: Improved error catch.
+"     - Get status. 
 "
 "   1.1: Use interactive.
 "
@@ -47,14 +48,15 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         call s:init_process(a:fd, a:args, a:other_info.is_interactive)
 
         if has('win32') || has('win64')
-            while exists('b:subproc')
+            while exists('b:vimproc_sub')
                 call interactive#execute_out()
             endwhile
         else
-            while exists('b:subproc')
+            while exists('b:vimproc_sub')
                 call interactive#execute_pipe_out()
             endwhile
         endif
+        let b:vimshell_system_variables['status'] = b:vimproc_status
     else
         let l:cmdline = ''
         for arg in a:args
@@ -80,12 +82,19 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         if a:fd.stdin == ''
             call delete(l:null)
         endif
+
+        let b:vimshell_system_variables['status'] = v:shell_error
     endif
 
     return 0
 endfunction"}}}
 
 function! s:init_process(fd, args, is_interactive)
+    if exists('b:vimproc_sub')
+        " Delete zombee process.
+        call interactive#exit()
+    endif
+
     let l:proc = proc#import()
 
     try
@@ -102,12 +111,12 @@ function! s:init_process(fd, args, is_interactive)
 
     " Set variables.
     let b:vimproc = l:proc
-    let b:subproc = l:sub
-    let b:proc_fd = a:fd
+    let b:vimproc_sub = l:sub
+    let b:vimproc_fd = a:fd
 
     " Input from stdin.
-    if b:proc_fd.stdin != ''
-        call b:subproc.stdin.write(vimshell#read(a:fd))
+    if b:vimproc_fd.stdin != ''
+        call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
     endif
-    call b:subproc.stdin.close()
+    call b:vimproc_sub.stdin.close()
 endfunction

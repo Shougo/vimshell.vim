@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Jun 2009
+" Last Modified: 21 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.15, for Vim 7.0
+" Version: 5.16, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -315,25 +315,22 @@ function! s:get_redirection(string)"{{{
         elseif l:string[l:i] == '<'
             let l:fd.stdin = matchstr(l:string, '<\s*\zs\f*', l:i)
             let l:end = matchend(l:string, '<\s*\zs\f*', l:i)
+
             let l:string = l:string[: l:i-1] . l:string[l:end :]
             let l:i = l:end
         elseif l:string[l:i] == '>'
             if l:string[l:i :] =~ '^>&'
                 let l:fd.stderr = matchstr(l:string, '>&\s*\zs\f*', l:i)
                 let l:end = matchend(l:string, '>&\s*\zs\f*', l:i)
-                let l:string = l:string[: l:i-1] . l:string[l:end :]
-                let l:i = l:end
             elseif l:string[l:i :] =~ '^>>'
                 let l:fd.stdout = '>' . matchstr(l:string, '>>\s*\zs\f*', l:i)
                 let l:end = matchend(l:string, '>>\s*\zs\f*', l:i)
-                let l:string = l:string[: l:i-1] . l:string[l:end :]
-                let l:i = l:end
             else
                 let l:fd.stdout = matchstr(l:string, '>\s*\zs\f*', l:i)
                 let l:end = matchend(l:string, '>\s*\zs\f*', l:i)
-                let l:string = l:string[: l:i-1] . l:string[l:end :]
-                let l:i = l:end
             endif
+            let l:string = l:string[: l:i-1] . l:string[l:end :]
+            let l:i = l:end
         else
             let l:i += 1
         endif
@@ -350,6 +347,7 @@ function! s:get_args(string)"{{{
     let l:text = ''
     while l:i <= l:max
         if a:string[l:i] == "'"
+            " Single quote.
             let l:end = matchend(a:string, "'\\zs[^']*'", l:i)
             if l:end == -1
                 throw 'Quote error.'
@@ -357,11 +355,24 @@ function! s:get_args(string)"{{{
             let l:arg .= a:string[l:i+1 : l:end-2]
             let l:i = l:end
         elseif a:string[l:i] == '"'
-            let l:end = matchend(a:string, '"\zs[^"]*"', l:i)
+            " Double quote.
+            let l:end = matchend(a:string, '"\zs\%([^"]\|\"\)*"', l:i)
             if l:end == -1
                 throw 'Quote error.'
             endif
-            let l:arg .= a:string[l:i+1 : l:end-2]
+            let l:arg .= substitute(a:string[l:i+1 : l:end-2], '\\"', '"', 'g')
+            let l:i = l:end
+        elseif a:string[l:i] == '`'
+            " Back quote.
+            if a:string[l:i :] =~ '`='
+                let l:quote = matchstr(a:string, '^`=\zs[^`]*\ze`', l:i)
+                let l:end = matchend(a:string, '^`=[^`]*`', l:i)
+                let l:arg .= string(eval(l:quote))
+            else
+                let l:quote = matchstr(a:string, '^`\zs[^`]*\ze`', l:i)
+                let l:end = matchend(a:string, '^`[^`]*`', l:i)
+                let l:arg .= substitute(system(l:quote), '\n', ' ', 'g')
+            endif
             let l:i = l:end
         elseif a:string[l:i] != ' '
             let l:text .= a:string[l:i]
@@ -387,23 +398,40 @@ function! s:get_args(string)"{{{
 endfunction"}}}
 
 function! s:eval_text(text)"{{{
+    let l:i = 0
     let l:string = ''
-    if a:text =~ '\\\@<![*?]'
-        let l:string = join(split(escape(glob(a:text), ' '), '\n'))
-    elseif a:text =~ '$\h\w*'
-        let l:string = a:text
-        while l:string =~ '$\h\w*'
-            if l:string =~ '$\u'
-                let l:string = substitute(l:string, '$\u\w*',
-                            \escape(string(eval(matchstr(l:string, '$\u\w*'))), '\\'), '')
+    let l:max = len(a:text)
+    while l:i <= l:max
+        if a:text[i] == '*' || a:text[i] == '?'
+            let l:string .= join(split(escape(glob(l:string), ' '), '\n'))
+            break
+        elseif a:text[i] == '~' && i == 0
+            " Expand home directory.
+            let l:string .= $HOME
+            let l:i += 1
+        elseif a:text[i] == '$'
+            " Eval variables.
+            if a:text =~ '^$\l'
+                let l:string .= string(eval(printf("b:vimshell_variables['%s']", matchstr(a:text, '^$\zs\l\w*', l:i))))
+            elseif a:text =~ '^$$\h'
+                let l:string .= string(eval(printf("b:vimshell_system_variables['%s']", matchstr(a:text, '^$$\zs\h\w*', l:i))))
             else
-                let l:string = substitute(l:string, '$\l\w*',
-                            \escape(string(eval(printf("b:vimshell_variables['%s']", matchstr(l:string, '$\zs\l\w*')))), '\\'), '')
+                let l:string .= string(eval(matchstr(a:text, '^$\u\w*', l:i)))
             endif
-        endwhile
-    else
-        let l:string = substitute(a:text, '\\\([*?${}]\)', '\1', 'g')
-    endif
+            let l:i = matchend(a:text, '^$$\?\h\w*', l:i)
+        elseif a:text[i] == '\'
+            " Escape.
+            let l:i += 1
+
+            if l:i <= l:max
+                let l:string .= a:text[i]
+                let l:i += 1
+            endif
+        else
+            let l:string .= a:text[i]
+            let l:i += 1
+        endif
+    endwhile
 
     return l:string
 endfunction"}}}
@@ -415,13 +443,7 @@ function! vimshell#read(fd)"{{{
         let l:ff = "\<LF>"
     endif
 
-    "return join(readfile(b:proc_fd.stdin), l:ff)
-    let s = ''
-    for line in readfile(b:proc_fd.stdin)
-        let s .= line.l:ff
-    endfor
-
-    return s
+    return join(readfile(a:fd.stdin), l:ff)
 endfunction"}}}
 function! vimshell#print(fd, string)"{{{
     if a:string == ''
@@ -736,6 +758,9 @@ function! vimshell#create_shell(split_flag)"{{{
     endif
     if !exists('b:vimshell_variables')
         let b:vimshell_variables = {}
+    endif
+    if !exists('b:vimshell_system_variables')
+        let b:vimshell_system_variables = { 'status' : 0 }
     endif
 
     " Set environment variables.
