@@ -180,7 +180,9 @@ function! s:on_exit()
 
     call interactive#exit()
 
-    let b:vimshell_system_variables['status'] = b:vimproc_status
+    if exists('b:vimshell_system_variables')
+        let b:vimshell_system_variables['status'] = b:vimproc_status
+    endif
 endfunction
 
 function! s:check_bg()"{{{

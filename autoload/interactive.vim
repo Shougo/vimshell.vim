@@ -248,7 +248,6 @@ function! interactive#exit()"{{{
 
     " Get status.
     let [l:cond, l:status] = b:vimproc.api.vp_waitpid(b:vimproc_sub.pid)
-    echo [l:cond, l:status]
     if l:cond != 'exit'
         " Kill process.
         " 9 == SIGKILL
