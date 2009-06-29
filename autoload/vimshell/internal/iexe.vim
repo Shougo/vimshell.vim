@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2009
+" Last Modified: 26 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.7, for Vim 7.0
+" Version: 1.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.8: 
+"     - Supported pipe.
+"
 "   1.7: Refactoringed.
 "     - Get status. 
 "
@@ -58,7 +61,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     " Interactive execute command.
     if !g:VimShell_EnableInteractive
         " Error.
-        call vimshell#error_line('Must use vimproc plugin.')
+        call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
         return 0
     endif
 
@@ -68,22 +71,41 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     " Initialize.
     let l:proc = proc#import()
+    let l:sub = []
 
-    try
-        if has('win32') || has('win64')
-            let l:sub = l:proc.popen3(a:args)
+    " Search pipe.
+    let l:commands = [[]]
+    for arg in a:args
+        if arg == '|'
+            call add(l:commands, [])
         else
-            let l:sub = l:proc.ptyopen(a:args)
+            call add(l:commands[-1], arg)
         endif
-    catch 'list index out of range'
-        if a:other_info.is_interactive
-            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
-        else
-            echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
-        endif
+    endfor
 
-        return
-    endtry
+    for command in l:commands
+        try
+            if has('win32') || has('win64')
+                call add(l:sub, l:proc.popen3(command))
+            else
+                call add(l:sub, l:proc.ptyopen(command))
+            endif
+        catch 'list index out of range'
+            if empty(command)
+                let l:error = 'Wrong pipe used.'
+            else
+                let l:error = printf('File: "%s" is not found.', command[0])
+            endif
+
+            if a:is_interactive
+                call vimshell#error_line(a:fd, l:error)
+            else
+                echohl WarningMsg | echo l:error | echohl None
+            endif
+
+            return 0
+        endtry
+    endfor
 
     if exists('b:vimproc_sub')
         " Delete zombee process.
@@ -102,10 +124,10 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     " Input from stdin.
     if b:vimproc_fd.stdin != ''
         if has('win32') || has('win64')
-            call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
-            call b:vimproc_sub.stdin.close()
+            call b:vimproc_sub[0].stdin.write(vimshell#read(a:fd))
+            call b:vimproc_sub[0].stdin.close()
         else
-            call b:vimproc_sub.write(vimshell#read(a:fd))
+            call b:vimproc_sub[0].write(vimshell#read(a:fd))
         endif
     endif
 
@@ -139,7 +161,7 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     else
         vsplit
     endif
-    edit `=join(a:args).'@'.(bufnr('$')+1)`
+    edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
     setlocal buftype=nofile
     setlocal noswapfile
 

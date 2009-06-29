@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 26 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Supported pipe.
+"
 "   1.2: Improved error catch.
 "     - Get status. 
 "
@@ -45,7 +48,9 @@
 function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
     " Execute command.
     if g:VimShell_EnableInteractive
-        call s:init_process(a:fd, a:args, a:other_info.is_interactive)
+        if s:init_process(a:fd, a:args, a:other_info.is_interactive)
+            return 0
+        endif
 
         if has('win32') || has('win64')
             while exists('b:vimproc_sub')
@@ -96,18 +101,37 @@ function! s:init_process(fd, args, is_interactive)
     endif
 
     let l:proc = proc#import()
+    let l:sub = []
 
-    try
-        let l:sub = l:proc.popen3(a:args)
-    catch 'list index out of range'
-        if a:is_interactive
-            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
+    " Search pipe.
+    let l:commands = [[]]
+    for arg in a:args
+        if arg == '|'
+            call add(l:commands, [])
         else
-            echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
+            call add(l:commands[-1], arg)
         endif
+    endfor
 
-        return
-    endtry
+    for command in l:commands
+        try
+            call add(l:sub, l:proc.popen3(command))
+        catch 'list index out of range'
+            if empty(command)
+                let l:error = 'Wrong pipe used.'
+            else
+                let l:error = printf('File: "%s" is not found.', command[0])
+            endif
+
+            if a:is_interactive
+                call vimshell#error_line(a:fd, l:error)
+            else
+                echohl WarningMsg | echo l:error | echohl None
+            endif
+
+            return 1
+        endtry
+    endfor
 
     " Set variables.
     let b:vimproc = l:proc
@@ -116,7 +140,9 @@ function! s:init_process(fd, args, is_interactive)
 
     " Input from stdin.
     if b:vimproc_fd.stdin != ''
-        call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
+        call b:vimproc_sub[0].stdin.write(vimshell#read(a:fd))
     endif
-    call b:vimproc_sub.stdin.close()
+    call b:vimproc_sub[0].stdin.close()
+
+    return 0
 endfunction

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 26 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.7, for Vim 7.0
+" Version: 1.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.8: Supported pipe.
+"
 "   1.7: Improved error catch.
 "     - Get status. 
 "
@@ -92,6 +94,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
         return s:init_bg(a:fd, a:args, a:other_info.is_interactive)
     else
         " Execute in screen.
+        let l:other_info = a:other_info
         return vimshell#internal#screen#execute(a:args[0], a:args[1:], a:fd, l:other_info)
     endif
 endfunction"}}}
@@ -106,23 +109,43 @@ function! s:init_bg(fd, args, is_interactive)"{{{
         call interactive#exit()
     endif
 
+    " Initialize.
     let l:proc = proc#import()
+    let l:sub = []
 
-    try
-        if has('win32') || has('win64')
-            let l:sub = l:proc.popen3(a:args)
+    " Search pipe.
+    let l:commands = [[]]
+    for arg in a:args
+        if arg == '|'
+            call add(l:commands, [])
         else
-            let l:sub = l:proc.ptyopen(a:args)
+            call add(l:commands[-1], arg)
         endif
-    catch 'list index out of range'
-        if a:is_interactive
-            call vimshell#error_line(a:fd, printf('File: "%s" is not found.', a:args[0]))
-        else
-            echohl WarningMsg | echo printf('File: "%s" is not found.', a:args[0]) | echohl None
-        endif
+    endfor
 
-        return
-    endtry
+    for command in l:commands
+        try
+            if has('win32') || has('win64')
+                call add(l:sub, l:proc.popen3(command))
+            else
+                call add(l:sub, l:proc.ptyopen(command))
+            endif
+        catch 'list index out of range'
+            if empty(command)
+                let l:error = 'Wrong pipe used.'
+            else
+                let l:error = printf('File: "%s" is not found.', command[0])
+            endif
+
+            if a:is_interactive
+                call vimshell#error_line(a:fd, l:error)
+            else
+                echohl WarningMsg | echo l:error | echohl None
+            endif
+
+            return 0
+        endtry
+    endfor
 
     " Init buffer.
     if a:is_interactive
@@ -146,10 +169,10 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     " Input from stdin.
     if b:vimproc_fd.stdin != ''
         if has('win32') || has('win64')
-            call b:vimproc_sub.stdin.write(vimshell#read(a:fd))
-            call b:vimproc_sub.stdin.close()
+            call b:vimproc_sub[0].stdin.write(vimshell#read(a:fd))
+            call b:vimproc_sub[0].stdin.close()
         else
-            call b:vimproc_sub.write(vimshell#read(a:fd))
+            call b:vimproc_sub[0].write(vimshell#read(a:fd))
         endif
     endif
 

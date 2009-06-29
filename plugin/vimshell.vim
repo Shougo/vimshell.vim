@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 22 Jun 2009
+" Last Modified: 29 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,11 @@
 " ChangeLog: "{{{
 "   5.17 :
 "     - Fixed error when bg or iexe terminated.
+"     - Implemented gexe command.
+"     - Implemented pipe.
+"     - Check pipe in ls command.
+"     - Improved wildcard.
+"     - Fully pipe implemented.
 "
 "   5.16 :
 "     - Implemented back quote and vim quote.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Jun 2009
+" Last Modified: 26 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.6:
+"     - Check pipe.
+"
 "   1.5:
 "     - Optimized.
 "
@@ -56,7 +59,16 @@
 function! vimshell#internal#ls#execute(program, args, fd, other_info)
     let l:arguments = a:args
 
-    if a:fd.stdout == ''
+    " Check pipe.
+    let l:pipe_found = 0
+    for arg in a:args
+        if arg == '|'
+            let l:pipe_found = 1
+            break
+        endif
+    endfor
+
+    if a:fd.stdout == '' && !l:pipe_found
         call insert(l:arguments, '-FC')
     endif
 

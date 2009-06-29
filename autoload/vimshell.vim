@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 21 Jun 2009
+" Last Modified: 29 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.16, for Vim 7.0
+" Version: 5.17, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -145,7 +145,40 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         "}}}
     elseif has_key(s:internal_func_table, l:program)"{{{
         " Internal commands.
-        return call(s:internal_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
+
+        " Search pipe.
+        let l:args = []
+        let l:i = 0
+        let l:fd = copy(a:fd)
+        for arg in l:arguments
+            if arg == '|'
+                " Create temporary file.
+                let l:temp = tempname()
+                let l:fd.stdout = l:temp
+                call writefile([], l:temp)
+                break
+            endif
+            call add(l:args, arg)
+            let l:i += 1
+        endfor
+        let l:ret = call(s:internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
+
+        if l:i < len(l:arguments)
+            if l:i+1 == len(l:arguments) 
+                call delete(l:temp)
+                call vimshell#error_line(a:fd, 'Wrong pipe used.')
+                return 0
+            endif
+
+            " Process pipe.
+            let l:prog = l:arguments[l:i + 1]
+            let l:fd = copy(a:fd)
+            let l:fd.stdin = temp
+            let l:ret = vimshell#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
+            call delete(l:temp)
+        endif
+
+        return l:ret
         "}}}
     elseif isdirectory(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''))"{{{
         " Directory.
@@ -163,7 +196,40 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             return vimshell#execute_command(l:execute, l:arguments, a:fd, a:other_info)
         else
             " External commands.
-            call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
+
+            " Search pipe.
+            let l:args = []
+            let l:i = 0
+            let l:fd = copy(a:fd)
+            for arg in l:arguments
+                if arg == '|'
+                    " Create temporary file.
+                    let l:temp = tempname()
+                    let l:fd.stdout = l:temp
+                    call writefile([], l:temp)
+                    break
+                endif
+                call add(l:args, arg)
+                let l:i += 1
+            endfor
+            let l:ret = vimshell#internal#exe#execute('exe', insert(l:args, l:program), l:fd, a:other_info)
+
+            if l:i < len(l:arguments)
+                if l:i+1 == len(l:arguments) 
+                    call delete(l:temp)
+                    call vimshell#error_line(a:fd, 'Wrong pipe used.')
+                    return 0
+                endif
+
+                " Process pipe.
+                let l:prog = l:arguments[l:i + 1]
+                let l:fd = copy(a:fd)
+                let l:fd.stdin = temp
+                let l:ret = vimshell#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
+                call delete(l:temp)
+            endif
+
+            return l:ret
         endif
     endif
     "}}}
@@ -253,6 +319,9 @@ function! vimshell#process_enter()"{{{
             let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
             let l:args = split(l:string)
         else
+            if l:line =~ '[|]'
+                let l:string = s:convert_pipe(l:string)
+            endif
             if l:line =~ '[<>]'
                 let [l:fd, l:string] = s:get_redirection(l:string)
             else
@@ -292,6 +361,59 @@ function! vimshell#process_enter()"{{{
     call s:highlight_escape_sequence()
 
     call vimshell#start_insert()
+endfunction"}}}
+
+function! s:convert_pipe(string)"{{{
+    let l:i = 0
+    let l:string = ''
+    let l:max = len(a:string)
+    while l:i <= l:max
+        if a:string[l:i] == '|'
+            let l:string .= ' | '
+            let l:i += 1
+        elseif a:string[l:i] == "'"
+            " Single quote.
+            let l:end = matchend(a:string, "'\\zs[^']*'", l:i)
+            if l:end == -1
+                throw 'Quote error.'
+            endif
+            let l:string .= a:string[l:i : l:end-1]
+            let l:i = l:end
+        elseif a:string[l:i] == '"'
+            " Double quote.
+            let l:end = matchend(a:string, '"\zs\%([^"]\|\"\)*"', l:i)
+            if l:end == -1
+                throw 'Quote error.'
+            endif
+            let l:string .= substitute(a:string[l:i : l:end-1], '\\"', '"', 'g')
+            let l:i = l:end
+        elseif a:string[l:i] == '`'
+            " Back quote.
+            if a:string[l:i :] =~ '`='
+                let l:quote = matchstr(a:string, '^`=\zs[^`]*\ze`', l:i)
+                let l:end = matchend(a:string, '^`=[^`]*`', l:i)
+            else
+                let l:quote = matchstr(a:string, '^`\zs[^`]*\ze`', l:i)
+                let l:end = matchend(a:string, '^`[^`]*`', l:i)
+            endif
+            let l:string .= a:string[l:i : l:end-1]
+            let l:i = l:end
+        elseif a:string[i] == '\'
+            " Escape.
+            let l:string .= a:string[i]
+            let l:i += 1
+
+            if l:i <= l:max
+                let l:string .= a:string[i]
+                let l:i += 1
+            endif
+        else
+            let l:string .= a:string[i]
+            let l:i += 1
+        endif
+    endwhile
+
+    return l:string
 endfunction"}}}
 
 function! s:get_redirection(string)"{{{
@@ -401,13 +523,15 @@ function! s:eval_text(text)"{{{
     let l:i = 0
     let l:string = ''
     let l:max = len(a:text)
+    let l:is_wildcard = 0
     while l:i <= l:max
-        if a:text[i] == '*' || a:text[i] == '?'
-            let l:string .= join(split(escape(glob(l:string), ' '), '\n'))
-            break
-        elseif a:text[i] == '~' && i == 0
+        if a:text[i] == '~' && i == 0
             " Expand home directory.
             let l:string .= $HOME
+            let l:i += 1
+        elseif a:text[i] == '[' || a:text[i] == '*' || a:text[i] == '?' 
+            let l:is_wildcard = 1
+            let l:string .= a:text[i]
             let l:i += 1
         elseif a:text[i] == '$'
             " Eval variables.
@@ -420,7 +544,6 @@ function! s:eval_text(text)"{{{
             endif
             let l:i = matchend(a:text, '^$$\?\h\w*', l:i)
         elseif a:text[i] == '\'
-            " Escape.
             let l:i += 1
 
             if l:i <= l:max
@@ -432,6 +555,11 @@ function! s:eval_text(text)"{{{
             let l:i += 1
         endif
     endwhile
+
+    if l:is_wildcard
+        " Expand wildcard.
+        let l:string = join(split(escape(glob(l:string), ' '), '\n'))
+    endif
 
     return l:string
 endfunction"}}}
