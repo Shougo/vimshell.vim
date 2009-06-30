@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.17, for Vim 7.0
+" Version: 5.18, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -120,10 +120,6 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     " Check alias."{{{
     if has_key(b:vimshell_alias_table, l:program) && !empty(b:vimshell_alias_table[l:program])
         let l:alias = split(b:vimshell_alias_table[l:program])
-        if l:alias[0] == l:program
-            call vimshell#error_line('', printf('Recursive alias "%s" detected.', l:program))
-            return 0
-        endif
 
         let l:program = l:alias[0]
         let l:arguments = l:alias[1:]
@@ -131,11 +127,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     endif"}}}
 
     " Special commands.
-    if l:program =~ '^\w*=' "{{{
-        " Variables substitution.
-        execute 'silent let $' . l:program
-        "}}}
-    elseif l:line =~ '&\s*$'"{{{
+    if l:line =~ '&\s*$'"{{{
         " Background execution.
         return vimshell#internal#bg#execute('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
         "}}}
@@ -152,6 +144,11 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         let l:fd = copy(a:fd)
         for arg in l:arguments
             if arg == '|'
+                if l:i+1 == len(l:arguments) 
+                    call vimshell#error_line(a:fd, 'Wrong pipe used.')
+                    return 0
+                endif
+
                 " Create temporary file.
                 let l:temp = tempname()
                 let l:fd.stdout = l:temp
@@ -164,12 +161,6 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         let l:ret = call(s:internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
 
         if l:i < len(l:arguments)
-            if l:i+1 == len(l:arguments) 
-                call delete(l:temp)
-                call vimshell#error_line(a:fd, 'Wrong pipe used.')
-                return 0
-            endif
-
             " Process pipe.
             let l:prog = l:arguments[l:i + 1]
             let l:fd = copy(a:fd)
@@ -203,11 +194,20 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             let l:fd = copy(a:fd)
             for arg in l:arguments
                 if arg == '|'
-                    " Create temporary file.
-                    let l:temp = tempname()
-                    let l:fd.stdout = l:temp
-                    call writefile([], l:temp)
-                    break
+                    if l:i+1 == len(l:arguments) 
+                        call vimshell#error_line(a:fd, 'Wrong pipe used.')
+                        return 0
+                    endif
+
+                    " Check internal command.
+                    let l:prog = l:arguments[l:i + 1]
+                    if !has_key(s:special_func_table, l:prog) && !has_key(s:internal_func_table, l:prog)
+                        " Create temporary file.
+                        let l:temp = tempname()
+                        let l:fd.stdout = l:temp
+                        call writefile([], l:temp)
+                        break
+                    endif
                 endif
                 call add(l:args, arg)
                 let l:i += 1
@@ -215,14 +215,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             let l:ret = vimshell#internal#exe#execute('exe', insert(l:args, l:program), l:fd, a:other_info)
 
             if l:i < len(l:arguments)
-                if l:i+1 == len(l:arguments) 
-                    call delete(l:temp)
-                    call vimshell#error_line(a:fd, 'Wrong pipe used.')
-                    return 0
-                endif
-
                 " Process pipe.
-                let l:prog = l:arguments[l:i + 1]
                 let l:fd = copy(a:fd)
                 let l:fd.stdin = temp
                 let l:ret = vimshell#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
@@ -571,7 +564,7 @@ function! vimshell#read(fd)"{{{
         let l:ff = "\<LF>"
     endif
 
-    return join(readfile(a:fd.stdin), l:ff)
+    return join(readfile(a:fd.stdin), l:ff) . l:ff
 endfunction"}}}
 function! vimshell#print(fd, string)"{{{
     if a:string == ''
@@ -690,7 +683,7 @@ function! vimshell#smart_omni_completion(findstart, base)"{{{
         " Get cursor word.
         let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
 
-        return match(l:cur_text, '\h\w*$')
+        return match(l:cur_text, '\f\+$')
     endif
 
     " Save option.
@@ -974,7 +967,12 @@ function! s:get_complete_words(cur_keyword_str)"{{{
         call add(l:ret, l:dict)
     endfor 
 
-    if len(a:cur_keyword_str) > 1
+    for keyword in filter(split(glob(a:cur_keyword_str . '*'), '\n'), 'isdirectory(v:val)')
+        let l:dict = { 'word' : keyword, 'abbr' : keyword . '/', 'menu' : '[Dir]', 'icase' : 1 }
+        call add(l:ret, l:dict)
+    endfor 
+
+    if a:cur_keyword_str =~ '\h\w\+$'
         " External commands.
         if has('win32') || has('win64')
             let l:path = substitute($PATH, '\\\?;', ',', 'g')

@@ -26,6 +26,9 @@
 " Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.5:
+"     - Changed alias syntax.
+"
 "   1.4:
 "     - Optimized parse.
 "
@@ -63,7 +66,14 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
         endif
     else
         " Define alias.
-        let l:arguments = join(a:args[1:])
-        let b:vimshell_alias_table[a:args[0]] = l:arguments
+
+        let l:args = join(a:args)
+
+        if l:args !~ '^\h\w*\s*=\s*'
+            call vimshell#error_line(a:fd, 'Wrong syntax.')
+            return
+        endif
+        let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
+        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  l:expression)
     endif
 endfunction
