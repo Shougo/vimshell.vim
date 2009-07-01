@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 01 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.23, for Vim 7.0
+" Version: 1.24, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.24: Supported escape sequence.
+"
 "   1.23: Supported pipe.
 "
 "   1.22: Refactoringed.
@@ -156,6 +158,8 @@ if has('win32') || has('win64')
         if b:vimproc_sub[-1].stdout.eof && b:vimproc_sub[-1].stderr.eof
             call interactive#exit()
         endif
+
+        call interactive#highlight_escape_sequence()
     endfunction"}}}
 else
     function! interactive#execute_inout(is_interactive)"{{{
@@ -237,6 +241,8 @@ else
         if b:vimproc_sub[-1].eof
             call interactive#exit()
         endif
+
+        call interactive#highlight_escape_sequence()
     endfunction"}}}
 
     function! interactive#execute_pipe_out()"{{{
@@ -281,6 +287,8 @@ else
         if b:vimproc_sub[-1].stdout.eof && b:vimproc_sub[-1].stderr.eof
             call interactive#exit()
         endif
+
+        call interactive#highlight_escape_sequence()
     endfunction"}}}
 endif
 
@@ -310,6 +318,83 @@ function! interactive#exit()"{{{
     unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
+endfunction"}}}
+
+function! interactive#highlight_escape_sequence()"{{{
+    let l:gcolor_table = [
+                \'#3c3c3c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0', 
+                \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff']
+    let register_save = @"
+    while search("\<ESC>\\[[0-9;]*m", 'c')
+        normal! dfm
+
+        let [lnum, col] = getpos('.')[1:2]
+        if len(getline('.')) == col
+            let col += 1
+        endif
+        let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . lnum . '_' . col
+        execute 'syntax region' syntax_name 'start=+\%' . lnum . 'l\%' . col . 'c+ end=+\%$+' 'contains=ALL'
+
+        let highlight = ''
+        for color_code in split(matchstr(@", '[0-9;]\+'), ';')
+            if color_code == 0"{{{
+                let highlight .= ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE'
+            elseif color_code == 1
+                let highlight .= ' cterm=BOLD gui=BOLD'
+            elseif color_code == 4
+                let highlight .= ' cterm=UNDERLINE gui=UNDERLINE'
+            elseif color_code == 7
+                let highlight .= ' cterm=REVERSE gui=REVERSE'
+            elseif color_code == 8
+                let highlight .= ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000'
+            elseif 30 <= color_code && color_code <= 37 
+                " Foreground color.
+                let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 30, l:gcolor_table[color_code - 30])
+            elseif color_code == 38
+                " TODO
+            elseif color_code == 39
+                " TODO
+            elseif 40 <= color_code && color_code <= 47 
+                " Background color.
+                let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 40, l:gcolor_table[color_code - 40])
+            elseif color_code == 48
+                " 256 Colors
+                let l:color = split(matchstr(@", '[0-9;]\+'), ';')[2]
+                if l:color >= 232
+                    let l:gcolor = (l:color - 232) * 10
+                    if l:gcolor != 0
+                        let l:gcolor += 15
+                    endif
+                    let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
+                elseif l:color >= 16
+                    let l:gcolor = l:color - 16
+                    let l:red = l:gcolor / 36 * 40
+                    let l:green = (l:gcolor - l:gcolor/36 * 36) / 6 * 40
+                    let l:blue = l:gcolor % 6 * 40
+
+                    if l:red != 0
+                        let l:red += 15
+                    endif
+                    if l:blue != 0
+                        let l:blue += 15
+                    endif
+                    if l:green != 0
+                        let l:green += 15
+                    endif
+                    let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
+                else
+                    let highlight .= printf(' ctermfg=%d guifg=%s', l:color, l:gcolor_table[l:color])
+                endif
+                break
+            elseif color_code == 49
+                " TODO
+            endif"}}}
+        endfor
+        if len(highlight)
+            execute 'highlight' syntax_name highlight
+        endif
+    endwhile
+    let @" = register_save
 endfunction"}}}
 
 function! s:print_buffer(fd, string)"{{{

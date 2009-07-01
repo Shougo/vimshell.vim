@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 Jun 2009
+" Last Modified: 01 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.18, for Vim 7.0
+" Version: 5.19, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -325,7 +325,7 @@ function! vimshell#process_enter()"{{{
     catch /^Quote/
         call vimshell#error_line('', 'Quote error.')
         call vimshell#print_prompt()
-        call s:highlight_escape_sequence()
+        call interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -351,7 +351,7 @@ function! vimshell#process_enter()"{{{
     endif
 
     call vimshell#print_prompt()
-    call s:highlight_escape_sequence()
+    call interactive#highlight_escape_sequence()
 
     call vimshell#start_insert()
 endfunction"}}}
@@ -909,61 +909,22 @@ function! s:restore_current_dir()"{{{
     endif
 endfunction"}}}
 
-function! s:highlight_escape_sequence()"{{{
-    let register_save = @"
-    while search("\<ESC>\\[[0-9;]*m", 'c')
-        normal! dfm
-
-        let [lnum, col] = getpos('.')[1:2]
-        if len(getline('.')) == col
-            let col += 1
-        endif
-        let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . lnum . '_' . col
-        execute 'syntax region' syntax_name 'start=+\%' . lnum . 'l\%' . col . 'c+ end=+\%$+' 'contains=ALL'
-
-        let highlight = ''
-        for color_code in split(matchstr(@", '[0-9;]\+'), ';')
-            if color_code == 0
-                let highlight .= ' ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE'
-            elseif color_code == 1
-                let highlight .= ' cterm=bold gui=bold'
-            elseif 30 <= color_code && color_code <= 37
-                let highlight .= ' ctermfg=' . (color_code - 30)
-            elseif color_code == 38
-                " TODO
-            elseif color_code == 39
-                " TODO
-            elseif 40 <= color_code && color_code <= 47
-                let highlight .= ' ctermbg=' . (color_code - 40)
-            elseif color_code == 48
-                " TODO
-            elseif color_code == 49
-                " TODO
-            endif
-        endfor
-        if len(highlight)
-            execute 'highlight' syntax_name highlight
-        endif
-    endwhile
-    let @" = register_save
-endfunction"}}}
-
 function! s:get_complete_words(cur_keyword_str)"{{{
     let l:ret = []
     let l:pattern = printf('v:val =~ "^%s"', a:cur_keyword_str)
 
     for keyword in filter(keys(b:vimshell_alias_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Alias]', 'icase' : 1 }
+        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Alias]', 'icase' : 1 }
         call add(l:ret, l:dict)
     endfor 
 
     for keyword in filter(keys(s:special_func_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Special]', 'icase' : 1 }
+        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Special]', 'icase' : 1 }
         call add(l:ret, l:dict)
     endfor 
 
     for keyword in filter(keys(s:internal_func_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Internal]', 'icase' : 1 }
+        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Internal]', 'icase' : 1 }
         call add(l:ret, l:dict)
     endfor 
 
@@ -982,7 +943,7 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
         for keyword in map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
                     \'executable(v:val)'), 'fnamemodify(v:val, ":t")')
-            let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Command]', 'icase' : 1 }
+            let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Command]', 'icase' : 1 }
             call add(l:ret, l:dict)
         endfor 
     endif
