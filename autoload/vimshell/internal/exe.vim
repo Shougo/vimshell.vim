@@ -115,7 +115,11 @@ function! s:init_process(fd, args, is_interactive)
 
     for command in l:commands
         try
-            call add(l:sub, l:proc.popen3(command))
+            if g:VimShell_UsePopen2
+                call add(l:sub, l:proc.popen2(command))
+            else
+                call add(l:sub, l:proc.popen3(command))
+            endif
         catch 'list index out of range'
             if empty(command)
                 let l:error = 'Wrong pipe used.'

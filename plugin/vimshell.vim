@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.19, for Vim 7.0
+" Version: 5.20, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.20 :
+"     - Added g:VimShell_UsePopen2 option.
+"     - Openable directory in vim command.
+"
 "   5.19 :
 "     - Improved variables path.
 "     - Implemented "h string".
@@ -341,6 +345,9 @@ if !exists('g:VimShell_EnableInteractive')
 endif
 if !exists('g:VimShell_SplitHeight')
     let g:VimShell_SplitHeight = 30
+endif
+if !exists('g:VimShell_UsePopen2')
+    let g:VimShell_UsePopen2 = 0
 endif
 "}}}
 

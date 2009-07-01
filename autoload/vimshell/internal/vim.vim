@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 01 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,13 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Open directory.
+"
 "   1.2:
 "     - Ignore directory.
+"
 "   1.1:
 "     - Split nicely.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -47,11 +52,6 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
 
     " Filename escape
     let l:arguments = join(a:args, ' ')
-
-    if isdirectory(l:arguments)
-        " Ignore.
-        return 0
-    endif
 
     call vimshell#print_prompt()
 

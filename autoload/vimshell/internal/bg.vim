@@ -125,10 +125,10 @@ function! s:init_bg(fd, args, is_interactive)"{{{
 
     for command in l:commands
         try
-            if has('win32') || has('win64')
-                call add(l:sub, l:proc.popen3(command))
+            if g:VimShell_UsePopen2
+                call add(l:sub, l:proc.popen2(command))
             else
-                call add(l:sub, l:proc.ptyopen(command))
+                call add(l:sub, l:proc.popen3(command))
             endif
         catch 'list index out of range'
             if empty(command)
