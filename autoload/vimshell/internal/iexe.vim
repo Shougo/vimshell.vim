@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 03 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.8, for Vim 7.0
+" Version: 1.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.9: 
+"     - Fixed error when file not found.
+"
 "   1.8: 
 "     - Supported pipe.
 "
@@ -97,10 +100,10 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
                 let l:error = printf('File: "%s" is not found.', command[0])
             endif
 
-            if a:is_interactive
+            if a:other_info.is_interactive
                 call vimshell#error_line(a:fd, l:error)
             else
-                echohl WarningMsg | echo l:error | echohl None
+                echohl WarningMsg | echomsg l:error | echohl None
             endif
 
             return 0
@@ -132,14 +135,25 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     endif
 
     if a:other_info.is_background
-        call interactive#execute_inout(0)
+        if has('win32') || has('win64')
+            call interactive#execute_pipe_inout(0)
+        else
+            call interactive#execute_pty_inout(0)
+        endif
 
         return 1
     else
-        while exists('b:vimproc_sub')
-            call interactive#execute_out()
-            call interactive#execute_inout(1)
-        endwhile
+        if has('win32') || has('win64')
+            call interactive#execute_pipe_out()
+            while exists('b:vimproc_sub')
+                call interactive#execute_pipe_inout(1)
+            endwhile
+        else
+            call interactive#execute_pty_out()
+            while exists('b:vimproc_sub')
+                call interactive#execute_pty_inout(1)
+            endwhile
+        endif
         let b:vimshell_system_variables['status'] = b:vimproc_status
 
         return 0
@@ -165,16 +179,23 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
 
-    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_inout(0)<CR>
-    inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_inout(0)<CR>
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
     augroup vimshell_iexe
         autocmd BufDelete <buffer>   call s:on_exit()
-        autocmd CursorHold <buffer>  call interactive#execute_out()
     augroup END
 
-    call interactive#execute_out()
+    if has('win32') || has('win64')
+        nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_inout(0)<CR>
+        inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pipe_inout(0)<CR>
+        autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pipe_out()
+        call interactive#execute_pipe_out()
+    else
+        nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pty_inout(0)<CR>
+        inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pty_inout(0)<CR>
+        autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pty_out()
+        call interactive#execute_pty_out()
+    endif
 endfunction"}}}
 
 function! s:on_exit()

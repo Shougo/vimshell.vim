@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 01 Jul 2009
+" Last Modified: 03 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,6 +29,11 @@
 "   5.20 :
 "     - Added g:VimShell_UsePopen2 option.
 "     - Openable directory in vim command.
+"     - Improved bg command.
+"     - Fixed escape sequence.
+"     - Improved highlight timing.
+"     - Implemented error highlight.
+"     - Refactoringed interactive.vim.
 "
 "   5.19 :
 "     - Improved variables path.

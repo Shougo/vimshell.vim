@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 01 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.8, for Vim 7.0
+" Version: 1.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.9: Fixed error on Linux.
+"
 "   1.8: Supported pipe.
 "
 "   1.7: Improved error catch.
@@ -140,7 +142,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
             if a:is_interactive
                 call vimshell#error_line(a:fd, l:error)
             else
-                echohl WarningMsg | echo l:error | echohl None
+                echohl WarningMsg | echomsg l:error | echohl None
             endif
 
             return 0
@@ -183,9 +185,8 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     autocmd vimshell_bg BufDelete <buffer>       call s:on_exit()
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
-    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_out()<CR>
-
-    call interactive#execute_out()
+    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_out()<CR>
+    call interactive#execute_pipe_out()
 
     return 1
 endfunction"}}}
@@ -215,7 +216,7 @@ function! s:check_bg()"{{{
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber) && string(getbufvar(l:bufnumber, 'sub')) != ''
             execute 'buffer ' . l:bufnumber
-            call interactive#execute_out()
+            call interactive#execute_pipe_out()
         endif
         let l:bufnumber += 1
     endwhile

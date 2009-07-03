@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 03 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -52,15 +52,9 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             return 0
         endif
 
-        if has('win32') || has('win64')
-            while exists('b:vimproc_sub')
-                call interactive#execute_out()
-            endwhile
-        else
-            while exists('b:vimproc_sub')
-                call interactive#execute_pipe_out()
-            endwhile
-        endif
+        while exists('b:vimproc_sub')
+            call interactive#execute_pipe_out()
+        endwhile
         let b:vimshell_system_variables['status'] = b:vimproc_status
     else
         let l:cmdline = ''
@@ -130,7 +124,7 @@ function! s:init_process(fd, args, is_interactive)
             if a:is_interactive
                 call vimshell#error_line(a:fd, l:error)
             else
-                echohl WarningMsg | echo l:error | echohl None
+                echohl WarningMsg | echomsg l:error | echohl None
             endif
 
             return 1
