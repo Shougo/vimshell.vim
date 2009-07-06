@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jun 2009
+" Last Modified: 04 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Refactoringed.
+"
 "   1.1:
 "     - Implemented "h string".
 "
@@ -43,10 +46,9 @@
 
 function! vimshell#internal#h#execute(program, args, fd, other_info)
     " Execute from history.
-    if get(g:vimshell#hist_buffer, 0) =~ '^h\s' || get(g:vimshell#hist_buffer, 0) == 'h'
-        " Delete from history.
-        call remove(g:vimshell#hist_buffer, 0)
-    endif
+
+    " Delete from history.
+    call vimshell#remove_history('h')
 
     if empty(a:args) || a:args[0] =~ '^\d\+'
         if empty(a:args)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2009
+" Last Modified: 05 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.9: 
 "     - Fixed error when file not found.
+"     - Improved in console.
 "
 "   1.8: 
 "     - Supported pipe.
@@ -63,9 +64,29 @@
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     " Interactive execute command.
     if !g:VimShell_EnableInteractive
-        " Error.
-        call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
-        return 0
+        if has('gui_running')
+            " Error.
+            call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
+            return 0
+        else
+            " Use system().
+            let l:cmdline = ''
+            for arg in a:args
+                let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
+            endfor
+
+            " Set redirection.
+            if a:fd.stdin != ''
+                let l:stdin = '<' . a:fd.stdin
+            else
+                let l:stdin = ''
+            endif
+
+            call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
+
+            let b:vimshell_system_variables['status'] = v:shell_error
+            return 0
+        endif
     endif
 
     if empty(a:args)
@@ -123,6 +144,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     let b:vimproc = l:proc
     let b:vimproc_sub = l:sub
     let b:vimproc_fd = a:fd
+    let b:vimproc_is_secret = 0
 
     " Input from stdin.
     if b:vimproc_fd.stdin != ''

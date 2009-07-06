@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Jan 2009
+" Last Modified: 04 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Refactoringed.
+"
 "   1.1:
 "     - Supported vimshell Ver.3.2.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -41,10 +45,7 @@
 "=============================================================================
 
 function! vimshell#internal#history#execute(program, args, fd, other_info)
-    if get(g:vimshell#hist_buffer, 0) =~ '^history'
-        " Delete from history.
-        call remove(g:vimshell#hist_buffer, 0)
-    endif
+    call vimshell#remove_history('history')
 
     let l:cnt = 0
     let l:arguments = join(a:args, ' ')

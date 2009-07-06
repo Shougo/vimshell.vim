@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.25, for Vim 7.0
+" Version: 1.26, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.26:
+"     - Improved error highlight.
+"     - Implemented password input.
+"
 "   1.25: Fixed escape sequence.
 "     - Improved highlight timing.
 "     - Implemented error highlight.
@@ -64,19 +68,25 @@
 " Utility functions.
 
 let s:password_regex = 
-            \'^\s*Password:' . '\|'     "  su, ssh, ftp
-            \. 'password:' . '\|'       "  ???, seen this somewhere
-            \. 'Password required'      "  other ftp clients
-
-let s:last_out = ''
+            \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
+            \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
+            \'[Pp]assword'
 
 function! interactive#execute_pipe_inout(is_interactive)"{{{
     if !exists('b:vimproc_sub')
         return
     endif
 
-    if b:vimproc_sub[0].stdin.fd > 0
+    if b:vimproc_is_secret
+        " Password input.
+        set imsearch=0
+        let l:in = inputsecret('Input Secret : ')
+        call b:vimproc_sub[0].stdin.write(l:in . "\<NL>")
+
+        let b:vimproc_is_secret = 0
+    elseif b:vimproc_sub[0].stdin.fd > 0
         if a:is_interactive
+            set imsearch=0
             let l:in = input('Input: ')
         else
             let l:in = getline('.')
@@ -95,7 +105,7 @@ function! interactive#execute_pipe_inout(is_interactive)"{{{
             if l:in =~ ""
                 call b:vimproc_sub[0].stdin.close()
             else
-                call b:vimproc_sub[0].stdin.write(l:in . "\<CR>\<LF>")
+                call b:vimproc_sub[0].stdin.write(l:in . "\<NL>")
             endif
 
             if a:is_interactive
@@ -126,8 +136,16 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
         return
     endif
 
-    if !b:vimproc_sub[0].eof
+    if b:vimproc_is_secret
+        " Password input.
+        set imsearch=0
+        let l:in = inputsecret('Input Secret : ')
+        call b:vimproc_sub[0].write(l:in . "\<NL>")
+        let b:vimproc_is_secret = 0
+
+    elseif !b:vimproc_sub[0].eof
         if a:is_interactive
+            set imsearch=0
             let l:in = input('Input: ')
         else
             let l:in = getline('.')
@@ -151,7 +169,7 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
                 call interactive#exit()
                 return
             elseif l:in != ''
-                call b:vimproc_sub[0].write(l:in . "\<LF>")
+                call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
         catch
             call b:vimproc_sub[0].close()
@@ -180,7 +198,7 @@ function! interactive#execute_pty_out()"{{{
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
         if !sub.eof
-            let l:read = sub.read(-1, 200)
+            let l:read = sub.read(-1, 300)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -190,7 +208,7 @@ function! interactive#execute_pty_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.read(-1, 200)
+                let l:read = sub.read(-1, 300)
             endwhile
         endif
 
@@ -211,7 +229,7 @@ function! interactive#execute_pipe_out()"{{{
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
         if !sub.stdout.eof
-            let l:read = sub.stdout.read(-1, 200)
+            let l:read = sub.stdout.read(-1, 300)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -221,7 +239,7 @@ function! interactive#execute_pipe_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.stdout.read(-1, 200)
+                let l:read = sub.stdout.read(-1, 300)
             endwhile
         elseif l:i < l:submax && b:vimproc_sub[l:i + 1].stdin.fd > 0
             " Close pipe.
@@ -229,12 +247,12 @@ function! interactive#execute_pipe_out()"{{{
         endif
 
         if !g:VimShell_UsePopen2 && !sub.stderr.eof
-            let l:read = sub.stderr.read(-1, 200)
+            let l:read = sub.stderr.read(-1, 300)
             while l:read != ''
                 call s:error_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = sub.stderr.read(-1, 200)
+                let l:read = sub.stderr.read(-1, 300)
             endwhile
         endif
 
@@ -380,6 +398,11 @@ function! s:print_buffer(fd, string)"{{{
         return
     endif
 
+    if a:string =~ s:password_regex
+        " Set secret flag.
+        let b:vimproc_is_secret = 1
+    endif
+
     if a:fd.stdout != ''
         if a:fd.stdout != '/dev/null'
             " Write file.
@@ -442,8 +465,10 @@ function! s:error_buffer(fd, string)"{{{
     endif
 
     if &filetype != 'vimshell'
-        echohl WarningMsg | echomsg substitute(l:string, '\r\?\n$', '', '') | echohl None
-        return
+        syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
+        syn match   VimShellErrorHidden            '!!!' contained
+        hi def link VimShellError Error
+        hi def link VimShellErrorHidden Ignore
     endif
 
     " Print buffer.

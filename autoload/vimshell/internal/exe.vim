@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2009
+" Last Modified: 05 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.3:
 "     - Supported pipe.
+"     - Improved in console.
 "
 "   1.2: Improved error catch.
 "     - Get status. 
@@ -72,11 +73,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             let l:stdin = '<' . l:null
         endif
 
-        if a:fd.stdout != ''
-            silent execute printf('!%s %s %s', l:cmdline, l:stdin, '>' . a:fd.stdout)
-        else
-            silent execute printf('read! %s %s', l:cmdline, l:stdin)
-        endif
+        call vimshell#print(a:fd, system(printf('%s <%s', l:cmdline, l:stdin)))
 
         if a:fd.stdin == ''
             call delete(l:null)

@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2009
+" FILE: gexe.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 26 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,24 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.5:
-"     - Changed alias syntax.
-"
-"   1.4:
-"     - Optimized parse.
-"
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.2:
-"     - Use vimshell#print_line.
-"
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
-"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -53,27 +38,14 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#alias#execute(program, args, fd, other_info)
-    if empty(a:args)
-        " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
-        endfor
-    elseif len(a:args) == 1
-        if has_key(b:vimshell_alias_table, a:args[0])
-            " View alias.
-            call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
-        endif
+function! vimshell#internal#gexe#execute(program, args, fd, other_info)
+    " Execute GUI program.
+    if has('win32') || has('win64')
+        silent execute printf('!start %s', join(a:args))
     else
-        " Define alias.
+        " For *nix.
 
-        let l:args = join(a:args)
-
-        if l:args !~ '^\h\w*\s*=\s*'
-            call vimshell#error_line(a:fd, 'Wrong syntax.')
-            return
-        endif
-        let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
-        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  l:expression)
+        " Background execute.
+        call system(join(a:args) . '&')
     endif
 endfunction

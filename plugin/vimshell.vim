@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 03 Jul 2009
+" Last Modified: 05 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,9 +23,28 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.20, for Vim 7.0
+" Version: 5.22, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.22 :
+"     - Improved share history.
+"     - Improved run_help.
+"     - Improved alias.
+"
+"   5.21 :
+"     - Improved error highlight.
+"     - Implemented password input.
+"     - Implemented sudo internal command.
+"     - Added g:VimShell_SecondaryPrompt option.
+"     - Set COLUMNS and LINES environment variables.
+"     - Remove dup history.
+"     - Improved history commands.
+"     - Splitted parser.
+"     - Reduce blanks when append history.
+"     - Implemented insert last word keymapping.
+"     - Improved iexe.
+"     - Implemented run_help.
+"
 "   5.20 :
 "     - Added g:VimShell_UsePopen2 option.
 "     - Openable directory in vim command.
@@ -300,6 +319,8 @@ nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0)<C
 nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
 inoremap <silent> <Plug>(vimshell_insert_command_completion)  <ESC>:<C-u>call vimshell#insert_command_completion()<CR>a<C-x><C-o>
 inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#push_current_line()<CR>
+inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#insert_last_word()<CR>
+inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#run_help()<CR>
 nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_delete_previous_prompt)  :<C-u>call vimshell#delete_previous_prompt()<CR>
@@ -312,6 +333,9 @@ nmap <silent> <Leader>sc     <Plug>(vimshell_create)
 " Global options definition."{{{
 if !exists('g:VimShell_Prompt')
     let g:VimShell_Prompt = 'VimShell% '
+endif
+if !exists('g:VimShell_SecondaryPrompt')
+    let g:VimShell_SecondaryPrompt = '%% '
 endif
 if !exists('g:VimShell_HistoryPath')
     if has('win32') || has('win64')
