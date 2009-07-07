@@ -606,6 +606,8 @@ function! vimshell#run_help()"{{{
     if l:program !~ '\h\w*'
         startinsert!
         return
+    elseif has_key(b:vimshell_alias_table, l:program)
+        let l:program = b:vimshell_alias_table[l:program]
     endif
 
     call vimshell#internal#bg#execute('bg', ['man', '-p', 'cat', l:program], 

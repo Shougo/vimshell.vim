@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: alias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2009
+" Last Modified: 07 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.6:
+"     - Fixed parse bug.
+"
 "   1.5:
 "     - Changed alias syntax.
 "
@@ -59,14 +62,13 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
         for alias in keys(b:vimshell_alias_table)
             call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
         endfor
-    elseif len(a:args) == 1
+    elseif a:args[0] =~ '^\h\w*$'
         if has_key(b:vimshell_alias_table, a:args[0])
             " View alias.
             call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
         endif
     else
         " Define alias.
-
         let l:args = join(a:args)
 
         if l:args !~ '^\h\w*\s*=\s*'

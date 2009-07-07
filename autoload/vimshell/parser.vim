@@ -68,7 +68,6 @@ function! vimshell#parser#eval_script(script, program)
         let l:program = 'cat'
     endif
 
-    echomsg string([l:program, l:args, l:fd])
     return [l:program, l:args, l:fd]
 endfunction
 
