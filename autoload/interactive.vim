@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2009
+" Last Modified: 08 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.26, for Vim 7.0
+" Version: 1.27, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.27:
+"     - Fixed prompt in background pty(Thanks Nico!).
+"     - Stripped <CR>(Thanks Nico!).
+"     - Improved output in background program.
+"
 "   1.26:
 "     - Improved error highlight.
 "     - Implemented password input.
@@ -142,23 +147,31 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
         let l:in = inputsecret('Input Secret : ')
         call b:vimproc_sub[0].write(l:in . "\<NL>")
         let b:vimproc_is_secret = 0
-
     elseif !b:vimproc_sub[0].eof
         if a:is_interactive
             set imsearch=0
             let l:in = input('Input: ')
+
+            if l:in !~ ""
+                call setline(line('$'), getline('$') . l:in)
+            endif
         else
             let l:in = getline('.')
-            if l:in !~ '^> '
+            if exists("b:prompt_history") && !exists("b:prompt_history['".line('.')."']")
                 echohl WarningMsg | echo "Invalid input." | echohl None
-                call append(line('$'), '> ')
                 normal! G
                 startinsert!
 
                 return
             endif
 
-            let l:in = l:in[2:]
+            if len(l:in) && exists("b:prompt_history")
+              let l:in = l:in[ len(b:prompt_history[line('.')]) : ]
+              echo 'Running command ' . l:in
+              call cursor(line('.'), len(b:prompt_history[line('.')]) + 1)
+            else
+              let l:in = ''
+            endif
         endif
 
         try
@@ -168,7 +181,7 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
 
                 call interactive#exit()
                 return
-            elseif l:in != ''
+            else
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
         catch
@@ -183,7 +196,6 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
     elseif b:vimproc_sub[-1].eof
         call interactive#exit()
     elseif !a:is_interactive
-        call append(line('$'), '> ')
         normal! G
         startinsert!
     endif
@@ -214,6 +226,12 @@ function! interactive#execute_pty_out()"{{{
 
         let l:i += 1
     endfor
+
+    " record prompt used on this line
+    if !exists('b:prompt_history')
+        let b:prompt_history = {}
+    endif
+    let b:prompt_history[line('.')] = getline('.')
 
     if b:vimproc_sub[-1].eof
         call interactive#exit()
@@ -420,23 +438,17 @@ function! s:print_buffer(fd, string)"{{{
         let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
-    if l:string =~ '\r[[:print:]]'
-        " Set line.
-        for line in split(l:string, '\r\n\|\n')
-            call append(line('$'), '')
-
-            for l in split(line, '\r')
-                call setline(line('$'), l)
-                call interactive#highlight_escape_sequence()
-                redraw
-            endfor
-        endfor
-    else
-        for line in split(l:string, '\r\n\|\r\|\n')
-            call append(line('$'), line)
-        endfor
-        call interactive#highlight_escape_sequence()
-    endif
+    " Strip <CR>.
+    let l:string = substitute(l:string, '\r', '', 'g')
+    let l:lines = split(l:string, '\n', 1)
+    for i in range(len(l:lines))
+        if line('$') == 1 && empty(getline('$'))
+            call setline(line('$'), l:lines[i])
+        else
+            call append(line('$'), l:lines[i])
+        endif
+    endfor
+    call interactive#highlight_escape_sequence()
 
     " Set cursor.
     normal! G

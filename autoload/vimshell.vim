@@ -610,7 +610,7 @@ function! vimshell#run_help()"{{{
         let l:program = b:vimshell_alias_table[l:program]
     endif
 
-    call vimshell#internal#bg#execute('bg', ['man', '-p', 'cat', l:program], 
+    call vimshell#internal#bg#execute('bg', ['man', '-P', 'cat', l:program], 
                 \{'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
     startinsert!
 endfunction"}}}

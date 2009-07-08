@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2009
+" Last Modified: 08 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.9, for Vim 7.0
+" Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.10: 
+"     - Improved behavior.
+"
 "   1.9: 
 "     - Fixed error when file not found.
 "     - Improved in console.
@@ -158,10 +161,11 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     if a:other_info.is_background
         if has('win32') || has('win64')
-            call interactive#execute_pipe_inout(0)
+            call interactive#execute_pipe_out()
         else
-            call interactive#execute_pty_inout(0)
+            call interactive#execute_pty_out()
         endif
+        startinsert!
 
         return 1
     else
@@ -222,7 +226,7 @@ endfunction"}}}
 
 function! s:on_exit()
     augroup vimshell_iexe
-        autocmd! * <buffer>
+        autocmd! BufDelete <buffer>
     augroup END
 
     call interactive#exit()

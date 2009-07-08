@@ -16,7 +16,7 @@ imap <buffer> <C-z> <Plug>(vimshell_push_current_line)
 " Insert last word.
 imap <buffer> <C-]> <Plug>(vimshell_insert_last_word)
 " Run help.
-imap <buffer> <C-r> <Plug>(vimshell_run_help)
+imap <buffer> <C-r>h <Plug>(vimshell_run_help)
 " Move to previous prompt.
 nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
 " Move to next prompt.

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 Jul 2009
+" Last Modified: 08 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,6 +31,9 @@
 "     - Improved run_help.
 "     - Improved alias.
 "     - Fixed parse bug.
+"     - Changed run_help key mappings.
+"     - Implemented sudo vim.
+"     - Improved iexe and bg.
 "
 "   5.21 :
 "     - Improved error highlight.

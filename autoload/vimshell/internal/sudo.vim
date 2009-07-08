@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sudo.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2009
+" Last Modified: 09 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Implemented sudo vim.
+"
 "   1.1:
 "     - Improved in console.
 "
@@ -49,6 +52,10 @@ function! vimshell#internal#sudo#execute(program, args, fd, other_info)
     elseif empty(a:args)
         call vimshell#error_line(a:fd, 'Arguments required.')
         return 0
+    elseif a:args[0] == 'vim'
+        let l:args = a:args[1:]
+        let l:args[0] = 'sudo:' . l:args[0]
+        return vimshell#internal#vim#execute('vim', l:args, a:fd, a:other_info)
     elseif has('gui_running')
         return vimshell#internal#iexe#execute('iexe', insert(a:args, 'sudo'), a:fd, a:other_info)
     else

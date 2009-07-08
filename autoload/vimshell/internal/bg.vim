@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2009
+" Last Modified: 08 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.9, for Vim 7.0
+" Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.10: Improved CursorHold event.
+"
 "   1.9: Fixed error on Linux.
 "
 "   1.8: Supported pipe.
@@ -61,7 +63,6 @@
 ""}}}
 "=============================================================================
 
-let s:background_programs = 0
 augroup vimshell_bg
     autocmd!
 augroup END
@@ -178,11 +179,8 @@ function! s:init_bg(fd, args, is_interactive)"{{{
         endif
     endif
 
-    if s:background_programs <= 0
-        autocmd vimshell_bg CursorHold * call s:check_bg()
-    endif
-    let s:background_programs += 1
     autocmd vimshell_bg BufDelete <buffer>       call s:on_exit()
+    autocmd vimshell_bg CursorHold <buffer>  call interactive#execute_pipe_out()
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
     nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_out()<CR>
@@ -192,15 +190,10 @@ function! s:init_bg(fd, args, is_interactive)"{{{
 endfunction"}}}
 
 function! s:on_exit()
-    let s:background_programs -= 1
-
     augroup vimshell_bg
-        autocmd! * <buffer>
+        autocmd! CursorHold <buffer>
+        autocmd! BufDelete <buffer>
     augroup END
-
-    if s:background_programs <= 0
-        autocmd! vimshell_bg CursorHold
-    endif
 
     call interactive#exit()
 
@@ -208,18 +201,3 @@ function! s:on_exit()
         let b:vimshell_system_variables['status'] = b:vimproc_status
     endif
 endfunction
-
-function! s:check_bg()"{{{
-    let l:save_cursor = getpos('.')
-    let l:bufnumber = 1
-    let l:current_buf = bufnr('%')
-    while l:bufnumber <= bufnr('$')
-        if buflisted(l:bufnumber) && string(getbufvar(l:bufnumber, 'sub')) != ''
-            execute 'buffer ' . l:bufnumber
-            call interactive#execute_pipe_out()
-        endif
-        let l:bufnumber += 1
-    endwhile
-    execute 'buffer ' . l:current_buf
-    call setpos('.', l:save_cursor)
-endfunction"}}}
