@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jul 2009
+" Last Modified: 09 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.27, for Vim 7.0
+" Version: 1.28, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.28:
+"     - Implemented input cancel.
+"     - Improved signal.
+"     - Stripped "\n$" when print_buffer.
+"     - Echo in running command.
+"
 "   1.27:
 "     - Fixed prompt in background pty(Thanks Nico!).
 "     - Stripped <CR>(Thanks Nico!).
@@ -152,8 +158,12 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
             set imsearch=0
             let l:in = input('Input: ')
 
-            if l:in !~ ""
-                call setline(line('$'), getline('$') . l:in)
+            if l:in != '' && l:in !~ ""
+                if match(getline('$'), g:VimShell_Prompt) < 0
+                    call setline(line('$'), getline('$') . l:in)
+                else
+                    call append(line('$'), l:in)
+                endif
             endif
         else
             let l:in = getline('.')
@@ -167,7 +177,6 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
 
             if len(l:in) && exists("b:prompt_history")
               let l:in = l:in[ len(b:prompt_history[line('.')]) : ]
-              echo 'Running command ' . l:in
               call cursor(line('.'), len(b:prompt_history[line('.')]) + 1)
             else
               let l:in = ''
@@ -181,7 +190,7 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
 
                 call interactive#exit()
                 return
-            else
+            elseif l:in != ''
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
         catch
@@ -206,6 +215,7 @@ function! interactive#execute_pty_out()"{{{
         return
     endif
 
+    echo 'Running command.'
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -226,6 +236,7 @@ function! interactive#execute_pty_out()"{{{
 
         let l:i += 1
     endfor
+    echo ''
 
     " record prompt used on this line
     if !exists('b:prompt_history')
@@ -243,6 +254,7 @@ function! interactive#execute_pipe_out()"{{{
         return
     endif
 
+    echo 'Running command.'
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -276,6 +288,7 @@ function! interactive#execute_pipe_out()"{{{
 
         let l:i += 1
     endfor
+    echo ''
 
     if b:vimproc_sub[-1].stdout.eof && (g:VimShell_UsePopen2 || b:vimproc_sub[-1].stderr.eof)
         call interactive#exit()
@@ -292,8 +305,8 @@ function! interactive#exit()"{{{
         let [l:cond, l:status] = b:vimproc.api.vp_waitpid(sub.pid)
         if l:cond != 'exit'
             " Kill process.
-            " 9 == SIGKILL
-            call b:vimproc.api.vp_kill(sub.pid, 9)
+            " 15 == SIGTERM
+            call b:vimproc.api.vp_kill(sub.pid, 15)
         endif
     endfor
 
@@ -439,7 +452,7 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     " Strip <CR>.
-    let l:string = substitute(l:string, '\r', '', 'g')
+    let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
     let l:lines = split(l:string, '\n', 1)
     for i in range(len(l:lines))
         if line('$') == 1 && empty(getline('$'))

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Jul 2009
+" Last Modified: 09 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.22, for Vim 7.0
+" Version: 5.23, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.23 :
+"     - Improved completion.
+"     - Added g:VimShell_EnableAutoLs option.
+"
 "   5.22 :
 "     - Improved share history.
 "     - Improved run_help.
@@ -33,7 +37,7 @@
 "     - Fixed parse bug.
 "     - Changed run_help key mappings.
 "     - Implemented sudo vim.
-"     - Improved iexe and bg.
+"     - Improved iexe and bg(Tanks Nico!).
 "
 "   5.21 :
 "     - Improved error highlight.
@@ -381,6 +385,9 @@ if !exists('g:VimShell_SplitHeight')
 endif
 if !exists('g:VimShell_UsePopen2')
     let g:VimShell_UsePopen2 = 0
+endif
+if !exists('g:VimShell_EnableAutoLs')
+    let g:VimShell_EnableAutoLs = 0
 endif
 "}}}
 

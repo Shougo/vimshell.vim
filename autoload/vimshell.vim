@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jul 2009
+" Last Modified: 09 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.22, for Vim 7.0
+" Version: 5.23, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -276,10 +276,22 @@ function! vimshell#process_enter()"{{{
     " Delete head spaces.
     let l:line = substitute(l:line, '^\s\+', '', '')
     if l:line =~ '^\s*$'
-        " Ignore empty command line.
-        call setline(line('.'), g:VimShell_Prompt)
+        if g:VimShell_EnableAutoLs
+            call setline(line('.'), g:VimShell_Prompt . 'ls')
+            call vimshell#internal#ls#execute('ls', [], 
+                        \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
+                        \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
 
-        call vimshell#start_insert()
+            call vimshell#print_prompt()
+            call interactive#highlight_escape_sequence()
+
+            call vimshell#start_insert()
+        else
+            " Ignore empty command line.
+            call setline(line('.'), g:VimShell_Prompt)
+
+            call vimshell#start_insert()
+        endif
         return
     endif
 
@@ -728,6 +740,11 @@ function! s:get_complete_words(cur_keyword_str)"{{{
     let l:ret = []
     let l:pattern = printf('v:val =~ "^%s"', a:cur_keyword_str)
 
+    for keyword in filter(split(glob(a:cur_keyword_str . '*'), '\n'), 'isdirectory(v:val)')
+        let l:dict = { 'word' : keyword, 'abbr' : keyword . '/', 'menu' : '[Dir]', 'icase' : 1 }
+        call add(l:ret, l:dict)
+    endfor 
+
     for keyword in filter(keys(b:vimshell_alias_table), l:pattern)
         let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Alias]', 'icase' : 1 }
         call add(l:ret, l:dict)
@@ -740,11 +757,6 @@ function! s:get_complete_words(cur_keyword_str)"{{{
 
     for keyword in filter(keys(s:internal_func_table), l:pattern)
         let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Internal]', 'icase' : 1 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(split(glob(a:cur_keyword_str . '*'), '\n'), 'isdirectory(v:val)')
-        let l:dict = { 'word' : keyword, 'abbr' : keyword . '/', 'menu' : '[Dir]', 'icase' : 1 }
         call add(l:ret, l:dict)
     endfor 
 

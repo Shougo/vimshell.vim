@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.2:
 "     - Implemented sudo vim.
+"     - Supported Mac OS X.
 "
 "   1.1:
 "     - Improved in console.
@@ -46,7 +47,7 @@
 
 function! vimshell#internal#sudo#execute(program, args, fd, other_info)
     " Execute GUI program.
-    if has('win32') || has('win64') || has('mac')
+    if has('win32') || has('win64')
         call vimshell#error_line(a:fd, 'This platform is not supported.')
         return 0
     elseif empty(a:args)
