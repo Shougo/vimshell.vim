@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Mar 2009
+" Last Modified: 12 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,13 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Improved error message.
+"
 "   1.2:
 "     - Supported vimshell Ver.3.2.
+"
 "   1.1:
 "     - Use vimshell#error_line.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -60,12 +65,12 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
         let l:pop = 1
     else
         " Error.
-        call vimshell#error_line(a:fd, 'Error arguments.')
+        call vimshell#error_line(a:fd, 'Arguments error .')
         return
     endif
     if l:pop >= len(w:vimshell_directory_stack)
         " Overflow.
-        call vimshell#error_line(a:fd, 'Not found in directory stack.')
+        call vimshell#error_line(a:fd, printf("Not found '%d' in directory stack.", l:pop))
         return
     endif
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jul 2009
+" Last Modified: 11 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.10, for Vim 7.0
+" Version: 1.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.11:
+"     - Kill zombee process.
+"
 "   1.10: Improved CursorHold event.
 "
 "   1.9: Fixed error on Linux.
@@ -109,7 +112,7 @@ endfunction"}}}
 function! s:init_bg(fd, args, is_interactive)"{{{
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#exit()
+        call interactive#force_exit()
     endif
 
     " Initialize.
@@ -195,9 +198,5 @@ function! s:on_exit()
         autocmd! BufDelete <buffer>
     augroup END
 
-    call interactive#exit()
-
-    if exists('b:vimshell_system_variables')
-        let b:vimshell_system_variables['status'] = b:vimproc_status
-    endif
+    call interactive#force_exit()
 endfunction

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2009
+" Last Modified: 11 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.4:
+"     - Kill zombee process.
+"
 "   1.3:
 "     - Supported pipe.
 "     - Improved in console.
@@ -88,7 +91,7 @@ endfunction"}}}
 function! s:init_process(fd, args, is_interactive)
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#exit()
+        call interactive#force_exit()
     endif
 
     let l:proc = proc#import()

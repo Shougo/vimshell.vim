@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jul 2009
+" Last Modified: 11 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.10: 
 "     - Improved behavior.
+"     - Kill zombee process.
 "
 "   1.9: 
 "     - Fixed error when file not found.
@@ -136,7 +137,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#exit()
+        call interactive#force_exit()
     endif
 
     if a:other_info.is_background
@@ -227,11 +228,9 @@ endfunction"}}}
 function! s:on_exit()
     augroup vimshell_iexe
         autocmd! BufDelete <buffer>
+        autocmd! CursorHold <buffer>
     augroup END
 
-    call interactive#exit()
-    if exists('b:vimshell_system_variables')
-        let b:vimshell_system_variables['status'] = b:vimproc_status
-    endif
+    call interactive#force_exit()
 endfunction
 

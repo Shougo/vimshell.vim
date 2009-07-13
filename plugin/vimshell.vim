@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 09 Jul 2009
+" Last Modified: 12 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,12 +23,23 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.23, for Vim 7.0
+" Version: 5.24, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.24 :
+"     - Improved parser.
+"     - Fixed append_history() bug.
+"     - Implemented block.
+"     - Supported multiple statements.
+"     - Fixed alias parse bug.
+"     - Implemented repeat.
+"     - Improved pushd timing.
+"
 "   5.23 :
 "     - Improved completion.
 "     - Added g:VimShell_EnableAutoLs option.
+"     - Move to parent directory if argument isn't directory in cd command.
+"     - Implemented force kill processes.
 "
 "   5.22 :
 "     - Improved share history.

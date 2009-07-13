@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2009
+" Last Modified: 11 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.28, for Vim 7.0
+" Version: 1.29, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.29:
+"     - Implemented force exit.
+"
 "   1.28:
 "     - Implemented input cancel.
 "     - Improved signal.
@@ -215,7 +218,9 @@ function! interactive#execute_pty_out()"{{{
         return
     endif
 
+    redraw
     echo 'Running command.'
+    redraw
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -236,7 +241,6 @@ function! interactive#execute_pty_out()"{{{
 
         let l:i += 1
     endfor
-    echo ''
 
     " record prompt used on this line
     if !exists('b:prompt_history')
@@ -254,7 +258,9 @@ function! interactive#execute_pipe_out()"{{{
         return
     endif
 
+    redraw
     echo 'Running command.'
+    redraw
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -313,6 +319,28 @@ function! interactive#exit()"{{{
     let b:vimproc_status = eval(l:status)
     if &filetype != 'vimshell'
         call append(line('$'), '*Exit*')
+        normal! G
+    endif
+
+    let s:last_out = ''
+
+    unlet b:vimproc
+    unlet b:vimproc_sub
+    unlet b:vimproc_fd
+endfunction"}}}
+function! interactive#force_exit()"{{{
+    if !exists('b:vimproc_sub')
+        return
+    endif
+
+    " Kill processes.
+    for sub in b:vimproc_sub
+        " 15 == SIGTERM
+        call b:vimproc.api.vp_kill(sub.pid, 15)
+    endfor
+
+    if &filetype != 'vimshell'
+        call append(line('$'), '*Killed*')
         normal! G
     endif
 

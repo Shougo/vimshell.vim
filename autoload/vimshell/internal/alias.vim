@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: alias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 Jul 2009
+" Last Modified: 12 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -62,7 +62,7 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
         for alias in keys(b:vimshell_alias_table)
             call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
         endfor
-    elseif a:args[0] =~ '^\h\w*$'
+    elseif join(a:args) =~ '^\h\w*$'
         if has_key(b:vimshell_alias_table, a:args[0])
             " View alias.
             call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
@@ -76,6 +76,6 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
             return
         endif
         let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
-        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  l:expression)
+        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
     endif
 endfunction
