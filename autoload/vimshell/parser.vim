@@ -2,7 +2,7 @@
 " FILE: parser.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Jul 2009
+" Last Modified: 15 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -320,7 +320,7 @@ function! s:parse_wildcard(script)"{{{
             let l:script = l:script[: -len(l:head)+1]
 
             " Expand wildcard.
-            let l:script .= substitute(escape(glob(l:wildcard), ' '), '\n', ' ', 'g')
+            let l:script .= join(filter(split(escape(glob(l:wildcard), ' '), '\n'), 'v:val != "." && v:val != ".."'))
             let l:i = matchend(a:script, '^[^[:blank:]]*', l:i)
         else
             let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
