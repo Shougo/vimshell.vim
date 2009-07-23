@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Jul 2009
+" Last Modified: 19 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.24, for Vim 7.0
+" Version: 5.26, for Vim 7.0
 "=============================================================================
 
 " Helper functions.
@@ -612,6 +612,11 @@ function! vimshell#run_help()"{{{
 
     call vimshell#internal#bg#execute('bg', ['man', '-P', 'cat', l:program], 
                 \{'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+
+    let l:save_cursor = getpos('.')
+    let l:save_cursor[1] = 7
+    call setpos('.', l:save_cursor)
+    wincmd w
     startinsert!
 endfunction"}}}
 

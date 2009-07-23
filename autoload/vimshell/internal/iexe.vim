@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2009
+" Last Modified: 19 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,15 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.10, for Vim 7.0
+" Version: 1.11, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.11: 
+"     - Improved completion.
+"     - Set filetype.
+"     - Improved initialize on pty.
+"
 "   1.10: 
 "     - Improved behavior.
 "     - Kill zombee process.
 "     - Supported completion on pty.
 "     - Improved initialize program.
 "     - Implemented command history on pty.
+"     - <C-c> as <C-v><C-d>.
 "
 "   1.9: 
 "     - Fixed error when file not found.
@@ -167,12 +173,18 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         if has('win32') || has('win64')
             call interactive#execute_pipe_out()
         else
-            call interactive#execute_pty_out()
+            let l:cnt = 0
+            while line('$') == 1 && col('.') == 1 && l:cnt < 15
+                call interactive#execute_pty_out()
+                let l:cnt += 1
+            endwhile
         endif
         startinsert!
 
         return 1
     else
+        cnoremap <buffer> <C-c>          <C-v><C-d><CR> 
+
         if has('win32') || has('win64')
             call interactive#execute_pipe_out()
             while exists('b:vimproc_sub')
@@ -185,6 +197,8 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
             endwhile
         endif
         let b:vimshell_system_variables['status'] = b:vimproc_status
+
+        cunmap <buffer> <C-c>
 
         return 0
     endif
@@ -208,9 +222,9 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
     setlocal buftype=nofile
     setlocal noswapfile
+    execute 'setfiletype ' . a:args[0]
 
     nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
-    inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
     augroup vimshell_iexe
         autocmd BufDelete <buffer>   call s:on_exit()
     augroup END
@@ -219,15 +233,14 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
         nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_inout(0)<CR>
         inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pipe_inout(0)<CR>
         autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pipe_out()
-        call interactive#execute_pipe_out()
     else
         nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pty_inout(0)<CR>
         inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pty_inout(0)<CR>
-        inoremap <buffer><silent><C-t>       <ESC>:<C-u>call <SID>pty_completion()<CR>
-        inoremap <buffer><silent><Up>        <ESC>:<C-u>call <SID>previous_command()<CR>
-        inoremap <buffer><silent><Down>      <ESC>:<C-u>call <SID>next_command()<CR>
+        inoremap <buffer><silent><C-h>      <ESC>:<C-u>call <SID>delete_backword_char()<CR>a<C-h>
+        execute 'inoremap <buffer><silent>'.g:VimShell_TabCompletionKey.'    <ESC>:<C-u>call <SID>pty_completion()<CR>'
+        execute 'inoremap <buffer><silent>'.g:VimShell_HistoryPrevKey.'        <ESC>:<C-u>call <SID>previous_command()<CR>'
+        execute 'inoremap <buffer><silent>'.g:VimShell_HistoryNextKey.'      <ESC>:<C-u>call <SID>next_command()<CR>'
         autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pty_out()
-        call interactive#execute_pty_out()
     endif
 
     normal! G$
@@ -245,16 +258,33 @@ endfunction
 
 function! s:pty_completion()"{{{
     " Insert <TAB>.
-    let l:in = getline('.')
+    if exists('b:prompt_history[line(".")]')
+        let l:prev_prompt = b:prompt_history[line('.')]
+    else
+        let l:prev_prompt = ''
+    endif
     let l:prompt = getline('.')
     call setline(line('.'), getline('.') . "\<TAB>")
-    if exists("b:prompt_history['".line('.')."']")
-        let l:in = l:in[len(b:prompt_history[line('.')]) : ]
-    endif
-    let l:prompt = l:prompt[: len(l:in)]
 
     " Do command completion.
     call interactive#execute_pty_inout(0)
+
+    let l:candidate = getline('$')
+    if l:candidate !~ l:prompt
+        if l:candidate =~ '\\\@<!\s.\+'
+            call append(line('$'), l:prompt)
+            let b:prompt_history[line('.')] = l:prompt
+            normal! j
+        else
+            call setline(line('$'), l:prompt . l:candidate)
+            let b:prompt_history[line('.')] = l:prompt . l:candidate
+        endif
+        normal! $
+    elseif l:candidate =~ '\t$'
+        " Failed completion.
+        call setline(line('$'), l:prompt)
+        let b:prompt_history[line('$')] = l:prev_prompt
+    endif
 
     startinsert!
 endfunction"}}}
@@ -294,3 +324,18 @@ function! s:next_command()"{{{
     call setline(line('.'), b:prompt_history[max(keys(b:prompt_history))] . l:next_command)
     startinsert!
 endfunction"}}}
+
+function! s:delete_backword_char()"{{{
+    if exists('b:vimproc_sub') && exists('b:prompt_history[line(".")]')
+                \&& col('.') <= len(b:prompt_history[line('.')])
+        call b:vimproc_sub[0].write("")
+
+        if col('.') > 1
+            let b:prompt_history[line('.')] = getline('.')[: col('.')-2]
+        else
+            let b:prompt_history[line('.')] = ''
+        endif
+        echomsg b:prompt_history[line('.')]
+    endif
+endfunction"}}}
+

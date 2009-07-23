@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jul 2009
+" Last Modified: 19 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12:
+"     - Set filetype.
+"
 "   1.11:
 "     - Kill zombee process.
 "
@@ -166,6 +169,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     edit `=join(a:args).'&'.(bufnr('$')+1)`
     setlocal buftype=nofile
     setlocal noswapfile
+    execute 'setfiletype ' . a:args[0]
 
     " Set variables.
     let b:vimproc = l:proc

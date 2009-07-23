@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2009
+" Last Modified: 19 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,16 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.29, for Vim 7.0
+" Version: 1.30, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.30:
+"     - Implemented iexe completion.
+"     - Implemented iexe prompt.
+"     - Improved response.
+"     - Improved arguments completion.
+"     - Report error in print when lines is too long.
+"
 "   1.29:
 "     - Implemented force exit.
 "     - Catch kill error.
@@ -85,6 +92,10 @@
 
 " Utility functions.
 
+function! s:SID_PREFIX()
+    return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+endfunction
+
 let s:password_regex = 
             \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
@@ -105,7 +116,11 @@ function! interactive#execute_pipe_inout(is_interactive)"{{{
     elseif b:vimproc_sub[0].stdin.fd > 0
         if a:is_interactive
             set imsearch=0
-            let l:in = input('Input: ')
+            if exists('*neocomplcache#get_complete_words')
+                let l:in = input('Input: ', '', 'customlist,'.s:SID_PREFIX().'complete_words')
+            else
+                let l:in = input('Input: ')
+            endif
         else
             let l:in = getline('.')
             if l:in !~ '^> '
@@ -165,7 +180,16 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
     elseif !b:vimproc_sub[0].eof
         if a:is_interactive
             set imsearch=0
-            let l:in = input('Input: ')
+            if match(getline('$'), g:VimShell_Prompt) < 0
+                let l:prompt = getline('$')
+            else
+                let l:prompt = ''
+            endif
+            if exists('*neocomplcache#get_complete_words')
+                let l:in = input(l:prompt, '', 'customlist,'.s:SID_PREFIX().'complete_words')
+            else
+                let l:in = input(l:prompt)
+            endif
 
             if l:in != '' && l:in !~ ""
                 if match(getline('$'), g:VimShell_Prompt) < 0
@@ -247,6 +271,9 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
             elseif l:in =~ '\t$'
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
+            elseif l:in =~ '\s$'
+                " Not append new line.
+                call b:vimproc_sub[0].write(l:in)
             elseif l:in != ''
                 " If input is empty, only output.
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
@@ -280,7 +307,7 @@ function! interactive#execute_pty_out()"{{{
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
         if !sub.eof
-            let l:read = sub.read(-1, 300)
+            let l:read = sub.read(-1, 500)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -290,7 +317,7 @@ function! interactive#execute_pty_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.read(-1, 300)
+                let l:read = sub.read(-1, 500)
             endwhile
         endif
 
@@ -380,8 +407,6 @@ function! interactive#exit()"{{{
         normal! G$
     endif
 
-    let s:last_out = ''
-
     unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
@@ -404,8 +429,6 @@ function! interactive#force_exit()"{{{
         call append(line('$'), '*Killed*')
         normal! G$
     endif
-
-    let s:last_out = ''
 
     unlet b:vimproc
     unlet b:vimproc_sub
@@ -544,7 +567,11 @@ function! s:print_buffer(fd, string)"{{{
     let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
     let l:lines = split(l:string, '\n', 1)
     for i in range(len(l:lines))
-        if line('$') == 1 && empty(getline('$'))
+        if len(l:lines[i]) > 500
+            " Too long.
+            call s:error_buffer(a:fd, 'Lines is too long.')
+            return
+        elseif line('$') == 1 && empty(getline('$'))
             call setline(line('$'), l:lines[i])
         else
             call append(line('$'), l:lines[i])
@@ -667,6 +694,33 @@ function! s:on_exit()"{{{
     augroup END
 
     call interactive#exit()
+endfunction"}}}
+
+" Arguments completion by neocomplcache.
+function! s:complete_words(arglead, cmdline, cursorpos)"{{{
+    " Caching.
+    call neocomplcache#keyword_complete#word_caching_current_line()
+    
+    let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
+    let l:cur_keyword_str = matchstr(a:cmdline[: a:cursorpos], l:pattern)
+    let l:complete_words = neocomplcache#get_complete_words(l:cur_keyword_str)
+    let l:match = match(a:cmdline[: a:cursorpos], l:pattern)
+    if l:cur_keyword_str != ''
+        if l:match > 0
+            let l:cmdline = a:cmdline[: l:match-1]
+        else
+            let l:cmdline = ''
+        endif
+    else
+        let l:cmdline = a:cmdline[: a:cursorpos]
+    endif
+
+    let l:list = []
+    for l:word in l:complete_words
+        call add(l:list, l:cmdline.l:word.word)
+    endfor
+    
+    return l:list
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2009
+" Last Modified: 17 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -79,7 +79,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             let l:stdin = '<' . l:null
         endif
 
-        call vimshell#print(a:fd, system(printf('%s', l:cmdline, l:stdin)))
+        call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
 
         if a:fd.stdin == ''
             call delete(l:null)

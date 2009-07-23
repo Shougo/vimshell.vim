@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jul 2009
+" Last Modified: 19 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.5, for Vim 7.0
+" Version: 3.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.6:
+"     - Refactoringed.
+"
 "   3.5:
 "     - Added secondary prompt.
 "     - Improved arguments on Windows.
@@ -102,34 +105,31 @@ syn match   VimShellConstants         '[+-]\=\<0x\x\+\>'
 syn match   VimShellConstants         '[+-]\=\<0\o\+\>'
 syn match   VimShellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
 syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syn match   VimShellExe               '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
-syn match   VimShellSocket            '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
-syn match   VimShellDotFiles          '\(^\|[[:blank:]]\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
-syn match   VimShellArguments         '[[:blank:]]-\=-[[:alnum:]-]\+=\=' contained
+syn match   VimShellExe               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
+syn match   VimShellSocket            '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
+syn match   VimShellDotFiles          '\%(^\|\s\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
+syn match   VimShellArguments         '\s-\=-[[:alnum:]-]\+=\=' contained
 syn match   VimShellQuoted            '\\.' contained
 syn match   VimShellSpecial           '[|<>;&;]' contained
-syn match   VimShellSpecial           '!!\|!\d*' contained
 syn match   VimShellVariable          '$\h\w*' contained
-syn match   VimShellVariable          '$\%(\d\+\|[*@#?$!-]\)' contained
 syn match   VimShellVariable          '$$\h\w*' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
-syn region   VimShellVariable  start=+$(([[:blank:]]+ end=+[[:blank:]]))+ contained
 syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history gcd iexe ls nop one popd pwd shell view vim vimsh  contained
 syn keyword  vimshSpecial         command internal contained
 if has('win32') || ('win64')
-    syn match   VimShellArguments         '[[:blank:]]/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
+    syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
     syn match   VimShellDirectory         '[/~]\=\f\+[/\\]\f*'
     syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
 else
     syn match   VimShellDirectory         '[/~]\=\f\+/\f*'
-    syn match   VimShellLink              '\(^\|[[:blank:]]\)[[:alnum:]_.][[:alnum:]_.-]\+@'
+    syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 
-execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='\\f*[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
-syn match VimShellExe '[|;][[:blank:]]*\f\+' contained contains=VimShellSpecial,VimShellArguments
+execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+syn match VimShellExe '[|;]\s*\f\+' contained contains=VimShellSpecial,VimShellArguments
 execute "syn region   VimShellLine start='" . g:VimShell_Prompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-execute "syn region   VimShellExe start='" . g:VimShell_SecondaryPrompt . "' end='\\f*[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+execute "syn region   VimShellExe start='" . g:VimShell_SecondaryPrompt . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
 execute "syn region   VimShellLine start='" . g:VimShell_SecondaryPrompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 if has('gui_running')

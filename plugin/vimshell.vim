@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Jul 2009
+" Last Modified: 19 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,16 +23,27 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.25, for Vim 7.0
+" Version: 5.26, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.26 :
+"     - Implemented iexe completion.
+"     - Implemented iexe prompt.
+"     - <C-c> as <C-v><C-d>.
+"     - Added g:VimShell_HistoryPrevKey, g:VimShell_HistoryNextKey, g:VimShell_TabCompletionKey options.
+"     - Improved pty response.
+"     - Set filetype.
+"     - Improved initialize on pty.
+"     - Improved syntax highlight.
+"     - Improved run_help.
+"
 "   5.25 :
 "     - Catch kill error.
 "     - Improved prompt in background pty(Thanks Nico!).
 "     - Supported input empty.
 "     - Supported completion on pty.
 "     - Improved output in dirs command.
-"     - Implemented command history on pty.
+"     - Implemented command history on pty(Thanks Nico!).
 "     - "." and ".." were excluded from a wildcard expand result.
 "
 "   5.24 :
@@ -408,6 +419,16 @@ if !exists('g:VimShell_UsePopen2')
 endif
 if !exists('g:VimShell_EnableAutoLs')
     let g:VimShell_EnableAutoLs = 0
+endif
+" Key-mappings.
+if !exists('g:VimShell_HistoryPrevKey')
+    let g:VimShell_HistoryPrevKey = '<C-p>'
+endif
+if !exists('g:VimShell_HistoryNextKey')
+    let g:VimShell_HistoryNextKey = '<C-n>'
+endif
+if !exists('g:VimShell_TabCompletionKey')
+    let g:VimShell_TabCompletionKey = '<C-t>'
 endif
 "}}}
 
