@@ -2,7 +2,7 @@
 " FILE: parser.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Jul 2009
+" Last Modified: 23 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -141,7 +141,7 @@ function! s:split_statements(script)"{{{
                 throw 'Escape error.'
             endif
 
-            let l:script .= a:script[l:i]
+            let l:statement .= a:script[l:i]
             let l:i += 1
         else
             let l:statement .= a:script[l:i]
@@ -414,8 +414,8 @@ function! s:skip_else(args, script, i)"{{{
         let l:script = a:args . l:string
     elseif a:script[a:i] == '\'
         " Escape.
-        let l:script = a:args . '\' . a:script[l:i+1]
-        let l:i += 2
+        let l:script = a:args . '\' . a:script[a:i+1]
+        let l:i = a:i + 2
     else
         let l:script = a:args . a:script[a:i]
         let l:i = a:i + 1
