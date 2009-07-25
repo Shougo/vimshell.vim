@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jul 2009
+" Last Modified: 25 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.30, for Vim 7.0
+" Version: 1.31, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.31:
+"     - Optimized output.
+"
 "   1.30:
 "     - Implemented iexe completion.
 "     - Implemented iexe prompt.
@@ -300,9 +303,7 @@ function! interactive#execute_pty_out()"{{{
         return
     endif
 
-    redraw
     echo 'Running command.'
-    redraw
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -323,6 +324,8 @@ function! interactive#execute_pty_out()"{{{
 
         let l:i += 1
     endfor
+    redraw
+    echo ''
 
     " record prompt used on this line
     if !exists('b:prompt_history')
@@ -340,9 +343,7 @@ function! interactive#execute_pipe_out()"{{{
         return
     endif
 
-    redraw
     echo 'Running command.'
-    redraw
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -376,6 +377,7 @@ function! interactive#execute_pipe_out()"{{{
 
         let l:i += 1
     endfor
+    redraw
     echo ''
 
     if b:vimproc_sub[-1].stdout.eof && (g:VimShell_UsePopen2 || b:vimproc_sub[-1].stderr.eof)
@@ -566,17 +568,13 @@ function! s:print_buffer(fd, string)"{{{
     " Strip <CR>.
     let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
     let l:lines = split(l:string, '\n', 1)
-    for i in range(len(l:lines))
-        if len(l:lines[i]) > 500
-            " Too long.
-            call s:error_buffer(a:fd, 'Lines is too long.')
-            return
-        elseif line('$') == 1 && empty(getline('$'))
-            call setline(line('$'), l:lines[i])
-        else
-            call append(line('$'), l:lines[i])
-        endif
-    endfor
+    call append(line('$'), l:lines)
+    if line('$') == 1 && empty(getline('$'))
+        call setline(line('$'), l:lines[0])
+        call append(line('$'), l:lines[1:])
+    else
+        call append(line('$'), l:lines)
+    endif
     call interactive#highlight_escape_sequence()
 
     " Set cursor.
@@ -613,20 +611,14 @@ function! s:error_buffer(fd, string)"{{{
     endif
 
     " Print buffer.
-    if l:string =~ '\r[[:print:]]'
-        " Set line.
-        for line in split(l:string, '\r\n\|\n')
-            call append(line('$'), '')
-
-            for l in split(line, '\r')
-                call setline(line('$'), '!!! '.l.' !!!')
-                redraw
-            endfor
-        endfor
+    " Strip <CR>.
+    let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
+    let l:lines = map(split(l:string, '\n', 1), '"!!! " . v:val . " !!!"')
+    if line('$') == 1 && empty(getline('$'))
+        call setline(line('$'), l:lines[0])
+        call append(line('$'), l:lines[1:])
     else
-        for line in split(l:string, '\r\n\|\r\|\n')
-            call append(line('$'), '!!! '.line.' !!!')
-        endfor
+        call append(line('$'), l:lines)
     endif
 
     " Set cursor.

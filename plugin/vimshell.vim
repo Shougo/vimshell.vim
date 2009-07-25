@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 Jul 2009
+" Last Modified: 25 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   5.27 :
 "     - Fixed parse error.
+"     - Optimized output.
+"     - Deleted long lines error.
 "
 "   5.26 :
 "     - Implemented iexe completion.
