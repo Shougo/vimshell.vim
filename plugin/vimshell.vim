@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Jul 2009
+" Last Modified: 29 Jul 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,11 @@
 "     - Fixed parse error.
 "     - Optimized output.
 "     - Deleted long lines error.
+"     - Implemented paste prompt.
+"     - Extend current directory.
+"     - Applyed backspace patch(Thanks Nico!).
+"     - Added g:VimShell_PromptPrevKey, g:VimShell_PromptNextKey, g:VimShell_PastePromptKey options.
+"     - Improved run_help and push_current_line.
 "
 "   5.26 :
 "     - Implemented iexe completion.
@@ -368,6 +373,7 @@ inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#run_help()
 nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_delete_previous_prompt)  :<C-u>call vimshell#delete_previous_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#paste_prompt()<CR>
 nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
 nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
 nmap <silent> <Leader>sh     <Plug>(vimshell_switch)
@@ -434,6 +440,15 @@ if !exists('g:VimShell_HistoryNextKey')
 endif
 if !exists('g:VimShell_TabCompletionKey')
     let g:VimShell_TabCompletionKey = '<C-t>'
+endif
+if !exists('g:VimShell_PromptPrevKey')
+    let g:VimShell_PromptPrevKey = '<C-p>'
+endif
+if !exists('g:VimShell_PromptNextKey')
+    let g:VimShell_PromptNextKey = '<C-n>'
+endif
+if !exists('g:VimShell_PastePromptKey')
+    let g:VimShell_PastePromptKey = '<C-y>'
 endif
 "}}}
 

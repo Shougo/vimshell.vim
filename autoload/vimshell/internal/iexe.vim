@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jul 2009
+" Last Modified: 29 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.11, for Vim 7.0
+" Version: 1.12, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.12: 
+"     - Applyed backspace patch(Thanks Nico!).
+"     - Implemented paste prompt.
+"     - Implemented move to prompt.
+"
 "   1.11: 
 "     - Improved completion.
 "     - Set filetype.
@@ -209,6 +214,9 @@ function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
 endfunction"}}}
 
 function! s:init_bg(proc, sub, args, is_interactive)"{{{
+    " Save current directiory.
+    let l:cwd = getcwd()
+
     " Init buffer.
     if a:is_interactive
         call vimshell#print_prompt()
@@ -219,7 +227,9 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     else
         vsplit
     endif
+
     edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
+    lcd `=l:cwd`
     setlocal buftype=nofile
     setlocal noswapfile
     execute 'setfiletype ' . a:args[0]
@@ -230,17 +240,22 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     augroup END
 
     if has('win32') || has('win64')
-        nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_inout(0)<CR>
+        nnoremap <buffer><silent><CR>        :<C-u>call interactive#execute_pipe_inout(0)<CR>
         inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pipe_inout(0)<CR>
         autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pipe_out()
     else
-        nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pty_inout(0)<CR>
+        nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
         inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pty_inout(0)<CR>
-        inoremap <buffer><silent><C-h>      <ESC>:<C-u>call <SID>delete_backword_char()<CR>a<C-h>
+        inoremap <buffer><silent><expr><C-h>      <SID>delete_backword_char()
+        inoremap <buffer><silent><expr><BS>       <SID>delete_backword_char()
         execute 'inoremap <buffer><silent>'.g:VimShell_TabCompletionKey.'    <ESC>:<C-u>call <SID>pty_completion()<CR>'
         execute 'inoremap <buffer><silent>'.g:VimShell_HistoryPrevKey.'        <ESC>:<C-u>call <SID>previous_command()<CR>'
         execute 'inoremap <buffer><silent>'.g:VimShell_HistoryNextKey.'      <ESC>:<C-u>call <SID>next_command()<CR>'
+        execute 'nnoremap <buffer><silent>'.g:VimShell_PastePromptKey.'     :<C-u>call <SID>paste_prompt()<CR>'
+        execute 'nnoremap <buffer><silent>'.g:VimShell_PromptPrevKey.'      :<C-u>call <SID>previous_prompt()<CR>'
+        execute 'nnoremap <buffer><silent>'.g:VimShell_PromptNextKey.'      :<C-u>call <SID>next_prompt()<CR>'
         autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pty_out()
+        autocmd vimshell_iexe CursorHoldI <buffer>  call interactive#execute_pty_out()
     endif
 
     normal! G$
@@ -251,6 +266,7 @@ function! s:on_exit()
     augroup vimshell_iexe
         autocmd! BufDelete <buffer>
         autocmd! CursorHold <buffer>
+        autocmd! CursorHoldI <buffer>
     augroup END
 
     call interactive#force_exit()
@@ -325,17 +341,68 @@ function! s:next_command()"{{{
     startinsert!
 endfunction"}}}
 
+" Prevent backspace over prompt
 function! s:delete_backword_char()"{{{
-    if exists('b:vimproc_sub') && exists('b:prompt_history[line(".")]')
-                \&& col('.') <= len(b:prompt_history[line('.')])
-        call b:vimproc_sub[0].write("")
-
-        if col('.') > 1
-            let b:prompt_history[line('.')] = getline('.')[: col('.')-2]
-        else
-            let b:prompt_history[line('.')] = ''
-        endif
-        echomsg b:prompt_history[line('.')]
+    if !exists("b:prompt_history['".line('.')."']") || getline(line('.')) != b:prompt_history[line('.')]
+        return "\<BS>"
+    else
+        return ""
     endif
 endfunction"}}}
 
+function! s:execute_history()"{{{
+    " Search prompt.
+    if !exists('b:prompt_history[line(".")]')
+        return
+    endif
+
+    let l:command = strpart(getline('.'), len(b:prompt_history[line('.')]))
+
+    if !exists('b:prompt_history[line("$")]')
+        " Insert prompt line.
+        call append(line('$'), l:command)
+    else
+        " Set prompt line.
+        call setline(line('$'), b:prompt_history[line("$")] . l:command)
+    endif
+
+    normal! G
+
+    call interactive#execute_pty_inout(0)
+endfunction"}}}
+function! s:paste_prompt()"{{{
+    " Search prompt.
+    if !exists('b:prompt_history[line(".")]')
+        return
+    endif
+
+    let l:command = strpart(getline('.'), len(b:prompt_history[line('.')]))
+
+    if !exists('b:prompt_history[line("$")]')
+        " Insert prompt line.
+        call append(line('$'), l:command)
+    else
+        " Set prompt line.
+        call setline(line('$'), b:prompt_history[line("$")] . l:command)
+    endif
+
+    normal! G
+endfunction"}}}
+
+function! s:previous_prompt()"{{{
+    let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val < line(".")'), 'str2nr(v:val)'), 's:compare_func')
+    if !empty(l:prompts)
+        execute ':'.l:prompts[-1]
+    endif
+endfunction"}}}
+
+function! s:next_prompt()"{{{
+    let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val > line(".")'), 'str2nr(v:val)'), 's:compare_func')
+    if !empty(l:prompts)
+        execute ':'.l:prompts[0]
+    endif
+endfunction"}}}
+
+function! s:compare_func(i1, i2)
+    return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction

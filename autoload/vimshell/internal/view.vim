@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jun 2009
+" Last Modified: 29 Jun 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,15 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.4, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.4:
+"     - Extend current directory.
+"
 "   1.3:
 "     - Ignore directory.
+"
 "   1.2:
 "     - Improved error.
+"
 "   1.1:
 "     - Split nicely.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -60,13 +66,18 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
     if empty(l:arguments)
         vimshell#error_line(a:fd, 'Filename required.')
     else
+        " Save current directiory.
+        let l:cwd = getcwd()
+
         " Split nicely.
         if winheight(0) > &winheight
             split
         else
             vsplit
         endif
+
         edit `=l:arguments`
+        lcd `=l:cwd`
         setlocal nomodifiable
     endif
 endfunction

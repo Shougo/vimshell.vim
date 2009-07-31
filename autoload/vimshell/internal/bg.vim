@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jul 2009
+" Last Modified: 29 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.12, for Vim 7.0
+" Version: 1.13, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.13:
+"     - Extend current directory.
+"
 "   1.12:
 "     - Set filetype.
 "
@@ -160,13 +163,19 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     if a:is_interactive
         call vimshell#print_prompt()
     endif
+
+    " Save current directiory.
+    let l:cwd = getcwd()
+
     " Split nicely.
     if winheight(0) > &winheight
         split
     else
         vsplit
     endif
+
     edit `=join(a:args).'&'.(bufnr('$')+1)`
+    lcd `=l:cwd`
     setlocal buftype=nofile
     setlocal noswapfile
     execute 'setfiletype ' . a:args[0]

@@ -23,6 +23,8 @@ nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
 nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
 " Remove this output.
 nmap <buffer> <C-d> <Plug>(vimshell_delete_previous_prompt)
+" Paste this prompt.
+nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
 
 " Filename completion.
 inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete') ? 

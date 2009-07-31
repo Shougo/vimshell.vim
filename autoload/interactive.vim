@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2009
+" Last Modified: 27 Jul 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -207,6 +207,9 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
             if l:in == ''
                 " Do nothing.
 
+            elseif l:in == '...'
+                " Working
+
             elseif !exists('b:prompt_history')
                 let l:in = ''
 
@@ -255,7 +258,7 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
         if !exists('b:interactive_command_history')
             let b:interactive_command_history = []
         endif
-        if l:in != ''
+        if l:in != '' && l:in != '...'
             call add(b:interactive_command_history, l:in)
         endif
         let b:interactive_command_position = 0
@@ -268,23 +271,22 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
 
                 call interactive#exit()
                 return
-            elseif l:in =~ '^\s\+$'
-                " Input empty.
-                call b:vimproc_sub[0].write("\<NL>")
             elseif l:in =~ '\t$'
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
             elseif l:in =~ '\s$'
                 " Not append new line.
                 call b:vimproc_sub[0].write(l:in)
-            elseif l:in != ''
-                " If input is empty, only output.
+            elseif l:in != '...'
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
         catch
             call b:vimproc_sub[0].close()
         endtry
     endif
+
+    call append(line('$'), '...')
+    normal! G$
 
     call interactive#execute_pty_out()
 
@@ -568,13 +570,19 @@ function! s:print_buffer(fd, string)"{{{
     " Strip <CR>.
     let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
     let l:lines = split(l:string, '\n', 1)
-    call append(line('$'), l:lines)
     if line('$') == 1 && empty(getline('$'))
         call setline(line('$'), l:lines[0])
-        call append(line('$'), l:lines[1:])
-    else
-        call append(line('$'), l:lines)
+        let l:lines = l:lines[1:]
     endif
+
+    for l:line in l:lines
+        if getline(line('$')) == '...'
+            call setline(line('$'), l:line)
+        else
+            call append(line('$'), l:line)
+        endif
+    endfor
+
     call interactive#highlight_escape_sequence()
 
     " Set cursor.
