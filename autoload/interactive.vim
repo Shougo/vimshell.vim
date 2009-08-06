@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jul 2009
+" Last Modified: 06 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.31:
 "     - Optimized output.
+"     - Fixed tail space bug(Thanks Nico).
+"     - Fixed prompt history bug(Thanks Nico).
 "
 "   1.30:
 "     - Implemented iexe completion.
@@ -274,9 +276,6 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
             elseif l:in =~ '\t$'
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
-            elseif l:in =~ '\s$'
-                " Not append new line.
-                call b:vimproc_sub[0].write(l:in)
             elseif l:in != '...'
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
@@ -308,6 +307,7 @@ function! interactive#execute_pty_out()"{{{
     echo 'Running command.'
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
+    let l:outputed = 0
     for sub in b:vimproc_sub
         if !sub.eof
             let l:read = sub.read(-1, 500)
@@ -321,6 +321,7 @@ function! interactive#execute_pty_out()"{{{
                 endif
 
                 let l:read = sub.read(-1, 500)
+                let l:outputed = 1
             endwhile
         endif
 
@@ -333,7 +334,9 @@ function! interactive#execute_pty_out()"{{{
     if !exists('b:prompt_history')
         let b:prompt_history = {}
     endif
-    let b:prompt_history[line('.')] = getline('.')
+    if l:outputed
+        let b:prompt_history[line('.')] = getline('.')
+    endif
 
     if b:vimproc_sub[-1].eof
         call interactive#exit()

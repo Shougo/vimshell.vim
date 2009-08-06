@@ -2,7 +2,7 @@
 " FILE: parser.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 Jul 2009
+" Last Modified: 06 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,7 +29,7 @@
 function! vimshell#parser#eval_script(script, other_info)"{{{
     let l:skip_prompt = 0
     " Split statements.
-    for l:statement in s:split_statements(a:script)
+    for l:statement in vimshell#parser#split_statements(a:script)
         " Get program.
         let l:program = matchstr(l:statement, '^\s*\zs[^[:blank:]]*')
         let l:script = substitute(l:statement, '^\s*'.l:program, '', '')
@@ -83,7 +83,7 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
             endif
 
             " Split args.
-            let l:args = s:split_args(l:script)
+            let l:args = vimshell#parser#split_args(l:script)
         endif
 
         if l:fd.stdout != ''
@@ -108,7 +108,7 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
     return l:skip_prompt
 endfunction"}}}
 
-function! s:split_statements(script)"{{{
+function! vimshell#parser#split_statements(script)"{{{
     let l:max = len(a:script)
     let l:statements = []
     let l:statement = ''
@@ -155,7 +155,7 @@ function! s:split_statements(script)"{{{
 
     return l:statements
 endfunction"}}}
-function! s:split_args(script)"{{{
+function! vimshell#parser#split_args(script)"{{{
     let l:max = len(a:script)
     let l:args = []
     let l:arg = ''
