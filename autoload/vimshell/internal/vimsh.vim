@@ -26,6 +26,10 @@
 " Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Print all error.
+"     - Improved error print format.
+"
 "   1.1:
 "     - Improved parser.
 "
@@ -49,23 +53,23 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
         return 1
     else
         " Filename escape.
-        let l:filename = escape(join(a:args, ' '), "\\*?[]{}`$%#&'\"|!<>+")
+        let l:filename = join(a:args, ' ')
 
         if filereadable(l:filename)
             let l:scripts = readfile(l:filename)
 
             let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 }
+            let l:i = 0
+            let l:skip_prompt = 0
             for l:script in l:scripts
                 try
                     let l:skip_prompt = vimshell#parser#eval_script(l:script, l:other_info)
-                catch /^Quote/
-                    call vimshell#error_line('', 'Quote error.')
-                    call vimshell#print_prompt()
-                    call interactive#highlight_escape_sequence()
-
-                    call vimshell#start_insert()
-                    return
+                catch /.*/
+                    call vimshell#error_line({}, printf('%s(%d): %s', join(a:args, ' '), l:i, v:exception))
+                    return 0
                 endtry
+
+                let l:i += 1
             endfor
 
             if l:skip_prompt

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 06 Aug 2009
+" Last Modified: 08 Aug 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,12 +23,22 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.28, for Vim 7.0
+" Version: 5.29, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.29 :
+"     - Implemented filename expantion.
+"
 "   5.28 :
 "     - Fixed tail space bug(Thanks Nico).
 "     - Fixed prompt history bug(Thanks Nico).
+"     - Supported escape sequence in cd.
+"     - Print all error.
+"     - Improved error print format.
+"     - Optimized print.
+"     - Implemented user prompt.
+"     - Implemented exclude wildcard.
+"     - Implemented global alias.
 "
 "   5.27 :
 "     - Fixed parse error.

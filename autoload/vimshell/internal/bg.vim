@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jul 2009
+" Last Modified: 08 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.13, for Vim 7.0
+" Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.14:
+"     - Improved error message.
+"     - Set syntax.
+"
 "   1.13:
 "     - Extend current directory.
 "
@@ -149,11 +153,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
                 let l:error = printf('File: "%s" is not found.', command[0])
             endif
 
-            if a:is_interactive
-                call vimshell#error_line(a:fd, l:error)
-            else
-                echohl WarningMsg | echomsg l:error | echohl None
-            endif
+            call vimshell#error_line(a:fd, l:error)
 
             return 0
         endtry
@@ -179,6 +179,12 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     execute 'setfiletype ' . a:args[0]
+
+    " Set syntax.
+    syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
+    syn match   VimShellErrorHidden            '!!!' contained
+    hi def link VimShellError Error
+    hi def link VimShellErrorHidden Ignore
 
     " Set variables.
     let b:vimproc = l:proc

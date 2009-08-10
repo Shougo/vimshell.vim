@@ -614,13 +614,6 @@ function! s:error_buffer(fd, string)"{{{
         let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
-    if &filetype != 'vimshell'
-        syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
-        syn match   VimShellErrorHidden            '!!!' contained
-        hi def link VimShellError Error
-        hi def link VimShellErrorHidden Ignore
-    endif
-
     " Print buffer.
     " Strip <CR>.
     let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')

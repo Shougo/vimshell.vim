@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Jul 2009
+" Last Modified: 07 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.6, for Vim 7.0
+" Version: 3.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.7:
+"     - Added user prompt.
+"
 "   3.6:
 "     - Refactoringed.
 "
@@ -94,6 +97,7 @@ endif
 
 execute 'syn match VimShellPrompt ' . "'".g:VimShell_Prompt."'"
 execute 'syn match VimShellPrompt ' . "'".g:VimShell_SecondaryPrompt."'"
+syn match   VimShellUserPrompt   '^\[%\] .*$'
 syn region   VimShellString   start=+'+ end=+'+ oneline
 syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
 syn region   VimShellString   start=+`+ end=+`+ oneline
@@ -137,6 +141,8 @@ if has('gui_running')
 else
     hi def link VimShellPrompt Identifier
 endif
+
+hi def link VimShellUserPrompt Special
 
 hi def link VimShellQuoted Special
 hi def link VimShellString Constant

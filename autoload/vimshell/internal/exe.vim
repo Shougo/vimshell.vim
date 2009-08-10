@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2009
+" Last Modified: 08 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.6:
+"     - Improved error message.
+"
 "   1.5:
 "     - Fixed stdin bug when g:VimShell_EnableInteractive is 0.
 "
@@ -55,7 +58,7 @@
 function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
     " Execute command.
     if g:VimShell_EnableInteractive
-        if s:init_process(a:fd, a:args, a:other_info.is_interactive)
+        if s:init_process(a:fd, a:args)
             return 0
         endif
 
@@ -91,7 +94,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
     return 0
 endfunction"}}}
 
-function! s:init_process(fd, args, is_interactive)
+function! s:init_process(fd, args)
     if exists('b:vimproc_sub')
         " Delete zombee process.
         call interactive#force_exit()
@@ -124,11 +127,7 @@ function! s:init_process(fd, args, is_interactive)
                 let l:error = printf('File: "%s" is not found.', command[0])
             endif
 
-            if a:is_interactive
-                call vimshell#error_line(a:fd, l:error)
-            else
-                echohl WarningMsg | echomsg l:error | echohl None
-            endif
+            call vimshell#error_line(a:fd, l:error)
 
             return 1
         endtry

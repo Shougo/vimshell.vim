@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Jul 2009
+" Last Modified: 08 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,8 +24,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.26, for Vim 7.0
+" Version: 5.29, for Vim 7.0
 "=============================================================================
+
+if !exists('g:VimShell_UserPrompt')
+    let s:user_prompt = ''
+else
+    let s:user_prompt = g:VimShell_UserPrompt
+endif
 
 " Helper functions.
 function! vimshell#set_execute_file(exts, program)"{{{
@@ -116,6 +122,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     endif
     let l:program = a:program
     let l:arguments = a:args
+    let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
 
     " Special commands.
     if l:line =~ '&\s*$'"{{{
@@ -162,12 +169,12 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
 
         return l:ret
         "}}}
-    elseif isdirectory(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''))"{{{
+    elseif isdirectory(l:dir)"{{{
         " Directory.
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        call vimshell#internal#cd#execute('cd', split(l:line), a:fd, a:other_info)
+        call vimshell#internal#cd#execute('cd', [l:dir], a:fd, a:other_info)
         "}}}
     else"{{{
         let l:ext = fnamemodify(l:program, ':e')
@@ -293,8 +300,8 @@ function! vimshell#process_enter()"{{{
     let l:other_info = { 'has_head_spaces' : l:line =~ '^\s\+', 'is_interactive' : 1, 'is_background' : 0 }
     try
         let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
-    catch /^Quote/
-        call vimshell#error_line('', 'Quote error.')
+    catch /.*/
+        call vimshell#error_line({}, v:exception)
         call vimshell#print_prompt()
         call interactive#highlight_escape_sequence()
 
@@ -325,7 +332,7 @@ function! vimshell#print(fd, string)"{{{
         return
     endif
 
-    if a:fd.stdout != ''
+    if !empty(a:fd) && a:fd.stdout != ''
         if a:fd.stdout != '/dev/null'
             " Write file.
             let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
@@ -342,27 +349,23 @@ function! vimshell#print(fd, string)"{{{
         let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
-    if l:string =~ '\r[[:print:]]'
-        " Set line.
-        for line in split(l:string, '\r\n\|\n')
-            call append(line('$'), '')
-
-            for l in split(line, '\r')
-                call setline(line('$'), l)
-                redraw
-            endfor
-        endfor
-    else
-        for line in split(l:string, '\r\n\|\r\|\n')
-            call append(line('$'), line)
-        endfor
+    " Strip <CR>.
+    let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
+    let l:lines = split(l:string, '\n', 1)
+    if line('$') == 1 && empty(getline('$'))
+        call setline(line('$'), l:lines[0])
+        let l:lines = l:lines[1:]
     endif
+
+    for l:line in l:lines
+        call append(line('$'), l:line)
+    endfor
 
     " Set cursor.
     normal! G
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
-    if a:fd.stdout != ''
+    if !empty(a:fd) && a:fd.stdout != ''
         if a:fd.stdout != '/dev/null'
             " Write file.
             let l:file = add(readfile(a:fd.stdout), a:string)
@@ -370,13 +373,16 @@ function! vimshell#print_line(fd, string)"{{{
         endif
 
         return
+    elseif line('$') == 1 && empty(getline('$'))
+        call setline(line('$'), a:string)
+        normal! j
     else
         call append(line('$'), a:string)
         normal! j
     endif
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
-    if a:fd.stderr != ''
+    if !empty(a:fd) && a:fd.stderr != ''
         if a:fd.stdout != '/dev/null'
             " Write file.
             let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
@@ -384,8 +390,15 @@ function! vimshell#error_line(fd, string)"{{{
         endif
 
         return
+    endif
+
+    let l:string = '!!! ' . a:string . ' !!!'
+
+    if line('$') == 1 && empty(getline('$'))
+        call setline(line('$'), l:string)
+        normal! j
     else
-        call append(line('$'), '!!! '.a:string.' !!!')
+        call append(line('$'), l:string)
         normal! j
     endif
 endfunction"}}}
@@ -401,19 +414,22 @@ function! vimshell#print_prompt()"{{{
         let l:new_prompt = b:vimshell_commandline_stack[-1]
         call remove(b:vimshell_commandline_stack, -1)
     endif
-    if match(l:escaped, g:VimShell_Prompt) < 0
-        " Prompt not found
-        if !empty(l:escaped)
-            " Insert prompt line.
-            call append(line('$'), l:new_prompt)
-            normal! j
+
+    if s:user_prompt != ''
+        " Insert user prompt line.
+        let l:secondary = '[%] ' . eval(s:user_prompt)
+        if line('$') == 1 && getline('.') == ''
+            call setline(line('$'), l:secondary)
         else
-            " Set prompt line.
-            call setline(line('$'), l:new_prompt)
+            call append(line('$'), l:secondary)
+            normal! j$
         endif
-        normal! $
+    endif
+
+    " Insert prompt line.
+    if line('$') == 1 && getline('.') == ''
+        call setline(line('$'), l:new_prompt)
     else
-        " Insert prompt line.
         call append(line('$'), l:new_prompt)
         normal! j$
     endif
@@ -448,7 +464,7 @@ function! vimshell#start_insert()"{{{
 endfunction"}}}
 "}}}
 
-" VimShell key-mappings function."{{{
+" VimShell key-mappings functions."{{{
 function! vimshell#insert_command_completion()"{{{
     " Set function.
     let &l:omnifunc = 'vimshell#smart_omni_completion'
@@ -492,6 +508,8 @@ function! vimshell#push_current_line()"{{{
 
     " Set prompt line.
     call setline(line('.'), g:VimShell_Prompt)
+
+    startinsert!
 endfunction"}}}
 
 function! vimshell#previous_prompt()"{{{
@@ -608,16 +626,31 @@ function! vimshell#run_help()"{{{
         return
     elseif has_key(b:vimshell_alias_table, l:program)
         let l:program = b:vimshell_alias_table[l:program]
+    elseif has_key(b:vimshell_galias_table, l:program)
+        let l:program = b:vimshell_galias_table[l:program]
     endif
 
+    let l:nr = winnr()
     call vimshell#internal#bg#execute('bg', ['man', '-P', 'cat', l:program], 
                 \{'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 
-    let l:save_cursor = getpos('.')
-    let l:save_cursor[1] = 7
-    call setpos('.', l:save_cursor)
-    wincmd w
+    normal! gg
+    execute l:nr.'wincmd w'
     startinsert!
+endfunction"}}}
+function! vimshell#paste_prompt()"{{{
+    if match(getline('.'), g:VimShell_Prompt) < 0
+        return
+    endif
+
+    if match(getline('$'), g:VimShell_Prompt) < 0
+        " Insert prompt line.
+        call append(line('$'), getline('.'))
+    else
+        " Set prompt line.
+        call setline(line('$'), getline('.'))
+    endif
+    normal! G
 endfunction"}}}
 
 function! vimshell#create_shell(split_flag)"{{{
@@ -658,6 +691,9 @@ function! vimshell#create_shell(split_flag)"{{{
     endif
     if !exists('b:vimshell_alias_table')
         let b:vimshell_alias_table = {}
+    endif
+    if !exists('b:vimshell_galias_table')
+        let b:vimshell_galias_table = {}
     endif
     if !exists('s:internal_func_table')
         let s:internal_func_table = {}

@@ -2,7 +2,7 @@
 " FILE: parser.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 06 Aug 2009
+" Last Modified: 08 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -34,6 +34,10 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
         let l:program = matchstr(l:statement, '^\s*\zs[^[:blank:]]*')
         let l:script = substitute(l:statement, '^\s*'.l:program, '', '')
 
+        for galias in keys(b:vimshell_galias_table)
+            let l:script = substitute(l:script, '\s\zs'.galias.'\ze\%(\s\|$\)', b:vimshell_galias_table[galias], 'g')
+        endfor
+
         " Check alias."{{{
         if has_key(b:vimshell_alias_table, l:program) && !empty(b:vimshell_alias_table[l:program])
             let l:alias_prog = matchstr(b:vimshell_alias_table[l:program], '^\s*\zs[^[:blank:]]*')
@@ -56,8 +60,13 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
             endif
 
             " Expand tilde.
-            if l:script =~ '\~'
+            if l:script =~ ' \~'
                 let l:script = s:parse_tilde(l:script)
+            endif
+
+            " Expand filename.
+            if l:script =~ ' ='
+                let l:script = s:parse_equal(l:script)
             endif
 
             " Expand variables.
@@ -66,7 +75,7 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
             endif
 
             " Expand wildcard.
-            if l:script =~ '[[*?]'
+            if l:script =~ '[[*?]\|\\[()|]'
                 let l:script = s:parse_wildcard(l:script)
             endif
 
@@ -138,7 +147,7 @@ function! vimshell#parser#split_statements(script)"{{{
             let l:i += 1
 
             if l:i >= len(a:script)
-                throw 'Escape error.'
+                throw 'Escape error'
             endif
 
             let l:statement .= a:script[l:i]
@@ -165,7 +174,7 @@ function! vimshell#parser#split_args(script)"{{{
             " Single quote.
             let l:end = matchend(a:script, "^'\\zs[^']*'", l:i)
             if l:end == -1
-                throw 'Quote error.'
+                throw 'Quote error'
             endif
             let l:arg .= a:script[l:i+1 : l:end-2]
             let l:i = l:end
@@ -173,7 +182,7 @@ function! vimshell#parser#split_args(script)"{{{
             " Double quote.
             let l:end = matchend(a:script, '^"\zs\%([^"]\|\"\)*"', l:i)
             if l:end == -1
-                throw 'Quote error.'
+                throw 'Quote error'
             endif
             let l:arg .= substitute(a:script[l:i+1 : l:end-2], '\\"', '"', 'g')
             let l:i = l:end
@@ -194,7 +203,7 @@ function! vimshell#parser#split_args(script)"{{{
             let l:i += 1
 
             if l:i > l:max
-                throw 'Escape error.'
+                throw 'Escape error'
             endif
 
             let l:arg .= a:script[i]
@@ -212,6 +221,7 @@ function! vimshell#parser#split_args(script)"{{{
             if l:arg != ''
                 call add(l:args, l:arg)
             endif
+
             let l:arg = ''
 
             let l:i += 1
@@ -239,7 +249,7 @@ function! s:parse_block(script)"{{{
             let l:script = l:script[: -len(l:head)-1]
             let l:block = matchstr(a:script, '{\zs.*[^\\]\ze}', l:i)
             if l:block == ''
-                throw 'Block error.'
+                throw 'Block error'
             elseif l:block =~ '^\d\+\.\.\d\+$'
                 " Range block.
                 let l:start = matchstr(l:block, '^\d\+')
@@ -270,12 +280,36 @@ function! s:parse_tilde(script)"{{{
 
     let l:i = 0
     let l:max = len(a:script)
-    while l:i < l:max
-        if a:script[i] == '~'
+    while l:i < l:max - 1
+        if a:script[i] == ' ' && a:script[i+1] == '~'
             " Tilde.
             " Expand home directory.
             let l:script .= escape($HOME, '\ ')
-            let l:i += 1
+            let l:i += 2
+        else
+            let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+        endif
+    endwhile
+
+    return l:script
+endfunction"}}}
+function! s:parse_equal(script)"{{{
+    let l:script = ''
+
+    let l:i = 0
+    let l:max = len(a:script)
+    while l:i < l:max - 1
+        if a:script[i] == ' ' && a:script[i+1] == '='
+            " Expand filename.
+            let l:prog = matchstr(a:script, '^=\zs[^[:blank:]]*', l:i+1)
+            echomsg l:prog
+            try
+                let l:script .= s:getfilename(l:prog)
+            catch 'list index out of range'
+                throw printf('File: "%s" is not found.', l:prog)
+            endtry
+
+            let l:i += matchend(a:script, '^=[^[:blank:]]*', l:i+1)
         else
             let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
         endif
@@ -312,15 +346,46 @@ function! s:parse_wildcard(script)"{{{
     let l:i = 0
     let l:max = len(a:script)
     while l:i < l:max
-        if a:script[l:i] == '[' || a:script[l:i] == '*' || a:script[l:i] == '?' 
+        if a:script[l:i] == '[' || a:script[l:i] == '*' || a:script[l:i] == '?' || a:script[l:i :] =~ '^\\[()|]'
             " Wildcard.
             let l:head = matchstr(a:script[: l:i-1], '[^[:blank:]]*$')
             let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', l:i)
             " Trunk l:script.
             let l:script = l:script[: -len(l:head)+1]
 
+            " Exclude wildcard.
+            let l:exclude = matchstr(l:wildcard, '\~.*$')
+            if l:exclude != ''
+                " Trunk l:wildcard.
+                let l:wildcard = l:wildcard[: len(l:wildcard)-len(l:exclude)-1]
+            endif
+
             " Expand wildcard.
-            let l:script .= join(filter(split(escape(glob(l:wildcard), ' '), '\n'), 'v:val != "." && v:val != ".."'))
+            let l:expanded = split(escape(glob(l:wildcard), ' '), '\n')
+            if empty(l:expanded)
+                throw 'Unmatched wildcard'
+            endif
+            let l:exclude_wilde = split(escape(glob(l:exclude[1:]), ' '), '\n')
+            if !empty(l:exclude_wilde)
+                let l:candidates = l:expanded
+                let l:expanded = []
+                for candidate in l:candidates
+                    let l:found = 0
+
+                    for ex in l:exclude_wilde
+                        if candidate == ex
+                            let l:found = 1
+                            break
+                        endif
+                    endfor
+
+                    if l:found == 0
+                        call add(l:expanded, candidate)
+                    endif
+                endfor
+            endif
+
+            let l:script .= join(filter(l:expanded, 'v:val != "." && v:val != ".."'))
             let l:i = matchend(a:script, '^[^[:blank:]]*', l:i)
         else
             let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
@@ -381,21 +446,21 @@ endfunction"}}}
 function! s:skip_quote(script, i)"{{{
     let l:end = matchend(a:script, "^'[^']*'", a:i)
     if l:end == -1
-        throw 'Quote error.'
+        throw 'Quote error'
     endif
     return [matchstr(a:script, "^'[^']*'", a:i), l:end]
 endfunction"}}}
 function! s:skip_double_quote(script, i)"{{{
     let l:end = matchend(a:script, '^"\%([^"]\|\"\)*"', a:i)
     if l:end == -1
-        throw 'Quote error.'
+        throw 'Quote error'
     endif
     return [matchstr(a:script, '^"\%([^"]\|\"\)*"', a:i), l:end]
 endfunction"}}}
 function! s:skip_back_quote(script, i)"{{{
     let l:end = matchend(a:script, '^`[^`]*`', a:i)
     if l:end == -1
-        throw 'Quote error.'
+        throw 'Quote error'
     endif
     return [matchstr(a:script, '^`[^`]*`', a:i), l:end]
 endfunction"}}}
@@ -423,5 +488,24 @@ function! s:skip_else(args, script, i)"{{{
 
     return [l:script, l:i]
 endfunction"}}}
+
+" Helper.
+function! s:getfilename(program)
+    " Command search.
+    if has('win32') || has('win64')
+        let l:path = substitute($PATH, '\\\?;', ',', 'g')
+        let l:files = ''
+        for ext in ['', '.bat', '.cmd', '.exe']
+            let l:files = globpath(l:path, a:program.ext)
+            if !empty(l:files)
+                break
+            endif
+        endfor
+        return split(l:files, '\n')[0]
+    else
+        let l:path = substitute($PATH, '/\?:', ',', 'g')
+        return split(globpath(l:path, a:program), '\n')[0]
+    endif
+endfunction
 
 " vim: foldmethod=marker
