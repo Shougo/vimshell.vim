@@ -333,6 +333,8 @@ let $Hoge = $hoge
 のように、変数名の先頭を大文字にします。
 普通のシェルと違って、 = の間に空白があってもなくても動作します。
 代入する式はVimScriptとなっているので、計算も自由自在です。
+vimshellでは変数名の頭に必ず$を付けなければなりません。
+注意してください。
 
 コマンドの終了ステータスは$$statusに書き込まれますが、Windowsでは上手く動作しません。
 
@@ -437,7 +439,12 @@ echo `=3`
 
 % ls *.htm
 というようなワイルドカードも普通に使えます。
-指定されたファイルが存在しない場合、引数が空になるので注意。
+指定されたファイルが存在しない場合、zshのようにエラーになるので注意。
+
+ワイルドカードの除外もサポートしました。
+% ls *~*.htm
+'~'で区切ってパターンを記述することで、「パターンを除外したパターン」という意味になります。
+zshの機能を移植。
 
 --------------------------------
 ブロック
@@ -452,6 +459,34 @@ echo `=3`
 zshを超えるのももう少しかもしれません。
 
 --------------------------------
+ユーザープロンプト
+g:VimShell_UserPrompt変数にVimScriptの式を文字列として代入することで、
+ユーザーが追加で表示されるプロンプトを定義できます。
+
+例えば、このように毎回カレントディレクトリを表示するようにすれば便利です。
+let g:VimShell_UserPrompt = 'getcwd()'
+
+ただし、セキュリティの関係上、vimshellの関数を呼び出す前に
+値を設定しなければ無効になります。
+
+--------------------------------
+グローバルエイリアス
+
+zshのようなグローバルエイリアスにも対応。
+galias G = '|grep'
+とすることで、引数のGは'|grep'に置き換わります。
+'ls G hoge'は'ls |grep hoge'という意味になります。
+パイプライン処理を手軽に駆けるので便利です。
+
+--------------------------------
+プログラム名展開
+
+% echo =ls
+のように、'='に続けてパスが通っているプログラム名を記述すると、
+プログラムのフルパスに置き換わります。
+デバッガの引数にするときや、ページャを使ってソースを読みたい場合に便利です。
+
+--------------------------------
 キーバインド等のカスタマイズ
 
 vimshellのキーバインドはftplugin/vimshell.vimにて定義されています。
@@ -460,16 +495,18 @@ vimshellのキーバインドはftplugin/vimshell.vimにて定義されていま
 --------------------------------
 私の設定
 
+let g:VimShell_UserPrompt = 'getcwd()'
+let g:VimShell_EnableInteractive = 1
+let g:VimShell_EnableSmartCase = 1
+let g:VimShell_EnableAutoLs = 1
+
 " Initialize execute file list.
 let g:VimShell_ExecuteFileList = {}
-let g:VimShell_ExecuteFileList['txt'] = 'vim'
-let g:VimShell_ExecuteFileList['vim'] = 'vim'
+call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
 let g:VimShell_ExecuteFileList['rb'] = 'ruby'
 let g:VimShell_ExecuteFileList['pl'] = 'perl'
 let g:VimShell_ExecuteFileList['py'] = 'python'
-
-let g:VimShell_EnableInteractive = 1
-let g:VimShell_EnableSmartCase = 1
+call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 
 if has('win32') || has('win64') 
     " Display user name on Windows.
@@ -481,8 +518,8 @@ else
     " Display user name on Linux.
     let g:VimShell_Prompt = $USER."% "
 
-    call vimshell#set_execute_file('bmp,jpg,png,gif', 'bg eog')
-    call vimshell#set_execute_file('mp3,m4a,ogg', 'bg amarok')
+    call vimshell#set_execute_file('bmp,jpg,png,gif', 'gexe eog')
+    call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
     let g:VimShell_ExecuteFileList['zip'] = 'zipinfo'
     call vimshell#set_execute_file('tgz,gz', 'gzcat')
     call vimshell#set_execute_file('tbz,bz2', 'bzcat')
@@ -493,10 +530,13 @@ nnoremap !  :<C-u>VimShellInteractive<Space>
 " &: vimshell background execute.
 nnoremap &  :<C-u>VimShellExecute<Space>
 
-プロンプトをユーザ名にしているだけで、後は凝った設定はしてないです。
+プロンプトをユーザー名にしているだけで、後は凝った設定はしてないです。
 neocomplcacheでは、ヒストリファイルを辞書として使用してます。
 これはなかなか便利です。
 g:VimShell_ExecuteFileListによる関連づけも設定しています。
+ユーザープロンプトを設定するのは一番最初にします。
+なぜなら、vimshellを読み込む前に設定しないと
+セキュリティの関係で再設定できなくなるからです。
 
 --------------------------------
 日本語情報

@@ -6,7 +6,8 @@ imap <buffer><silent> <CR> <ESC><CR>
 " Hide vimshell.
 nnoremap <buffer><silent> q :<C-u>hide<CR>
 " History completion.
-inoremap <buffer> <C-j> <C-x><C-o><C-p>
+inoremap <buffer><expr><C-j>  exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete') ? 
+            \ neocomplcache#manual_omni_complete() : "\<C-x>\<C-o>\<C-p>"
 " Move to Beginning of command.
 imap <buffer><silent> <C-a> <ESC>:call search(g:VimShell_Prompt, 'be', line('.'))<CR>a
 " Command completion.
