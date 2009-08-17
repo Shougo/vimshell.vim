@@ -31,6 +31,7 @@
 "     - Supported neocomplcache omni completion.
 "     - Improved block expantion.
 "     - Improved highlight of escape sequence.
+"     - Create g:VimShell_HistoryPath directory if not exists.
 "
 "   5.28 :
 "     - Fixed tail space bug(Thanks Nico).
@@ -410,6 +411,10 @@ if !exists('g:VimShell_HistoryPath')
     else
         let g:VimShell_HistoryPath = $HOME.'/.vimshell_hist'
     endif
+
+    if !isdirectory(fnamemodify(g:VimShell_HistoryPath, ':p:h'))
+        call mkdir(fnamemodify(g:VimShell_HistoryPath, ':p:h'), 'p')
+    endif
 endif
 if !exists('g:VimShell_HistoryMaxSize')
     let g:VimShell_HistoryMaxSize = 1000
@@ -419,6 +424,10 @@ if !exists('g:VimShell_VimshrcPath')
         let g:VimShell_VimshrcPath = $HOME.'\.vimshrc'
     else
         let g:VimShell_VimshrcPath = $HOME.'/.vimshrc'
+    endif
+
+    if !isdirectory(fnamemodify(g:VimShell_VimshrcPath, ':p:h'))
+        call mkdir(fnamemodify(g:VimShell_VimshrcPath, ':p:h'), 'p')
     endif
 endif
 if !exists('g:VimShell_IgnoreCase')
