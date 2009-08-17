@@ -2,7 +2,7 @@
 " FILE: parser.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Aug 2009
+" Last Modified: 13 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -262,7 +262,7 @@ function! s:parse_block(script)"{{{
                 endfor
             else
                 " Normal block.
-                for l:b in split(l:block, ',')
+                for l:b in split(l:block, ',', 1)
                     " Concat.
                     let l:script .= l:head . escape(l:b, ' ') . ' '
                 endfor

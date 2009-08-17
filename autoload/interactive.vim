@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Aug 2009
+" Last Modified: 15 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.31, for Vim 7.0
+" Version: 1.32, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.32:
+"     - Improved highlight of escape sequence.
+"
 "   1.31:
 "     - Optimized output.
 "     - Fixed tail space bug(Thanks Nico).
@@ -443,7 +446,14 @@ function! interactive#force_exit()"{{{
 endfunction"}}}
 
 function! interactive#highlight_escape_sequence()"{{{
-    let register_save = @"
+    let l:register_save = @"
+    let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
+    let l:grey_table = [
+                \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
+                \0x58, 0x62, 0x6C, 0x76, 0x80, 0x8A, 0x94, 0x9E, 
+                \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
+                \]
+
     while search("\<ESC>\\[[0-9;]*m", 'c')
         normal! dfm
 
@@ -473,26 +483,16 @@ function! interactive#highlight_escape_sequence()"{{{
                 " Foreground 256 colors.
                 let l:color = split(matchstr(@", '[0-9;]\+'), ';')[2]
                 if l:color >= 232
-                    let l:gcolor = (l:color - 232) * 11
-                    if l:gcolor != 0
-                        let l:gcolor += 2
-                    endif
+                    " Grey scale.
+                    let l:gcolor = l:grey_table[(l:color - 232)]
                     let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
                 elseif l:color >= 16
+                    " RGB.
                     let l:gcolor = l:color - 16
-                    let l:red = l:gcolor / 36 * 40
-                    let l:green = (l:gcolor - l:gcolor/36 * 36) / 6 * 40
-                    let l:blue = l:gcolor % 6 * 40
+                    let l:red = l:color_table[l:gcolor / 36]
+                    let l:green = l:color_table[(l:gcolor % 36) / 6]
+                    let l:blue = l:color_table[l:gcolor % 6]
 
-                    if l:red != 0
-                        let l:red += 15
-                    endif
-                    if l:blue != 0
-                        let l:blue += 15
-                    endif
-                    if l:green != 0
-                        let l:green += 15
-                    endif
                     let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
                 else
                     let highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:Interactive_EscapeColors[l:color])
@@ -507,26 +507,16 @@ function! interactive#highlight_escape_sequence()"{{{
                 " Background 256 colors.
                 let l:color = split(matchstr(@", '[0-9;]\+'), ';')[2]
                 if l:color >= 232
-                    let l:gcolor = (l:color - 232) * 11
-                    if l:gcolor != 0
-                        let l:gcolor += 2
-                    endif
+                    " Grey scale.
+                    let l:gcolor = l:grey_table[(l:color - 232)]
                     let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
                 elseif l:color >= 16
+                    " RGB.
                     let l:gcolor = l:color - 16
-                    let l:red = l:gcolor / 36 * 40
-                    let l:green = (l:gcolor - l:gcolor/36 * 36) / 6 * 40
-                    let l:blue = l:gcolor % 6 * 40
+                    let l:red = l:color_table[l:gcolor / 36]
+                    let l:green = l:color_table[(l:gcolor % 36) / 6]
+                    let l:blue = l:color_table[l:gcolor % 6]
 
-                    if l:red != 0
-                        let l:red += 15
-                    endif
-                    if l:blue != 0
-                        let l:blue += 15
-                    endif
-                    if l:green != 0
-                        let l:green += 15
-                    endif
                     let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
                 else
                     let highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:Interactive_EscapeColors[l:color])
@@ -540,7 +530,7 @@ function! interactive#highlight_escape_sequence()"{{{
             execute 'highlight' syntax_name highlight
         endif
     endwhile
-    let @" = register_save
+    let @" = l:register_save
 endfunction"}}}
 
 function! s:print_buffer(fd, string)"{{{

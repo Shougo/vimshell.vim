@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Aug 2009
+" Last Modified: 15 Aug 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,6 +29,8 @@
 "   5.29 :
 "     - Implemented filename expantion.
 "     - Supported neocomplcache omni completion.
+"     - Improved block expantion.
+"     - Improved highlight of escape sequence.
 "
 "   5.28 :
 "     - Fixed tail space bug(Thanks Nico).
