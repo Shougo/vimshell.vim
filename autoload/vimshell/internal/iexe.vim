@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2009
+" Last Modified: 24 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.13, for Vim 7.0
+" Version: 1.14, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.14: 
+"     - Use plugin Key-mappings.
+"
 "   1.13: 
 "     - Improved error message.
 "     - Set syntax.
@@ -252,14 +255,25 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     else
         nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
         inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pty_inout(0)<CR>
-        inoremap <buffer><silent><expr><C-h>      <SID>delete_backword_char()
-        inoremap <buffer><silent><expr><BS>       <SID>delete_backword_char()
-        execute 'inoremap <buffer><silent>'.g:VimShell_TabCompletionKey.'    <ESC>:<C-u>call <SID>pty_completion()<CR>'
-        execute 'inoremap <buffer><silent>'.g:VimShell_HistoryPrevKey.'        <ESC>:<C-u>call <SID>previous_command()<CR>'
-        execute 'inoremap <buffer><silent>'.g:VimShell_HistoryNextKey.'      <ESC>:<C-u>call <SID>next_command()<CR>'
-        execute 'nnoremap <buffer><silent>'.g:VimShell_PastePromptKey.'     :<C-u>call <SID>paste_prompt()<CR>'
-        execute 'nnoremap <buffer><silent>'.g:VimShell_PromptPrevKey.'      :<C-u>call <SID>previous_prompt()<CR>'
-        execute 'nnoremap <buffer><silent>'.g:VimShell_PromptNextKey.'      :<C-u>call <SID>next_prompt()<CR>'
+
+        " Plugin key-mappings.
+        inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
+        imap <buffer><silent><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
+        imap <buffer><silent><BS>     <Plug>(vimshell_iexe_delete_backword_char)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>pty_completion()<CR>
+        imap <buffer><silent><C-t>     <Plug>(vimshell_iexe_tab_completion)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
+        imap <buffer><silent><C-p>     <Plug>(vimshell_iexe_previous_history)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
+        imap <buffer><silent><C-n>     <Plug>(vimshell_iexe_next_history)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
+        imap <buffer><silent><C-y>     <Plug>(vimshell_iexe_paste_prompt)
+
+        nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
+        nmap <buffer><silent><C-p>     <Plug>(vimshell_iexe_previous_prompt)
+        nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
+        nmap <buffer><silent><C-n>     <Plug>(vimshell_iexe_next_prompt)
+
         autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pty_out()
         autocmd vimshell_iexe CursorHoldI <buffer>  call interactive#execute_pty_out()
     endif

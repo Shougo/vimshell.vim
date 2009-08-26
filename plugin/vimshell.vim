@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Aug 2009
+" Last Modified: 23 Aug 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,15 +23,21 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.29, for Vim 7.0
+" Version: 5.30, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   5.30 :
+"     -
+"
 "   5.29 :
 "     - Implemented filename expantion.
 "     - Supported neocomplcache omni completion.
 "     - Improved block expantion.
 "     - Improved highlight of escape sequence.
-"     - Create g:VimShell_HistoryPath directory if not exists.
+"     - Create g:VimShell_HistoryPath's parent directory if not exists.
+"     - Create g:VimShell_VimshrcPath's parent directory if not exists.
+"     - Check 'cdpath' when cd.
+"     - Used plugin key-mappings insetead of key-mappings option.
 "
 "   5.28 :
 "     - Fixed tail space bug(Thanks Nico).
@@ -456,25 +462,6 @@ if !exists('g:VimShell_UsePopen2')
 endif
 if !exists('g:VimShell_EnableAutoLs')
     let g:VimShell_EnableAutoLs = 0
-endif
-" Key-mappings.
-if !exists('g:VimShell_HistoryPrevKey')
-    let g:VimShell_HistoryPrevKey = '<C-p>'
-endif
-if !exists('g:VimShell_HistoryNextKey')
-    let g:VimShell_HistoryNextKey = '<C-n>'
-endif
-if !exists('g:VimShell_TabCompletionKey')
-    let g:VimShell_TabCompletionKey = '<C-t>'
-endif
-if !exists('g:VimShell_PromptPrevKey')
-    let g:VimShell_PromptPrevKey = '<C-p>'
-endif
-if !exists('g:VimShell_PromptNextKey')
-    let g:VimShell_PromptNextKey = '<C-n>'
-endif
-if !exists('g:VimShell_PastePromptKey')
-    let g:VimShell_PastePromptKey = '<C-y>'
 endif
 "}}}
 

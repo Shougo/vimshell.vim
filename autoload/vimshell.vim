@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Aug 2009
+" Last Modified: 23 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.29, for Vim 7.0
+" Version: 5.30, for Vim 7.0
 "=============================================================================
 
 if !exists('g:VimShell_UserPrompt')
@@ -174,7 +174,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        call vimshell#internal#cd#execute('cd', [l:dir], a:fd, a:other_info)
+        return vimshell#internal#cd#execute('cd', [l:dir], a:fd, a:other_info)
         "}}}
     else"{{{
         let l:ext = fnamemodify(l:program, ':e')

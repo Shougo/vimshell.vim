@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2009
+" Last Modified: 22 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,10 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
+" Version: 1.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.6:
+"   1.8:
+"     - Check cd path.
+"
+"   1.7:
 "     - Improved pushd timing.
 "
 "   1.6:
@@ -78,10 +81,16 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     if isdirectory(l:arguments)
         " Move to directory.
         lcd `=fnamemodify(l:arguments, ':p')`
-    elseif !filereadable(l:arguments)
+    elseif filereadable(l:arguments)
         " Move to parent directory.
         lcd `=fnamemodify(l:arguments, ':p:h')`
     else
-        call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
+        " Check cd path.
+        let l:dirs = split(globpath(&cdpath, l:arguments), '\n')
+        if !empty(l:dirs) && isdirectory(l:dirs[0])
+            lcd `=fnamemodify(l:dirs[0], ':p')`
+        else
+            call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
+        endif
     endif
 endfunction
