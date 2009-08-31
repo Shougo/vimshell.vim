@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: alias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Jul 2009
+" Last Modified: 28 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.6:
 "     - Fixed parse bug.
+"     - Improved error message.
 "
 "   1.5:
 "     - Changed alias syntax.
@@ -72,7 +73,7 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
         let l:args = join(a:args)
 
         if l:args !~ '^\h\w*\s*=\s*'
-            call vimshell#error_line(a:fd, 'Wrong syntax.')
+            call vimshell#error_line(a:fd, 'Wrong syntax: ' . l:args)
             return
         endif
         let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]

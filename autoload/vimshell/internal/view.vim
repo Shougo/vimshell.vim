@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jun 2009
+" Last Modified: 30 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.4, for Vim 7.0
+" Version: 1.5, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.5:
+"     - Catch error.
+"
 "   1.4:
 "     - Extend current directory.
 "
@@ -76,7 +79,12 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
             vsplit
         endif
 
-        edit `=l:arguments`
+        try
+            edit `=l:arguments`
+        catch /^.*/
+            echohl Error | echomsg v:errmsg | echohl None
+        endtry
+
         lcd `=l:cwd`
         setlocal nomodifiable
     endif

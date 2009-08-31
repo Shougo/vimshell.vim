@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Aug 2009
+" Last Modified: 29 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.14, for Vim 7.0
+" Version: 1.15, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.15: 
+"     - Implemented delete line and move head.
+"     - Deleted normal iexe.
+"
 "   1.14: 
 "     - Use plugin Key-mappings.
+"     - Improved execute message.
+"     - Use sexe.
+"     - Setfiletype iexe.
 "
 "   1.13: 
 "     - Improved error message.
@@ -94,23 +101,8 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
             call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
             return 0
         else
-            " Use system().
-            let l:cmdline = ''
-            for arg in a:args
-                let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
-            endfor
-
-            " Set redirection.
-            if a:fd.stdin != ''
-                let l:stdin = '<' . a:fd.stdin
-            else
-                let l:stdin = ''
-            endif
-
-            call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
-
-            let b:vimshell_system_variables['status'] = v:shell_error
-            return 0
+            " Use sexe.
+            return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
         endif
     endif
 
@@ -157,9 +149,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call interactive#force_exit()
     endif
 
-    if a:other_info.is_background
-        call s:init_bg(l:proc, l:sub, a:args, a:other_info.is_interactive)
-    endif
+    call s:init_bg(l:proc, l:sub, a:args, a:other_info.is_interactive)
 
     " Set variables.
     let b:vimproc = l:proc
@@ -177,39 +167,22 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         endif
     endif
 
-    if a:other_info.is_background
-        if has('win32') || has('win64')
-            call interactive#execute_pipe_out()
-        else
-            let l:cnt = 0
-            while line('$') == 1 && col('.') == 1 && l:cnt < 15
-                call interactive#execute_pty_out()
-                let l:cnt += 1
-            endwhile
-        endif
-        startinsert!
-
-        return 1
+    echo 'Running command.'
+    if has('win32') || has('win64')
+        call interactive#execute_pipe_out()
     else
-        cnoremap <buffer> <C-c>          <C-v><C-d><CR> 
-
-        if has('win32') || has('win64')
-            call interactive#execute_pipe_out()
-            while exists('b:vimproc_sub')
-                call interactive#execute_pipe_inout(1)
-            endwhile
-        else
+        let l:cnt = 0
+        while line('$') == 1 && col('.') == 1 && l:cnt < 15
             call interactive#execute_pty_out()
-            while exists('b:vimproc_sub')
-                call interactive#execute_pty_inout(1)
-            endwhile
-        endif
-        let b:vimshell_system_variables['status'] = b:vimproc_status
-
-        cunmap <buffer> <C-c>
-
-        return 0
+            let l:cnt += 1
+        endwhile
     endif
+    redraw
+    echo ''
+
+    startinsert!
+
+    return 1
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
@@ -235,6 +208,7 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     lcd `=l:cwd`
     setlocal buftype=nofile
     setlocal noswapfile
+    setfiletype iexe
     execute 'setfiletype ' . a:args[0]
 
     " Set syntax.
@@ -249,38 +223,64 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     augroup END
 
     if has('win32') || has('win64')
-        nnoremap <buffer><silent><CR>        :<C-u>call interactive#execute_pipe_inout(0)<CR>
-        inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pipe_inout(0)<CR>
-        autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pipe_out()
+        nnoremap <buffer><silent><CR>        :<C-u>call <SID>on_execute()<CR>
+        inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
+        autocmd vimshell_iexe CursorHold <buffer>  call s:on_hold()
     else
         nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
-        inoremap <buffer><silent><CR>       <ESC>:<C-u>call interactive#execute_pty_inout(0)<CR>
+        inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
 
         " Plugin key-mappings.
         inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
-        imap <buffer><silent><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
-        imap <buffer><silent><BS>     <Plug>(vimshell_iexe_delete_backword_char)
+        imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
+        imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
         inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>pty_completion()<CR>
-        imap <buffer><silent><C-t>     <Plug>(vimshell_iexe_tab_completion)
+        imap <buffer><C-t>     <Plug>(vimshell_iexe_tab_completion)
         inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
-        imap <buffer><silent><C-p>     <Plug>(vimshell_iexe_previous_history)
+        imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
         inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
-        imap <buffer><silent><C-n>     <Plug>(vimshell_iexe_next_history)
+        imap <buffer><C-n>     <Plug>(vimshell_iexe_next_history)
         inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
-        imap <buffer><silent><C-y>     <Plug>(vimshell_iexe_paste_prompt)
+        imap <buffer><C-y>     <Plug>(vimshell_iexe_paste_prompt)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+        imap <buffer><C-a>     <Plug>(vimshell_iexe_move_head)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+        imap <buffer><C-u>     <Plug>(vimshell_iexe_delete_line)
 
         nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
-        nmap <buffer><silent><C-p>     <Plug>(vimshell_iexe_previous_prompt)
+        nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
         nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
-        nmap <buffer><silent><C-n>     <Plug>(vimshell_iexe_next_prompt)
+        nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
 
-        autocmd vimshell_iexe CursorHold <buffer>  call interactive#execute_pty_out()
-        autocmd vimshell_iexe CursorHoldI <buffer>  call interactive#execute_pty_out()
+        autocmd vimshell_iexe CursorHold <buffer>  call s:on_hold()
+        autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
     endif
 
     normal! G$
     startinsert!
 endfunction"}}}
+
+function! s:on_execute()
+    echo 'Running command.'
+    if has('win32') || has('win64')
+        call interactive#execute_pipe_inout(0)
+    else
+        call interactive#execute_pty_inout(0)
+    endif
+    redraw
+    echo ''
+endfunction
+
+function! s:on_hold()
+    echo 'Running command.'
+    if has('win32') || has('win64')
+        call interactive#execute_pipe_out()
+    else
+        call interactive#execute_pty_out()
+    endif
+    redraw
+    echo ''
+endfunction
 
 function! s:on_exit()
     augroup vimshell_iexe
@@ -291,6 +291,8 @@ function! s:on_exit()
 
     call interactive#force_exit()
 endfunction
+
+" Key-mappings functions."{{{
 
 function! s:pty_completion()"{{{
     " Insert <TAB>.
@@ -324,7 +326,6 @@ function! s:pty_completion()"{{{
 
     startinsert!
 endfunction"}}}
-
 function! s:previous_command()"{{{
     " If this is the first up arrow use, save what's been typed in so far.
     if b:interactive_command_position == 0
@@ -341,7 +342,6 @@ function! s:previous_command()"{{{
     call setline(line('.'), b:prompt_history[max(keys(b:prompt_history))] . l:prev_command)
     startinsert!
 endfunction"}}}
-
 function! s:next_command()"{{{
     " If we're already at the last command.
     if b:interactive_command_position == 0
@@ -360,16 +360,14 @@ function! s:next_command()"{{{
     call setline(line('.'), b:prompt_history[max(keys(b:prompt_history))] . l:next_command)
     startinsert!
 endfunction"}}}
-
-" Prevent backspace over prompt
 function! s:delete_backword_char()"{{{
+    " Prevent backspace over prompt
     if !exists("b:prompt_history['".line('.')."']") || getline(line('.')) != b:prompt_history[line('.')]
         return "\<BS>"
     else
         return ""
     endif
 endfunction"}}}
-
 function! s:execute_history()"{{{
     " Search prompt.
     if !exists('b:prompt_history[line(".")]')
@@ -408,20 +406,35 @@ function! s:paste_prompt()"{{{
 
     normal! G
 endfunction"}}}
-
 function! s:previous_prompt()"{{{
     let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val < line(".")'), 'str2nr(v:val)'), 's:compare_func')
     if !empty(l:prompts)
         execute ':'.l:prompts[-1]
     endif
 endfunction"}}}
+function! s:move_head()"{{{
+    if !exists('b:prompt_history[line(".")]')
+        return
+    endif
+    call search(b:prompt_history[line('.')], 'be', line('.'))
+    normal! l
+    startinsert
+endfunction"}}}
+function! s:delete_line()"{{{
+    if !exists('b:prompt_history[line(".")]')
+        return
+    endif
 
-function! s:next_prompt()"{{{
-    let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val > line(".")'), 'str2nr(v:val)'), 's:compare_func')
-    if !empty(l:prompts)
-        execute ':'.l:prompts[0]
+    let l:col = col('.')
+    let l:mcol = col('$')
+    call setline(line('.'), b:prompt_history[line('.')] . getline('.')[l:col :])
+    call s:move_head()
+
+    if l:col == l:mcol-1
+        startinsert!
     endif
 endfunction"}}}
+"}}}
 
 function! s:compare_func(i1, i2)
     return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1

@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vim.vim
+" FILE: sexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2009
+" Last Modified: 27 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,26 +23,10 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.5:
-"     - Catch error.
-"
-"   1.4:
-"     - Extend current directory.
-"
-"   1.3:
-"     - Open directory.
-"
-"   1.2:
-"     - Ignore directory.
-"
-"   1.1:
-"     - Split nicely.
-"
-"   1.0:
-"     - Initial version.
+"   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -53,45 +37,36 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#vim#execute(program, args, fd, other_info)
-    " Edit file.
+function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
+    " Execute shell command.
+    let l:cmdline = ''
+    for arg in a:args
+        let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
+    endfor
 
-    " Filename escape
-    let l:arguments = join(a:args, ' ')
+    " Set redirection.
+    if a:fd.stdin == ''
+        let l:stdin = ''
+    elseif a:fd.stdin == '/dev/null'
+        let l:null = tempname()
+        call writefile([], l:null)
 
-    call vimshell#print_prompt()
-
-    " Save current directiory.
-    let l:cwd = getcwd()
-
-    " Split nicely.
-    if winheight(0) > &winheight
-        let l:is_split = 1
+        let l:stdin = '<' . l:null
     else
-        let l:is_split = 0
+        let l:stdin = '<' . a:fd.stdin
     endif
 
-    if empty(l:arguments)
-        if l:is_split
-            new
-        else
-            vnew
-        endif
-    else
-        if l:is_split
-            split
-        else
-            vsplit
-        endif
+    echo 'Running command.'
+    call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
+    redraw
+    echo ''
 
-        try
-            edit `=l:arguments`
-        catch /^.*/
-            echohl Error | echomsg v:errmsg | echohl None
-        endtry
+    if a:fd.stdin == '/dev/null'
+        call delete(l:null)
     endif
 
-    lcd `=l:cwd`
+    let b:vimshell_system_variables['status'] = v:shell_error
 
-    return 1
-endfunction
+    return 0
+endfunction"}}}
+

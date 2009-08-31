@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2009
+" Last Modified: 27 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,8 @@
 " ChangeLog: "{{{
 "   1.6:
 "     - Improved error message.
+"     - Improved execute message.
+"     - Use sexe.
 "
 "   1.5:
 "     - Fixed stdin bug when g:VimShell_EnableInteractive is 0.
@@ -63,32 +65,19 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         endif
 
         while exists('b:vimproc_sub')
+            echo 'Running command.'
             call interactive#execute_pipe_out()
+            redraw
+            echo ''
         endwhile
         let b:vimshell_system_variables['status'] = b:vimproc_status
     else
-        let l:cmdline = ''
-        for arg in a:args
-            let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
-        endfor
-
-        " Set redirection.
-        if a:fd.stdin != ''
-            let l:stdin = '<' . a:fd.stdin
-        else
-            let l:null = tempname()
-            call writefile([], l:null)
-
-            let l:stdin = '<' . l:null
+        let l:fd = a:fd
+        " Null input.
+        if l:fd.stdin == ''
+            let l:fd.stdin = '/dev/null'
         endif
-
-        call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
-
-        if a:fd.stdin == ''
-            call delete(l:null)
-        endif
-
-        let b:vimshell_system_variables['status'] = v:shell_error
+        return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
     endif
 
     return 0

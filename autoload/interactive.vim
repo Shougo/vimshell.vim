@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.32:
 "     - Improved highlight of escape sequence.
+"     - Improved execute message.
 "
 "   1.31:
 "     - Optimized output.
@@ -351,7 +352,6 @@ function! interactive#execute_pipe_out()"{{{
         return
     endif
 
-    echo 'Running command.'
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
@@ -385,8 +385,6 @@ function! interactive#execute_pipe_out()"{{{
 
         let l:i += 1
     endfor
-    redraw
-    echo ''
 
     if b:vimproc_sub[-1].stdout.eof && (g:VimShell_UsePopen2 || b:vimproc_sub[-1].stderr.eof)
         call interactive#exit()

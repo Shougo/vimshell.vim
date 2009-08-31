@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vim.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2009
+" FILE: galias.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" Last Modified: 08 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,24 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.5:
-"     - Catch error.
-"
-"   1.4:
-"     - Extend current directory.
-"
-"   1.3:
-"     - Open directory.
-"
-"   1.2:
-"     - Ignore directory.
-"
-"   1.1:
-"     - Split nicely.
-"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -53,45 +38,26 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#vim#execute(program, args, fd, other_info)
-    " Edit file.
-
-    " Filename escape
-    let l:arguments = join(a:args, ' ')
-
-    call vimshell#print_prompt()
-
-    " Save current directiory.
-    let l:cwd = getcwd()
-
-    " Split nicely.
-    if winheight(0) > &winheight
-        let l:is_split = 1
-    else
-        let l:is_split = 0
-    endif
-
-    if empty(l:arguments)
-        if l:is_split
-            new
-        else
-            vnew
+function! vimshell#internal#galias#execute(program, args, fd, other_info)
+    if empty(a:args)
+        " View all global aliases.
+        for alias in keys(b:vimshell_galias_table)
+            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
+        endfor
+    elseif join(a:args) =~ '^\h\w*$'
+        if has_key(b:vimshell_galias_table, a:args[0])
+            " View global alias.
+            call vimshell#print_line(a:fd, b:vimshell_galias_table[a:args[0]])
         endif
     else
-        if l:is_split
-            split
-        else
-            vsplit
+        " Define global alias.
+        let l:args = join(a:args)
+
+        if l:args !~ '^\h\w*\s*=\s*'
+            call vimshell#error_line(a:fd, 'Wrong syntax.')
+            return
         endif
-
-        try
-            edit `=l:arguments`
-        catch /^.*/
-            echohl Error | echomsg v:errmsg | echohl None
-        endtry
+        let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
+        execute 'let ' . printf("b:vimshell_galias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
     endif
-
-    lcd `=l:cwd`
-
-    return 1
 endfunction

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 Aug 2009
+" Last Modified: 29 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.30, for Vim 7.0
+" Version: 5.31, for Vim 7.0
 "=============================================================================
 
 if !exists('g:VimShell_UserPrompt')
@@ -44,10 +44,10 @@ endfunction"}}}
 function! s:special_command(program, args, fd, other_info)"{{{
     let l:program = a:args[0]
     let l:arguments = a:args[1:]
-    if has_key(s:internal_func_table, l:program)
+    if has_key(g:vimshell#internal_func_table, l:program)
         " Internal commands.
         execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-                    \ s:internal_func_table[l:program])
+                    \ g:vimshell#internal_func_table[l:program])
     else
         call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
     endif
@@ -57,16 +57,16 @@ endfunction"}}}
 function! s:special_internal(program, args, fd, other_info)"{{{
     if empty(a:args)
         " Print internal commands.
-        for func_name in keys(s:internal_func_table)
+        for func_name in keys(g:vimshell#internal_func_table)
             call vimshell#print_line(func_name)
         endfor
     else
         let l:program = a:args[0]
         let l:arguments = a:args[1:]
-        if has_key(s:internal_func_table, l:program)
+        if has_key(g:vimshell#internal_func_table, l:program)
             " Internal commands.
             execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-                        \ s:internal_func_table[l:program])
+                        \ g:vimshell#internal_func_table[l:program])
         else
             " Error.
             call vimshell#error_line('', printf('Not found internal command "%s".', l:program))
@@ -76,42 +76,6 @@ function! s:special_internal(program, args, fd, other_info)"{{{
     return 0
 endfunction"}}}
 "}}}
-
-function! vimshell#history_complete(findstart, base)"{{{
-    if a:findstart
-        let l:escaped = escape(getline('.'), '"')
-        let l:prompt_pos = match(substitute(l:escaped, "'", "''", 'g'), g:VimShell_Prompt)
-        if l:prompt_pos < 0
-            " Not found prompt.
-            return -1
-        endif
-        
-        return len(g:VimShell_Prompt)
-    endif
-
-    " Save options.
-    let l:ignorecase_save = &l:ignorecase
-
-    " Complete.
-    if g:VimShell_SmartCase && a:base =~ '\u'
-        let &l:ignorecase = 0
-    else
-        let &l:ignorecase = g:VimShell_IgnoreCase
-    endif
-    " Ignore head spaces.
-    let l:cur_keyword_str = substitute(a:base, '^\s\+', '', '')
-    let l:complete_words = []
-    for hist in g:vimshell#hist_buffer
-        if len(hist) > len(l:cur_keyword_str) && hist =~ l:cur_keyword_str
-            call add(l:complete_words, { 'word' : hist, 'abbr' : hist, 'dup' : 0 })
-        endif
-    endfor
-
-    " Restore options.
-    let &l:ignorecase = l:ignorecase_save
-
-    return l:complete_words
-endfunction"}}}
 
 " VimShell plugin utility functions."{{{
 function! vimshell#execute_command(program, args, fd, other_info)"{{{
@@ -123,6 +87,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     let l:program = a:program
     let l:arguments = a:args
     let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
+    let l:command = vimshell#getfilename(program)
 
     " Special commands.
     if l:line =~ '&\s*$'"{{{
@@ -133,7 +98,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Other special commands.
         return call(g:vimshell#special_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
         "}}}
-    elseif has_key(s:internal_func_table, l:program)"{{{
+    elseif has_key(g:vimshell#internal_func_table, l:program)"{{{
         " Internal commands.
 
         " Search pipe.
@@ -156,7 +121,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             call add(l:args, arg)
             let l:i += 1
         endfor
-        let l:ret = call(s:internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
+        let l:ret = call(g:vimshell#internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
 
         if l:i < len(l:arguments)
             " Process pipe.
@@ -169,6 +134,44 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
 
         return l:ret
         "}}}
+    elseif l:command != '' || executable(l:program)
+        " Execute external commands.
+
+        " Search pipe.
+        let l:args = []
+        let l:i = 0
+        let l:fd = copy(a:fd)
+        for arg in l:arguments
+            if arg == '|'
+                if l:i+1 == len(l:arguments) 
+                    call vimshell#error_line(a:fd, 'Wrong pipe used.')
+                    return 0
+                endif
+
+                " Check internal command.
+                let l:prog = l:arguments[l:i + 1]
+                if !has_key(g:vimshell#special_func_table, l:prog) && !has_key(g:vimshell#internal_func_table, l:prog)
+                    " Create temporary file.
+                    let l:temp = tempname()
+                    let l:fd.stdout = l:temp
+                    call writefile([], l:temp)
+                    break
+                endif
+            endif
+            call add(l:args, arg)
+            let l:i += 1
+        endfor
+        let l:ret = vimshell#internal#exe#execute('exe', insert(l:args, l:program), l:fd, a:other_info)
+
+        if l:i < len(l:arguments)
+            " Process pipe.
+            let l:fd = copy(a:fd)
+            let l:fd.stdin = temp
+            let l:ret = vimshell#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
+            call delete(l:temp)
+        endif
+
+        return l:ret
     elseif isdirectory(l:dir)"{{{
         " Directory.
         " Change the working directory like zsh.
@@ -184,43 +187,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             let l:arguments = extend(split(g:VimShell_ExecuteFileList[l:ext])[1:], insert(l:arguments, l:program))
             return vimshell#execute_command(l:execute, l:arguments, a:fd, a:other_info)
         else
-            " External commands.
-
-            " Search pipe.
-            let l:args = []
-            let l:i = 0
-            let l:fd = copy(a:fd)
-            for arg in l:arguments
-                if arg == '|'
-                    if l:i+1 == len(l:arguments) 
-                        call vimshell#error_line(a:fd, 'Wrong pipe used.')
-                        return 0
-                    endif
-
-                    " Check internal command.
-                    let l:prog = l:arguments[l:i + 1]
-                    if !has_key(g:vimshell#special_func_table, l:prog) && !has_key(s:internal_func_table, l:prog)
-                        " Create temporary file.
-                        let l:temp = tempname()
-                        let l:fd.stdout = l:temp
-                        call writefile([], l:temp)
-                        break
-                    endif
-                endif
-                call add(l:args, arg)
-                let l:i += 1
-            endfor
-            let l:ret = vimshell#internal#exe#execute('exe', insert(l:args, l:program), l:fd, a:other_info)
-
-            if l:i < len(l:arguments)
-                " Process pipe.
-                let l:fd = copy(a:fd)
-                let l:fd.stdin = temp
-                let l:ret = vimshell#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
-                call delete(l:temp)
-            endif
-
-            return l:ret
+            throw printf('File: "%s" is not found.', l:program)
         endif
     endif
     "}}}
@@ -261,7 +228,7 @@ function! vimshell#process_enter()"{{{
     endif
 
     " Delete prompt string.
-    let l:line = substitute(getline('.'), g:VimShell_Prompt, '', '')
+    let l:line = substitute(getline('.'), '^' . g:VimShell_Prompt, '', '')
 
     " Delete comment.
     let l:line = substitute(l:line, '#.*$', '', '')
@@ -456,6 +423,30 @@ function! vimshell#remove_history(command)"{{{
 
     let s:hist_size = getfsize(g:VimShell_HistoryPath)
 endfunction"}}}
+function! vimshell#getfilename(program)"{{{
+    " Command search.
+    if has('win32') || has('win64')
+        let l:path = substitute($PATH, '\\\?;', ',', 'g')
+        let l:files = ''
+        for ext in ['', '.bat', '.cmd', '.exe']
+            let l:files = globpath(l:path, a:program.ext)
+            if !empty(l:files)
+                break
+            endif
+        endfor
+
+        let l:namelist = filter(split(l:files, '\n'), 'executable(v:val)')
+    else
+        let l:path = substitute($PATH, '/\?:', ',', 'g')
+        let l:namelist = filter(split(globpath(l:path, a:program), '\n'), 'executable(v:val)')
+    endif
+
+    if empty(l:namelist)
+        return ''
+    else
+        return l:namelist[0]
+    endif
+endfunction"}}}
 
 function! vimshell#start_insert()"{{{
     " Enter insert mode.
@@ -465,39 +456,6 @@ endfunction"}}}
 "}}}
 
 " VimShell key-mappings functions."{{{
-function! vimshell#insert_command_completion()"{{{
-    " Set function.
-    let &l:omnifunc = 'vimshell#smart_omni_completion'
-endfunction"}}}
-function! vimshell#smart_omni_completion(findstart, base)"{{{
-    if a:findstart
-        " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.') - 1) 
-
-        return match(l:cur_text, '\f\+$')
-    endif
-
-    " Save option.
-    let l:ignorecase_save = &ignorecase
-
-    " Complete.
-    if g:VimShell_SmartCase && a:base =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:VimShell_IgnoreCase
-    endif
-
-   let l:complete_words = s:get_complete_words(a:base)
-
-    " Restore option.
-    let &ignorecase = l:ignorecase_save
-
-    " Restore option.
-    let &l:omnifunc = 'vimshell#history_complete'
-
-    return l:complete_words
-endfunction"}}}
-
 function! vimshell#push_current_line()"{{{
     " Check current line.
     if match(getline('.'), g:VimShell_Prompt) < 0
@@ -614,7 +572,7 @@ function! vimshell#run_help()"{{{
     endif
 
     " Delete prompt string.
-    let l:line = substitute(getline('.'), g:VimShell_Prompt, '', '')
+    let l:line = substitute(getline('.'), '^' . g:VimShell_Prompt, '', '')
     if l:line =~ '^\s*$'
         startinsert!
         return
@@ -652,6 +610,20 @@ function! vimshell#paste_prompt()"{{{
     endif
     normal! G
 endfunction"}}}
+function! vimshell#move_head()"{{{
+    call search(g:VimShell_Prompt, 'be', line('.'))
+    normal! l
+    startinsert
+endfunction"}}}
+function! vimshell#delete_line()"{{{
+    let l:col = col('.')
+    let l:mcol = col('$')
+    call setline(line('.'), g:VimShell_Prompt . getline('.')[l:col :])
+    call vimshell#move_head()
+    if l:col == l:mcol-1
+        startinsert!
+    endif
+endfunction"}}}
 
 function! vimshell#create_shell(split_flag)"{{{
     let l:bufname = 'vimshell'
@@ -670,7 +642,7 @@ function! vimshell#create_shell(split_flag)"{{{
 
     setlocal buftype=nofile
     setlocal noswapfile
-    let &l:omnifunc = 'vimshell#history_complete'
+    let &l:omnifunc = 'vimshell#complete#history_complete'
 
     " Save current directory.
     let b:vimshell_save_dir = getcwd()
@@ -695,13 +667,13 @@ function! vimshell#create_shell(split_flag)"{{{
     if !exists('b:vimshell_galias_table')
         let b:vimshell_galias_table = {}
     endif
-    if !exists('s:internal_func_table')
-        let s:internal_func_table = {}
+    if !exists('g:vimshell#internal_func_table')
+        let g:vimshell#internal_func_table = {}
 
         " Search autoload.
         for list in split(globpath(&runtimepath, 'autoload/vimshell/internal/*.vim'), '\n')
             let l:func_name = fnamemodify(list, ':t:r')
-            let s:internal_func_table[l:func_name] = 'vimshell#internal#' . l:func_name . '#execute'
+            let g:vimshell#internal_func_table[l:func_name] = 'vimshell#internal#' . l:func_name . '#execute'
         endfor
     endif
     if !exists('g:vimshell#special_func_table')
@@ -763,48 +735,6 @@ function! s:restore_current_dir()"{{{
         lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
         let b:vimshell_save_dir = l:current_dir
     endif
-endfunction"}}}
-
-function! s:get_complete_words(cur_keyword_str)"{{{
-    let l:ret = []
-    let l:pattern = printf('v:val =~ "^%s"', a:cur_keyword_str)
-
-    for keyword in filter(split(glob(a:cur_keyword_str . '*'), '\n'), 'isdirectory(v:val)')
-        let l:dict = { 'word' : keyword, 'abbr' : keyword . '/', 'menu' : '[Dir]', 'icase' : 1 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(keys(b:vimshell_alias_table), l:pattern)
-        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Alias]', 'icase' : 1 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(keys(g:vimshell#special_func_table), l:pattern)
-        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Special]', 'icase' : 1 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(keys(s:internal_func_table), l:pattern)
-        let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Internal]', 'icase' : 1 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    if a:cur_keyword_str =~ '\h\w\+$'
-        " External commands.
-        if has('win32') || has('win64')
-            let l:path = substitute($PATH, '\\\?;', ',', 'g')
-        else
-            let l:path = substitute($PATH, '/\?:', ',', 'g')
-        endif
-
-        for keyword in map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
-                    \'executable(v:val)'), 'fnamemodify(v:val, ":t")')
-            let l:dict = { 'word' : keyword . ' ', 'abbr' : keyword, 'menu' : '[Command]', 'icase' : 1 }
-            call add(l:ret, l:dict)
-        endfor 
-    endif
-
-    return l:ret
 endfunction"}}}
 
 augroup VimShellAutoCmd"{{{

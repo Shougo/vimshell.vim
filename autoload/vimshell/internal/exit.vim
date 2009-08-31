@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exit.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2009
+" Last Modified: 28 Apr 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Close window.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -43,7 +46,11 @@ function! vimshell#internal#exit#execute(program, args, fd, other_info)
     if a:other_info.is_interactive
         let vimsh_buf = bufnr('%')
         " Switch buffer.
-        buffer #
+        if winnr('$') != 1
+            close
+        else
+            buffer #
+        endif
         execute 'bdelete!'. vimsh_buf
         return 1
     else

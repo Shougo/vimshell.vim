@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2009
+" Last Modified: 27 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.14:
 "     - Improved error message.
 "     - Set syntax.
+"     - Improved execute message.
 "
 "   1.13:
 "     - Extend current directory.
@@ -201,15 +202,22 @@ function! s:init_bg(fd, args, is_interactive)"{{{
         endif
     endif
 
-    autocmd vimshell_bg BufDelete <buffer>       call s:on_exit()
-    autocmd vimshell_bg CursorHold <buffer>  call interactive#execute_pipe_out()
-    nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
-    inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
-    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_out()<CR>
-    call interactive#execute_pipe_out()
+    autocmd vimshell_bg BufDelete <buffer>       call <SID>on_exit()
+    autocmd vimshell_bg CursorHold <buffer>  call <SID>on_execute()
+    nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
+    inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
+    nnoremap <buffer><silent><CR>       :<C-u>call <SID>on_execute()<CR>
+    call s:on_execute()
 
     return 1
 endfunction"}}}
+
+function! s:on_execute()
+    echo 'Running command.'
+    call interactive#execute_pipe_out()
+    redraw
+    echo ''
+endfunction
 
 function! s:on_exit()
     augroup vimshell_bg
