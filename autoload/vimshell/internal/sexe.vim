@@ -70,7 +70,6 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     endif
 
     echo 'Running command.'
-    echomsg printf('%s %s', l:cmdline, l:stdin)
     call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
     redraw
     echo ''
