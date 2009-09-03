@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Aug 2009
+" Last Modified: 03 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.32:
 "     - Improved highlight of escape sequence.
 "     - Improved execute message.
+"     - Overwrite highlight Normal in escape sequence range.
 "
 "   1.31:
 "     - Optimized output.
@@ -524,7 +525,8 @@ function! interactive#highlight_escape_sequence()"{{{
                 " TODO
             endif"}}}
         endfor
-        if len(highlight)
+        if highlight != ''
+            execute 'highlight link' syntax_name 'Normal'
             execute 'highlight' syntax_name highlight
         endif
     endwhile

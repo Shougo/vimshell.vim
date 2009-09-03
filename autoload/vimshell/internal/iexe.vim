@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2009
+" Last Modified: 31 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -416,8 +416,10 @@ function! s:move_head()"{{{
     if !exists('b:prompt_history[line(".")]')
         return
     endif
-    call search(b:prompt_history[line('.')], 'be', line('.'))
-    normal! l
+    call search(vimshell#escape_match(b:prompt_history[line('.')]), 'be', line('.'))
+    if l:col != l:mcol-1
+        normal! l
+    endif
     startinsert
 endfunction"}}}
 function! s:delete_line()"{{{

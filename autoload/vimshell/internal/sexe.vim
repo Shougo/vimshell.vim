@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Aug 2009
+" Last Modified: 03 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1: 
+"     - Shell escape.
+"     - Improved in Windows.
+"
 "   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
@@ -39,10 +43,19 @@
 
 function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     " Execute shell command.
+    let l:iswin = has('win32') || has('win64')
     let l:cmdline = ''
     for arg in a:args
-        let l:cmdline .= substitute(arg, '"', '\\""', 'g') . ' '
+        if l:iswin
+            let l:cmdline .= '"' . substitute(arg, '"', '\\"', 'g') . '" '
+        else
+            let l:cmdline .= shellescape(arg) . ' '
+        endif
     endfor
+
+    if l:iswin
+        let l:cmdline = '"' . l:cmdline . '"'
+    endif
 
     " Set redirection.
     if a:fd.stdin == ''
@@ -57,6 +70,7 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     endif
 
     echo 'Running command.'
+    echomsg printf('%s %s', l:cmdline, l:stdin)
     call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
     redraw
     echo ''
