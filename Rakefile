@@ -1,8 +1,10 @@
 VIMSHELL_TARGETS = %w[
   autoload/proc.vim
   autoload/vimshell
+  autoload/interactive.vim
   autoload/vimshell.vim
   ftplugin/vimshell.vim
+  plugin/interactive.vim
   plugin/vimshell.vim
   syntax/vimshell.vim
 ]
