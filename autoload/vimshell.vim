@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 03 Sep 2009
+" Last Modified: 10 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.32, for Vim 7.0
+" Version: 5.33, for Vim 7.0
 "=============================================================================
 
 if !exists('g:VimShell_UserPrompt')
@@ -256,9 +256,7 @@ function! vimshell#process_enter()"{{{
     if l:line =~ '^\s*$'
         if g:VimShell_EnableAutoLs
             call setline(line('.'), g:VimShell_Prompt . 'ls')
-            call vimshell#internal#ls#execute('ls', [], 
-                        \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
-                        \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
+            call vimshell#execute_internal_command('ls', [], {}, {})
 
             call vimshell#print_prompt()
             call interactive#highlight_escape_sequence()
@@ -270,6 +268,15 @@ function! vimshell#process_enter()"{{{
 
             call vimshell#start_insert()
         endif
+        return
+    elseif l:line =~ '^\s*-\s*$'
+        " Popd.
+        call vimshell#execute_internal_command('cd', ['-'], {}, {})
+
+        call vimshell#print_prompt()
+        call interactive#highlight_escape_sequence()
+
+        call vimshell#start_insert()
         return
     endif
 
@@ -294,6 +301,21 @@ function! vimshell#process_enter()"{{{
     call vimshell#start_insert()
 endfunction"}}}
 
+function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
+    if empty(a:fd)
+        let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+    else
+        let l:fd = a:fd
+    endif
+
+    if empty(a:other_info)
+        let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 }
+    else
+        let l:other_info = l:other_info
+    endif
+
+    return call('vimshell#internal#'.a:command.'#execute', [a:command, a:args, l:fd, l:other_info])
+endfunction"}}}
 function! vimshell#read(fd)"{{{
     if has('win32') || has('win64')
         let l:ff = "\<CR>\<LF>"
@@ -512,10 +534,6 @@ function! vimshell#switch_shell(split_flag)"{{{
             " Change current directory.
             let b:vimshell_save_dir = l:current
             lcd `=fnamemodify(l:current, ':p')`
-
-            call vimshell#start_insert()
-
-            call vimshell#print_prompt()
             return
         endif
 
@@ -538,10 +556,6 @@ function! vimshell#switch_shell(split_flag)"{{{
             " Change current directory.
             let b:vimshell_save_dir = l:current
             lcd `=fnamemodify(l:current, ':p')`
-
-            call vimshell#start_insert()
-
-            call vimshell#print_prompt()
             return
         endif
 
@@ -700,6 +714,7 @@ function! vimshell#create_shell(split_flag)"{{{
 
     setlocal buftype=nofile
     setlocal noswapfile
+    setlocal bufhidden=hide
     let &l:omnifunc = 'vimshell#complete#history_complete'
 
     " Save current directory.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 Aug 2009
+" Last Modified: 08 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -175,7 +175,12 @@ function! vimshell#parser#split_args(script)"{{{
             if l:end == -1
                 throw 'Quote error'
             endif
+
             let l:arg .= a:script[l:i+1 : l:end-2]
+            if l:arg == ''
+                call add(l:args, l:arg)
+            endif
+
             let l:i = l:end
         elseif a:script[l:i] == '"'
             " Double quote.
@@ -183,7 +188,12 @@ function! vimshell#parser#split_args(script)"{{{
             if l:end == -1
                 throw 'Quote error'
             endif
+
             let l:arg .= substitute(a:script[l:i+1 : l:end-2], '\\"', '"', 'g')
+            if l:arg == ''
+                call add(l:args, l:arg)
+            endif
+
             let l:i = l:end
         elseif a:script[l:i] == '`'
             " Back quote.
@@ -196,6 +206,10 @@ function! vimshell#parser#split_args(script)"{{{
                 let l:end = matchend(a:script, '^`[^`]*`', l:i)
                 let l:arg .= substitute(system(l:quote), '\n', ' ', 'g')
             endif
+            if l:arg == ''
+                call add(l:args, l:arg)
+            endif
+
             let l:i = l:end
         elseif a:script[i] == '\'
             " Escape.
@@ -279,11 +293,11 @@ function! s:parse_tilde(script)"{{{
 
     let l:i = 0
     let l:max = len(a:script)
-    while l:i < l:max - 1
+    while l:i < l:max
         if a:script[i] == ' ' && a:script[i+1] == '~'
             " Tilde.
             " Expand home directory.
-            let l:script .= escape($HOME, '\ ')
+            let l:script .= ' ' . escape($HOME, '\ ')
             let l:i += 2
         else
             let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)

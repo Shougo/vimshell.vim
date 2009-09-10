@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2009
+" Last Modified: 08 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.32, for Vim 7.0
+" Version: 1.33, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.33:
+"     - Improved timeout.
+"
 "   1.32:
 "     - Improved highlight of escape sequence.
 "     - Improved execute message.
@@ -357,7 +360,7 @@ function! interactive#execute_pipe_out()"{{{
     let l:submax = len(b:vimproc_sub) - 1
     for sub in b:vimproc_sub
         if !sub.stdout.eof
-            let l:read = sub.stdout.read(-1, 300)
+            let l:read = sub.stdout.read(-1, 40)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -367,7 +370,7 @@ function! interactive#execute_pipe_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.stdout.read(-1, 300)
+                let l:read = sub.stdout.read(-1, 40)
             endwhile
         elseif l:i < l:submax && b:vimproc_sub[l:i + 1].stdin.fd > 0
             " Close pipe.
@@ -375,12 +378,12 @@ function! interactive#execute_pipe_out()"{{{
         endif
 
         if !g:VimShell_UsePopen2 && !sub.stderr.eof
-            let l:read = sub.stderr.read(-1, 300)
+            let l:read = sub.stderr.read(-1, 40)
             while l:read != ''
                 call s:error_buffer(b:vimproc_fd, l:read)
                 redraw
 
-                let l:read = sub.stderr.read(-1, 300)
+                let l:read = sub.stderr.read(-1, 40)
             endwhile
         endif
 
@@ -442,6 +445,51 @@ function! interactive#force_exit()"{{{
     unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
+endfunction"}}}
+function! interactive#hang_up()"{{{
+    if !exists('b:vimproc_sub')
+        return
+    endif
+
+    " Kill processes.
+    for sub in b:vimproc_sub
+        try
+            " 15 == SIGTERM
+            call b:vimproc.api.vp_kill(sub.pid, 15)
+            echomsg 'Killed'
+        catch /No such process/
+        endtry
+    endfor
+
+    if &filetype != 'vimshell'
+        call append(line('$'), '*Killed*')
+        normal! G$
+    endif
+
+    unlet b:vimproc
+    unlet b:vimproc_sub
+    unlet b:vimproc_fd
+endfunction"}}}
+
+function! interactive#interrupt()"{{{
+    if !exists('b:vimproc_sub')
+        return
+    endif
+
+    " Kill processes.
+    for sub in b:vimproc_sub
+        try
+            " 1 == SIGINT
+            call b:vimproc.api.vp_kill(sub.pid, 1)
+        catch /No such process/
+        endtry
+    endfor
+
+    if has('win32') || has('win64')
+        call interactive#execute_pipe_out()
+    else
+        call interactive#execute_pty_out()
+    endif
 endfunction"}}}
 
 function! interactive#highlight_escape_sequence()"{{{

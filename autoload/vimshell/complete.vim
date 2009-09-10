@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 30 Aug 2009
+" Last Modified: 10 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -83,7 +83,7 @@ function! vimshell#complete#insert_command_completion()"{{{
     if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
         call feedkeys(neocomplcache#manual_omni_complete(), 'n')
     else
-        call feedkeys("\<C-x>\<C-o>", 'n')
+        call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
     endif
 endfunction"}}}
 function! vimshell#complete#smart_omni_completion(findstart, base)"{{{

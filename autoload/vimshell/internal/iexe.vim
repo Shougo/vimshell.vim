@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2009
+" Last Modified: 08 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.15, for Vim 7.0
+" Version: 1.16, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.16: 
+"     - Improved kill processes.
+"     - Send interrupt when press <C-c>.
+"     - Improved tab completion.
+"
 "   1.15: 
 "     - Implemented delete line and move head.
 "     - Deleted normal iexe.
@@ -208,6 +213,7 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     lcd `=l:cwd`
     setlocal buftype=nofile
     setlocal noswapfile
+    setlocal wrap
     setfiletype iexe
     execute 'setfiletype ' . a:args[0]
 
@@ -218,8 +224,9 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
     hi def link VimShellErrorHidden Ignore
 
     nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
+    inoremap <buffer><silent><C-c>       <C-o>:<C-u>call interactive#interrupt()<CR>
     augroup vimshell_iexe
-        autocmd BufDelete <buffer>   call s:on_exit()
+        autocmd BufUnload <buffer>   call s:on_exit()
     augroup END
 
     if has('win32') || has('win64')
@@ -234,8 +241,8 @@ function! s:init_bg(proc, sub, args, is_interactive)"{{{
         inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
         imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
         imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>pty_completion()<CR>
-        imap <buffer><C-t>     <Plug>(vimshell_iexe_tab_completion)
+        inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
+        imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
         inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
         imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
         inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
@@ -283,18 +290,11 @@ function! s:on_hold()
 endfunction
 
 function! s:on_exit()
-    augroup vimshell_iexe
-        autocmd! BufDelete <buffer>
-        autocmd! CursorHold <buffer>
-        autocmd! CursorHoldI <buffer>
-    augroup END
-
-    call interactive#force_exit()
+    call interactive#hang_up()
 endfunction
 
 " Key-mappings functions."{{{
-
-function! s:pty_completion()"{{{
+function! s:tab_completion()"{{{
     " Insert <TAB>.
     if exists('b:prompt_history[line(".")]')
         let l:prev_prompt = b:prompt_history[line('.')]
@@ -435,6 +435,84 @@ function! s:delete_line()"{{{
     if l:col == l:mcol-1
         startinsert!
     endif
+endfunction"}}}
+"}}}
+
+" Smart tab completion."{{{
+function! s:smart_tab_completion()"{{{
+    let &iminsert = 0
+    let &imsearch = 0
+
+    " Command completion.
+
+    " Set complete function.
+    let &l:omnifunc = 'vimshell#internal#iexe#smart_tab_completion'
+
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
+        call feedkeys(neocomplcache#manual_omni_complete(), 'n')
+    else
+        call feedkeys("\<C-x>\<C-o>", 'n')
+    endif
+endfunction"}}}
+function! vimshell#internal#iexe#smart_tab_completion(findstart, base)"{{{
+    if a:findstart
+        " Get cursor word.
+        let l:cur_text = strpart(getline('.'), 0, col('.')) 
+
+        return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
+    endif
+
+    " Save option.
+    let l:ignorecase_save = &ignorecase
+
+    " Complete.
+    if g:VimShell_SmartCase && a:base =~ '\u'
+        let &ignorecase = 0
+    else
+        let &ignorecase = g:VimShell_IgnoreCase
+    endif
+
+    let l:complete_words = s:get_tab_complete_words(a:base)
+
+    " Restore option.
+    let &ignorecase = l:ignorecase_save
+
+    return l:complete_words
+endfunction"}}}
+
+function! s:get_tab_complete_words(cur_keyword_str)"{{{
+    let l:list = []
+
+    " Insert <TAB>.
+    if exists('b:prompt_history[line(".")]')
+        let l:prev_prompt = b:prompt_history[line('.')]
+    else
+        let l:prev_prompt = ''
+    endif
+    let l:prompt = getline('.')
+    call setline(line('.'), getline('.') . "\<TAB>")
+
+    " Do command completion.
+    call interactive#execute_pty_inout(0)
+
+    let l:candidate = getline('$')
+    if l:candidate !~ l:prompt
+        if l:candidate =~ '\\\@<!\s.\+'
+            call append(line('$'), l:prompt)
+            let b:prompt_history[line('.')] = l:prompt
+            normal! j
+        else
+            call setline(line('$'), l:prompt . l:candidate)
+            let b:prompt_history[line('.')] = l:prompt . l:candidate
+        endif
+        normal! $
+    elseif l:candidate =~ '\t$'
+        " Failed completion.
+        call setline(line('$'), l:prompt)
+        let b:prompt_history[line('$')] = l:prev_prompt
+    endif
+
+    return l:list
 endfunction"}}}
 "}}}
 

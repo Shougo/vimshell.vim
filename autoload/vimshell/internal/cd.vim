@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2009
+" Last Modified: 10 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.8, for Vim 7.0
+" Version: 1.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.9:
+"     - Implemented 'cd -'.
+"     - Implemented 'cd name1 name2'.
+"
 "   1.8:
 "     - Check cd path.
 "
@@ -68,9 +72,15 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     if empty(a:args)
         " Move to HOME directory.
         let l:arguments = $HOME
+    elseif len(a:args) == 2
+        " Substitute current directory.
+        let l:arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
+    elseif len(a:args) > 2
+        call vimshell#error_line(a:fd, 'Too many arguments.')
+        return
     else
         " Filename escape.
-        let l:arguments = substitute(join(a:args, ' '), '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
+        let l:arguments = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
     endif
 
     if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
@@ -81,6 +91,11 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     if isdirectory(l:arguments)
         " Move to directory.
         lcd `=fnamemodify(l:arguments, ':p')`
+    elseif l:arguments == '-'
+        " Popd.
+        return vimshell#internal#popd#execute('popd', [ 1 ], 
+                    \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
+                    \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
     elseif filereadable(l:arguments)
         " Move to parent directory.
         lcd `=fnamemodify(l:arguments, ':p:h')`

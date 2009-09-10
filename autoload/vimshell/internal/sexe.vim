@@ -47,7 +47,9 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     let l:cmdline = ''
     for arg in a:args
         if l:iswin
-            let l:cmdline .= '"' . substitute(arg, '"', '\\"', 'g') . '" '
+            let l:arg = substitute(arg, '"', '\\"', 'g')
+            let l:arg = substitute(arg, '[<>|^]', '^\0', 'g')
+            let l:cmdline .= '"' . arg . '" '
         else
             let l:cmdline .= shellescape(arg) . ' '
         endif
@@ -70,7 +72,8 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     endif
 
     echo 'Running command.'
-    call vimshell#print(a:fd, system(printf('%s %s', l:cmdline, l:stdin)))
+    let l:result = system(printf('%s %s', l:cmdline, l:stdin))
+    call vimshell#print(a:fd, l:result)
     redraw
     echo ''
 
