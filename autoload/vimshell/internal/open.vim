@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: gexe.vim
+" FILE: open.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,8 +26,7 @@
 " Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
+"   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -38,14 +37,27 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#gexe#execute(program, args, fd, other_info)
-    " Execute GUI program.
-    if has('win32') || has('win64')
-        execute printf('!start %s', join(a:args))
+function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
+    " Open file.
+    if g:VimShell_EnableInteractive
+        let l:command = 'exe'
     else
-        " For *nix.
-
-        " Background execute.
-        call system(join(a:args) . '&')
+        let l:command = 'sexe'
     endif
-endfunction
+
+    if has('win32') || has('win64')
+        let l:command = 'gexe'
+        let l:args = a:args
+    elseif has('mac')
+        let l:args = ['open'] + a:args
+    elseif executable(vimshell#getfilename('gnome-open'))
+        let l:args = ['gnome-open'] + a:args
+    elseif executable(vimshell#getfilename('kfmclient'))
+        let l:args = ['kfmclient', 'exec'] + a:args
+    else
+        throw 'open: Not supported.'
+    endif
+
+    return vimshell#execute_internal_command(l:command, l:args, a:fd, a:other_info)
+endfunction"}}}
+

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 10 Sep 2009
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -24,7 +24,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.33, for Vim 7.0
+" Version: 5.34, for Vim 7.0
 "=============================================================================
 
 if !exists('g:VimShell_UserPrompt')
@@ -49,7 +49,7 @@ function! s:special_command(program, args, fd, other_info)"{{{
         execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
                     \ g:vimshell#internal_func_table[l:program])
     else
-        call vimshell#internal#exe#execute('exe', insert(l:arguments, l:program), a:fd, a:other_info)
+        call vimshell#execute_internal_command('exe', insert(l:arguments, l:program), a:fd, a:other_info)
     endif
 
     return 0
@@ -92,7 +92,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     " Special commands.
     if l:line =~ '&\s*$'"{{{
         " Background execution.
-        return vimshell#internal#bg#execute('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
+        return vimshell#execute_internal_command('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
         "}}}
     elseif has_key(g:vimshell#special_func_table, l:program)"{{{
         " Other special commands.
@@ -170,7 +170,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
             call add(l:args, arg)
             let l:i += 1
         endfor
-        let l:ret = vimshell#internal#exe#execute('exe', insert(l:args, l:program), l:fd, a:other_info)
+        let l:ret = vimshell#execute_internal_command('exe', insert(l:args, l:program), l:fd, a:other_info)
 
         if l:i < len(l:arguments)
             " Process pipe.
@@ -186,7 +186,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
         " Change the working directory like zsh.
 
         " Call internal cd command.
-        return vimshell#internal#cd#execute('cd', [l:dir], a:fd, a:other_info)
+        return vimshell#execute_internal_command('cd', [l:dir], a:fd, a:other_info)
         "}}}
     else"{{{
         throw printf('File: "%s" is not found.', l:program)
@@ -228,7 +228,6 @@ function! vimshell#process_enter()"{{{
             " Set prompt line.
             call setline(line('$'), getline('.'))
         endif
-        normal! G$
     endif
 
     " Check current directory.
@@ -298,6 +297,7 @@ function! vimshell#process_enter()"{{{
     endif
 
     call vimshell#print_prompt()
+    call interactive#highlight_escape_sequence()
     call vimshell#start_insert()
 endfunction"}}}
 
@@ -311,10 +311,10 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
     if empty(a:other_info)
         let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 }
     else
-        let l:other_info = l:other_info
+        let l:other_info = a:other_info
     endif
 
-    return call('vimshell#internal#'.a:command.'#execute', [a:command, a:args, l:fd, l:other_info])
+    return call('vimshell#internal#' . a:command . '#execute', [a:command, a:args, l:fd, l:other_info])
 endfunction"}}}
 function! vimshell#read(fd)"{{{
     if has('win32') || has('win64')
@@ -483,6 +483,7 @@ endfunction"}}}
 
 function! vimshell#start_insert()"{{{
     " Enter insert mode.
+    normal! G$
     startinsert!
     set iminsert=0 imsearch=0
 endfunction"}}}
@@ -631,8 +632,8 @@ function! vimshell#run_help()"{{{
     endif
 
     let l:nr = winnr()
-    call vimshell#internal#bg#execute('bg', ['man', '-P', 'cat', l:program], 
-                \{'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+    call vimshell#execute_internal_command('bg', ['man', '-P', 'cat', l:program], 
+                \{}, {'is_interactive' : 0, 'is_background' : 1})
 
     normal! gg
     execute l:nr.'wincmd w'
@@ -768,9 +769,8 @@ function! vimshell#create_shell(split_flag)"{{{
     endif
     " Load rc file.
     if filereadable(g:VimShell_VimshrcPath) && !exists('b:vimshell_loaded_vimshrc')
-        let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-        let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 }
-        call vimshell#internal#vimsh#execute('vimsh', [g:VimShell_VimshrcPath], l:fd, l:other_info)
+        call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
+                    \{ 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 })
         let b:vimshell_loaded_vimshrc = 1
     endif
     if !exists('b:vimshell_commandline_stack')

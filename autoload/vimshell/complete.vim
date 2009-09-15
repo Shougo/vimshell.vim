@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 10 Sep 2009
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -64,15 +64,17 @@ function! vimshell#complete#insert_command_completion()"{{{
     let &iminsert = 0
     let &imsearch = 0
 
-    let l:cur_text = substitute(strpart(getline('.'), 0, col('.')), '^' . g:VimShell_Prompt . '\s*', '', '')
+    let l:save_ve = &l:virtualedit
+    setlocal virtualedit=all
+    let l:cur_text = substitute(getline('.')[: virtcol('.')-1], '^' . g:VimShell_Prompt . '\s*', '', '')
+    let &l:virtualedit = l:save_ve
     if l:cur_text =~ '^.\+/\|^[^\\]\+\s'
         " Filename completion.
         if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete')
-            call feedkeys(neocomplcache#manual_filename_complete(), 'n')
+            return neocomplcache#manual_filename_complete()
         else
-            call feedkeys("\<C-x>\<C-f>", 'n')
+            return "\<C-x>\<C-f>"
         endif
-        return
     endif
 
     " Command completion.
@@ -81,15 +83,18 @@ function! vimshell#complete#insert_command_completion()"{{{
     let &l:omnifunc = 'vimshell#complete#smart_omni_completion'
 
     if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        call feedkeys(neocomplcache#manual_omni_complete(), 'n')
+        return neocomplcache#manual_omni_complete()
     else
-        call feedkeys("\<C-x>\<C-o>\<C-p>", 'n')
+        return "\<C-x>\<C-o>\<C-p>"
     endif
 endfunction"}}}
 function! vimshell#complete#smart_omni_completion(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.')) 
+        let l:save_ve = &l:virtualedit
+        setlocal virtualedit=all
+        let l:cur_text = getline('.')[: virtcol('.')-1]
+        let &l:virtualedit = l:save_ve
 
         return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
     endif

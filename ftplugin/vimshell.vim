@@ -23,9 +23,7 @@ imap <buffer> <CR> <ESC><Plug>(vimshell_enter)
 inoremap <buffer><expr><C-j>  exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete') ? 
             \ neocomplcache#manual_omni_complete() : "\<C-x>\<C-o>\<C-p>"
 " Command completion.
-"inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete') ? 
-"\ neocomplcache#manual_filename_complete() : "\<C-x>\<C-f>"
-imap <buffer><expr><TAB> pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_insert_command_completion)"
+inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : vimshell#complete#insert_command_completion()
 " Move to Beginning of command.
 imap <buffer> <C-a> <Plug>(vimshell_move_head)
 " Delete all entered characters in the current line

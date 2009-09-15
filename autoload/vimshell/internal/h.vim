@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jul 2009
+" Last Modified: 12 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.3, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Use startinsert!.
+"
 "   1.2:
 "     - Refactoringed.
 "
@@ -87,6 +90,29 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
         call setline(line('.'), g:VimShell_Prompt . l:hist)
     endif
 
-    call vimshell#process_enter()
+    try
+        let l:skip_prompt = vimshell#parser#eval_script(l:hist, a:other_info)
+    catch /.*/
+        call vimshell#error_line({}, v:exception)
+        call vimshell#print_prompt()
+        call interactive#highlight_escape_sequence()
+
+        call vimshell#start_insert()
+        return
+    endtry
+
+    if l:skip_prompt
+        " Skip prompt.
+        return
+    endif
+
+    call interactive#highlight_escape_sequence()
+
+    if a:other_info.is_interactive
+        call vimshell#print_prompt()
+        call vimshell#start_insert()
+        startinsert!
+    endif
+
     return 1
 endfunction

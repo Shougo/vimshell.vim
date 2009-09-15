@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 03 Sep 2009
+" Last Modified: 14 Sep 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.33, for Vim 7.0
+" Version: 5.34, for Vim 7.0
 "=============================================================================
 
 if exists('g:loaded_vimshell') || v:version < 700
@@ -41,7 +41,6 @@ nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt(
 nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#delete_previous_output()<CR>
 nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#paste_prompt()<CR>
 
-inoremap <silent> <Plug>(vimshell_insert_command_completion)  <C-o>:<C-u>call vimshell#complete#insert_command_completion()<CR>
 inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#push_current_line()<CR>
 inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#insert_last_word()<CR>
 inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#run_help()<CR>

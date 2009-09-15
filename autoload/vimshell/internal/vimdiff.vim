@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: gexe.vim
+" FILE: vimdiff.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" Last Modified: 12 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -38,14 +38,36 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#gexe#execute(program, args, fd, other_info)
-    " Execute GUI program.
-    if has('win32') || has('win64')
-        execute printf('!start %s', join(a:args))
-    else
-        " For *nix.
+function! vimshell#internal#vimdiff#execute(program, args, fd, other_info)
+    " Diff file1 file2.
 
-        " Background execute.
-        call system(join(a:args) . '&')
+    if len(a:args) != 2
+        " Error.
+        call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
+        return 0
     endif
+
+    call vimshell#print_prompt()
+
+    " Save current directiory.
+    let l:cwd = getcwd()
+
+    " Split nicely.
+    if winheight(0) > &winheight
+        split
+    else
+        vsplit
+    endif
+
+    try
+        edit `=a:args[0]`
+    catch /^.*/
+        echohl Error | echomsg v:errmsg | echohl None
+    endtry
+
+    lcd `=l:cwd`
+
+    vertical diffsplit `=a:args[1]`
+
+    return 1
 endfunction

@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: gexe.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2009
+" FILE: vexe.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" Last Modified: 13 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -38,14 +38,15 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#gexe#execute(program, args, fd, other_info)
-    " Execute GUI program.
-    if has('win32') || has('win64')
-        execute printf('!start %s', join(a:args))
-    else
-        " For *nix.
+function! vimshell#special#vexe#execute(program, args, fd, other_info)
+    " Execute vim command.
 
-        " Background execute.
-        call system(join(a:args) . '&')
-    endif
+    let l:command = join(a:args)
+    redir => l:output
+    execute l:command
+    redir END
+
+    for line in split(l:output, '\n')
+        call vimshell#print_line(a:fd, line)
+    endfor
 endfunction

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Sep 2009
+" Last Modified: 12 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -368,7 +368,7 @@ function! s:parse_wildcard(script)"{{{
             let l:head = matchstr(a:script[: l:i-1], '[^[:blank:]]*$')
             let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', l:i)
             " Trunk l:script.
-            let l:script = l:script[: -len(l:head)+1]
+            let l:script = l:script[: -len(l:wildcard)+1]
 
             " Exclude wildcard.
             let l:exclude = matchstr(l:wildcard, '\~.*$')
