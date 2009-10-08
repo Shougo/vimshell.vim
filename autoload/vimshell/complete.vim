@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Sep 2009
+" Last Modified: 19 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -64,10 +64,8 @@ function! vimshell#complete#insert_command_completion()"{{{
     let &iminsert = 0
     let &imsearch = 0
 
-    let l:save_ve = &l:virtualedit
-    setlocal virtualedit=all
-    let l:cur_text = substitute(getline('.')[: virtcol('.')-1], '^' . g:VimShell_Prompt . '\s*', '', '')
-    let &l:virtualedit = l:save_ve
+    let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
+    let l:cur_text = substitute(l:cur_text, '^' . g:VimShell_Prompt . '\s*', '', '')
     if l:cur_text =~ '^.\+/\|^[^\\]\+\s'
         " Filename completion.
         if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete')
@@ -91,10 +89,7 @@ endfunction"}}}
 function! vimshell#complete#smart_omni_completion(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
-        let l:save_ve = &l:virtualedit
-        setlocal virtualedit=all
-        let l:cur_text = getline('.')[: virtcol('.')-1]
-        let &l:virtualedit = l:save_ve
+        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
 
         return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
     endif

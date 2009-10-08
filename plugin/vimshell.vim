@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Sep 2009
+" Last Modified: 22 Sep 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,12 +23,15 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.34, for Vim 7.0
+" Version: 5.35, for Vim 7.0
 "=============================================================================
 
 if exists('g:loaded_vimshell') || v:version < 700
   finish
 endif
+
+let s:save_cpo = &cpo
+set cpo&vim
 
 " Plugin keymapping"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1)<CR>
@@ -40,6 +43,7 @@ nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#delete_previous_output()<CR>
 nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#paste_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_move_end_argument) 0:<C-u>call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))<CR>
 
 inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#push_current_line()<CR>
 inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#insert_last_word()<CR>
@@ -118,6 +122,9 @@ endif
 command! -nargs=0 VimShell call vimshell#switch_shell(0)
 command! -nargs=+ -complete=shellcmd VimShellExecute call vimshell#internal#bg#vimshell_bg(split(<q-args>))
 command! -nargs=+ -complete=shellcmd VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(split(<q-args>))
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 let g:loaded_vimshell = 1
 

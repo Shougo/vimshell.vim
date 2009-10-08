@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: open.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Sep 2009
+" Last Modified: 14 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1: Improved behaivior.
+"
 "   1.0: Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
@@ -39,15 +41,10 @@
 
 function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
     " Open file.
-    if g:VimShell_EnableInteractive
-        let l:command = 'exe'
-    else
-        let l:command = 'sexe'
-    endif
 
     if has('win32') || has('win64')
-        let l:command = 'gexe'
-        let l:args = a:args
+        execute printf('silent ! start %s', join(a:args))
+        return 0
     elseif has('mac')
         let l:args = ['open'] + a:args
     elseif executable(vimshell#getfilename('gnome-open'))
@@ -58,6 +55,6 @@ function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
         throw 'open: Not supported.'
     endif
 
-    return vimshell#execute_internal_command(l:command, l:args, a:fd, a:other_info)
+    return vimshell#execute_internal_command('gexe', l:args, a:fd, a:other_info)
 endfunction"}}}
 

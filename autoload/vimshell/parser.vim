@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Sep 2009
+" Last Modified: 08 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -342,9 +342,9 @@ function! s:parse_variables(script)"{{{
     while l:i < l:max
         if a:script[l:i] == '$'
             " Eval variables.
-            if match(a:script, '^$\l', l:i)
+            if match(a:script, '^$\l', l:i) >= 0
                 let l:script .= string(eval(printf("b:vimshell_variables['%s']", matchstr(a:script, '^$\zs\l\w*', l:i))))
-            elseif match(a:script, '^$$', l:i)
+            elseif match(a:script, '^$$', l:i) >= 0
                 let l:script .= string(eval(printf("b:vimshell_system_variables['%s']", matchstr(a:script, '^$$\zs\h\w*', l:i))))
             else
                 let l:script .= string(eval(matchstr(a:script, '^$\h\w*', l:i)))

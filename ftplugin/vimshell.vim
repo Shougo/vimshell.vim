@@ -14,6 +14,8 @@ nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
 nmap <buffer> <C-d> <Plug>(vimshell_delete_previous_output)
 " Paste this prompt.
 nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
+" Search end argument.
+nmap <buffer> E <Plug>(vimshell_move_end_argument)
 "}}}
 
 " Insert mode key-mappings."{{{

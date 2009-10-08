@@ -1,3 +1,6 @@
+pwd = ENV["PWD"]       
+$HOME = ENV["HOME"]
+
 VIMSHELL_TARGETS = %w[
   autoload/proc.vim
   autoload/vimshell
