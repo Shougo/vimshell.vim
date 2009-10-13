@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 22 Sep 2009
+" Last Modified: 12 Oct 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,10 +34,10 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Plugin keymapping"{{{
-nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1)<CR>
-nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shell(1)<CR>
-nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0)<CR>
-nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0)<CR>
+nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
+nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shell(1, '')<CR>
+nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
+nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
 nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
 nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
@@ -65,30 +65,8 @@ endif
 if !exists('g:VimShell_SecondaryPrompt')
     let g:VimShell_SecondaryPrompt = '%% '
 endif
-if !exists('g:VimShell_HistoryPath')
-    if has('win32') || has('win64')
-        let g:VimShell_HistoryPath = $HOME.'\.vimshell_hist'
-    else
-        let g:VimShell_HistoryPath = $HOME.'/.vimshell_hist'
-    endif
-
-    if !isdirectory(fnamemodify(g:VimShell_HistoryPath, ':p:h'))
-        call mkdir(fnamemodify(g:VimShell_HistoryPath, ':p:h'), 'p')
-    endif
-endif
-if !exists('g:VimShell_HistoryMaxSize')
-    let g:VimShell_HistoryMaxSize = 1000
-endif
-if !exists('g:VimShell_VimshrcPath')
-    if has('win32') || has('win64')
-        let g:VimShell_VimshrcPath = $HOME.'\.vimshrc'
-    else
-        let g:VimShell_VimshrcPath = $HOME.'/.vimshrc'
-    endif
-
-    if !isdirectory(fnamemodify(g:VimShell_VimshrcPath, ':p:h'))
-        call mkdir(fnamemodify(g:VimShell_VimshrcPath, ':p:h'), 'p')
-    endif
+if !exists('g:VimShell_UserPrompt')
+    let g:VimShell_UserPrompt = ''
 endif
 if !exists('g:VimShell_IgnoreCase')
     let g:VimShell_IgnoreCase = 1
@@ -117,11 +95,30 @@ endif
 if !exists('g:VimShell_EnableAutoLs')
     let g:VimShell_EnableAutoLs = 0
 endif
+
+if !exists('g:VimShell_HistoryPath')
+    let g:VimShell_HistoryPath = '~/.vimshell_hist'
+endif
+let g:VimShell_HistoryPath = expand(g:VimShell_HistoryPath)
+if !isdirectory(fnamemodify(g:VimShell_HistoryPath, ':p:h'))
+    call mkdir(fnamemodify(g:VimShell_HistoryPath, ':p:h'), 'p')
+endif
+if !exists('g:VimShell_HistoryMaxSize')
+    let g:VimShell_HistoryMaxSize = 1000
+endif
+if !exists('g:VimShell_VimshrcPath')
+    let g:VimShell_VimshrcPath = '~/.vimshrc'
+endif
+let g:VimShell_VimshrcPath = expand(g:VimShell_VimshrcPath)
+if !isdirectory(fnamemodify(g:VimShell_VimshrcPath, ':p:h'))
+    call mkdir(fnamemodify(g:VimShell_VimshrcPath, ':p:h'), 'p')
+endif
 "}}}
 
-command! -nargs=0 VimShell call vimshell#switch_shell(0)
-command! -nargs=+ -complete=shellcmd VimShellExecute call vimshell#internal#bg#vimshell_bg(split(<q-args>))
-command! -nargs=+ -complete=shellcmd VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(split(<q-args>))
+command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
+command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
+command! -nargs=+ -complete=shellcmd VimShellExecute call vimshell#internal#bg#vimshell_bg(vimshell#parser#split_args(<q-args>))
+command! -nargs=+ -complete=shellcmd VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(vimshell#parser#split_args(<q-args>))
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

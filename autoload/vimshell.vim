@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Oct 2009
+" Last Modified: 12 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -27,10 +27,24 @@
 " Version: 5.35, for Vim 7.0
 "=============================================================================
 
+if !exists('g:VimShell_Prompt')
+    let s:prompt = 'vimshell% '
+else
+    let s:prompt = g:VimShell_Prompt
+endif
+if !exists('g:VimShell_SecondaryPrompt')
+    let s:secondary_prompt = '%% '
+else
+    let s:secondary_prompt = g:VimShell_SecondaryPrompt
+endif
 if !exists('g:VimShell_UserPrompt')
     let s:user_prompt = ''
 else
     let s:user_prompt = g:VimShell_UserPrompt
+endif
+
+if !exists('g:VimShell_ExecuteFileList')
+    let g:VimShell_ExecuteFileList = {}
 endif
 
 " Helper functions.
@@ -196,12 +210,12 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
     return 0
 endfunction"}}}
 function! vimshell#process_enter()"{{{
-    if getline('.') !~ vimshell#escape_match(g:VimShell_Prompt)
+    if getline('.') !~ vimshell#escape_match(s:prompt)
         " Prompt not found
 
-        if match(getline('$'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+        if match(getline('$'), vimshell#escape_match(s:prompt)) < 0
             " Create prompt line.
-            call append(line('$'), g:VimShell_Prompt)
+            call append(line('$'), s:prompt)
         endif
 
         " Search cursor file.
@@ -213,15 +227,15 @@ function! vimshell#process_enter()"{{{
         normal! G$
         " Execute cursor file.
         if isdirectory(l:filename)
-            call setline(line('$'), g:VimShell_Prompt . l:filename)
+            call setline(line('$'), s:prompt . l:filename)
         else
-            call setline(line('$'), g:VimShell_Prompt . 'vim ' . l:filename)
+            call setline(line('$'), s:prompt . 'vim ' . l:filename)
         endif
     endif
 
     if line('.') != line('$')
         " History execution.
-        if match(getline('$'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+        if match(getline('$'), vimshell#escape_match(s:prompt)) < 0
             " Insert prompt line.
             call append(line('$'), getline('.'))
         else
@@ -236,7 +250,7 @@ function! vimshell#process_enter()"{{{
     endif
 
     " Delete prompt string.
-    let l:line = substitute(getline('.'), '^' . g:VimShell_Prompt, '', '')
+    let l:line = substitute(getline('.'), '^' . s:prompt, '', '')
 
     " Delete comment.
     let l:line = substitute(l:line, '#.*$', '', '')
@@ -254,7 +268,7 @@ function! vimshell#process_enter()"{{{
     let l:line = substitute(l:line, '^\s\+', '', '')
     if l:line =~ '^\s*$'
         if g:VimShell_EnableAutoLs
-            call setline(line('.'), g:VimShell_Prompt . 'ls')
+            call setline(line('.'), s:prompt . 'ls')
             call vimshell#execute_internal_command('ls', [], {}, {})
 
             call vimshell#print_prompt()
@@ -263,7 +277,7 @@ function! vimshell#process_enter()"{{{
             call vimshell#start_insert()
         else
             " Ignore empty command line.
-            call setline(line('.'), g:VimShell_Prompt)
+            call setline(line('.'), s:prompt)
 
             call vimshell#start_insert()
         endif
@@ -407,7 +421,7 @@ function! vimshell#print_prompt()"{{{
         let b:vimshell_commandline_stack = []
     endif
     if empty(b:vimshell_commandline_stack)
-        let l:new_prompt = g:VimShell_Prompt
+        let l:new_prompt = s:prompt
     else
         let l:new_prompt = b:vimshell_commandline_stack[-1]
         call remove(b:vimshell_commandline_stack, -1)
@@ -495,25 +509,38 @@ endfunction"}}}
 " VimShell key-mappings functions."{{{
 function! vimshell#push_current_line()"{{{
     " Check current line.
-    if match(getline('.'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+    if match(getline('.'), vimshell#escape_match(s:prompt)) < 0
         return
     endif
 
     call add(b:vimshell_commandline_stack, getline('.'))
 
     " Set prompt line.
-    call setline(line('.'), g:VimShell_Prompt)
+    call setline(line('.'), s:prompt)
 
     startinsert!
 endfunction"}}}
+function! vimshell#push_and_execute(command)"{{{
+    " Check current line.
+    if match(getline('.'), vimshell#escape_match(s:prompt)) < 0
+        return
+    endif
+
+    call add(b:vimshell_commandline_stack, getline('.'))
+
+    " Set prompt line.
+    call setline(line('.'), s:prompt . a:command)
+
+    call vimshell#process_enter()
+endfunction"}}}
 
 function! vimshell#previous_prompt()"{{{
-    call search('^' . vimshell#escape_match(g:VimShell_Prompt), 'bWe')
+    call search('^' . vimshell#escape_match(s:prompt), 'bWe')
 endfunction"}}}
 function! vimshell#next_prompt()"{{{
-    call search('^' . vimshell#escape_match(g:VimShell_Prompt), 'We')
+    call search('^' . vimshell#escape_match(s:prompt), 'We')
 endfunction"}}}
-function! vimshell#switch_shell(split_flag)"{{{
+function! vimshell#switch_shell(split_flag, directory)"{{{
     if &filetype == 'vimshell'
         if winnr('$') != 1
             close
@@ -521,6 +548,12 @@ function! vimshell#switch_shell(split_flag)"{{{
             buffer #
         endif
 
+        if a:directory != ''
+            " Change current directory.
+            lcd `=fnamemodify(a:directory, ':p')`
+            call vimshell#print_prompt()
+        endif
+        call vimshell#start_insert()
         return
     endif
 
@@ -528,13 +561,15 @@ function! vimshell#switch_shell(split_flag)"{{{
     let l:cnt = 1
     while l:cnt <= winnr('$')
         if getwinvar(l:cnt, '&filetype') == 'vimshell'
-            let l:current = getcwd()
 
             execute l:cnt . 'wincmd w'
 
-            " Change current directory.
-            let b:vimshell_save_dir = l:current
-            lcd `=fnamemodify(l:current, ':p')`
+            if a:directory != ''
+                " Change current directory.
+                lcd `=fnamemodify(a:directory, ':p')`
+                call vimshell#print_prompt()
+            endif
+            call vimshell#start_insert()
             return
         endif
 
@@ -545,8 +580,6 @@ function! vimshell#switch_shell(split_flag)"{{{
     let l:cnt = 1
     while l:cnt <= bufnr('$')
         if getbufvar(l:cnt, '&filetype') == 'vimshell'
-            let l:current = getcwd()
-
             if a:split_flag
                 execute 'sbuffer' . l:cnt
                 execute 'resize' . winheight(0)*g:VimShell_SplitHeight / 100
@@ -554,9 +587,12 @@ function! vimshell#switch_shell(split_flag)"{{{
                 execute 'buffer' . l:cnt
             endif
 
-            " Change current directory.
-            let b:vimshell_save_dir = l:current
-            lcd `=fnamemodify(l:current, ':p')`
+            if a:directory != ''
+                " Change current directory.
+                lcd `=fnamemodify(a:directory, ':p')`
+                call vimshell#print_prompt()
+            endif
+            call vimshell#start_insert()
             return
         endif
 
@@ -564,10 +600,10 @@ function! vimshell#switch_shell(split_flag)"{{{
     endwhile
 
     " Create window.
-    call vimshell#create_shell(a:split_flag)
+    call vimshell#create_shell(a:split_flag, a:directory)
 endfunction"}}}
 function! vimshell#delete_previous_output()"{{{
-    let l:prompt = vimshell#escape_match(g:VimShell_Prompt)
+    let l:prompt = vimshell#escape_match(s:prompt)
     if s:user_prompt != ''
         let l:nprompt = '^\[%\] '
     else
@@ -609,13 +645,13 @@ function! vimshell#insert_last_word()"{{{
     startinsert!
 endfunction"}}}
 function! vimshell#run_help()"{{{
-    if match(getline('.'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+    if match(getline('.'), vimshell#escape_match(s:prompt)) < 0
         startinsert!
         return
     endif
 
     " Delete prompt string.
-    let l:line = substitute(getline('.'), '^' . vimshell#escape_match(g:VimShell_Prompt), '', '')
+    let l:line = substitute(getline('.'), '^' . vimshell#escape_match(s:prompt), '', '')
     if l:line =~ '^\s*$'
         startinsert!
         return
@@ -640,11 +676,11 @@ function! vimshell#run_help()"{{{
     startinsert!
 endfunction"}}}
 function! vimshell#paste_prompt()"{{{
-    if match(getline('.'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+    if match(getline('.'), vimshell#escape_match(s:prompt)) < 0
         return
     endif
 
-    if match(getline('$'), vimshell#escape_match(g:VimShell_Prompt)) < 0
+    if match(getline('$'), vimshell#escape_match(s:prompt)) < 0
         " Insert prompt line.
         call append(line('$'), getline('.'))
     else
@@ -654,7 +690,7 @@ function! vimshell#paste_prompt()"{{{
     normal! G
 endfunction"}}}
 function! vimshell#move_head()"{{{
-    call search(vimshell#escape_match(g:VimShell_Prompt), 'be', line('.'))
+    call search(vimshell#escape_match(s:prompt), 'be', line('.'))
     if col('.') != col('$')-1
         normal! l
     endif
@@ -663,7 +699,7 @@ endfunction"}}}
 function! vimshell#delete_line()"{{{
     let l:col = col('.')
     let l:mcol = col('$')
-    call setline(line('.'), g:VimShell_Prompt . getline('.')[l:col :])
+    call setline(line('.'), s:prompt . getline('.')[l:col :])
     call vimshell#move_head()
     if l:col == l:mcol-1
         startinsert!
@@ -698,7 +734,7 @@ function! vimshell#clear()"{{{
     endif
 endfunction"}}}
 
-function! vimshell#create_shell(split_flag)"{{{
+function! vimshell#create_shell(split_flag, directory)"{{{
     let l:bufname = 'vimshell'
     let l:cnt = 2
     while bufexists(l:bufname)
@@ -718,8 +754,10 @@ function! vimshell#create_shell(split_flag)"{{{
     setlocal bufhidden=hide
     let &l:omnifunc = 'vimshell#complete#history_complete'
 
-    " Save current directory.
+    " Change current directory.
     let b:vimshell_save_dir = getcwd()
+    let l:current = (a:directory != '')? a:directory : getcwd()
+    lcd `=fnamemodify(l:current, ':p')`
 
     " Load history.
     if !filereadable(g:VimShell_HistoryPath)

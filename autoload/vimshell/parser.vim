@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Oct 2009
+" Last Modified: 12 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -164,54 +164,60 @@ function! vimshell#parser#split_statements(script)"{{{
     return l:statements
 endfunction"}}}
 function! vimshell#parser#split_args(script)"{{{
-    let l:max = len(a:script)
+    " Substitute modifier.
+    let l:script = ''
+    for val in split(a:script)
+        let l:modify = split(val, ':[/\\]\@!')
+        let l:script .= ' ' . fnamemodify(l:modify[0], ':' . join(l:modify[1:], ':'))
+    endfor
+    let l:max = len(l:script)
     let l:args = []
     let l:arg = ''
     let l:i = 0
     while l:i < l:max
-        if a:script[l:i] == "'"
+        if l:script[l:i] == "'"
             " Single quote.
-            let l:end = matchend(a:script, "^'\\zs[^']*'", l:i)
+            let l:end = matchend(l:script, "^'\\zs[^']*'", l:i)
             if l:end == -1
                 throw 'Quote error'
             endif
 
-            let l:arg .= a:script[l:i+1 : l:end-2]
+            let l:arg .= l:script[l:i+1 : l:end-2]
             if l:arg == ''
-                call add(l:args, l:arg)
+                call add(l:args, '')
             endif
 
             let l:i = l:end
-        elseif a:script[l:i] == '"'
+        elseif l:script[l:i] == '"'
             " Double quote.
-            let l:end = matchend(a:script, '^"\zs\%([^"]\|\"\)*"', l:i)
+            let l:end = matchend(l:script, '^"\zs\%([^"]\|\"\)*"', l:i)
             if l:end == -1
                 throw 'Quote error'
             endif
 
-            let l:arg .= substitute(a:script[l:i+1 : l:end-2], '\\"', '"', 'g')
+            let l:arg .= substitute(l:script[l:i+1 : l:end-2], '\\"', '"', 'g')
             if l:arg == ''
-                call add(l:args, l:arg)
+                call add(l:args, '')
             endif
 
             let l:i = l:end
-        elseif a:script[l:i] == '`'
+        elseif l:script[l:i] == '`'
             " Back quote.
-            if a:script[l:i :] =~ '`='
-                let l:quote = matchstr(a:script, '^`=\zs[^`]*\ze`', l:i)
-                let l:end = matchend(a:script, '^`=[^`]*`', l:i)
+            if l:script[l:i :] =~ '^`='
+                let l:quote = matchstr(l:script, '^`=\zs[^`]*\ze`', l:i)
+                let l:end = matchend(l:script, '^`=[^`]*`', l:i)
                 let l:arg .= string(eval(l:quote))
             else
-                let l:quote = matchstr(a:script, '^`\zs[^`]*\ze`', l:i)
-                let l:end = matchend(a:script, '^`[^`]*`', l:i)
+                let l:quote = matchstr(l:script, '^`\zs[^`]*\ze`', l:i)
+                let l:end = matchend(l:script, '^`[^`]*`', l:i)
                 let l:arg .= substitute(system(l:quote), '\n', ' ', 'g')
             endif
             if l:arg == ''
-                call add(l:args, l:arg)
+                call add(l:args, '')
             endif
 
             let l:i = l:end
-        elseif a:script[i] == '\'
+        elseif l:script[i] == '\'
             " Escape.
             let l:i += 1
 
@@ -219,18 +225,16 @@ function! vimshell#parser#split_args(script)"{{{
                 throw 'Escape error'
             endif
 
-            let l:arg .= a:script[i]
+            let l:arg .= l:script[i]
             let l:i += 1
-        elseif a:script[i] == '#'
+        elseif l:script[i] == '#'
             " Comment.
-            if l:arg != ''
-                call add(l:args, l:arg)
-            endif
             break
-        elseif a:script[l:i] != ' '
-            let l:arg .= a:script[l:i]
+        elseif l:script[l:i] != ' '
+            let l:arg .= l:script[l:i]
             let l:i += 1
         else
+            " Space.
             if l:arg != ''
                 call add(l:args, l:arg)
             endif
@@ -379,9 +383,6 @@ function! s:parse_wildcard(script)"{{{
 
             " Expand wildcard.
             let l:expanded = split(escape(glob(l:wildcard), ' '), '\n')
-            if empty(l:expanded)
-                throw 'Unmatched wildcard'
-            endif
             let l:exclude_wilde = split(escape(glob(l:exclude[1:]), ' '), '\n')
             if !empty(l:exclude_wilde)
                 let l:candidates = l:expanded
