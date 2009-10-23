@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Oct 2009
+" Last Modified: 22 Oct 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,11 +23,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.35, for Vim 7.0
+" Version: 5.36, for Vim 7.0
 "=============================================================================
 
-if exists('g:loaded_vimshell') || v:version < 700
-  finish
+if v:version < 700
+    echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
+    finish
+elseif exists('g:loaded_vimshell')
+    finish
 endif
 
 let s:save_cpo = &cpo
@@ -39,18 +42,22 @@ nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shel
 nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
 nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
 nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
-nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#previous_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#next_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#delete_previous_output()<CR>
-nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#paste_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_move_end_argument) 0:<C-u>call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))<CR>
+nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
+nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
+nnoremap <silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
 
-inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#push_current_line()<CR>
-inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#insert_last_word()<CR>
-inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#run_help()<CR>
-inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#move_head()<CR>
-inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#delete_line()<CR>
-inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#clear()<CR>
+inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete_whole()
+inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete_insert()
+inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#complete#command_complete()
+inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
+inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
+inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
+inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
+inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
+inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
 
 nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
 nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)

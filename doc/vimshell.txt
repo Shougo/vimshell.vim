@@ -1,6 +1,6 @@
-*vimshell.txt*	Powerfull shell implemented by Vim
+*vimshell.txt*	Powerful shell implemented by Vim
 
-Version: 5.35
+Version: 5.36
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -118,6 +118,14 @@ The ability of vimshell will spread by creating plugin by yourself.
 CHANGELOG					*vimshell-changelog*
 
 ChangeLog 5.30-: {{{
+    5.36 :
+     - Added syntax keywords.
+     - Echo error when you use old Vim.
+     - Splitted mapping functions.
+     - Improved run_help.
+     - Implemented insert history completion.
+     - Improved completion.
+
     5.35 :
      - Improved open behaivior.
      - Fixed completion column bug.

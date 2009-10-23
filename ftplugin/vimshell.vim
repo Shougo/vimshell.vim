@@ -5,7 +5,7 @@
 " Execute command.
 nmap <buffer> <CR> <Plug>(vimshell_enter)
 " Hide vimshell.
-nnoremap <buffer><silent> q :<C-u>hide<CR>
+nmap <buffer> q <Plug>(vimshell_hide)
 " Move to previous prompt.
 nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
 " Move to next prompt.
@@ -22,10 +22,10 @@ nmap <buffer> E <Plug>(vimshell_move_end_argument)
 " Execute command.
 imap <buffer> <CR> <ESC><Plug>(vimshell_enter)
 " History completion.
-inoremap <buffer><expr><C-j>  exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete') ? 
-            \ neocomplcache#manual_omni_complete() : "\<C-x>\<C-o>\<C-p>"
+imap <buffer> <C-j>  <Plug>(vimshell_history_complete_whole)
+imap <buffer> <C-r>c  <Plug>(vimshell_history_complete_insert)
 " Command completion.
-inoremap <buffer><expr><TAB>  pumvisible() ? "\<C-n>" : vimshell#complete#insert_command_completion()
+imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
 " Move to Beginning of command.
 imap <buffer> <C-a> <Plug>(vimshell_move_head)
 " Delete all entered characters in the current line

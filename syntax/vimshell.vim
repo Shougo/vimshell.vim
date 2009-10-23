@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 07 Aug 2009
+" Last Modified: 19 Oct 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.7, for Vim 7.0
+" Version: 3.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.8:
+"     - Added keywords.
+"
 "   3.7:
 "     - Added user prompt.
 "
@@ -118,8 +121,12 @@ syn match   VimShellSpecial           '[|<>;&;]' contained
 syn match   VimShellVariable          '$\h\w*' contained
 syn match   VimShellVariable          '$$\h\w*' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
-syn keyword  vimshInternal        alias cd clear dirs ev exit h hide histdel history gcd iexe ls nop one popd pwd shell view vim vimsh  contained
-syn keyword  vimshSpecial         command internal contained
+syn keyword  vimshInternal        
+            \alias bg cd clear dirs echo exe exit galias gcd gexe h hide histdel history iexe
+            \ls nop one open popd pwd repeat screen sexe shell sudo view vim vimdiff vimsh
+            \contained
+syn keyword  vimshSpecial         command internal ev let vexe
+            \contained
 if has('win32') || ('win64')
     syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
     syn match   VimShellDirectory         '[/~]\=\f\+[/\\]\f*'
