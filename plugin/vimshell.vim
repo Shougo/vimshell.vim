@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 22 Oct 2009
+" Last Modified: 22 Nov 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,10 +59,12 @@ inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#
 inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
 inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
 
-nmap <silent> <Leader>sp     <Plug>(vimshell_split_switch)
-nmap <silent> <Leader>sn     <Plug>(vimshell_split_create)
-nmap <silent> <Leader>sh     <Plug>(vimshell_switch)
-nmap <silent> <Leader>sc     <Plug>(vimshell_create)
+if !(exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
+    silent! nmap <unique> <Leader>sp     <Plug>(vimshell_split_switch)
+    silent! nmap <unique> <Leader>sn     <Plug>(vimshell_split_create)
+    silent! nmap <unique> <Leader>sh     <Plug>(vimshell_switch)
+    silent! nmap <unique> <Leader>sc     <Plug>(vimshell_create)
+endif
 "}}}
 
 " Global options definition."{{{

@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by Vim
 
-Version: 5.36
+Version: 5.37
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -116,6 +116,10 @@ The ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
+
+    5.37 :
+     - Added g:VimShell_NoDefaultKeyMappings option.
+     - Unique key mappings.
 
 ChangeLog 5.30-: {{{
     5.36 :
