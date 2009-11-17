@@ -120,6 +120,8 @@ CHANGELOG					*vimshell-changelog*
     5.37 :
      - Added g:VimShell_NoDefaultKeyMappings option.
      - Unique key mappings.
+     - Improved echo when executing.
+     - Fixed delete_line error.
 
 ChangeLog 5.30-: {{{
     5.36 :

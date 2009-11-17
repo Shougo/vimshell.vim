@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Oct 2009
+" Last Modified: 17 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -132,7 +132,6 @@ function! vimshell#mappings#run_help()"{{{
         call vimshell#execute_internal_command('bg', ['man', '-P', 'cat', l:program], 
                     \{}, {'is_interactive' : 0, 'is_background' : 1})
     endif
-    0
 endfunction"}}}
 function! vimshell#mappings#paste_prompt()"{{{
     if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
@@ -163,7 +162,7 @@ function! vimshell#mappings#delete_line()"{{{
     let l:col = col('.')
     let l:mcol = col('$')
     call setline(line('.'), vimshell#get_prompt() . getline('.')[l:col :])
-    call vimshell#move_head()
+    call vimshell#mappings#move_head()
     if l:col == l:mcol-1
         startinsert!
     endif

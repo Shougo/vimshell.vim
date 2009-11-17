@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2009
+" Last Modified: 14 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,9 @@
 " Version: 1.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.8:
+"     - Improved echo.
+"
 "   1.7:
 "     - Improved kill processes.
 "
@@ -67,12 +70,12 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
             return 0
         endif
 
+        echo 'Running command.'
         while exists('b:vimproc_sub')
-            echo 'Running command.'
             call interactive#execute_pipe_out()
-            redraw
-            echo ''
         endwhile
+        redraw
+        echo ''
         let b:vimshell_system_variables['status'] = b:vimproc_status
     else
         let l:fd = a:fd
