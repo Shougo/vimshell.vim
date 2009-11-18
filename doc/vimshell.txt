@@ -122,6 +122,8 @@ CHANGELOG					*vimshell-changelog*
      - Unique key mappings.
      - Improved echo when executing.
      - Fixed delete_line error.
+     - Implemented pseudo device '/dev/clip'.
+     - Improved command completion in Windows.
 
 ChangeLog 5.30-: {{{
     5.36 :

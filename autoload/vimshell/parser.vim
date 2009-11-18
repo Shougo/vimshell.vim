@@ -97,8 +97,13 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
         if l:fd.stdout != ''
             if l:fd.stdout =~ '^>'
                 let l:fd.stdout = l:fd.stdout[1:]
-            elseif l:fd.stdout != '/dev/null'
-                " Open file.
+            elseif l:fd.stdout == '/dev/null'
+                " Nothing.
+            elseif l:fd.stdout == '/dev/clip'
+                " Clear.
+                let @+ = ''
+            else
+                " Create file.
                 call writefile([], l:fd.stdout)
             endif
         endif

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Nov 2009
+" Last Modified: 17 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -491,13 +491,25 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
     return call('vimshell#internal#' . a:command . '#execute', [a:command, a:args, l:fd, l:other_info])
 endfunction"}}}
 function! vimshell#read(fd)"{{{
-    if has('win32') || has('win64')
-        let l:ff = "\<CR>\<LF>"
-    else
-        let l:ff = "\<LF>"
+    if empty(a:fd) || a:fd.stdin == ''
+        return ''
     endif
-
-    return join(readfile(a:fd.stdin), l:ff) . l:ff
+    
+    if a:fd.stdout == '/dev/null'
+        " Nothing.
+        return ''
+    elseif a:fd.stdout == '/dev/clip'
+        " Write to clipboard.
+        return @+
+    else
+        " Read from file.
+        if has('win32') || has('win64')
+            let l:ff = "\<CR>\<LF>"
+        else
+            let l:ff = "\<LF>"
+            return join(readfile(a:fd.stdin), l:ff) . l:ff
+        endif
+    endif
 endfunction"}}}
 function! vimshell#print(fd, string)"{{{
     if a:string == ''
@@ -505,7 +517,12 @@ function! vimshell#print(fd, string)"{{{
     endif
 
     if !empty(a:fd) && a:fd.stdout != ''
-        if a:fd.stdout != '/dev/null'
+        if a:fd.stdout == '/dev/null'
+            " Nothing.
+        elseif a:fd.stdout == '/dev/clip'
+            " Write to clipboard.
+            let @+ .= a:string
+        else
             " Write file.
             let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stdout)
@@ -538,7 +555,12 @@ function! vimshell#print(fd, string)"{{{
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
     if !empty(a:fd) && a:fd.stdout != ''
-        if a:fd.stdout != '/dev/null'
+        if a:fd.stdout == '/dev/null'
+            " Nothing.
+        elseif a:fd.stdout == '/dev/clip'
+            " Write to clipboard.
+            let @+ .= a:string
+        else
             " Write file.
             let l:file = add(readfile(a:fd.stdout), a:string)
             call writefile(l:file, a:fd.stdout)
@@ -555,7 +577,12 @@ function! vimshell#print_line(fd, string)"{{{
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
     if !empty(a:fd) && a:fd.stderr != ''
-        if a:fd.stdout != '/dev/null'
+        if a:fd.stderr == '/dev/null'
+            " Nothing.
+        elseif a:fd.stderr == '/dev/clip'
+            " Write to clipboard.
+            let @+ .= a:string
+        else
             " Write file.
             let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stderr)

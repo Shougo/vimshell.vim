@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Oct 2009
+" Last Modified: 18 Nov 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -100,17 +100,21 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
         call add(l:ret, l:dict)
     endfor 
 
-    if len(a:cur_keyword_str) >= 2
+    if len(a:cur_keyword_str) >= 1
         " External commands.
         if has('win32') || has('win64')
             let l:path = substitute($PATH, '\\\?;', ',', 'g')
+            let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
+            let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
+                        \'"." . fnamemodify(v:val, ":e") =~ '.string(l:exts)), 'fnamemodify(v:val, ":t")')
         else
             let l:path = substitute($PATH, '/\?:', ',', 'g')
+            let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
+                        \'executable(v:val)'), 'fnamemodify(v:val, ":t")')
         endif
 
-        for keyword in map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
-                    \'executable(v:val)'), 'fnamemodify(v:val, ":t")')
-            let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : '[Command]', 'icase' : 1, 'rank' : 5 }
+        for keyword in l:list
+            let l:dict = { 'word' : keyword, 'abbr' : keyword . '*', 'menu' : '[Command]', 'icase' : 1, 'rank' : 5 }
             call add(l:ret, l:dict)
         endfor 
     endif

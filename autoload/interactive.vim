@@ -592,7 +592,12 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     if a:fd.stdout != ''
-        if a:fd.stdout != '/dev/null'
+        if a:fd.stdout == '/dev/null'
+            " Nothing.
+        elseif a:fd.stdout == '/dev/clip'
+            " Write to clipboard.
+            let @+ .= a:string
+        else
             " Write file.
             let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stdout)
@@ -636,12 +641,17 @@ function! s:error_buffer(fd, string)"{{{
     endif
 
     if a:fd.stderr != ''
-        if a:fd.stdout != '/dev/null'
+        if a:fd.stderr == '/dev/null'
+            " Nothing.
+        elseif a:fd.stderr == '/dev/clip'
+            " Write to clipboard.
+            let @+ .= a:string
+        else
             " Write file.
             let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stderr)
         endif
-
+        
         return
     endif
 
