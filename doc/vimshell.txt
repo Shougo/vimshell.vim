@@ -124,6 +124,7 @@ CHANGELOG					*vimshell-changelog*
      - Fixed delete_line error.
      - Implemented pseudo device '/dev/clip'.
      - Improved command completion in Windows.
+     - Implemented mkcd internal command.
 
 ChangeLog 5.30-: {{{
     5.36 :

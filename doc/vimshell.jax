@@ -1,0 +1,152 @@
+*vimshell.txt*	Vimで実装された強力なシェル
+
+Version: 5.37
+Author : Shougo <Shougo.Matsu@gmail.com>
+License: MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+CONTENTS					*vimshell-contents*
+
+Introduction		|vimshell-introduction|
+Install			|vimshell-install|
+Interface		|vimshell-interface|
+  Commands		  |vimshell-commands|
+  Variables		  |vimshell-variables|
+  Key mappings		  |vimshell-key-mappings|
+Examples		|vimshell-examples|
+Internal Commands	|vimshell-internal-commands|
+Special Commands	|vimshell-special-commands|
+Create plugin		|vimshell-create-plugin|
+ToDo			|vimshell-todo|
+Bugs			|vimshell-bugs|
+Changelog		|vimshell-changelog|
+
+==============================================================================
+INTRODUCTION					*vimshell-introduction*
+
+vimshellは外部のシェルを使わず、100% VimScriptによって実装された究極のシェルです。
+ただし、eshellとは違ってまだまだ未完成です。
+一番の特徴としては、Vimのプラグインと連携ができることです。
+特にWindowsはシェルが貧弱なので、使用していてイライラしますが、vimshellはWindowsでも動作するので安心です。
+ただしWindows上では一部の機能が制限されるので注意。
+加えて、他のシェルの便利な機能を多数取り込んでいます。
+設定して当たり前の機能は標準的に使えるため、zshと比べて設定の手間もありません。
+
+ただし非同期実行を行わない場合、vimshellはVimのシェル設定を用いてプログラムを起動します。
+よって、シェルは適切に設定しておく必要があります。
+
+ちなみに、使いやすいシェルを目指しているため、変数の規則などが普通のシェルと異なります。
+
+==============================================================================
+USAGE						*vimshell-usage*
+
+vimshellを起動するには、|:VimShell|コマンドを実行します。
+これが面倒なら、便利なキーマッピングも定義されているので使用すると良いでしょう。
+一部の相違点を除けば、vimshellは他のシェルと同じように動作します。
+よって、すぐに使い始めることができるでしょう。
+ただし、vimshellは\をエスケープシーケンスとして認識します。
+たとえWindows環境であってもパスは/を用いなければなりません。
+
+==============================================================================
+INSTALL						*vimshell-install*
+
+http://github.com/Shougo/vimshell/tree/master
+より、配布ファイルをVimの'runtimepath'にコピーします。
+ただし、presen/vimshell.txtとRakefileは必要ありません。
+
+==============================================================================
+INTERFACE					*vimshell-interface*
+
+------------------------------------------------------------------------------
+COMMANDS 					*vimshell-commands*
+
+:VimShell                                       *:VimShell*
+		vimshellを起動します。
+
+------------------------------------------------------------------------------
+KEY MAPPINGS 					*vimshell-key-mappings*
+
+<Plug>(vimshell_)				*<Plug>(vimshell_)*
+		
+
+==============================================================================
+EXAMPLES					*vimshell-examples*
+>
+	" Initialize execute file list.
+	let g:VimShell_ExecuteFileList = {}
+	call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
+	let g:VimShell_ExecuteFileList['rb'] = 'ruby'
+	let g:VimShell_ExecuteFileList['pl'] = 'perl'
+	let g:VimShell_ExecuteFileList['py'] = 'python'
+	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
+	
+	let g:VimShell_EnableInteractive = 1
+	let g:VimShell_EnableSmartCase = 1
+	let g:VimShell_EnableAutoLs = 1
+	
+	if has('win32') || has('win64') 
+	    " Display user name on Windows.
+	    let g:VimShell_Prompt = $USERNAME."% "
+	else
+	    " Display user name on Linux.
+	    let g:VimShell_Prompt = $USER."% "
+	
+	    call vimshell#set_execute_file('bmp,jpg,png,gif', 'gexe eog')
+	    call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
+	    let g:VimShell_ExecuteFileList['zip'] = 'zipinfo'
+	    call vimshell#set_execute_file('tgz,gz', 'gzcat')
+	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
+	endif
+<
+==============================================================================
+INTERNAL COMMANDS				*vimshell-internal-commands*
+
+alias {alias-name} = {command}						*alias*
+		vimshellにaliasを定義します。vimshellは{alias-name}がコマンド名として使用されると、
+		自動的に{command}に置き換えます。普通のシェルとは違い、 = の前後に空白があっても動作します。
+
+bg {command}						*bg*
+		commandをバックグラウンドで起動します。非同期実行機能が有効でないと動作しません。
+		vimshellのバックグラウンド実行は新たにバッファを開き、そこに{command}の出力を書き出します。
+		bgの場合、ユーザーからの入力は一切受け付けません。
+		バックグラウンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に終了させます。
+
+==============================================================================
+SPECIAL COMMANDS				*vimshell-special-commands*
+
+==============================================================================
+TODO						*vimshell-todo*
+
+==============================================================================
+BUGS						*vimshell-bugs*
+
+==============================================================================
+CREATE PLUGIN					*vimshell-create-plugin*
+
+In this clause, I comment on a method to make plugin of vimshell.
+The ability of vimshell will spread by creating plugin by yourself.
+
+==============================================================================
+CHANGELOG					*vimshell-changelog*
+
+doc/vimshell.txtを参照せよ。
+
+==============================================================================
+vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:
