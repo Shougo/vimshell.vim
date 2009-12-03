@@ -44,10 +44,10 @@ INTRODUCTION					*vimshell-introduction*
 ==============================================================================
 USAGE						*vimshell-usage*
 
-You can start vimshell in ":VimShell". 
-Because vimshell works similar with a common shell, you may operate it intuitively. 
-But vimshell perform the path appointment in '/'. Vimshell is misunderstood 
-with escape sequence when you use '\' by Windows for a path and do not work.
+You can start vimshell in ":VimShell".  Because vimshell works similar with
+a common shell, you may operate it intuitively.  But vimshell perform the
+path appointment in '/'. Vimshell is misunderstood with escape sequence when
+you use '\' by Windows for a path and do not work.
 
 ==============================================================================
 INSTALL						*vimshell-install*
@@ -111,8 +111,8 @@ BUGS						*vimshell-bugs*
 ==============================================================================
 CREATE PLUGIN					*vimshell-create-plugin*
 
-In this clause, I comment on a method to make plugin of vimshell.
-The ability of vimshell will spread by creating plugin by yourself.
+In this clause, I comment on a method to make plugin of vimshell.  The
+ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
@@ -125,6 +125,7 @@ CHANGELOG					*vimshell-changelog*
      - Implemented pseudo device '/dev/clip'.
      - Improved command completion in Windows.
      - Implemented mkcd internal command.
+     - Append last line.
 
 ChangeLog 5.30-: {{{
     5.36 :
@@ -561,4 +562,4 @@ ChangeLog 3.9-1.0{{{
      - Initial version.}}}
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help:norl:fen:fdl=0:fdm=marker:
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:

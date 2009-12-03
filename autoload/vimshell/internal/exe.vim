@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Nov 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -71,6 +71,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         endif
 
         echo 'Running command.'
+        call append(line('$'), '')
         while exists('b:vimproc_sub')
             call interactive#execute_pipe_out()
         endwhile

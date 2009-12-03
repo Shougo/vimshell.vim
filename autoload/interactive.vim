@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2009
+" Last Modified: 03 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   1.33:
 "     - Improved timeout.
+"     - Append last line.
 "
 "   1.32:
 "     - Improved highlight of escape sequence.
@@ -614,19 +615,13 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     " Strip <CR>.
-    let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
+    let l:line = getline(line('$'))
+    let l:string = (l:line == '...' ? '' : l:line) . substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
     let l:lines = split(l:string, '\n', 1)
-    if line('$') == 1 && empty(getline('$'))
-        call setline(line('$'), l:lines[0])
-        let l:lines = l:lines[1:]
-    endif
+    call setline(line('$'), l:lines[0])
 
-    for l:line in l:lines
-        if getline(line('$')) == '...'
-            call setline(line('$'), l:line)
-        else
-            call append(line('$'), l:line)
-        endif
+    for l:line in l:lines[1:]
+        call append(line('$'), l:line)
     endfor
 
     call interactive#highlight_escape_sequence()
