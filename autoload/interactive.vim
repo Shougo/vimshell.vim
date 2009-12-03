@@ -615,8 +615,8 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     " Strip <CR>.
-    let l:line = getline(line('$'))
-    let l:string = (l:line == '...' ? '' : l:line) . substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
+    let l:last_line = getline(line('$'))
+    let l:string = (l:last_line == '...' ? '' : l:last_line) . substitute(l:string, '\r', '', 'g')
     let l:lines = split(l:string, '\n', 1)
     call setline(line('$'), l:lines[0])
 
