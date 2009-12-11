@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by Vim
 
-Version: 5.37
+Version: 5.38
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,12 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    5.38 :
+     - Fixed stdout flush bug.
+     - Append last line when interactive error.
+     - Syntax clear in clear command. 
+
+ChangeLog 5.30-: {{{
     5.37 :
      - Added g:VimShell_NoDefaultKeyMappings option.
      - Unique key mappings.
@@ -127,7 +133,6 @@ CHANGELOG					*vimshell-changelog*
      - Implemented mkcd internal command.
      - Append last line.
 
-ChangeLog 5.30-: {{{
     5.36 :
      - Added syntax keywords.
      - Echo error when you use old Vim.

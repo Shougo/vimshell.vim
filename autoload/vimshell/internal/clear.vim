@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: clear.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 31 Mar 2009
+" Last Modified: 11 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,8 +26,12 @@
 " Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2:
+"     - Syntax clear.
+"
 "   1.1:
 "     - Supported vimshell Ver.3.2.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -43,4 +47,11 @@
 function! vimshell#internal#clear#execute(program, args, fd, other_info)
     " Clean up the screen.
     % delete _
+    highlight clear
+    
+    if has('gui_running')
+        hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+    else
+        hi def link VimShellPrompt Identifier
+    endif
 endfunction
