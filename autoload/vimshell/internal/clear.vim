@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   1.2:
@@ -47,11 +47,8 @@
 function! vimshell#internal#clear#execute(program, args, fd, other_info)
     " Clean up the screen.
     % delete _
+    syntax clear
     highlight clear
     
-    if has('gui_running')
-        hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-    else
-        hi def link VimShellPrompt Identifier
-    endif
+    runtime! syntax/vimshell.vim
 endfunction
