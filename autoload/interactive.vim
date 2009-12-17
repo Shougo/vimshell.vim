@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 17 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,78 +21,6 @@
 "     CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-" }}}
-" Version: 1.33, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.33:
-"     - Improved timeout.
-"     - Append last line.
-"
-"   1.32:
-"     - Improved highlight of escape sequence.
-"     - Improved execute message.
-"     - Overwrite highlight Normal in escape sequence range.
-"
-"   1.31:
-"     - Optimized output.
-"     - Fixed tail space bug(Thanks Nico).
-"     - Fixed prompt history bug(Thanks Nico).
-"
-"   1.30:
-"     - Implemented iexe completion.
-"     - Implemented iexe prompt.
-"     - Improved response.
-"     - Improved arguments completion.
-"     - Report error in print when lines is too long.
-"
-"   1.29:
-"     - Implemented force exit.
-"     - Catch kill error.
-"     - Improved prompt in background pty(Thanks Nico!).
-"     - Supported input empty.
-"     - Supported completion on pty.
-"
-"   1.28:
-"     - Implemented input cancel.
-"     - Improved signal.
-"     - Stripped "\n$" when print_buffer.
-"     - Echo in running command.
-"
-"   1.27:
-"     - Fixed prompt in background pty(Thanks Nico!).
-"     - Stripped <CR>(Thanks Nico!).
-"     - Improved output in background program.
-"
-"   1.26:
-"     - Improved error highlight.
-"     - Implemented password input.
-"
-"   1.25: Fixed escape sequence.
-"     - Improved highlight timing.
-"     - Implemented error highlight.
-"     - Added g:Interactive_EscapeColors option.
-"     - Refactoringed.
-"
-"   1.24: Supported escape sequence.
-"
-"   1.23: Supported pipe.
-"
-"   1.22: Refactoringed.
-"     - Get status.
-"     - Kill zombee process.
-"
-"   1.21: Implemented redirection.
-"
-"   1.20: Independent from vimshell.
-"
-"   1.11: Improved autocmd.
-"
-"   1.10: Use vimshell.
-"
-"   1.01: Compatible Windows and Linux.
-"
-"   1.00: Initial version.
 " }}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -403,13 +330,17 @@ function! interactive#exit()"{{{
 
     " Get status.
     for sub in b:vimproc_sub
-        let [l:cond, l:status] = b:vimproc.api.vp_waitpid(sub.pid)
+        let [l:cond, l:status] = sub.waitpid()
         if l:cond != 'exit'
             try
                 " Kill process.
                 " 15 == SIGTERM
-                call b:vimproc.api.vp_kill(sub.pid, 15)
-            catch /No such process/
+                call sub.kill(15)
+            catch
+                " Ignore error.
+                unlet b:vimproc_sub
+                unlet b:vimproc_fd
+                return
             endtry
         endif
     endfor
@@ -420,7 +351,6 @@ function! interactive#exit()"{{{
         normal! G$
     endif
 
-    unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
 endfunction"}}}
@@ -433,7 +363,7 @@ function! interactive#force_exit()"{{{
     for sub in b:vimproc_sub
         try
             " 15 == SIGTERM
-            call b:vimproc.api.vp_kill(sub.pid, 15)
+            call sub.vp_kill(15)
         catch /No such process/
         endtry
     endfor
@@ -443,7 +373,6 @@ function! interactive#force_exit()"{{{
         normal! G$
     endif
 
-    unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
 endfunction"}}}
@@ -456,7 +385,7 @@ function! interactive#hang_up()"{{{
     for sub in b:vimproc_sub
         try
             " 15 == SIGTERM
-            call b:vimproc.api.vp_kill(sub.pid, 15)
+            call sub.kill(15)
             echomsg 'Killed'
         catch /No such process/
         endtry
@@ -467,7 +396,6 @@ function! interactive#hang_up()"{{{
         normal! G$
     endif
 
-    unlet b:vimproc
     unlet b:vimproc_sub
     unlet b:vimproc_fd
 endfunction"}}}
@@ -481,7 +409,7 @@ function! interactive#interrupt()"{{{
     for sub in b:vimproc_sub
         try
             " 1 == SIGINT
-            call b:vimproc.api.vp_kill(sub.pid, 1)
+            call sub.kill(1)
         catch /No such process/
         endtry
     endfor
@@ -618,8 +546,8 @@ function! s:print_buffer(fd, string)"{{{
     let l:last_line = getline(line('$'))
     let l:string = (l:last_line == '...' ? '' : l:last_line) . substitute(l:string, '\r', '', 'g')
     let l:lines = split(l:string, '\n', 1)
+    
     call setline(line('$'), l:lines[0])
-
     for l:line in l:lines[1:]
         call append(line('$'), l:line)
     endfor
@@ -659,14 +587,14 @@ function! s:error_buffer(fd, string)"{{{
 
     " Print buffer.
     " Strip <CR>.
-    let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
+    let l:last_line = getline(line('$'))
+    let l:string = (l:last_line == '...' ? '' : l:last_line) . substitute(l:string, '\r', '', 'g')
     let l:lines = map(split(l:string, '\n', 1), '"!!! " . v:val . " !!!"')
-    if line('$') == 1 && empty(getline('$'))
-        call setline(line('$'), l:lines[0])
-        call append(line('$'), l:lines[1:])
-    else
-        call append(line('$'), l:lines)
-    endif
+    
+    call setline(line('$'), l:lines[0])
+    for l:line in l:lines[1:]
+        call append(line('$'), l:line)
+    endfor
 
     " Set cursor.
     normal! G$
@@ -679,7 +607,6 @@ function! interactive#read(args)"{{{
     " Exit previous command.
     call s:on_exit()
 
-    let l:proc = proc#import()
     let l:sub = []
 
     " Search pipe.
@@ -696,7 +623,7 @@ function! interactive#read(args)"{{{
 
     for command in l:commands
         try
-            call add(l:sub, l:proc.popen3(command))
+            call add(l:sub, vimshell#popen3(command))
         catch
             if empty(command)
                 let l:error = 'Wrong pipe used.'
@@ -711,7 +638,6 @@ function! interactive#read(args)"{{{
     endfor
 
     " Set variables.
-    let b:vimproc = l:proc
     let b:vimproc_sub = l:sub
     let b:vimproc_fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
 

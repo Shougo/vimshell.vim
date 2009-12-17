@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2009
-" Usage: Just source this file.
+" Last Modified: 17 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +29,7 @@
 "     - Improved kill processes.
 "     - Send interrupt when press <C-c>.
 "     - Improved tab completion.
+"     - Use vimproc.vim.
 "
 "   1.15: 
 "     - Implemented delete line and move head.
@@ -116,7 +116,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     endif
 
     " Initialize.
-    let l:proc = proc#import()
     let l:sub = []
 
     " Search pipe.
@@ -132,9 +131,9 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     for command in l:commands
         try
             if has('win32') || has('win64')
-                call add(l:sub, l:proc.popen3(command))
+                call add(l:sub, vimproc#popen3(command))
             else
-                call add(l:sub, l:proc.ptyopen(command))
+                call add(l:sub, vimproc#ptyopen(command))
             endif
         catch 'list index out of range'
             if empty(command)
@@ -154,10 +153,9 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call interactive#force_exit()
     endif
 
-    call s:init_bg(l:proc, l:sub, a:args, a:other_info.is_interactive)
+    call s:init_bg(l:sub, a:args, a:other_info.is_interactive)
 
     " Set variables.
-    let b:vimproc = l:proc
     let b:vimproc_sub = l:sub
     let b:vimproc_fd = a:fd
     let b:vimproc_is_secret = 0
@@ -194,7 +192,7 @@ function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
     call vimshell#internal#iexe#execute('iexe', a:args, {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 endfunction"}}}
 
-function! s:init_bg(proc, sub, args, is_interactive)"{{{
+function! s:init_bg(sub, args, is_interactive)"{{{
     " Save current directiory.
     let l:cwd = getcwd()
 

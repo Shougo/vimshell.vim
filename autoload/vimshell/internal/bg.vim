@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2009
-" Usage: Just source this file.
+" Last Modified: 17 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +27,7 @@
 " ChangeLog: "{{{
 "   1.15:
 "     - Improved kill processes.
+"     - Use vimproc.vim.
 "
 "   1.14:
 "     - Improved error message.
@@ -130,7 +130,6 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     endif
 
     " Initialize.
-    let l:proc = proc#import()
     let l:sub = []
 
     " Search pipe.
@@ -146,9 +145,9 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     for command in l:commands
         try
             if g:VimShell_UsePopen2
-                call add(l:sub, l:proc.popen2(command))
+                call add(l:sub, vimproc#popen2(command))
             else
-                call add(l:sub, l:proc.popen3(command))
+                call add(l:sub, vimproc#popen3(command))
             endif
         catch 'list index out of range'
             if empty(command)
@@ -192,7 +191,6 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     hi def link VimShellErrorHidden Ignore
 
     " Set variables.
-    let b:vimproc = l:proc
     let b:vimproc_sub = l:sub
     let b:vimproc_fd = a:fd
 

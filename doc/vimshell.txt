@@ -121,6 +121,8 @@ CHANGELOG					*vimshell-changelog*
      - Fixed stdout flush bug.
      - Append last line when interactive error.
      - Syntax clear in clear command. 
+     - Ignore interactive exit error.
+     - Use vimproc.vim.
 
 ChangeLog 5.30-: {{{
     5.37 :
