@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2009
+" Last Modified: 21 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,14 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.16, for Vim 7.0
+" Version: 1.17, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.17: 
+"     - Use updatetime.
+"     - Deleted CursorHold event.
+"     - Deleted echo.
+"
 "   1.16: 
 "     - Improved kill processes.
 "     - Send interrupt when press <C-c>.
@@ -170,7 +175,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         endif
     endif
 
-    echo 'Running command.'
     if has('win32') || has('win64')
         call interactive#execute_pipe_out()
     else
@@ -180,8 +184,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
             let l:cnt += 1
         endwhile
     endif
-    redraw
-    echo ''
 
     startinsert!
 
@@ -257,34 +259,40 @@ function! s:init_bg(sub, args, is_interactive)"{{{
         nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
         nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
 
-        autocmd vimshell_iexe CursorHold <buffer>  call s:on_hold()
         autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
+        autocmd vimshell_iexe InsertEnter <buffer>  call s:on_insert_enter()
+        autocmd vimshell_iexe InsertLeave <buffer>  call s:on_insert_leave()
     endif
 
     normal! G$
+    
+    doautocmd InsertEnter
     startinsert!
 endfunction"}}}
 
 function! s:on_execute()
-    echo 'Running command.'
     if has('win32') || has('win64')
         call interactive#execute_pipe_inout(0)
     else
         call interactive#execute_pty_inout(0)
     endif
-    redraw
-    echo ''
 endfunction
 
 function! s:on_hold()
-    echo 'Running command.'
     if has('win32') || has('win64')
         call interactive#execute_pipe_out()
     else
         call interactive#execute_pty_out()
     endif
-    redraw
-    echo ''
+endfunction
+
+function! s:on_insert_enter()
+    let s:save_updatetime = &updatetime
+    let &updatetime = 50
+endfunction
+
+function! s:on_insert_leave()
+    let &updatetime = s:save_updatetime
 endfunction
 
 function! s:on_exit()

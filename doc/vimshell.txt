@@ -123,6 +123,12 @@ CHANGELOG					*vimshell-changelog*
      - Syntax clear in clear command. 
      - Ignore interactive exit error.
      - Use vimproc.vim.
+     - Fixed error in readonly buffer.
+     - Deleted interactive pty code.
+     - Use updatetime in iexe.
+     - Deleted CursorHold event in iexe.
+     - Deleted echo in iexe.
+     - Fixed iexe for echoback.
 
 ChangeLog 5.30-: {{{
     5.37 :

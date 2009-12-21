@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2009
+" Last Modified: 21 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,10 +34,14 @@
 " Utility functions.
 
 function! s:SID_PREFIX()
-    return matchstr(expand('<sfile>'), '<SNR>\d\+_')
+    return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
 endfunction
 
 let s:password_regex = 
+            \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
+            \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
+            \'[Pp]assword'
+let s:character_regex = 
             \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
             \'[Pp]assword'
@@ -119,78 +123,58 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
         call b:vimproc_sub[0].write(l:in . "\<NL>")
         let b:vimproc_is_secret = 0
     elseif !b:vimproc_sub[0].eof
-        if a:is_interactive
-            set imsearch=0
-            if match(getline('$'), g:VimShell_Prompt) < 0
-                let l:prompt = getline('$')
-            else
-                let l:prompt = ''
-            endif
-            if exists('*neocomplcache#get_complete_words')
-                let l:in = input(l:prompt, '', 'customlist,'.s:SID_PREFIX().'complete_words')
-            else
-                let l:in = input(l:prompt)
-            endif
+        let l:in = getline('.')
 
-            if l:in != '' && l:in !~ ""
-                if match(getline('$'), g:VimShell_Prompt) < 0
-                    call setline(line('$'), getline('$') . l:in)
-                else
-                    call append(line('$'), l:in)
-                endif
-            endif
+        if l:in == ''
+            " Do nothing.
+
+        elseif l:in == '...'
+            " Working
+
+        elseif !exists('b:prompt_history')
+            let l:in = ''
+
+        elseif exists("b:prompt_history['".line('.')."']")
+            let l:in = l:in[len(b:prompt_history[line('.')]) : ]
+
         else
-            let l:in = getline('.')
-
-            if l:in == ''
-                " Do nothing.
-
-            elseif l:in == '...'
-                " Working
-
-            elseif !exists('b:prompt_history')
-                let l:in = ''
-
-            elseif exists("b:prompt_history['".line('.')."']")
-                let l:in = l:in[len(b:prompt_history[line('.')]) : ]
-
-            else
-                " Maybe line numbering got disrupted, search for a matching prompt.
-                let l:prompt_search = 0
-                for pnr in reverse(sort(keys(b:prompt_history)))
-                    let l:prompt_length = len(b:prompt_history[pnr])
-                    " In theory 0 length or ' ' prompt shouldn't exist, but still...
-                    if l:prompt_length > 0 && b:prompt_history[pnr] != ' '
-                        " Does the current line have this prompt?
-                        if l:in[0 : l:prompt_length - 1] == b:prompt_history[pnr]
+            " Maybe line numbering got disrupted, search for a matching prompt.
+            let l:prompt_search = 0
+            for pnr in reverse(sort(keys(b:prompt_history)))
+                let l:prompt_length = len(b:prompt_history[pnr])
+                " In theory 0 length or ' ' prompt shouldn't exist, but still...
+                if l:prompt_length > 0 && b:prompt_history[pnr] != ' '
+                    " Does the current line have this prompt?
+                    if l:in[: l:prompt_length - 1] == b:prompt_history[pnr]
                         let l:in = l:in[l:prompt_length : ]
-                            let l:prompt_search = pnr
-                        endif
+                        let l:prompt_search = pnr
+                    endif
+                endif
+            endfor
+            " Still nothing? Maybe a multi-line command was pasted in.
+            let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
+            if l:prompt_search == 0 && l:max_prompt < line('$')
+                for i in range(l:max_prompt, line('$'))
+                    if i == l:max_prompt
+                        let l:in = getline(i)
+                        let l:in = l:in[len(b:prompt_history[i]) : ]
+                    else
+                        let l:in = l:in . getline(i)
                     endif
                 endfor
-                " Still nothing? Maybe a multi-line command was pasted in.
-                let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
-                if l:prompt_search == 0 && l:max_prompt < line('$')
-                    for i in range(l:max_prompt, line('$'))
-                        if i == l:max_prompt
-                            let l:in = getline(i)
-                            let l:in = l:in[len(b:prompt_history[i]) : ]
-                        else
-                            let l:in = l:in . getline(i)
-                        endif
-                    endfor
-                    let l:prompt_search = l:max_prompt
-                endif
+                let l:prompt_search = l:max_prompt
+            endif
 
-                " Still nothing? We give up.
-                if l:prompt_search == 0
-                    echohl WarningMsg | echo "Invalid input." | echohl None
-                    normal! G$
-                    startinsert!
-                    return
-                endif
+            " Still nothing? We give up.
+            if l:prompt_search == 0
+                echohl WarningMsg | echo "Invalid input." | echohl None
+                normal! G$
+                startinsert!
+                return
             endif
         endif
+        " Delete input string for echoback.
+        call setline(line('.'), getline('.')[: -(len(l:in)+1)])
 
         " record command history
         if !exists('b:interactive_command_history')
@@ -229,7 +213,7 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
         return
     elseif b:vimproc_sub[-1].eof
         call interactive#exit()
-    elseif !a:is_interactive
+    else
         normal! G$
         startinsert!
     endif
@@ -240,13 +224,12 @@ function! interactive#execute_pty_out()"{{{
         return
     endif
 
-    echo 'Running command.'
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     let l:outputed = 0
     for sub in b:vimproc_sub
         if !sub.eof
-            let l:read = sub.read(-1, 500)
+            let l:read = sub.read(-1, 10)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -256,15 +239,13 @@ function! interactive#execute_pty_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.read(-1, 500)
+                let l:read = sub.read(-1, 10)
                 let l:outputed = 1
             endwhile
         endif
 
         let l:i += 1
     endfor
-    redraw
-    echo ''
 
     " record prompt used on this line
     if !exists('b:prompt_history')
@@ -543,14 +524,15 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     " Strip <CR>.
+    if getline(line('$')) == '...'
+        $delete
+    endif
     let l:last_line = getline(line('$'))
-    let l:string = (l:last_line == '...' ? '' : l:last_line) . substitute(l:string, '\r', '', 'g')
-    let l:lines = split(l:string, '\n', 1)
     
-    call setline(line('$'), l:lines[0])
-    for l:line in l:lines[1:]
-        call append(line('$'), l:line)
-    endfor
+    $delete
+    let l:lines = split(l:last_line . substitute(l:string, '\r', '', 'g'), '\n', 1)
+    
+    call append(line('$'), l:lines)
 
     call interactive#highlight_escape_sequence()
 
