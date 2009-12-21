@@ -229,7 +229,7 @@ function! interactive#execute_pty_out()"{{{
     let l:outputed = 0
     for sub in b:vimproc_sub
         if !sub.eof
-            let l:read = sub.read(-1, 10)
+            let l:read = sub.read(-1, 40)
             while l:read != ''
                 if l:i < l:submax
                     " Write pipe.
@@ -239,7 +239,7 @@ function! interactive#execute_pty_out()"{{{
                     redraw
                 endif
 
-                let l:read = sub.read(-1, 10)
+                let l:read = sub.read(-1, 40)
                 let l:outputed = 1
             endwhile
         endif

@@ -29,6 +29,7 @@
 "     - Use updatetime.
 "     - Deleted CursorHold event.
 "     - Deleted echo.
+"     - Improved filetype.
 "
 "   1.16: 
 "     - Improved kill processes.
@@ -179,7 +180,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call interactive#execute_pipe_out()
     else
         let l:cnt = 0
-        while line('$') == 1 && col('.') == 1 && l:cnt < 15
+        while l:cnt < 100
             call interactive#execute_pty_out()
             let l:cnt += 1
         endwhile
@@ -214,8 +215,7 @@ function! s:init_bg(sub, args, is_interactive)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal wrap
-    setfiletype iexe
-    execute 'setfiletype ' . a:args[0]
+    execute 'setfiletype iexe_' . a:args[0]
 
     " Set syntax.
     syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline

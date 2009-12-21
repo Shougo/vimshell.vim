@@ -129,6 +129,9 @@ CHANGELOG					*vimshell-changelog*
      - Deleted CursorHold event in iexe.
      - Deleted echo in iexe.
      - Fixed iexe for echoback.
+     - Improved filetype in iexe.
+     - Improved read time.
+     - Improved iexe wait.
 
 ChangeLog 5.30-: {{{
     5.37 :
