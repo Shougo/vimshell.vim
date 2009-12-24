@@ -2,8 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 03 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 23 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +26,7 @@
 " Version: 5.38, for Vim 7.0
 "=============================================================================
 
+" Initialize."{{{
 if !exists('g:VimShell_Prompt')
     let s:prompt = 'vimshell% '
 else
@@ -45,7 +45,33 @@ endif
 
 if !exists('g:VimShell_ExecuteFileList')
     let g:VimShell_ExecuteFileList = {}
-endif
+endif"}}}
+
+augroup VimShellAutoCmd"{{{
+    autocmd!
+    autocmd BufEnter * if &filetype == 'vimshell' | call s:save_current_dir()
+    autocmd BufLeave * if &filetype == 'vimshell' | call s:restore_current_dir()
+augroup end"}}}
+
+" Plugin keymappings"{{{
+nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR>
+nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
+nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
+nnoremap <silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
+
+inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
+inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
+inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#complete#command_complete#complete()
+inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
+inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
+inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
+inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
+inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
+inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
+"}}}
 
 " Helper functions.
 function! vimshell#set_execute_file(exts, program)"{{{
@@ -110,6 +136,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal bufhidden=hide
+    setlocal noreadonly
     let &l:omnifunc = ''
 
     " Change current directory.
@@ -699,6 +726,13 @@ endfunction"}}}
 function! vimshell#get_user_prompt()"{{{
     return s:user_prompt
 endfunction"}}}
+function! vimshell#get_cur_text()"{{{
+    return substitute((col('.') < 2)? '' : getline('.')[: col('.')-2], 
+                \'^' . g:VimShell_Prompt . '\s*', '', '')
+endfunction"}}}
+function! vimshell#check_prompt()"{{{
+    return getline('.') =~ '^\V' . s:prompt
+endfunction"}}}
 "}}}
 
 function! s:save_current_dir()"{{{
@@ -713,11 +747,5 @@ function! s:restore_current_dir()"{{{
         let b:vimshell_save_dir = l:current_dir
     endif
 endfunction"}}}
-
-augroup VimShellAutoCmd"{{{
-    autocmd!
-    autocmd BufEnter * if &filetype == 'vimshell' | call s:save_current_dir()
-    autocmd BufLeave * if &filetype == 'vimshell' | call s:restore_current_dir()
-augroup end"}}}
 
 " vim: foldmethod=marker

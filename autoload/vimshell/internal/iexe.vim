@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Dec 2009
+" Last Modified: 23 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.17, for Vim 7.0
+" Version: 1.18, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.18: 
+"     - Implemented Windows pty support.
+"
 "   1.17: 
 "     - Use updatetime.
 "     - Deleted CursorHold event.
@@ -136,11 +139,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     for command in l:commands
         try
-            if has('win32') || has('win64')
-                call add(l:sub, vimproc#popen3(command))
-            else
-                call add(l:sub, vimproc#ptyopen(command))
-            endif
+            call add(l:sub, vimproc#ptyopen(command))
         catch 'list index out of range'
             if empty(command)
                 let l:error = 'Wrong pipe used.'
@@ -176,15 +175,11 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         endif
     endif
 
-    if has('win32') || has('win64')
-        call interactive#execute_pipe_out()
-    else
-        let l:cnt = 0
-        while l:cnt < 100
-            call interactive#execute_pty_out()
-            let l:cnt += 1
-        endwhile
-    endif
+    let l:cnt = 0
+    while l:cnt < 100
+        call interactive#execute_pty_out()
+        let l:cnt += 1
+    endwhile
 
     startinsert!
 
@@ -271,19 +266,11 @@ function! s:init_bg(sub, args, is_interactive)"{{{
 endfunction"}}}
 
 function! s:on_execute()
-    if has('win32') || has('win64')
-        call interactive#execute_pipe_inout(0)
-    else
-        call interactive#execute_pty_inout(0)
-    endif
+    call interactive#execute_pty_inout(0)
 endfunction
 
 function! s:on_hold()
-    if has('win32') || has('win64')
-        call interactive#execute_pipe_out()
-    else
-        call interactive#execute_pty_out()
-    endif
+    call interactive#execute_pty_out()
 endfunction
 
 function! s:on_insert_enter()

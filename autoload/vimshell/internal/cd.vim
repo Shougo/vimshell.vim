@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Sep 2009
+" Last Modified: 24 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -29,6 +29,7 @@
 "   1.9:
 "     - Implemented 'cd -'.
 "     - Implemented 'cd name1 name2'.
+"     - Fixed restore directory bug.
 "
 "   1.8:
 "     - Check cd path.
@@ -106,6 +107,11 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
             lcd `=fnamemodify(l:dirs[0], ':p')`
         else
             call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
+
+            if getcwd() == w:vimshell_directory_stack[0]
+                " Restore directory.
+                let w:vimshell_directory_stack = w:vimshell_directory_stack[1:]
+            endif
         endif
     endif
 endfunction

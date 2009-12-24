@@ -132,6 +132,10 @@ CHANGELOG					*vimshell-changelog*
      - Improved filetype in iexe.
      - Improved read time.
      - Improved iexe wait.
+     - Implemented bcd internal command.
+     - Implemented Windows pty support.
+     - Fixed popd.
+     - Improved completion.
 
 ChangeLog 5.30-: {{{
     5.37 :

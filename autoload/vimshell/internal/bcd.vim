@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: popd.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Jul 2009
+" FILE: bcd.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 23 Sep 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,18 +23,9 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
+" Version: 1.0, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.3:
-"     - Improved error message.
-"
-"   1.2:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.1:
-"     - Use vimshell#error_line.
-"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -47,36 +38,35 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#popd#execute(program, args, fd, other_info)
-    " Pop directory.
+function! vimshell#internal#bcd#execute(program, args, fd, other_info)
+    " Change working directory with buffer directory.
 
-    if empty(w:vimshell_directory_stack)
-        " Error.
-        call vimshell#error_line(a:fd, 'Directory stack is empty.')
+    if empty(a:args)
+        " Move to alternate buffer directory.
+        let l:bufname = bufnr('#')
+    elseif len(a:args) > 2
+        call vimshell#error_line(a:fd, 'Too many arguments.')
         return
-    endif
-
-    let l:cnt = 0
-    let l:arguments = join(a:args)
-    if l:arguments =~ '^\d\+$'
-        let l:pop = str2nr(l:arguments)
-    elseif empty(l:arguments)
-        " Default pop value.
-        let l:pop = 1
     else
-        " Error.
-        call vimshell#error_line(a:fd, 'Arguments error .')
-        return
+        let l:bufname = bufnr(a:args[0])
     endif
     
-    if l:pop >= len(w:vimshell_directory_stack)
-        " Overflow.
-        call vimshell#error_line(a:fd, printf("Not found '%d' in directory stack.", l:pop))
-        return
+    let l:bufnumber = bufnr(l:bufname)
+    
+    if l:bufnumber >= 0
+        let l:bufdir = fnamemodify(bufname(l:bufnumber), ':p:h')
+        if isdirectory(l:bufdir)
+            if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
+                " Push current directory.
+                call insert(w:vimshell_directory_stack, getcwd())
+            endif
+            
+            " Move to directory.
+            lcd `=l:bufdir`
+        else
+            call vimshell#error_line(a:fd, printf('Directory "%s" is not found.', l:bufdir))
+        endif
+    else
+        call vimshell#error_line(a:fd, printf('Buffer "%s" is not found.', l:arguments))
     endif
-
-    lcd `=w:vimshell_directory_stack[l:pop]`
-
-    " Pop from stack.
-    let w:vimshell_directory_stack = w:vimshell_directory_stack[l:pop+1:]
 endfunction
