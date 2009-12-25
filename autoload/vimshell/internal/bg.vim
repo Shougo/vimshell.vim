@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,13 +71,6 @@
 "   1.0:
 "     - Initial version.
 ""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 augroup vimshell_bg
@@ -126,7 +119,7 @@ endfunction"}}}
 function! s:init_bg(fd, args, is_interactive)"{{{
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#force_exit()
+        call vimshell#interactive#force_exit()
     endif
 
     " Initialize.
@@ -206,7 +199,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
 
     autocmd vimshell_bg BufUnload <buffer>       call <SID>on_exit()
     autocmd vimshell_bg CursorHold <buffer>  call <SID>on_execute()
-    nnoremap <buffer><silent><C-c>       :<C-u>call interactive#interrupt()<CR>
+    nnoremap <buffer><silent><C-c>       :<C-u>call vimshell#interactive#interrupt()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
     nnoremap <buffer><silent><CR>       :<C-u>call <SID>on_execute()<CR>
     call s:on_execute()
@@ -216,7 +209,7 @@ endfunction"}}}
 
 function! s:on_execute()
     echo 'Running command.'
-    call interactive#execute_pipe_out()
+    call vimshell#interactive#execute_pipe_out()
     redraw
     echo ''
 endfunction
@@ -227,5 +220,5 @@ function! s:on_exit()
         autocmd! BufUnload <buffer>
     augroup END
 
-    call interactive#hang_up()
+    call vimshell#interactive#hang_up()
 endfunction

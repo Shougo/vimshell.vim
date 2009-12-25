@@ -1,6 +1,6 @@
-*vimshell.txt*	Powerful shell implemented by Vim
+*vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 5.38
+Version: 6.00
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,12 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.00 :
+     - Deleted plugin/interactive.vim.
+     - Deleted ftplugin/vimshell.vim.
+     - Implemented vimshell#system().
+
+ChangeLog 5.30-: {{{
     5.38 :
      - Fixed stdout flush bug.
      - Append last line when interactive error.
@@ -137,7 +143,6 @@ CHANGELOG					*vimshell-changelog*
      - Fixed popd.
      - Improved completion.
 
-ChangeLog 5.30-: {{{
     5.37 :
      - Added g:VimShell_NoDefaultKeyMappings option.
      - Unique key mappings.

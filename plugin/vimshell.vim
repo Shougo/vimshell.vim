@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.38, for Vim 7.0
+" Version: 6.00, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -90,6 +90,12 @@ endif
 let g:VimShell_VimshrcPath = expand(g:VimShell_VimshrcPath)
 if !isdirectory(fnamemodify(g:VimShell_VimshrcPath, ':p:h'))
     call mkdir(fnamemodify(g:VimShell_VimshrcPath, ':p:h'), 'p')
+endif
+if !exists('g:VimShell_EscapeColors')
+    let g:VimShell_EscapeColors = [
+                \'#3c3c3c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0', 
+                \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff'
+                \]
 endif
 "}}}
 

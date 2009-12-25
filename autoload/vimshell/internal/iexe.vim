@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,13 +98,6 @@
 "
 "   1.0: Initial version.
 ""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
@@ -155,7 +148,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#force_exit()
+        call vimshell#interactive#force_exit()
     endif
 
     call s:init_bg(l:sub, a:args, a:other_info.is_interactive)
@@ -177,7 +170,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     let l:cnt = 0
     while l:cnt < 100
-        call interactive#execute_pty_out()
+        call vimshell#interactive#execute_pty_out()
         let l:cnt += 1
     endwhile
 
@@ -219,7 +212,7 @@ function! s:init_bg(sub, args, is_interactive)"{{{
     hi def link VimShellErrorHidden Ignore
 
     nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
-    inoremap <buffer><silent><C-c>       <C-o>:<C-u>call interactive#interrupt()<CR>
+    inoremap <buffer><silent><C-c>       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
     augroup vimshell_iexe
         autocmd BufUnload <buffer>   call s:on_exit()
     augroup END
@@ -261,16 +254,15 @@ function! s:init_bg(sub, args, is_interactive)"{{{
 
     normal! G$
     
-    doautocmd InsertEnter
     startinsert!
 endfunction"}}}
 
 function! s:on_execute()
-    call interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout(0)
 endfunction
 
 function! s:on_hold()
-    call interactive#execute_pty_out()
+    call vimshell#interactive#execute_pty_out()
 endfunction
 
 function! s:on_insert_enter()
@@ -283,7 +275,7 @@ function! s:on_insert_leave()
 endfunction
 
 function! s:on_exit()
-    call interactive#hang_up()
+    call vimshell#interactive#hang_up()
 endfunction
 
 " Key-mappings functions."{{{
@@ -298,7 +290,7 @@ function! s:tab_completion()"{{{
     call setline(line('.'), getline('.') . "\<TAB>")
 
     " Do command completion.
-    call interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout(0)
 
     let l:candidate = getline('$')
     if l:candidate !~ l:prompt
@@ -379,7 +371,7 @@ function! s:execute_history()"{{{
 
     normal! G
 
-    call interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout(0)
 endfunction"}}}
 function! s:paste_prompt()"{{{
     " Search prompt.
@@ -486,7 +478,7 @@ function! s:get_tab_complete_words(cur_keyword_str)"{{{
     call setline(line('.'), getline('.') . "\<TAB>")
 
     " Do command completion.
-    call interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout(0)
 
     let l:candidate = getline('$')
     if l:candidate !~ l:prompt

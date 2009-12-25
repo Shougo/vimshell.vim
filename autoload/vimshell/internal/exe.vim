@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,13 +54,6 @@
 "
 "   1.0: Initial version.
 ""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
@@ -73,7 +66,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         echo 'Running command.'
         call append(line('$'), '')
         while exists('b:vimproc_sub')
-            call interactive#execute_pipe_out()
+            call vimshell#interactive#execute_pipe_out()
         endwhile
         redraw
         echo ''
@@ -93,7 +86,7 @@ endfunction"}}}
 function! s:init_process(fd, args)
     if exists('b:vimproc_sub')
         " Delete zombee process.
-        call interactive#force_exit()
+        call vimshell#interactive#force_exit()
     endif
 
     let l:sub = []

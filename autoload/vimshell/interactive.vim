@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,13 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     - Nothing.
-""}}}
 "=============================================================================
 
 " Utility functions.
@@ -46,7 +39,7 @@ let s:character_regex =
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
             \'[Pp]assword'
 
-function! interactive#execute_pipe_inout(is_interactive)"{{{
+function! vimshell#interactive#execute_pipe_inout(is_interactive)"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -98,12 +91,12 @@ function! interactive#execute_pipe_inout(is_interactive)"{{{
         endtry
     endif
 
-    call interactive#execute_pipe_out()
+    call vimshell#interactive#execute_pipe_out()
 
     if !exists('b:vimproc_sub')
         return
     elseif b:vimproc_sub[-1].stdout.eof
-        call interactive#exit()
+        call vimshell#interactive#exit()
     elseif !a:is_interactive
         call append(line('$'), '> ')
         normal! G$
@@ -111,7 +104,7 @@ function! interactive#execute_pipe_inout(is_interactive)"{{{
     endif
 endfunction"}}}
 
-function! interactive#execute_pty_inout(is_interactive)"{{{
+function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -189,9 +182,9 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
             if l:in =~ ""
                 " EOF.
                 call b:vimproc_sub[0].write(l:in)
-                call interactive#execute_pty_out()
+                call vimshell#interactive#execute_pty_out()
 
-                call interactive#exit()
+                call vimshell#interactive#exit()
                 return
             elseif l:in =~ '\t$'
                 " Completion.
@@ -207,19 +200,19 @@ function! interactive#execute_pty_inout(is_interactive)"{{{
     call append(line('$'), '...')
     normal! G$
 
-    call interactive#execute_pty_out()
+    call vimshell#interactive#execute_pty_out()
 
     if !exists('b:vimproc_sub')
         return
     elseif b:vimproc_sub[-1].eof
-        call interactive#exit()
+        call vimshell#interactive#exit()
     else
         normal! G$
         startinsert!
     endif
 endfunction"}}}
 
-function! interactive#execute_pty_out()"{{{
+function! vimshell#interactive#execute_pty_out()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -256,11 +249,11 @@ function! interactive#execute_pty_out()"{{{
     endif
 
     if b:vimproc_sub[-1].eof
-        call interactive#exit()
+        call vimshell#interactive#exit()
     endif
 endfunction"}}}
 
-function! interactive#execute_pipe_out()"{{{
+function! vimshell#interactive#execute_pipe_out()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -300,11 +293,11 @@ function! interactive#execute_pipe_out()"{{{
     endfor
 
     if b:vimproc_sub[-1].stdout.eof && (g:VimShell_UsePopen2 || b:vimproc_sub[-1].stderr.eof)
-        call interactive#exit()
+        call vimshell#interactive#exit()
     endif
 endfunction"}}}
 
-function! interactive#exit()"{{{
+function! vimshell#interactive#exit()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -335,7 +328,7 @@ function! interactive#exit()"{{{
     unlet b:vimproc_sub
     unlet b:vimproc_fd
 endfunction"}}}
-function! interactive#force_exit()"{{{
+function! vimshell#interactive#force_exit()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -357,7 +350,7 @@ function! interactive#force_exit()"{{{
     unlet b:vimproc_sub
     unlet b:vimproc_fd
 endfunction"}}}
-function! interactive#hang_up()"{{{
+function! vimshell#interactive#hang_up()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -381,7 +374,7 @@ function! interactive#hang_up()"{{{
     unlet b:vimproc_fd
 endfunction"}}}
 
-function! interactive#interrupt()"{{{
+function! vimshell#interactive#interrupt()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -396,13 +389,13 @@ function! interactive#interrupt()"{{{
     endfor
 
     if has('win32') || has('win64')
-        call interactive#execute_pipe_out()
+        call vimshell#interactive#execute_pipe_out()
     else
-        call interactive#execute_pty_out()
+        call vimshell#interactive#execute_pty_out()
     endif
 endfunction"}}}
 
-function! interactive#highlight_escape_sequence()"{{{
+function! vimshell#interactive#highlight_escape_sequence()"{{{
     let l:register_save = @"
     let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
     let l:grey_table = [
@@ -435,7 +428,7 @@ function! interactive#highlight_escape_sequence()"{{{
                 let highlight .= ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000'
             elseif 30 <= color_code && color_code <= 37 
                 " Foreground color.
-                let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 30, g:Interactive_EscapeColors[color_code - 30])
+                let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 30, g:VimShell_EscapeColors[color_code - 30])
             elseif color_code == 38
                 " Foreground 256 colors.
                 let l:color = split(matchstr(@", '[0-9;]\+'), ';')[2]
@@ -452,14 +445,14 @@ function! interactive#highlight_escape_sequence()"{{{
 
                     let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
                 else
-                    let highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:Interactive_EscapeColors[l:color])
+                    let highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:VimShell_EscapeColors[l:color])
                 endif
                 break
             elseif color_code == 39
                 " TODO
             elseif 40 <= color_code && color_code <= 47 
                 " Background color.
-                let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 40, g:Interactive_EscapeColors[color_code - 40])
+                let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 40, g:VimShell_EscapeColors[color_code - 40])
             elseif color_code == 48
                 " Background 256 colors.
                 let l:color = split(matchstr(@", '[0-9;]\+'), ';')[2]
@@ -476,7 +469,7 @@ function! interactive#highlight_escape_sequence()"{{{
 
                     let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
                 else
-                    let highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:Interactive_EscapeColors[l:color])
+                    let highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:VimShell_EscapeColors[l:color])
                 endif
                 break
             elseif color_code == 49
@@ -534,7 +527,7 @@ function! s:print_buffer(fd, string)"{{{
     
     call append(line('$'), l:lines)
 
-    call interactive#highlight_escape_sequence()
+    call vimshell#interactive#highlight_escape_sequence()
 
     " Set cursor.
     normal! G$
@@ -585,7 +578,7 @@ endfunction"}}}
 " Command functions.
 
 " Interactive execute command.
-function! interactive#read(args)"{{{
+function! vimshell#interactive#read(args)"{{{
     " Exit previous command.
     call s:on_exit()
 
@@ -624,15 +617,15 @@ function! interactive#read(args)"{{{
     let b:vimproc_fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
 
     augroup interactive
-        autocmd CursorHold <buffer>     call interactive#execute_pipe_out()
+        autocmd CursorHold <buffer>     call vimshell#interactive#execute_pipe_out()
         autocmd BufDelete <buffer>      call s:on_exit()
     augroup END
 
     nnoremap <buffer><silent><C-c>       :<C-u>call <sid>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <sid>on_exit()<CR>
-    nnoremap <buffer><silent><CR>       :<C-u>call interactive#execute_pipe_out()<CR>
+    nnoremap <buffer><silent><CR>       :<C-u>call vimshell#interactive#execute_pipe_out()<CR>
 
-    call interactive#execute_pipe_out()
+    call vimshell#interactive#execute_pipe_out()
 endfunction"}}}
 
 function! s:on_exit()"{{{
@@ -640,7 +633,7 @@ function! s:on_exit()"{{{
         autocmd! * <buffer>
     augroup END
 
-    call interactive#exit()
+    call vimshell#interactive#exit()
 endfunction"}}}
 
 " Arguments completion by neocomplcache.

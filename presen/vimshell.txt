@@ -35,9 +35,17 @@ http://github.com/Shougo/vimshell/tree/master （毎週更新）
 私がvimshell用に修正したvimprocがあるので、それをリポジトリから取ってきます。
 http://github.com/Shougo/vimproc/tree/master
 そしてproc.soをmakeします。
-ただしMacの場合、make時に
+
+Make方法
+Mingw:
+$ make -f make_mingw.mak
+Mac:
 $ make -f make_mac.mak
-とする必要があります。
+Linux BSD:
+$ make -f make_gcc.mak
+Visual Studio:
+$ make -f make_msvc.mak
+
 コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクトリにコピーします。
 
 Windowsの場合、上記のリポジトリから自力でコンパイルするか、
@@ -535,8 +543,10 @@ vimshellからいちいちdiffを呼び出すのは不便なので、存分に�
 --------------------------------
 キーバインド等のカスタマイズ
 
-vimshellのキーバインドはftplugin/vimshell.vimにて定義されています。
-よって、after/ftplugin/vimshell.vimを作成すれば、簡単にカスタマイズできます。
+vimshellのキーバインドはvimshell#default_settings()にて定義されています。
+標準的キーバインドを設定してから、
+setfiletype vimshell
+を実行するので、ftplugin/vimshell.vimを作成すれば、簡単にカスタマイズできます。
 
 --------------------------------
 私の設定
@@ -630,6 +640,7 @@ vimshellは今後ますます進化します。皆さんの手で、最強のシ
 --------------------------------
 更新履歴
 
+2009/12/25      Ver.6.00に対応。
 2009/09/12      Ver.5.34に対応。
 2009/09/03      Ver.5.32に対応。
 2009/08/29      全体的に見直し。

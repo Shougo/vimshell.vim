@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 23 Dec 2009
+" Last Modified: 25 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,8 +23,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 5.38, for Vim 7.0
+" Version: 6.00, for Vim 7.0
 "=============================================================================
+
+" Check vimproc.
+let s:is_vimproc = exists('*vimproc#system')
 
 " Initialize."{{{
 if !exists('g:VimShell_Prompt')
@@ -73,51 +76,56 @@ inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mapping
 inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
 "}}}
 
-" Helper functions.
-function! vimshell#set_execute_file(exts, program)"{{{
-    for ext in split(a:exts, ',')
-        let g:VimShell_ExecuteFileList[ext] = a:program
-    endfor
-endfunction"}}}
+" User utility functions."{{{
+function! vimshell#default_settings()"{{{
+    setlocal buftype=nofile
+    setlocal noswapfile
+    setlocal bufhidden=hide
+    setlocal noreadonly
+    let &l:omnifunc = ''
 
-" Special functions."{{{
-function! s:special_command(program, args, fd, other_info)"{{{
-    let l:program = a:args[0]
-    let l:arguments = a:args[1:]
-    if has_key(g:vimshell#internal_func_table, l:program)
-        " Internal commands.
-        execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-                    \ g:vimshell#internal_func_table[l:program])
-    else
-        call vimshell#execute_internal_command('exe', insert(l:arguments, l:program), a:fd, a:other_info)
-    endif
+    " Normal mode key-mappings."{{{
+    " Execute command.
+    nmap <buffer> <CR> <Plug>(vimshell_enter)
+    " Hide vimshell.
+    nmap <buffer> q <Plug>(vimshell_hide)
+    " Move to previous prompt.
+    nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
+    " Move to next prompt.
+    nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
+    " Remove this output.
+    nmap <buffer> <C-d> <Plug>(vimshell_delete_previous_output)
+    " Paste this prompt.
+    nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
+    " Search end argument.
+    nmap <buffer> E <Plug>(vimshell_move_end_argument)
+    "}}}
 
-    return 0
-endfunction"}}}
-function! s:special_internal(program, args, fd, other_info)"{{{
-    if empty(a:args)
-        " Print internal commands.
-        for func_name in keys(g:vimshell#internal_func_table)
-            call vimshell#print_line(func_name)
-        endfor
-    else
-        let l:program = a:args[0]
-        let l:arguments = a:args[1:]
-        if has_key(g:vimshell#internal_func_table, l:program)
-            " Internal commands.
-            execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-                        \ g:vimshell#internal_func_table[l:program])
-        else
-            " Error.
-            call vimshell#error_line('', printf('Not found internal command "%s".', l:program))
-        endif
-    endif
-
-    return 0
+    " Insert mode key-mappings."{{{
+    " Execute command.
+    imap <buffer> <CR> <ESC><Plug>(vimshell_enter)
+    " History completion.
+    imap <buffer> <C-j>  <Plug>(vimshell_history_complete_whole)
+    imap <buffer> <C-r>c  <Plug>(vimshell_history_complete_insert)
+    " Command completion.
+    imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
+    " Move to Beginning of command.
+    imap <buffer> <C-a> <Plug>(vimshell_move_head)
+    " Delete all entered characters in the current line
+    imap <buffer> <C-u> <Plug>(vimshell_delete_line)
+    " Push current line to stack.
+    imap <buffer> <C-z> <Plug>(vimshell_push_current_line)
+    " Insert last word.
+    imap <buffer> <C-]> <Plug>(vimshell_insert_last_word)
+    " Run help.
+    imap <buffer> <C-r>h <Plug>(vimshell_run_help)
+    " Clear.
+    imap <buffer> <C-l> <Plug>(vimshell_clear)
+    "}}}
 endfunction"}}}
 "}}}
 
-" VimShell plugin utility functions."{{{
+" vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{
     let l:bufname = 'vimshell'
     let l:cnt = 2
@@ -127,17 +135,14 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     endwhile
 
     if a:split_flag
-        execute 'split +setfiletype\ vimshell ' . l:bufname
-        execute 'resize' . winheight(0)*g:VimShell_SplitHeight / 100
+        split `=l:bufname`
+        resize `=winheight(0)*g:VimShell_SplitHeight / 100`
     else
-        execute 'edit +setfiletype\ vimshell ' . l:bufname
+        edit `=l:bufname`
     endif
 
-    setlocal buftype=nofile
-    setlocal noswapfile
-    setlocal bufhidden=hide
-    setlocal noreadonly
-    let &l:omnifunc = ''
+    call vimshell#default_settings()
+    setfiletype vimshell
 
     " Change current directory.
     let b:vimshell_save_dir = getcwd()
@@ -342,7 +347,7 @@ function! vimshell#process_enter()"{{{
             call vimshell#execute_internal_command('ls', [], {}, {})
 
             call vimshell#print_prompt()
-            call interactive#highlight_escape_sequence()
+            call vimshell#interactive#highlight_escape_sequence()
 
             call vimshell#start_insert()
         else
@@ -357,7 +362,7 @@ function! vimshell#process_enter()"{{{
         call vimshell#execute_internal_command('cd', ['-'], {}, {})
 
         call vimshell#print_prompt()
-        call interactive#highlight_escape_sequence()
+        call vimshell#interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -369,7 +374,7 @@ function! vimshell#process_enter()"{{{
     catch /.*/
         call vimshell#error_line({}, v:exception)
         call vimshell#print_prompt()
-        call interactive#highlight_escape_sequence()
+        call vimshell#interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -381,7 +386,7 @@ function! vimshell#process_enter()"{{{
     endif
 
     call vimshell#print_prompt()
-    call interactive#highlight_escape_sequence()
+    call vimshell#interactive#highlight_escape_sequence()
     call vimshell#start_insert()
 endfunction"}}}
 
@@ -733,7 +738,54 @@ endfunction"}}}
 function! vimshell#check_prompt()"{{{
     return getline('.') =~ '^\V' . s:prompt
 endfunction"}}}
+function! vimshell#set_execute_file(exts, program)"{{{
+    for ext in split(a:exts, ',')
+        let g:VimShell_ExecuteFileList[ext] = a:program
+    endfor
+endfunction"}}}
+function! vimshell#system(str, ...)"{{{
+    return s:is_vimproc ? vimproc#system(a:str, join(a:000)): system(a:str, join(a:000))
+endfunction"}}}
 "}}}
+
+" Helper functions.
+" Special functions."{{{
+function! s:special_command(program, args, fd, other_info)"{{{
+    let l:program = a:args[0]
+    let l:arguments = a:args[1:]
+    if has_key(g:vimshell#internal_func_table, l:program)
+        " Internal commands.
+        execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
+                    \ g:vimshell#internal_func_table[l:program])
+    else
+        call vimshell#execute_internal_command('exe', insert(l:arguments, l:program), a:fd, a:other_info)
+    endif
+
+    return 0
+endfunction"}}}
+function! s:special_internal(program, args, fd, other_info)"{{{
+    if empty(a:args)
+        " Print internal commands.
+        for func_name in keys(g:vimshell#internal_func_table)
+            call vimshell#print_line(func_name)
+        endfor
+    else
+        let l:program = a:args[0]
+        let l:arguments = a:args[1:]
+        if has_key(g:vimshell#internal_func_table, l:program)
+            " Internal commands.
+            execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
+                        \ g:vimshell#internal_func_table[l:program])
+        else
+            " Error.
+            call vimshell#error_line('', printf('Not found internal command "%s".', l:program))
+        endif
+    endif
+
+    return 0
+endfunction"}}}
+"}}}
+
 
 function! s:save_current_dir()"{{{
     let l:current_dir = getcwd()
