@@ -39,70 +39,7 @@ let s:character_regex =
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
             \'[Pp]assword'
 
-function! vimshell#interactive#execute_pipe_inout(is_interactive)"{{{
-    if !exists('b:vimproc_sub')
-        return
-    endif
-
-    if b:vimproc_is_secret
-        " Password input.
-        set imsearch=0
-        let l:in = inputsecret('Input Secret : ')
-        call b:vimproc_sub[0].stdin.write(l:in . "\<NL>")
-
-        let b:vimproc_is_secret = 0
-    elseif b:vimproc_sub[0].stdin.fd > 0
-        if a:is_interactive
-            set imsearch=0
-            if exists('*neocomplcache#get_complete_words')
-                let l:in = input('Input: ', '', 'customlist,'.s:SID_PREFIX().'complete_words')
-            else
-                let l:in = input('Input: ')
-            endif
-        else
-            let l:in = getline('.')
-            if l:in !~ '^> '
-                echohl WarningMsg | echo "Invalid input." | echohl None
-                call append(line('$'), '> ')
-                normal! G$
-                startinsert!
-
-                return
-            endif
-            let l:in = l:in[2:]
-        endif
-
-        try
-            if l:in =~ ""
-                " EOF.
-                call b:vimproc_sub[0].stdin.close()
-            else
-                " Input.
-                call b:vimproc_sub[0].stdin.write(l:in . "\<NL>")
-            endif
-
-            if a:is_interactive
-                call append(line('$'), '>' . l:in)
-                normal! j
-                redraw
-            endif
-        catch
-            call b:vimproc_sub[0].stdin.close()
-        endtry
-    endif
-
-    call vimshell#interactive#execute_pipe_out()
-
-    if !exists('b:vimproc_sub')
-        return
-    elseif b:vimproc_sub[-1].stdout.eof
-        call vimshell#interactive#exit()
-    elseif !a:is_interactive
-        call append(line('$'), '> ')
-        normal! G$
-        startinsert!
-    endif
-endfunction"}}}
+let s:file_format = (has('win32') || has('win64'))? "\<CR>\<NL>" : has('mac')? "\<CR>" : "\<NL>"
 
 function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
     if !exists('b:vimproc_sub')
@@ -113,7 +50,7 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
         " Password input.
         set imsearch=0
         let l:in = inputsecret('Input Secret : ')
-        call b:vimproc_sub[0].write(l:in . "\<NL>")
+        call b:vimproc_sub[0].write(l:in . s:file_format)
         let b:vimproc_is_secret = 0
     elseif !b:vimproc_sub[0].eof
         let l:in = getline('.')
@@ -190,7 +127,7 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
             elseif l:in != '...'
-                call b:vimproc_sub[0].write(l:in . "\<NL>")
+                call b:vimproc_sub[0].write(l:in . s:file_format)
             endif
         catch
             call b:vimproc_sub[0].close()

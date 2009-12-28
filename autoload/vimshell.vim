@@ -67,7 +67,8 @@ nnoremap <silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
 
 inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
 inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
-inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#complete#command_complete#complete()
+inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
+            \ vimshell#mappings#expand_wildcard() : vimshell#complete#command_complete#complete()
 inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
 inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
 inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
@@ -732,11 +733,16 @@ function! vimshell#get_user_prompt()"{{{
     return s:user_prompt
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
-    return substitute((col('.') < 2)? '' : getline('.')[: col('.')-2], 
-                \'^' . g:VimShell_Prompt . '\s*', '', '')
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    return substitute(l:cur_text[len(s:prompt):], '^\s*', '', '')
 endfunction"}}}
 function! vimshell#check_prompt()"{{{
-    return getline('.') =~ '^\V' . s:prompt
+    return getline('.')[: len(s:prompt)-1] == s:prompt
+endfunction"}}}
+function! vimshell#head_match(checkstr, headstr)"{{{
+    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] == a:headstr
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
     for ext in split(a:exts, ',')
@@ -745,6 +751,9 @@ function! vimshell#set_execute_file(exts, program)"{{{
 endfunction"}}}
 function! vimshell#system(str, ...)"{{{
     return s:is_vimproc ? vimproc#system(a:str, join(a:000)): system(a:str, join(a:000))
+endfunction"}}}
+function! vimshell#trunk_string(string, max)"{{{
+    return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
 endfunction"}}}
 "}}}
 

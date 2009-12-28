@@ -121,6 +121,13 @@ CHANGELOG					*vimshell-changelog*
      - Deleted plugin/interactive.vim.
      - Deleted ftplugin/vimshell.vim.
      - Implemented vimshell#system().
+     - Implemented VCS information support.
+     - Deleted pipe inout.
+     - Implemented completion helper.
+     - Improved command completion.
+     - Implemented argument completion.
+     - Implemented expand wildcard.
+     - Improved get prompt.
 
 ChangeLog 5.30-: {{{
     5.38 :

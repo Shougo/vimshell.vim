@@ -27,7 +27,12 @@
 
 " Check vcs directiory.
 function! vimshell#vcs#git#is_vcs_dir()"{{{
-    return s:get_git_dir() != ''
+    if getcwd() =~ '[\\/]\.git\%([\\/].*\)\?$'
+        " Ignore inside .git directiory.
+        return 0
+    else
+        return s:get_git_dir() != ''
+    endif
 endfunction"}}}
 
 function! vimshell#vcs#git#vcs_name()"{{{
@@ -61,12 +66,20 @@ function! vimshell#vcs#git#repository_relative_path()"{{{
 endfunction"}}}
 
 function! vimshell#vcs#git#action_message()"{{{
-    "l:status = vimshell#system('git status')
-    return ''
+    let l:action = []
+    for l:status in split(vimshell#system('git status'), '\n')
+        if l:status =~ '^\s*#\s*unmerged'
+            call add(l:action, 'unmerged')
+        elseif l:status =~ '^\s*#\s*Untracked'
+            call add(l:action, 'untracked')
+        endif
+    endfor 
+    
+    return join(l:action)
 endfunction"}}}
 
 function! s:get_git_dir()"{{{
-    let l:git_dir = finddir('.git', '.;')
+    let l:git_dir = finddir('.git', ';')
     if l:git_dir != ''
         let l:git_dir = fnamemodify(l:git_dir, ':p')
     endif

@@ -179,10 +179,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     return 1
 endfunction"}}}
 
-function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
-    call vimshell#internal#iexe#execute('iexe', a:args, {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
-endfunction"}}}
-
 function! s:init_bg(sub, args, is_interactive)"{{{
     " Save current directiory.
     let l:cwd = getcwd()

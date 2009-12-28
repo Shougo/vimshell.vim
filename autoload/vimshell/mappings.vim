@@ -195,6 +195,14 @@ function! vimshell#mappings#clear()"{{{
         startinsert!
     endif
 endfunction"}}}
+function! vimshell#mappings#expand_wildcard()"{{{
+    " Wildcard.
+    let l:wildcard = matchstr(vimshell#get_cur_text(), '[^[:blank:]]*$')
+    let l:expanded = vimshell#parser#expand_wildcard(l:wildcard)
+    
+    return (pumvisible() ? "\<C-e>" : '')
+                \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
+endfunction"}}}
 
 "}}}
 " vim: foldmethod=marker

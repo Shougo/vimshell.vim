@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 19 Oct 2009
+" Last Modified: 25 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -28,6 +28,7 @@
 " ChangeLog: "{{{
 "   3.8:
 "     - Added keywords.
+"     - Use vimshell#get_prompt().
 "
 "   3.7:
 "     - Added user prompt.
@@ -98,8 +99,8 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-execute 'syn match VimShellPrompt ' . "'".g:VimShell_Prompt."'"
-execute 'syn match VimShellPrompt ' . "'".g:VimShell_SecondaryPrompt."'"
+execute 'syn match VimShellPrompt ' . "'". vimshell#get_prompt() ."'"
+execute 'syn match VimShellPrompt ' . "'". vimshell#get_secondary_prompt() ."'"
 syn match   VimShellUserPrompt   '^\[%\] .*$'
 syn region   VimShellString   start=+'+ end=+'+ oneline
 syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
@@ -136,12 +137,12 @@ else
     syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 
-execute "syn region   VimShellExe start='" . g:VimShell_Prompt . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+execute "syn region   VimShellExe start='" . vimshell#get_prompt() . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
 syn match VimShellExe '[|;]\s*\f\+' contained contains=VimShellSpecial,VimShellArguments
-execute "syn region   VimShellLine start='" . g:VimShell_Prompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
+execute "syn region   VimShellLine start='" . vimshell#get_prompt() ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-execute "syn region   VimShellExe start='" . g:VimShell_SecondaryPrompt . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
-execute "syn region   VimShellLine start='" . g:VimShell_SecondaryPrompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
+execute "syn region   VimShellExe start='" . vimshell#get_secondary_prompt() . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+execute "syn region   VimShellLine start='" . VimShell_SecondaryPrompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 if has('gui_running')
     hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE

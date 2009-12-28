@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2009
+" Last Modified: 26 Dec 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -95,7 +95,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     catch /.*/
         call vimshell#error_line({}, v:exception)
         call vimshell#print_prompt()
-        call interactive#highlight_escape_sequence()
+        call vimshell#interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -106,7 +106,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
         return
     endif
 
-    call interactive#highlight_escape_sequence()
+    call vimshell#interactive#highlight_escape_sequence()
 
     if a:other_info.is_interactive
         call vimshell#print_prompt()

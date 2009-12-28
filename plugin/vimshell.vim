@@ -52,8 +52,11 @@ endif
 if !exists('g:VimShell_SmartCase')
     let g:VimShell_SmartCase = 0
 endif
-if !exists('g:VimShell_MaxHistoryWidth')
-    let g:VimShell_MaxHistoryWidth = 40
+if !exists('g:VimShell_MaxKeywordWidth')
+    let g:VimShell_MaxKeywordWidth = 40
+endif
+if !exists('g:VimShell_MaxList')
+    let g:VimShell_MaxList = 100
 endif
 if !exists('g:VimShell_UseCkw')
     let g:VimShell_UseCkw = 0

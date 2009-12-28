@@ -25,19 +25,26 @@
 " }}}
 "=============================================================================
 
-function! vimshell#vcs#info(string)"{{{
+function! vimshell#vcs#info(string, ...)"{{{
     let l:func_name = s:load_vcs_plugin()
     if l:func_name == ''
         return ''
     endif
+
+    if call(l:func_name . 'action_message', []) != '' && !empty(a:000)
+        " Use action format.
+        let l:format_string = a:1
+    else
+        let l:format_string = a:string
+    endif
     
     " Substitute format string.
     let l:cnt = 0
-    let l:max = len(a:string)
+    let l:max = len(l:format_string)
     let l:info = ''
     while l:cnt < l:max
-        if a:string[l:cnt] == '%' && l:cnt+1 < l:max
-            let l:format = a:string[l:cnt + 1]
+        if l:format_string[l:cnt] == '%' && l:cnt+1 < l:max
+            let l:format = l:format_string[l:cnt + 1]
             if l:format == '%'
                 " %%.
                 let l:info .= '%'
@@ -66,7 +73,7 @@ function! vimshell#vcs#info(string)"{{{
             
             let l:cnt += 1
         else
-            let l:info .= a:string[l:cnt]
+            let l:info .= l:format_string[l:cnt]
         endif
         
         let l:cnt += 1

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2009
+" Last Modified: 27 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,25 +24,37 @@
 " }}}
 "=============================================================================
 
+" Initialize funcs table."{{{
+let s:special_funcs = {}
+for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/special/*.vim'), '\n')
+    let func_name = fnamemodify(list, ':t:r')
+    let s:special_funcs[func_name] = 'vimshell#complete#special#' . func_name . '#'
+endfor
+let s:internal_funcs = {}
+for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/internal/*.vim'), '\n')
+    let func_name = fnamemodify(list, ':t:r')
+    let s:internal_funcs[func_name] = 'vimshell#complete#internal#' . func_name . '#'
+endfor
+let s:command_funcs = {}
+for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/command/*.vim'), '\n')
+    let func_name = fnamemodify(list, ':t:r')
+    let s:command_funcs[func_name] = 'vimshell#complete#command#' . func_name . '#'
+endfor
+unlet func_name
+unlet list
+"}}}
+    
 function! vimshell#complete#args_complete#complete()"{{{
     " Args completion.
 
-    " Filename completion.
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_filename_complete')
-        return neocomplcache#manual_filename_complete()
-    else
-        return "\<C-x>\<C-f>"
+    " Get command name.
+    let l:args = vimshell#parser#split_args(vimshell#get_cur_text())
+    if vimshell#get_cur_text() =~ '\s\+$'
+        " Add blank argument.
+        call add(l:args, '')
     endif
-endfunction"}}}
-
-function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
-    if a:findstart
-        " Get cursor word.
-        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
-
-        return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
-    endif
-
+    let l:command = fnamemodify(l:args[0], ':t:r')
+    
     " Save option.
     let l:ignorecase_save = &ignorecase
 
@@ -53,13 +65,42 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
         let &ignorecase = g:VimShell_IgnoreCase
     endif
 
-    let l:complete_words = s:get_complete_commands(a:base)
-
+    " Get complete words.
+    if has_key(s:special_funcs, l:command)
+        let l:complete_words = call(s:special_funcs[l:command] . 'get_complete_words', [l:args[1:]])
+    elseif has_key(s:internal_funcs, l:command)
+        let l:complete_words = call(s:internal_funcs[l:command] . 'get_complete_words', [l:args[1:]])
+    elseif has_key(s:command_funcs, l:command)
+        let l:complete_words = call(s:command_funcs[l:command] . 'get_complete_words', [l:args[1:]])
+    else
+        let l:complete_words = vimshell#complete#helper#files(l:args[-1])
+    endif
+    
     " Restore option.
     let &ignorecase = l:ignorecase_save
     let &l:omnifunc = ''
+    
+    " Trunk many items.
+    let s:complete_words = l:complete_words[: g:VimShell_MaxList-1]
 
-    return l:complete_words
+    " Set complete function.
+    let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
+
+    return "\<C-x>\<C-o>\<C-p>"
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
+        return neocomplcache#manual_omni_complete()
+    else
+        return "\<C-x>\<C-o>\<C-p>"
+    endif
+endfunction"}}}
+
+function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
+    if a:findstart
+        " Get cursor word.
+        return len(vimshell#get_prompt()) + match(vimshell#get_cur_text(), '\%(\f\|\\\s\)*$')
+    endif
+
+    return s:complete_words
 endfunction"}}}
 
 " vim: foldmethod=marker

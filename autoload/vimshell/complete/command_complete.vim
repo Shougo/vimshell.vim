@@ -48,10 +48,7 @@ endfunction"}}}
 
 function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
     if a:findstart
-        " Get cursor word.
-        let l:cur_text = (col('.') < 2)? '' : getline('.')[: col('.')-2]
-
-        return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
+        return len(vimshell#get_prompt())
     endif
 
     " Save option.
@@ -74,77 +71,22 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
 endfunction"}}}
 
 function! s:get_complete_commands(cur_keyword_str)"{{{
-    let l:ret = []
-    let l:pattern = printf('v:val =~ "^%s"', a:cur_keyword_str)
-
-    let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
-    " Check dup.
-    let l:check = {}
-    for keyword in filter(split(substitute(globpath(&cdpath, a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 'isdirectory(v:val)')
-        if !has_key(l:check, keyword)
-            let l:check[keyword] = keyword
-        endif
+    let l:directories = vimshell#complete#helper#directories(a:cur_keyword_str)
+    for l:keyword in l:directories
+        let l:keyword.word = './' . l:keyword.word
     endfor
-    for keyword in values(l:check)
-        if keyword !~ '/'
-            let l:dict = { 'word' : './' . keyword, 'abbr' : keyword . '/', 'menu' : 'directory', 'icase' : 1, 'rank' : 6 }
-        else
-            let l:menu = 'cdpath'
-            if !filewritable(keyword)
-                let l:menu .= ' [-]'
-            endif
-
-            " Substitute home path.
-            let keyword = substitute(keyword, l:home_pattern, '\~/', '')
-            let l:dict = { 'word' : keyword, 'abbr' : keyword . '/', 'menu' : l:menu, 'icase' : 1, 'rank' : 5 }
-        endif
-        call add(l:ret, l:dict)
-    endfor
-
-    for keyword in filter(keys(b:vimshell_alias_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'icase' : 1, 'rank' : 5 }
-        if len(b:vimshell_alias_table[keyword]) > 15
-            let l:dict.menu = 'alias ' . printf("%s..%s", b:vimshell_alias_table[keyword][:8], b:vimshell_alias_table[keyword][-4:])
-        else
-            let l:dict.menu = 'alias ' . b:vimshell_alias_table[keyword]
-        endif
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(keys(g:vimshell#special_func_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : 'special', 'icase' : 1, 'rank' : 5 }
-        call add(l:ret, l:dict)
-    endfor 
-
-    for keyword in filter(keys(g:vimshell#internal_func_table), l:pattern)
-        let l:dict = { 'word' : keyword, 'abbr' : keyword, 'menu' : 'internal', 'icase' : 1, 'rank' : 5 }
-        call add(l:ret, l:dict)
-    endfor 
+    
+    let l:ret =    l:directories
+                \+ vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
+                \+ vimshell#complete#helper#aliases(a:cur_keyword_str)
+                \+ vimshell#complete#helper#specials(a:cur_keyword_str)
+                \+ vimshell#complete#helper#internals(a:cur_keyword_str)
 
     if len(a:cur_keyword_str) >= 1
-        " External commands.
-        if has('win32') || has('win64')
-            let l:path = substitute($PATH, '\\\?;', ',', 'g')
-            let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-            let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
-                        \'"." . fnamemodify(v:val, ":e") =~ '.string(l:exts)), 'fnamemodify(v:val, ":t:r")')
-        else
-            let l:path = substitute($PATH, '/\?:', ',', 'g')
-            let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
-                        \'executable(v:val)'), 'fnamemodify(v:val, ":t:r")')
-        endif
-
-        for keyword in l:list
-            let l:dict = { 'word' : keyword, 'abbr' : keyword . '*', 'menu' : 'command', 'icase' : 1, 'rank' : 5 }
-            call add(l:ret, l:dict)
-        endfor 
+        let l:ret += vimshell#complete#helper#commands(a:cur_keyword_str)
     endif
 
-    return sort(l:ret, 's:compare_rank')
-endfunction"}}}
-
-function! s:compare_rank(i1, i2)"{{{
-    return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
+    return l:ret
 endfunction"}}}
 
 " vim: foldmethod=marker
