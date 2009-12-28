@@ -220,11 +220,12 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
     let l:bufnumber = 1
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber) && vimshell#head_match(bufname(l:bufnumber), a:cur_keyword_str)
-            let l:bufname = bufname(l:bufnumber)
-            let l:dict = { 'word' : keyword, 'menu' : 'buffer', 'icase' : 1 }
+            let l:keyword = bufname(l:bufnumber)
+            let l:dict = { 'word' : l:keyword, 'menu' : 'buffer', 'icase' : 1 }
 
-            let l:dict.abbr = len(keyword) > g:VimShell_MaxKeywordWidth ? 
-                        \vimshell#trunk_string(keyword, g:VimShell_MaxKeywordWidth) : keyword
+            let l:dict.abbr = len(l:keyword) > g:VimShell_MaxKeywordWidth ? 
+                        \vimshell#trunk_string(l:keyword, g:VimShell_MaxKeywordWidth) : l:keyword
+            call add(l:ret, l:dict)
         endif
 
         let l:bufnumber += 1
