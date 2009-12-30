@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 29 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -160,12 +160,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     " Input from stdin.
     if b:vimproc_fd.stdin != ''
-        if has('win32') || has('win64')
-            call b:vimproc_sub[0].stdin.write(vimshell#read(a:fd))
-            call b:vimproc_sub[0].stdin.close()
-        else
-            call b:vimproc_sub[0].write(vimshell#read(a:fd))
-        endif
+        call b:vimproc_sub[0].write(vimshell#read(a:fd))
     endif
 
     let l:cnt = 0
@@ -173,6 +168,9 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call vimshell#interactive#execute_pty_out()
         let l:cnt += 1
     endwhile
+    if getline(line('$')) =~ '^\s*$'
+        call setline(line('$'), '...')
+    endif
 
     startinsert!
 
@@ -213,40 +211,34 @@ function! s:init_bg(sub, args, is_interactive)"{{{
         autocmd BufUnload <buffer>   call s:on_exit()
     augroup END
 
-    if has('win32') || has('win64')
-        nnoremap <buffer><silent><CR>        :<C-u>call <SID>on_execute()<CR>
-        inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
-        autocmd vimshell_iexe CursorHold <buffer>  call s:on_hold()
-    else
-        nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
-        inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
+    nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
+    inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
 
-        " Plugin key-mappings.
-        inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
-        imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
-        imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
-        imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
-        imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
-        imap <buffer><C-n>     <Plug>(vimshell_iexe_next_history)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
-        imap <buffer><C-y>     <Plug>(vimshell_iexe_paste_prompt)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-        imap <buffer><C-a>     <Plug>(vimshell_iexe_move_head)
-        inoremap <buffer><silent> <Plug>(vimshell_iexe_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
-        imap <buffer><C-u>     <Plug>(vimshell_iexe_delete_line)
+    " Plugin key-mappings.
+    inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
+    imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
+    imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
+    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
+    imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
+    imap <buffer><C-n>     <Plug>(vimshell_iexe_next_history)
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
+    imap <buffer><C-y>     <Plug>(vimshell_iexe_paste_prompt)
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+    imap <buffer><C-a>     <Plug>(vimshell_iexe_move_head)
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+    imap <buffer><C-u>     <Plug>(vimshell_iexe_delete_line)
 
-        nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
-        nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
-        nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
-        nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
+    nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
+    nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
+    nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
+    nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
 
-        autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
-        autocmd vimshell_iexe InsertEnter <buffer>  call s:on_insert_enter()
-        autocmd vimshell_iexe InsertLeave <buffer>  call s:on_insert_leave()
-    endif
+    autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
+    autocmd vimshell_iexe InsertEnter <buffer>  call s:on_insert_enter()
+    autocmd vimshell_iexe InsertLeave <buffer>  call s:on_insert_leave()
 
     normal! G$
     
@@ -259,6 +251,7 @@ endfunction
 
 function! s:on_hold()
     call vimshell#interactive#execute_pty_out()
+    startinsert!
 endfunction
 
 function! s:on_insert_enter()

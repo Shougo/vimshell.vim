@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.00
+Version: 6.01
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,15 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.01 :
+     - Improved error handling.
+     - Improved head match.
+     - Use completefunc_complete if available.
+     - Fixed trunk string.
+     - Escape complete candidates.
+     - Improved Windows pty support.
+
+ChangeLog 6.00-: {{{
     6.00 :
      - Deleted plugin/interactive.vim.
      - Deleted ftplugin/vimshell.vim.
@@ -129,6 +138,7 @@ CHANGELOG					*vimshell-changelog*
      - Implemented expand wildcard.
      - Improved get prompt.
 
+     }}}
 ChangeLog 5.30-: {{{
     5.38 :
      - Fixed stdout flush bug.
@@ -231,7 +241,8 @@ ChangeLog 5.30-: {{{
      - Improved command search.
      - Close window in exit.
      - Implemented delete line.
-     - Implemented delete line and move head in iexe.}}}
+     - Implemented delete line and move head in iexe.
+     }}}
 ChangeLog 5.10-5.29 {{{
      5.29 :
      - Implemented filename expantion.

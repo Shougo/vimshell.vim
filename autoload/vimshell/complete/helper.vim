@@ -103,10 +103,8 @@ function! vimshell#complete#helper#files(cur_keyword_str)"{{{
         if !filewritable(keyword.word)
             let keyword.menu .= ' [-]'
         endif
-    endfor
-
-    " Escape word.
-    for keyword in l:list
+        
+        " Escape word.
         let keyword.word = escape(keyword.word, ' *?[]"={}')
     endfor
 
@@ -115,7 +113,7 @@ endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
     let l:ret = []
     for keyword in filter(split(substitute(glob(a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 'isdirectory(v:val)')
-        let l:dict = { 'word' : keyword, 'menu' : 'directory', 'icase' : 1 }
+        let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'menu' : 'directory', 'icase' : 1 }
         
         let l:dict.abbr = len(keyword) > g:VimShell_MaxKeywordWidth ? 
                     \vimshell#trunk_string(keyword, g:VimShell_MaxKeywordWidth) . '/' : keyword . '/'
@@ -139,7 +137,7 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
     for keyword in keys(l:check)
         " Substitute home path.
         let keyword = substitute(keyword, l:home_pattern, '\~/', '')
-        let l:dict = { 'word' : keyword, 'menu' : 'cdpath', 'icase' : 1 }
+        let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'menu' : 'cdpath', 'icase' : 1 }
         
         let l:dict.abbr = len(keyword) > g:VimShell_MaxKeywordWidth ? 
                     \vimshell#trunk_string(keyword, g:VimShell_MaxKeywordWidth) . '/' : keyword . '/'
@@ -221,7 +219,7 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
     while l:bufnumber <= bufnr('$')
         if buflisted(l:bufnumber) && vimshell#head_match(bufname(l:bufnumber), a:cur_keyword_str)
             let l:keyword = bufname(l:bufnumber)
-            let l:dict = { 'word' : l:keyword, 'menu' : 'buffer', 'icase' : 1 }
+            let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'menu' : 'buffer', 'icase' : 1 }
 
             let l:dict.abbr = len(l:keyword) > g:VimShell_MaxKeywordWidth ? 
                         \vimshell#trunk_string(l:keyword, g:VimShell_MaxKeywordWidth) : l:keyword

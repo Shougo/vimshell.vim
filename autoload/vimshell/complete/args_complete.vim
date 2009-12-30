@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 29 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,18 +78,16 @@ function! vimshell#complete#args_complete#complete()"{{{
     
     " Restore option.
     let &ignorecase = l:ignorecase_save
-    let &l:omnifunc = ''
     
     " Trunk many items.
     let s:complete_words = l:complete_words[: g:VimShell_MaxList-1]
 
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
-
-    return "\<C-x>\<C-o>\<C-p>"
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        return neocomplcache#manual_omni_complete()
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#args_complete#omnifunc')
     else
+        " Set complete function.
+        let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
+        
         return "\<C-x>\<C-o>\<C-p>"
     endif
 endfunction"}}}
@@ -98,6 +96,10 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
     if a:findstart
         " Get cursor word.
         return len(vimshell#get_prompt()) + match(vimshell#get_cur_text(), '\%(\f\|\\\s\)*$')
+    endif
+    
+    if &l:omnifunc != ''
+        let &l:omnifunc = ''
     endif
 
     return s:complete_words

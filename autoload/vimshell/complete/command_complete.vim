@@ -36,12 +36,12 @@ function! vimshell#complete#command_complete#complete()"{{{
 
     " Command completion.
 
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#command_complete#omnifunc'
-
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        return neocomplcache#manual_omni_complete()
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#command_complete#omnifunc')
     else
+        " Set complete function.
+        let &l:omnifunc = 'vimshell#complete#command_complete#omnifunc'
+        
         return "\<C-x>\<C-o>\<C-p>"
     endif
 endfunction"}}}
@@ -65,7 +65,9 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
 
     " Restore option.
     let &ignorecase = l:ignorecase_save
-    let &l:omnifunc = ''
+    if &l:omnifunc != ''
+        let &l:omnifunc = ''
+    endif
 
     return l:complete_words
 endfunction"}}}

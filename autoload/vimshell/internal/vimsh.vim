@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: vimsh.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2009
-" Usage: Just source this file.
+" Last Modified: 28 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,9 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.3:
+"     - Improved error handling.
+"
 "   1.2:
 "     - Print all error.
 "     - Improved error print format.
@@ -65,7 +67,8 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
                 try
                     let l:skip_prompt = vimshell#parser#eval_script(l:script, l:other_info)
                 catch /.*/
-                    call vimshell#error_line({}, printf('%s(%d): %s', join(a:args, ' '), l:i, v:exception))
+                    let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+                    call vimshell#error_line({}, printf('%s(%d): %s', join(a:args, ' '), l:i, l:message))
                     return 0
                 endtry
 

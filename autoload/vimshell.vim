@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Dec 2009
+" Last Modified: 29 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.00, for Vim 7.0
+" Version: 6.01, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -373,7 +373,8 @@ function! vimshell#process_enter()"{{{
     try
         let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
     catch /.*/
-        call vimshell#error_line({}, v:exception)
+        let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+        call vimshell#error_line({}, l:message)
         call vimshell#print_prompt()
         call vimshell#interactive#highlight_escape_sequence()
 
@@ -742,7 +743,7 @@ function! vimshell#check_prompt()"{{{
     return getline('.')[: len(s:prompt)-1] == s:prompt
 endfunction"}}}
 function! vimshell#head_match(checkstr, headstr)"{{{
-    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] == a:headstr
+    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] ==# a:headstr
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
     for ext in split(a:exts, ',')
@@ -753,7 +754,7 @@ function! vimshell#system(str, ...)"{{{
     return s:is_vimproc ? vimproc#system(a:str, join(a:000)): system(a:str, join(a:000))
 endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
-    return printf('%.' . a:max-10 . 's..%%s', a:string, a:string[-8:])
+    return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
 endfunction"}}}
 "}}}
 

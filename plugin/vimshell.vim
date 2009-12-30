@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Dec 2009
+" Last Modified: 28 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.00, for Vim 7.0
+" Version: 6.01, for Vim 7.0
 "=============================================================================
 
 if v:version < 700

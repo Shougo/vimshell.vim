@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2009
+" Last Modified: 29 Dec 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,12 +30,12 @@ function! vimshell#complete#history_complete#whole()"{{{
 
     " Command completion.
 
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_whole'
-
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        return neocomplcache#manual_omni_complete()
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_whole')
     else
+        " Set complete function.
+        let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_whole'
+        
         return "\<C-x>\<C-o>\<C-p>"
     endif
 endfunction"}}}
@@ -45,12 +45,12 @@ function! vimshell#complete#history_complete#insert()"{{{
 
     " Command completion.
 
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_insert'
-
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        return neocomplcache#manual_omni_complete()
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_insert')
     else
+        " Set complete function.
+        let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_insert'
+        
         return "\<C-x>\<C-o>\<C-p>"
     endif
 endfunction"}}}
@@ -96,7 +96,9 @@ function! vimshell#complete#history_complete#omnifunc_whole(findstart, base)"{{{
 
     " Restore options.
     let &ignorecase = l:ignorecase_save
-    let &l:omnifunc = ''
+    if &l:omnifunc != ''
+        let &l:omnifunc = ''
+    endif
 
     return l:complete_words
 endfunction"}}}
@@ -124,7 +126,9 @@ function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{
 
     " Restore options.
     let &ignorecase = l:ignorecase_save
-    let &l:omnifunc = ''
+    if &l:omnifunc != ''
+        let &l:omnifunc = ''
+    endif
 
     return l:complete_words
 endfunction"}}}

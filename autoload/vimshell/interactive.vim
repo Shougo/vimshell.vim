@@ -39,7 +39,7 @@ let s:character_regex =
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
             \'[Pp]assword'
 
-let s:file_format = (has('win32') || has('win64'))? "\<CR>\<NL>" : has('mac')? "\<CR>" : "\<NL>"
+let s:is_win = (has('win32') || has('win64'))
 
 function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
     if !exists('b:vimproc_sub')
@@ -50,7 +50,7 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
         " Password input.
         set imsearch=0
         let l:in = inputsecret('Input Secret : ')
-        call b:vimproc_sub[0].write(l:in . s:file_format)
+        call b:vimproc_sub[0].write(l:in . "\<NL>")
         let b:vimproc_is_secret = 0
     elseif !b:vimproc_sub[0].eof
         let l:in = getline('.')
@@ -85,7 +85,7 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
             let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
             if l:prompt_search == 0 && l:max_prompt < line('$')
                 for i in range(l:max_prompt, line('$'))
-                    if i == l:max_prompt
+                    if i == l:max_prompt && has_key(b:prompt_history, i)
                         let l:in = getline(i)
                         let l:in = l:in[len(b:prompt_history[i]) : ]
                     else
@@ -98,9 +98,9 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
             " Still nothing? We give up.
             if l:prompt_search == 0
                 echohl WarningMsg | echo "Invalid input." | echohl None
-                normal! G$
-                startinsert!
-                return
+                "normal! G$
+                "startinsert!
+                "return
             endif
         endif
         " Delete input string for echoback.
@@ -116,9 +116,9 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
         let b:interactive_command_position = 0
 
         try
-            if l:in =~ ""
+            if l:in =~ "$"
                 " EOF.
-                call b:vimproc_sub[0].write(l:in)
+                call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "" : "")
                 call vimshell#interactive#execute_pty_out()
 
                 call vimshell#interactive#exit()
@@ -127,7 +127,12 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
             elseif l:in != '...'
-                call b:vimproc_sub[0].write(l:in . s:file_format)
+                if l:in =~ '^\.\.\.'
+                    " Delete ...
+                    let l:in = l:in[3:]
+                endif
+
+                call b:vimproc_sub[0].write(l:in . "\<NL>")
             endif
         catch
             call b:vimproc_sub[0].close()
@@ -138,13 +143,13 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
     normal! G$
 
     call vimshell#interactive#execute_pty_out()
+    if getline(line('$')) =~ '^\s*$'
+        call setline(line('$'), '...')
+    endif
 
-    if !exists('b:vimproc_sub')
-        return
-    elseif b:vimproc_sub[-1].eof
+    if exists('b:vimproc_sub') && b:vimproc_sub[-1].eof
         call vimshell#interactive#exit()
     else
-        normal! G$
         startinsert!
     endif
 endfunction"}}}
