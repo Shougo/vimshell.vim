@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
+" Last Modified: 03 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,8 @@
 " ChangeLog: "{{{
 "   1.18: 
 "     - Implemented Windows pty support.
+"     - Improved CursorHoldI event.
+"     - Set interactive option in Windows.
 "
 "   1.17: 
 "     - Use updatetime.
@@ -117,12 +119,17 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         return 0
     endif
 
+    let l:args = a:args
+    if has_key(s:interactive_option, a:args[0])
+        call add(l:args, s:interactive_option[a:args[0]])
+    endif
+
     " Initialize.
     let l:sub = []
 
     " Search pipe.
     let l:commands = [[]]
-    for arg in a:args
+    for arg in l:args
         if arg == '|'
             call add(l:commands, [])
         else
@@ -151,7 +158,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call vimshell#interactive#force_exit()
     endif
 
-    call s:init_bg(l:sub, a:args, a:other_info.is_interactive)
+    call s:init_bg(l:sub, l:args, a:other_info.is_interactive)
 
     " Set variables.
     let b:vimproc_sub = l:sub
@@ -177,27 +184,10 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     return 1
 endfunction"}}}
 
-function! s:init_bg(sub, args, is_interactive)"{{{
-    " Save current directiory.
-    let l:cwd = getcwd()
-
-    " Init buffer.
-    if a:is_interactive
-        call vimshell#print_prompt()
-    endif
-    " Split nicely.
-    if winheight(0) > &winheight
-        split
-    else
-        vsplit
-    endif
-
-    edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
-    lcd `=l:cwd`
+function! vimshell#internal#iexe#default_settings()"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal wrap
-    execute 'setfiletype iexe_' . a:args[0]
 
     " Set syntax.
     syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
@@ -218,8 +208,10 @@ function! s:init_bg(sub, args, is_interactive)"{{{
     inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
     imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
     imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
-    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
+    "inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
+    "imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
+    inoremap <buffer><expr> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
+    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_complete#complete()
     inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
     imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
     inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
@@ -239,6 +231,29 @@ function! s:init_bg(sub, args, is_interactive)"{{{
     autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
     autocmd vimshell_iexe InsertEnter <buffer>  call s:on_insert_enter()
     autocmd vimshell_iexe InsertLeave <buffer>  call s:on_insert_leave()
+    autocmd vimshell_iexe CursorMovedI <buffer>  call s:on_moved()
+endfunction"}}}
+
+function! s:init_bg(sub, args, is_interactive)"{{{
+    " Save current directiory.
+    let l:cwd = getcwd()
+
+    " Init buffer.
+    if a:is_interactive
+        call vimshell#print_prompt()
+    endif
+    " Split nicely.
+    if winheight(0) > &winheight
+        split
+    else
+        vsplit
+    endif
+
+    edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
+    lcd `=l:cwd`
+    execute 'setfiletype int_' . a:args[0]
+
+    call vimshell#internal#iexe#default_settings()
 
     normal! G$
     
@@ -251,7 +266,18 @@ endfunction
 
 function! s:on_hold()
     call vimshell#interactive#execute_pty_out()
-    startinsert!
+    if exists('b:vimproc_sub')
+        startinsert!
+    else
+        stopinsert
+    endif
+endfunction
+
+function! s:on_moved()
+    if getline('.') =~ '^\.\.\..$'
+        " Set prompt.
+        call setline(line('.'), '-> ' . getline('.')[3:])
+    endif
 endfunction
 
 function! s:on_insert_enter()
@@ -266,6 +292,17 @@ endfunction
 function! s:on_exit()
     call vimshell#interactive#hang_up()
 endfunction
+
+" Interactive option.
+if has('win32') || has('win64')
+    " Windows only.
+    let s:interactive_option = {
+                \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--simple-prompt', 
+                \ 'gosh' : '-i', 'python' : '-i'
+                \}
+else
+    let s:interactive_option = {}
+endif
 
 " Key-mappings functions."{{{
 function! s:tab_completion()"{{{
@@ -386,6 +423,12 @@ function! s:previous_prompt()"{{{
         execute ':'.l:prompts[-1]
     endif
 endfunction"}}}
+function! s:next_prompt()"{{{
+    let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val > line(".")'), 'str2nr(v:val)'), 's:compare_func')
+    if !empty(l:prompts)
+        execute ':'.l:prompts[0]
+    endif
+endfunction"}}}
 function! s:move_head()"{{{
     if !exists('b:prompt_history[line(".")]')
         return
@@ -409,84 +452,6 @@ function! s:delete_line()"{{{
     if l:col == l:mcol-1
         startinsert!
     endif
-endfunction"}}}
-"}}}
-
-" Smart tab completion."{{{
-function! s:smart_tab_completion()"{{{
-    let &iminsert = 0
-    let &imsearch = 0
-
-    " Command completion.
-
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#internal#iexe#smart_tab_completion'
-
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#manual_omni_complete')
-        call feedkeys(neocomplcache#manual_omni_complete(), 'n')
-    else
-        call feedkeys("\<C-x>\<C-o>", 'n')
-    endif
-endfunction"}}}
-function! vimshell#internal#iexe#smart_tab_completion(findstart, base)"{{{
-    if a:findstart
-        " Get cursor word.
-        let l:cur_text = strpart(getline('.'), 0, col('.')) 
-
-        return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
-    endif
-
-    " Save option.
-    let l:ignorecase_save = &ignorecase
-
-    " Complete.
-    if g:VimShell_SmartCase && a:base =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:VimShell_IgnoreCase
-    endif
-
-    let l:complete_words = s:get_tab_complete_words(a:base)
-
-    " Restore option.
-    let &ignorecase = l:ignorecase_save
-
-    return l:complete_words
-endfunction"}}}
-
-function! s:get_tab_complete_words(cur_keyword_str)"{{{
-    let l:list = []
-
-    " Insert <TAB>.
-    if exists('b:prompt_history[line(".")]')
-        let l:prev_prompt = b:prompt_history[line('.')]
-    else
-        let l:prev_prompt = ''
-    endif
-    let l:prompt = getline('.')
-    call setline(line('.'), getline('.') . "\<TAB>")
-
-    " Do command completion.
-    call vimshell#interactive#execute_pty_inout(0)
-
-    let l:candidate = getline('$')
-    if l:candidate !~ l:prompt
-        if l:candidate =~ '\\\@<!\s.\+'
-            call append(line('$'), l:prompt)
-            let b:prompt_history[line('.')] = l:prompt
-            normal! j
-        else
-            call setline(line('$'), l:prompt . l:candidate)
-            let b:prompt_history[line('.')] = l:prompt . l:candidate
-        endif
-        normal! $
-    elseif l:candidate =~ '\t$'
-        " Failed completion.
-        call setline(line('$'), l:prompt)
-        let b:prompt_history[line('$')] = l:prev_prompt
-    endif
-
-    return l:list
 endfunction"}}}
 "}}}
 

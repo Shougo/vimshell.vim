@@ -235,5 +235,8 @@ endfunction"}}}
 function! vimshell#complete#helper#compare_rank(i1, i2)"{{{
     return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
 endfunction"}}}
+function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
+    return filter(a:list, 'v:val =~ ' . string('^' . escape(a:cur_keyword_str, '~" \.^$[]*')))
+endfunction"}}}
 
 " vim: foldmethod=marker

@@ -124,6 +124,13 @@ CHANGELOG					*vimshell-changelog*
      - Fixed trunk string.
      - Escape complete candidates.
      - Improved Windows pty support.
+     - Improved password input.
+     - Improved echo back.
+     - Improved encoding.
+     - Implemented next_prompt() in iexe.
+     - Implemented arguments completion.
+     - Set interactive option in Windows iexe.
+     - Fixed force exit error.
 
 ChangeLog 6.00-: {{{
     6.00 :

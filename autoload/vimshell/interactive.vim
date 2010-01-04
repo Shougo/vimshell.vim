@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 03 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,6 +50,12 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
         " Password input.
         set imsearch=0
         let l:in = inputsecret('Input Secret : ')
+
+        if &termencoding != '' && &encoding != &termencoding
+            " Convert encoding.
+            let l:in = iconv(l:in, &encoding, &termencoding)
+        endif
+
         call b:vimproc_sub[0].write(l:in . "\<NL>")
         let b:vimproc_is_secret = 0
     elseif !b:vimproc_sub[0].eof
@@ -98,13 +104,8 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
             " Still nothing? We give up.
             if l:prompt_search == 0
                 echohl WarningMsg | echo "Invalid input." | echohl None
-                "normal! G$
-                "startinsert!
-                "return
             endif
         endif
-        " Delete input string for echoback.
-        call setline(line('.'), getline('.')[: -(len(l:in)+1)])
 
         " record command history
         if !exists('b:interactive_command_history')
@@ -116,9 +117,15 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
         let b:interactive_command_position = 0
 
         try
+            if &termencoding != '' && &encoding != &termencoding
+                " Convert encoding.
+                let l:in = iconv(l:in, &encoding, &termencoding)
+            endif
+
             if l:in =~ "$"
                 " EOF.
                 call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "" : "")
+                let b:skip_echoback = l:in[:-2]
                 call vimshell#interactive#execute_pty_out()
 
                 call vimshell#interactive#exit()
@@ -126,23 +133,44 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
             elseif l:in =~ '\t$'
                 " Completion.
                 call b:vimproc_sub[0].write(l:in)
+                let b:skip_echoback = l:in[: -1]
             elseif l:in != '...'
-                if l:in =~ '^\.\.\.'
+                if l:in =~ '^-> '
                     " Delete ...
                     let l:in = l:in[3:]
                 endif
 
                 call b:vimproc_sub[0].write(l:in . "\<NL>")
+                let b:skip_echoback = l:in
             endif
         catch
             call b:vimproc_sub[0].close()
         endtry
     endif
 
-    call append(line('$'), '...')
-    normal! G$
+    if getline('$') != '...'
+        call append(line('$'), '...')
+        normal! G$
+    endif
 
     call vimshell#interactive#execute_pty_out()
+    
+    while b:vimproc_is_secret
+        " Password input.
+        set imsearch=0
+        let l:in = inputsecret('Input Secret : ')
+
+        if &termencoding != '' && &encoding != &termencoding
+            " Convert encoding.
+            let l:in = iconv(l:in, &encoding, &termencoding)
+        endif
+        
+        call b:vimproc_sub[0].write(l:in . "\<NL>")
+        let b:vimproc_is_secret = 0
+
+        call vimshell#interactive#execute_pty_out()
+    endwhile
+    
     if getline(line('$')) =~ '^\s*$'
         call setline(line('$'), '...')
     endif
@@ -162,21 +190,30 @@ function! vimshell#interactive#execute_pty_out()"{{{
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
     let l:outputed = 0
+    let l:output = ''
     for sub in b:vimproc_sub
         if !sub.eof
             let l:read = sub.read(-1, 40)
             while l:read != ''
-                if l:i < l:submax
-                    " Write pipe.
-                    call b:vimproc_sub[l:i + 1].write(l:read)
-                else
-                    call s:print_buffer(b:vimproc_fd, l:read)
-                    redraw
-                endif
+                let l:output .= l:read
+                let l:outputed = 1
 
                 let l:read = sub.read(-1, 40)
-                let l:outputed = 1
             endwhile
+
+            if l:output != ''
+                if exists('b:skip_echoback')
+                    if vimshell#head_match(l:output, b:skip_echoback)
+                        let l:output = l:output[len(b:skip_echoback) :]
+                    else
+                        " Newline.
+                        let l:output = "\<NL>" . l:output
+                    endif
+                endif
+
+                call s:print_buffer(b:vimproc_fd, l:output)
+                redraw
+            endif
         endif
 
         let l:i += 1
@@ -186,6 +223,7 @@ function! vimshell#interactive#execute_pty_out()"{{{
     if !exists('b:prompt_history')
         let b:prompt_history = {}
     endif
+
     if l:outputed
         let b:prompt_history[line('.')] = getline('.')
     endif
@@ -280,7 +318,7 @@ function! vimshell#interactive#force_exit()"{{{
         try
             " 15 == SIGTERM
             call sub.vp_kill(15)
-        catch /No such process/
+        catch
         endtry
     endfor
 
@@ -330,11 +368,7 @@ function! vimshell#interactive#interrupt()"{{{
         endtry
     endfor
 
-    if has('win32') || has('win64')
-        call vimshell#interactive#execute_pipe_out()
-    else
-        call vimshell#interactive#execute_pty_out()
-    endif
+    call vimshell#interactive#execute_pty_out()
 endfunction"}}}
 
 function! vimshell#interactive#highlight_escape_sequence()"{{{
@@ -431,7 +465,11 @@ function! s:print_buffer(fd, string)"{{{
         return
     endif
 
-    if a:string =~ s:password_regex
+    " Convert encoding.
+    let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+                \ iconv(a:string, &termencoding, &encoding) : a:string
+
+    if l:string =~ s:password_regex
         " Set secret flag.
         let b:vimproc_is_secret = 1
     endif
@@ -441,21 +479,14 @@ function! s:print_buffer(fd, string)"{{{
             " Nothing.
         elseif a:fd.stdout == '/dev/clip'
             " Write to clipboard.
-            let @+ .= a:string
+            let @+ .= l:string
         else
             " Write file.
-            let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
+            let l:file = extend(readfile(a:fd.stdout), split(l:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stdout)
         endif
 
         return
-    endif
-
-    " Convert encoding for system().
-    if has('win32') || has('win64')
-        let l:string = iconv(a:string, 'cp932', &encoding) 
-    else
-        let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
     " Strip <CR>.
@@ -480,26 +511,23 @@ function! s:error_buffer(fd, string)"{{{
         return
     endif
 
+    " Convert encoding.
+    let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+                \ iconv(a:string, &termencoding, &encoding) : a:string
+
     if a:fd.stderr != ''
         if a:fd.stderr == '/dev/null'
             " Nothing.
         elseif a:fd.stderr == '/dev/clip'
             " Write to clipboard.
-            let @+ .= a:string
+            let @+ .= l:string
         else
             " Write file.
-            let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
+            let l:file = extend(readfile(a:fd.stderr), split(l:string, '\r\n\|\n'))
             call writefile(l:file, a:fd.stderr)
         endif
         
         return
-    endif
-
-    " Convert encoding for system().
-    if has('win32') || has('win64')
-        let l:string = iconv(a:string, 'cp932', &encoding) 
-    else
-        let l:string = iconv(a:string, 'utf-8', &encoding) 
     endif
 
     " Print buffer.
