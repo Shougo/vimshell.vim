@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Dec 2009
+" Last Modified: 05 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,9 @@
 " Version: 3.8, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.9:
+"     - Improved directory highlight.
+"
 "   3.8:
 "     - Added keywords.
 "     - Use vimshell#get_prompt().
@@ -128,12 +131,12 @@ syn keyword  vimshInternal
             \contained
 syn keyword  vimshSpecial         command internal ev let vexe
             \contained
-if has('win32') || ('win64')
+if vimshell#iswin()
     syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
-    syn match   VimShellDirectory         '[/~]\=\f\+[/\\]\f*'
+    syn match   VimShellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
     syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
 else
-    syn match   VimShellDirectory         '[/~]\=\f\+/\f*'
+    syn match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
     syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 

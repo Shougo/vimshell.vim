@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Dec 2009
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -113,7 +113,6 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
         endif
 
         let l:skip_prompt = vimshell#execute_command(l:program, l:args, l:fd, a:other_info)
-        call vimshell#interactive#highlight_escape_sequence()
         redraw
     endfor
 

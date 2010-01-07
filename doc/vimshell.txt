@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.01
+Version: 6.02
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,14 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.02 :
+    - Improved autocommand in iexe.
+    - Improved password prompt.
+    - Improved completion in iexe.
+    - Improved highlight escape sequence.
+    - Fixed echo in iexe.
+    
+ChangeLog 6.00-: {{{
     6.01 :
      - Improved error handling.
      - Improved head match.
@@ -132,7 +140,6 @@ CHANGELOG					*vimshell-changelog*
      - Set interactive option in Windows iexe.
      - Fixed force exit error.
 
-ChangeLog 6.00-: {{{
     6.00 :
      - Deleted plugin/interactive.vim.
      - Deleted ftplugin/vimshell.vim.

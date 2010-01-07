@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 Dec 2009
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.01, for Vim 7.0
+" Version: 6.02, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -300,7 +300,7 @@ function! vimshell#process_enter()"{{{
             return
         endif
 
-        normal! G$
+        $
         " Execute cursor file.
         if isdirectory(l:filename)
             call setline(line('$'), s:prompt . l:filename)
@@ -348,7 +348,6 @@ function! vimshell#process_enter()"{{{
             call vimshell#execute_internal_command('ls', [], {}, {})
 
             call vimshell#print_prompt()
-            call vimshell#interactive#highlight_escape_sequence()
 
             call vimshell#start_insert()
         else
@@ -363,7 +362,6 @@ function! vimshell#process_enter()"{{{
         call vimshell#execute_internal_command('cd', ['-'], {}, {})
 
         call vimshell#print_prompt()
-        call vimshell#interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -376,7 +374,6 @@ function! vimshell#process_enter()"{{{
         let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
         call vimshell#error_line({}, l:message)
         call vimshell#print_prompt()
-        call vimshell#interactive#highlight_escape_sequence()
 
         call vimshell#start_insert()
         return
@@ -388,7 +385,6 @@ function! vimshell#process_enter()"{{{
     endif
 
     call vimshell#print_prompt()
-    call vimshell#interactive#highlight_escape_sequence()
     call vimshell#start_insert()
 endfunction"}}}
 
@@ -583,9 +579,11 @@ function! vimshell#print(fd, string)"{{{
     for l:line in l:lines
         call append(line('$'), l:line)
     endfor
+    
+    call vimshell#interactive#highlight_escape_sequence()
 
     " Set cursor.
-    normal! G
+    $
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
     if !empty(a:fd) && a:fd.stdout != ''
@@ -603,11 +601,12 @@ function! vimshell#print_line(fd, string)"{{{
         return
     elseif line('$') == 1 && empty(getline('$'))
         call setline(line('$'), a:string)
-        normal! j
     else
         call append(line('$'), a:string)
-        normal! j
     endif
+    
+    call vimshell#interactive#highlight_escape_sequence()
+    normal! j
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
     if !empty(a:fd) && a:fd.stderr != ''
@@ -629,11 +628,12 @@ function! vimshell#error_line(fd, string)"{{{
 
     if line('$') == 1 && empty(getline('$'))
         call setline(line('$'), l:string)
-        normal! j
     else
         call append(line('$'), l:string)
-        normal! j
     endif
+    
+    call vimshell#interactive#highlight_escape_sequence()
+    normal! j
 endfunction"}}}
 function! vimshell#print_prompt()"{{{
     let l:escaped = escape(getline('.'), "\'")
@@ -717,7 +717,7 @@ function! vimshell#getfilename(program)"{{{
 endfunction"}}}
 function! vimshell#start_insert()"{{{
     " Enter insert mode.
-    normal! G$
+    $
     startinsert!
     set iminsert=0 imsearch=0
 endfunction"}}}
@@ -734,10 +734,15 @@ function! vimshell#get_user_prompt()"{{{
     return s:user_prompt
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
+    " Get cursor text without prompt.
     let l:pos = mode() ==# 'i' ? 2 : 1
 
     let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
     return substitute(l:cur_text[len(s:prompt):], '^\s*', '', '')
+endfunction"}}}
+function! vimshell#get_interactive_cur_text()"{{{
+    let l:pos = mode() ==# 'i' ? 2 : 1
+    return col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
 endfunction"}}}
 function! vimshell#check_prompt()"{{{
     return getline('.')[: len(s:prompt)-1] == s:prompt
@@ -755,6 +760,9 @@ function! vimshell#system(str, ...)"{{{
 endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
     return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
+endfunction"}}}
+function! vimshell#iswin()"{{{
+    return has('win32') || has('win64')
 endfunction"}}}
 "}}}
 

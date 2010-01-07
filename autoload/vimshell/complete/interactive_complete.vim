@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2009
+" Last Modified: 06 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,9 +42,7 @@ endfunction"}}}
 
 function! vimshell#complete#interactive_complete#omnifunc(findstart, base)"{{{
     if a:findstart
-        let l:pos = mode() ==# 'i' ? 2 : 1
-        let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
-        return match(l:cur_text, '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
+        return match(vimshell#get_interactive_cur_text(), '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
     endif
 
     " Save option.
@@ -79,25 +77,60 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
         let l:in = ''
         " Working
     elseif !exists('b:prompt_history')
+        let b:prompt_history = {}
         let l:in = ''
     elseif exists("b:prompt_history['".line('.')."']")
         let l:in = l:in[len(b:prompt_history[line('.')]) : ]
     endif
     
-    call b:vimproc_sub[0].write(l:in . "\<TAB>")
+    if &termencoding != '' && &encoding != &termencoding
+        " Convert encoding.
+        let l:in = iconv(l:in, &encoding, &termencoding)
+    endif
+    
+    call b:vimproc_sub[0].write(l:in . s:get_complete_key())
     
     " Get output.
     let l:read = b:vimproc_sub[0].read(-1, 40)
     let l:output = ''
-    while vimshell#head_match(split(l:output, '\r\n\|\n', 1)[-1], l:prompt)
+    while !vimshell#head_match(split(l:output, '\r\n\|\n', 1)[-1], l:prompt)
         let l:output .= l:read
-        let l:outputed = 1
 
         let l:read = b:vimproc_sub[0].read(-1, 40)
     endwhile
-    let l:candidates = split(l:output, '\r\n\|\n')[: -2]
+    
+    if &termencoding != '' && &encoding != &termencoding
+        " Convert encoding.
+        let l:output = iconv(l:output, &termencoding, &encoding)
+    endif
 
+    let l:candidates = split(join(split(l:output, '\r\n\|\n')[1: -2], '  '), '\s\s\+')
+    let l:cnt = 0
+    let l:ignore_input = l:in[: -len(a:cur_keyword_str)-1]
+    for l:candidate in l:candidates
+        if vimshell#head_match(l:candidate, l:ignore_input)
+            " Delete input line.
+            let l:candidates[l:cnt] = l:candidate[len(l:ignore_input) :]
+        endif
+        
+        let l:cnt += 1
+    endfor 
+    
+    " Delete input.
+    call b:vimproc_sub[0].write(repeat("\<C-h>", len(l:in)))
+    
     return vimshell#complete#helper#keyword_filter(l:candidates, a:cur_keyword_str)
 endfunction"}}}
 
+function! s:get_complete_key()"{{{
+    if !vimshell#iswin()
+        " For pty program.
+        return "\<TAB>"
+    elseif &filetype == 'iexe_zsh' || &filetype == 'iexe_nyaos' 
+        return "\<C-d>"
+    else
+        " For readline program.
+        return "\<ESC>?"
+    endif
+endfunction"}}}
 " vim: foldmethod=marker

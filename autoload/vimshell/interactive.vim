@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2009
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,17 +31,14 @@ function! s:SID_PREFIX()
 endfunction
 
 let s:password_regex = 
-            \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
+            \'\%(Enter \\|[Oo]ld \\|[Nn]ew \\|''s \\|login \\|'''  .
             \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
-            \'[Pp]assword'
-let s:character_regex = 
-            \"\\%(Enter \\|[Oo]ld \\|[Nn]ew \\|'s \\|login \\|'"  .
-            \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
-            \'[Pp]assword'
+            \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
+let s:character_regex = ''
 
-let s:is_win = (has('win32') || has('win64'))
+let s:is_win = has('win32') || has('win64')
 
-function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
+function! vimshell#interactive#execute_pty_inout()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
@@ -122,9 +119,9 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
                 let l:in = iconv(l:in, &encoding, &termencoding)
             endif
 
-            if l:in =~ "$"
+            if l:in =~ "\<C-d>$"
                 " EOF.
-                call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "" : "")
+                call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "\<C-z>" : "\<C-z>")
                 let b:skip_echoback = l:in[:-2]
                 call vimshell#interactive#execute_pty_out()
 
@@ -150,7 +147,7 @@ function! vimshell#interactive#execute_pty_inout(is_interactive)"{{{
 
     if getline('$') != '...'
         call append(line('$'), '...')
-        normal! G$
+        $
     endif
 
     call vimshell#interactive#execute_pty_out()
@@ -203,6 +200,7 @@ function! vimshell#interactive#execute_pty_out()"{{{
 
             if l:output != ''
                 if exists('b:skip_echoback')
+                    let l:output = substitute(l:output, "^\\s\\+\\|\<C-h>", '', 'g')
                     if vimshell#head_match(l:output, b:skip_echoback)
                         let l:output = l:output[len(b:skip_echoback) :]
                     else
@@ -302,7 +300,7 @@ function! vimshell#interactive#exit()"{{{
     let b:vimproc_status = eval(l:status)
     if &filetype != 'vimshell'
         call append(line('$'), '*Exit*')
-        normal! G$
+        $
     endif
 
     unlet b:vimproc_sub
@@ -324,7 +322,7 @@ function! vimshell#interactive#force_exit()"{{{
 
     if &filetype != 'vimshell'
         call append(line('$'), '*Killed*')
-        normal! G$
+        $
     endif
 
     unlet b:vimproc_sub
@@ -347,7 +345,7 @@ function! vimshell#interactive#hang_up()"{{{
 
     if &filetype != 'vimshell'
         call append(line('$'), '*Killed*')
-        normal! G$
+        $
     endif
 
     unlet b:vimproc_sub
@@ -499,11 +497,11 @@ function! s:print_buffer(fd, string)"{{{
     let l:lines = split(l:last_line . substitute(l:string, '\r', '', 'g'), '\n', 1)
     
     call append(line('$'), l:lines)
-
+    
     call vimshell#interactive#highlight_escape_sequence()
 
     " Set cursor.
-    normal! G$
+    $
 endfunction"}}}
 
 function! s:error_buffer(fd, string)"{{{
@@ -541,8 +539,10 @@ function! s:error_buffer(fd, string)"{{{
         call append(line('$'), l:line)
     endfor
 
+    call vimshell#interactive#highlight_escape_sequence()
+
     " Set cursor.
-    normal! G$
+    $
 endfunction"}}}
 
 " Command functions.

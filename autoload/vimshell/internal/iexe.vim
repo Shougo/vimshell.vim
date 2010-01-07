@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jun 2009
+" Last Modified: 05 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.18, for Vim 7.0
+" Version: 1.19, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.19: 
+"     - Improved autocommand.
+"     - Improved completion.
+"
 "   1.18: 
 "     - Implemented Windows pty support.
 "     - Improved CursorHoldI event.
@@ -197,41 +201,38 @@ function! vimshell#internal#iexe#default_settings()"{{{
 
     nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
-    augroup vimshell_iexe
-        autocmd BufUnload <buffer>   call s:on_exit()
-    augroup END
 
     nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
     inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
 
     " Plugin key-mappings.
     inoremap <buffer><silent><expr> <Plug>(vimshell_iexe_delete_backword_char)  <SID>delete_backword_char()
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+    inoremap <buffer><silent> <Plug>(vimshell_iexe_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+    
     imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
     imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
-    "inoremap <buffer><silent> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
-    "imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_iexe_tab_completion)"
-    inoremap <buffer><expr> <Plug>(vimshell_iexe_tab_completion)  <ESC>:<C-u>call <SID>tab_completion()<CR>
     imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_complete#complete()
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
     imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
     imap <buffer><C-n>     <Plug>(vimshell_iexe_next_history)
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_paste_prompt)  <ESC>:<C-u>call <SID>paste_prompt()<CR>
     imap <buffer><C-y>     <Plug>(vimshell_iexe_paste_prompt)
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
     imap <buffer><C-a>     <Plug>(vimshell_iexe_move_head)
-    inoremap <buffer><silent> <Plug>(vimshell_iexe_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
     imap <buffer><C-u>     <Plug>(vimshell_iexe_delete_line)
 
     nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
-    nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
     nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
+    
+    nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
     nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
 
-    autocmd vimshell_iexe CursorHoldI <buffer>  call s:on_hold()
-    autocmd vimshell_iexe InsertEnter <buffer>  call s:on_insert_enter()
-    autocmd vimshell_iexe InsertLeave <buffer>  call s:on_insert_leave()
-    autocmd vimshell_iexe CursorMovedI <buffer>  call s:on_moved()
+    augroup vimshell_iexe
+        autocmd BufUnload <buffer>   call s:on_exit()
+        autocmd CursorMovedI <buffer>  call s:on_moved()
+        autocmd CursorHoldI <buffer>  call s:on_hold()
+    augroup END
 endfunction"}}}
 
 function! s:init_bg(sub, args, is_interactive)"{{{
@@ -255,17 +256,18 @@ function! s:init_bg(sub, args, is_interactive)"{{{
 
     call vimshell#internal#iexe#default_settings()
 
-    normal! G$
+    $
     
     startinsert!
 endfunction"}}}
 
 function! s:on_execute()
-    call vimshell#interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout()
 endfunction
 
 function! s:on_hold()
     call vimshell#interactive#execute_pty_out()
+    
     if exists('b:vimproc_sub')
         startinsert!
     else
@@ -278,15 +280,6 @@ function! s:on_moved()
         " Set prompt.
         call setline(line('.'), '-> ' . getline('.')[3:])
     endif
-endfunction
-
-function! s:on_insert_enter()
-    let s:save_updatetime = &updatetime
-    let &updatetime = 50
-endfunction
-
-function! s:on_insert_leave()
-    let &updatetime = s:save_updatetime
 endfunction
 
 function! s:on_exit()
@@ -305,38 +298,6 @@ else
 endif
 
 " Key-mappings functions."{{{
-function! s:tab_completion()"{{{
-    " Insert <TAB>.
-    if exists('b:prompt_history[line(".")]')
-        let l:prev_prompt = b:prompt_history[line('.')]
-    else
-        let l:prev_prompt = ''
-    endif
-    let l:prompt = getline('.')
-    call setline(line('.'), getline('.') . "\<TAB>")
-
-    " Do command completion.
-    call vimshell#interactive#execute_pty_inout(0)
-
-    let l:candidate = getline('$')
-    if l:candidate !~ l:prompt
-        if l:candidate =~ '\\\@<!\s.\+'
-            call append(line('$'), l:prompt)
-            let b:prompt_history[line('.')] = l:prompt
-            normal! j
-        else
-            call setline(line('$'), l:prompt . l:candidate)
-            let b:prompt_history[line('.')] = l:prompt . l:candidate
-        endif
-        normal! $
-    elseif l:candidate =~ '\t$'
-        " Failed completion.
-        call setline(line('$'), l:prompt)
-        let b:prompt_history[line('$')] = l:prev_prompt
-    endif
-
-    startinsert!
-endfunction"}}}
 function! s:previous_command()"{{{
     " If this is the first up arrow use, save what's been typed in so far.
     if b:interactive_command_position == 0
@@ -395,9 +356,9 @@ function! s:execute_history()"{{{
         call setline(line('$'), b:prompt_history[line("$")] . l:command)
     endif
 
-    normal! G
+    $
 
-    call vimshell#interactive#execute_pty_inout(0)
+    call vimshell#interactive#execute_pty_inout()
 endfunction"}}}
 function! s:paste_prompt()"{{{
     " Search prompt.
@@ -415,7 +376,7 @@ function! s:paste_prompt()"{{{
         call setline(line('$'), b:prompt_history[line("$")] . l:command)
     endif
 
-    normal! G
+    $
 endfunction"}}}
 function! s:previous_prompt()"{{{
     let l:prompts = sort(map(filter(keys(b:prompt_history), 'v:val < line(".")'), 'str2nr(v:val)'), 's:compare_func')
