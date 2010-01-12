@@ -119,10 +119,23 @@ CHANGELOG					*vimshell-changelog*
 
     6.02 :
     - Improved autocommand in iexe.
-    - Improved password prompt.
     - Improved completion in iexe.
     - Improved highlight escape sequence.
     - Fixed echo in iexe.
+    - Improved password input.
+    - Fixed timer.
+    - Added powershell.exe and cmd.exe support.
+    - Improved vimshell buffer settings.
+    - Fixed <Plug>(vimshell_delete_previous_output) error.
+    - Delete control sequences.
+    - Improved complete pattern.
+    - Set completion timeout.
+    - Fixed interactive prompt bug.
+    - Deleted syntax keyword.
+    - Improved interactive print.
+    - Renamed interactive_complete.
+    - Fixed interactive process error.
+    - Fixed expand tilde bug.
     
 ChangeLog 6.00-: {{{
     6.01 :

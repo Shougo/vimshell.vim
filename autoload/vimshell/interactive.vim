@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2010
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,138 +38,116 @@ let s:character_regex = ''
 
 let s:is_win = has('win32') || has('win64')
 
+
+function! vimshell#interactive#get_cur_text()"{{{
+    if getline('.') == '...'
+        " Skip input.
+        return ''
+    endif
+    
+    " Get cursor text without prompt.
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+
+    if exists("b:prompt_history['".line('.')."']")
+        let l:cur_text = l:cur_text[len(b:prompt_history[line('.')]) : ]
+    elseif exists('b:prompt_history')
+        " Maybe line numbering got disrupted, search for a matching prompt.
+        let l:prompt_search = 0
+        for pnr in reverse(sort(keys(b:prompt_history)))
+            let l:prompt_length = len(b:prompt_history[pnr])
+            " In theory 0 length or ' ' prompt shouldn't exist, but still...
+            if l:prompt_length > 0 && b:prompt_history[pnr] != ' '
+                " Does the current line have this prompt?
+                if l:cur_text[: l:prompt_length - 1] == b:prompt_history[pnr]
+                    let l:cur_text = l:cur_text[l:prompt_length : ]
+                    let l:prompt_search = pnr
+                endif
+            endif
+        endfor
+        
+        " Still nothing? Maybe a multi-line command was pasted in.
+        let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
+        if l:prompt_search == 0 && l:max_prompt < line('$')
+            for i in range(l:max_prompt, line('$'))
+                if i == l:max_prompt && has_key(b:prompt_history, i)
+                    let l:cur_text = getline(i)
+                    let l:cur_text = l:cur_text[len(b:prompt_history[i]) : ]
+                else
+                    let l:cur_text = l:cur_text . getline(i)
+                endif
+            endfor
+            let l:prompt_search = l:max_prompt
+        endif
+
+        " Still nothing? We give up.
+        if l:prompt_search == 0
+            echohl WarningMsg | echo "Invalid input." | echohl None
+        endif
+    endif
+
+    return l:cur_text
+endfunction"}}}
+
 function! vimshell#interactive#execute_pty_inout()"{{{
     if !exists('b:vimproc_sub')
         return
     endif
 
-    if b:vimproc_is_secret
-        " Password input.
-        set imsearch=0
-        let l:in = inputsecret('Input Secret : ')
+    if b:vimproc_sub[0].eof
+        call vimshell#interactive#exit()
+        return
+    endif
+    
+    let l:in = vimshell#interactive#get_cur_text()
 
-        if &termencoding != '' && &encoding != &termencoding
-            " Convert encoding.
-            let l:in = iconv(l:in, &encoding, &termencoding)
-        endif
-
-        call b:vimproc_sub[0].write(l:in . "\<NL>")
-        let b:vimproc_is_secret = 0
-    elseif !b:vimproc_sub[0].eof
-        let l:in = getline('.')
-
-        if l:in == ''
-            " Do nothing.
-
-        elseif l:in == '...'
-            " Working
-
-        elseif !exists('b:prompt_history')
-            let l:in = ''
-
-        elseif exists("b:prompt_history['".line('.')."']")
-            let l:in = l:in[len(b:prompt_history[line('.')]) : ]
-
-        else
-            " Maybe line numbering got disrupted, search for a matching prompt.
-            let l:prompt_search = 0
-            for pnr in reverse(sort(keys(b:prompt_history)))
-                let l:prompt_length = len(b:prompt_history[pnr])
-                " In theory 0 length or ' ' prompt shouldn't exist, but still...
-                if l:prompt_length > 0 && b:prompt_history[pnr] != ' '
-                    " Does the current line have this prompt?
-                    if l:in[: l:prompt_length - 1] == b:prompt_history[pnr]
-                        let l:in = l:in[l:prompt_length : ]
-                        let l:prompt_search = pnr
-                    endif
-                endif
-            endfor
-            " Still nothing? Maybe a multi-line command was pasted in.
-            let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
-            if l:prompt_search == 0 && l:max_prompt < line('$')
-                for i in range(l:max_prompt, line('$'))
-                    if i == l:max_prompt && has_key(b:prompt_history, i)
-                        let l:in = getline(i)
-                        let l:in = l:in[len(b:prompt_history[i]) : ]
-                    else
-                        let l:in = l:in . getline(i)
-                    endif
-                endfor
-                let l:prompt_search = l:max_prompt
-            endif
-
-            " Still nothing? We give up.
-            if l:prompt_search == 0
-                echohl WarningMsg | echo "Invalid input." | echohl None
-            endif
-        endif
-
-        " record command history
-        if !exists('b:interactive_command_history')
-            let b:interactive_command_history = []
-        endif
-        if l:in != '' && l:in != '...'
-            call add(b:interactive_command_history, l:in)
-        endif
-        let b:interactive_command_position = 0
-
-        try
-            if &termencoding != '' && &encoding != &termencoding
-                " Convert encoding.
-                let l:in = iconv(l:in, &encoding, &termencoding)
-            endif
-
-            if l:in =~ "\<C-d>$"
-                " EOF.
-                call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "\<C-z>" : "\<C-z>")
-                let b:skip_echoback = l:in[:-2]
-                call vimshell#interactive#execute_pty_out()
-
-                call vimshell#interactive#exit()
-                return
-            elseif l:in =~ '\t$'
-                " Completion.
-                call b:vimproc_sub[0].write(l:in)
-                let b:skip_echoback = l:in[: -1]
-            elseif l:in != '...'
-                if l:in =~ '^-> '
-                    " Delete ...
-                    let l:in = l:in[3:]
-                endif
-
-                call b:vimproc_sub[0].write(l:in . "\<NL>")
-                let b:skip_echoback = l:in
-            endif
-        catch
-            call b:vimproc_sub[0].close()
-        endtry
+    " record command history
+    if !exists('b:interactive_command_history')
+        let b:interactive_command_history = []
+    endif
+    
+    if l:in != ''
+        call add(b:interactive_command_history, l:in)
     endif
 
+    if &termencoding != '' && &encoding != &termencoding
+        " Convert encoding.
+        let l:in = iconv(l:in, &encoding, &termencoding)
+    endif
+
+    try
+        if l:in =~ "\<C-d>$"
+            " EOF.
+            call b:vimproc_sub[0].write(l:in[:-2] . s:is_win ? "\<C-z>" : "\<C-z>")
+            let b:skip_echoback = l:in[:-2]
+            call vimshell#interactive#execute_pty_out()
+
+            call vimshell#interactive#exit()
+            return
+        elseif getline('.') != '...'
+            if l:in =~ '^-> '
+                " Delete ...
+                let l:in = l:in[3:]
+            endif
+
+            call b:vimproc_sub[0].write(l:in . "\<NL>")
+            let b:skip_echoback = l:in
+        endif
+    catch
+        call vimshell#interactive#exit()
+        return
+    endtry
+
     if getline('$') != '...'
-        call append(line('$'), '...')
+        call append('$', '...')
         $
     endif
 
     call vimshell#interactive#execute_pty_out()
     
-    while b:vimproc_is_secret
-        " Password input.
-        set imsearch=0
-        let l:in = inputsecret('Input Secret : ')
-
-        if &termencoding != '' && &encoding != &termencoding
-            " Convert encoding.
-            let l:in = iconv(l:in, &encoding, &termencoding)
-        endif
-        
-        call b:vimproc_sub[0].write(l:in . "\<NL>")
-        let b:vimproc_is_secret = 0
-
-        call vimshell#interactive#execute_pty_out()
-    endwhile
-    
-    if getline(line('$')) =~ '^\s*$'
-        call setline(line('$'), '...')
+    if getline('$') =~ '^\s*$'
+        call setline('$', '...')
     endif
 
     if exists('b:vimproc_sub') && b:vimproc_sub[-1].eof
@@ -188,47 +166,49 @@ function! vimshell#interactive#execute_pty_out()"{{{
     let l:submax = len(b:vimproc_sub) - 1
     let l:outputed = 0
     let l:output = ''
-    for sub in b:vimproc_sub
-        if !sub.eof
-            let l:read = sub.read(-1, 40)
-            while l:read != ''
-                let l:output .= l:read
-                let l:outputed = 1
-
+    try
+        for sub in b:vimproc_sub
+            if !sub.eof
                 let l:read = sub.read(-1, 40)
-            endwhile
+                while l:read != ''
+                    let l:output .= l:read
+                    let l:outputed = 1
 
-            if l:output != ''
-                if exists('b:skip_echoback')
-                    let l:output = substitute(l:output, "^\\s\\+\\|\<C-h>", '', 'g')
-                    if vimshell#head_match(l:output, b:skip_echoback)
-                        let l:output = l:output[len(b:skip_echoback) :]
-                    else
-                        " Newline.
-                        let l:output = "\<NL>" . l:output
-                    endif
+                    let l:read = sub.read(-1, 40)
+                endwhile
+
+                if l:output != ''
+                    call s:print_buffer(b:vimproc_fd, l:output)
+                    redraw
                 endif
-
-                call s:print_buffer(b:vimproc_fd, l:output)
-                redraw
             endif
-        endif
 
-        let l:i += 1
-    endfor
+            let l:i += 1
+        endfor
+    catch
+        call vimshell#interactive#exit()
+        return
+    endtry
 
     " record prompt used on this line
     if !exists('b:prompt_history')
         let b:prompt_history = {}
     endif
 
-    if l:outputed
-        let b:prompt_history[line('.')] = getline('.')
+    if exists('b:skip_echoback') && line('.') < line('$') && b:skip_echoback ==# getline(line('.'))
+        delete
+        redraw
     endif
 
     if b:vimproc_sub[-1].eof
         call vimshell#interactive#exit()
     endif
+    
+    if l:outputed
+        let b:prompt_history[line('$')] = getline('$')
+    endif
+
+    $
 endfunction"}}}
 
 function! vimshell#interactive#execute_pipe_out()"{{{
@@ -238,37 +218,42 @@ function! vimshell#interactive#execute_pipe_out()"{{{
 
     let l:i = 0
     let l:submax = len(b:vimproc_sub) - 1
-    for sub in b:vimproc_sub
-        if !sub.stdout.eof
-            let l:read = sub.stdout.read(-1, 40)
-            while l:read != ''
-                if l:i < l:submax
-                    " Write pipe.
-                    call b:vimproc_sub[l:i + 1].stdin.write(l:read)
-                else
-                    call s:print_buffer(b:vimproc_fd, l:read)
-                    redraw
-                endif
-
+    try
+        for sub in b:vimproc_sub
+            if !sub.stdout.eof
                 let l:read = sub.stdout.read(-1, 40)
-            endwhile
-        elseif l:i < l:submax && b:vimproc_sub[l:i + 1].stdin.fd > 0
-            " Close pipe.
-            call b:vimproc_sub[l:i + 1].stdin.close()
-        endif
+                while l:read != ''
+                    if l:i < l:submax
+                        " Write pipe.
+                        call b:vimproc_sub[l:i + 1].stdin.write(l:read)
+                    else
+                        call s:print_buffer(b:vimproc_fd, l:read)
+                        redraw
+                    endif
 
-        if !g:VimShell_UsePopen2 && !sub.stderr.eof
-            let l:read = sub.stderr.read(-1, 40)
-            while l:read != ''
-                call s:error_buffer(b:vimproc_fd, l:read)
-                redraw
+                    let l:read = sub.stdout.read(-1, 40)
+                endwhile
+            elseif l:i < l:submax && b:vimproc_sub[l:i + 1].stdin.fd > 0
+                " Close pipe.
+                call b:vimproc_sub[l:i + 1].stdin.close()
+            endif
 
+            if !g:VimShell_UsePopen2 && !sub.stderr.eof
                 let l:read = sub.stderr.read(-1, 40)
-            endwhile
-        endif
+                while l:read != ''
+                    call s:error_buffer(b:vimproc_fd, l:read)
+                    redraw
 
-        let l:i += 1
-    endfor
+                    let l:read = sub.stderr.read(-1, 40)
+                endwhile
+            endif
+
+            let l:i += 1
+        endfor
+    catch
+        call vimshell#interactive#exit()
+        return
+    endtry
 
     if b:vimproc_sub[-1].stdout.eof && (g:VimShell_UsePopen2 || b:vimproc_sub[-1].stderr.eof)
         call vimshell#interactive#exit()
@@ -370,6 +355,8 @@ function! vimshell#interactive#interrupt()"{{{
 endfunction"}}}
 
 function! vimshell#interactive#highlight_escape_sequence()"{{{
+    let l:pos = getpos('.')
+    
     let l:register_save = @"
     let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
     let l:grey_table = [
@@ -456,6 +443,11 @@ function! vimshell#interactive#highlight_escape_sequence()"{{{
         endif
     endwhile
     let @" = l:register_save
+
+    " Delete control sequences.
+    silent! .,$s/[^[:print:]\t]//g
+
+    call setpos('.', l:pos)
 endfunction"}}}
 
 function! s:print_buffer(fd, string)"{{{
@@ -466,11 +458,6 @@ function! s:print_buffer(fd, string)"{{{
     " Convert encoding.
     let l:string = (&termencoding != '' && &encoding != &termencoding) ?
                 \ iconv(a:string, &termencoding, &encoding) : a:string
-
-    if l:string =~ s:password_regex
-        " Set secret flag.
-        let b:vimproc_is_secret = 1
-    endif
 
     if a:fd.stdout != ''
         if a:fd.stdout == '/dev/null'
@@ -487,21 +474,41 @@ function! s:print_buffer(fd, string)"{{{
         return
     endif
 
-    " Strip <CR>.
-    if getline(line('$')) == '...'
-        $delete
+    if getline('$') == '...'
+        call setline('$', '')
     endif
-    let l:last_line = getline(line('$'))
     
-    $delete
-    let l:lines = split(l:last_line . substitute(l:string, '\r', '', 'g'), '\n', 1)
-    
-    call append(line('$'), l:lines)
+    " Strip <CR>.
+    let l:string = substitute(l:string, '\r\n', '\n', 'g')
+    if l:string =~ '\r'
+        for l:line in split(getline('$') . l:string, '\n', 1)
+            call append('$', '')
+            for l:l in split(l:line, '\r', 1)
+                call setline('$', l:l)
+                redraw
+            endfor
+        endfor
+    else
+        let l:lines = split(getline('$') . l:string, '\n', 1)
+
+        call setline('$', l:lines[0])
+        call append('$', l:lines[1:])
+    endif
+
+    if getline('$') =~ s:password_regex
+        " Password input.
+        set imsearch=0
+        let l:in = inputsecret('Input Secret : ')
+
+        if &termencoding != '' && &encoding != &termencoding
+            " Convert encoding.
+            let l:in = iconv(l:in, &encoding, &termencoding)
+        endif
+        
+        call b:vimproc_sub[0].write(l:in . "\<NL>")
+    endif
     
     call vimshell#interactive#highlight_escape_sequence()
-
-    " Set cursor.
-    $
 endfunction"}}}
 
 function! s:error_buffer(fd, string)"{{{
@@ -529,15 +536,26 @@ function! s:error_buffer(fd, string)"{{{
     endif
 
     " Print buffer.
+    if getline('$') == '...'
+        call setline('$', '')
+    endif
+
     " Strip <CR>.
-    let l:last_line = getline(line('$'))
-    let l:string = (l:last_line == '...' ? '' : l:last_line) . substitute(l:string, '\r', '', 'g')
-    let l:lines = map(split(l:string, '\n', 1), '"!!! " . v:val . " !!!"')
-    
-    call setline(line('$'), l:lines[0])
-    for l:line in l:lines[1:]
-        call append(line('$'), l:line)
-    endfor
+    let l:string = substitute(l:string, '\r\n', '\n', 'g')
+    if l:string =~ '\r'
+        for l:line in split(getline('$') . l:string, '\n', 1)
+            call append('$', '')
+            for l:l in split(l:line, '\r', 1)
+                call setline('$', '!!! ' . l:l . ' !!!')
+                redraw
+            endfor
+        endfor
+    else
+        let l:lines = map(split(getline('$') . l:string, '\n', 1), '"!!! " . v:val . " !!!"')
+
+        call setline('$', l:lines[0])
+        call append('$', l:lines[1:])
+    endif
 
     call vimshell#interactive#highlight_escape_sequence()
 

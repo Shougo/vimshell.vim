@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
+" Last Modified: 11 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,11 @@ function! vimshell#complete#history_complete#whole()"{{{
     let &iminsert = 0
     let &imsearch = 0
 
+    if !vimshell#check_prompt()
+        " Ignore.
+        return ''
+    endif
+
     " Command completion.
 
     if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
@@ -42,6 +47,11 @@ endfunction"}}}
 function! vimshell#complete#history_complete#insert()"{{{
     let &iminsert = 0
     let &imsearch = 0
+    
+    if !vimshell#check_prompt()
+        " Ignore.
+        return ''
+    endif
 
     " Command completion.
 
@@ -96,8 +106,8 @@ function! vimshell#complete#history_complete#omnifunc_whole(findstart, base)"{{{
 
     " Restore options.
     let &ignorecase = l:ignorecase_save
-    if &l:omnifunc != ''
-        let &l:omnifunc = ''
+    if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
+        let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
     return l:complete_words
@@ -126,8 +136,8 @@ function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{
 
     " Restore options.
     let &ignorecase = l:ignorecase_save
-    if &l:omnifunc != ''
-        let &l:omnifunc = ''
+    if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
+        let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
     return l:complete_words

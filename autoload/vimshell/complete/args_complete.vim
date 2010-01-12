@@ -45,7 +45,29 @@ unlet list
 "}}}
     
 function! vimshell#complete#args_complete#complete()"{{{
-    " Args completion.
+    let &iminsert = 0
+    let &imsearch = 0
+
+    if !vimshell#check_prompt()
+        " Ignore.
+        return ''
+    endif
+
+    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#args_complete#omnifunc')
+    else
+        " Set complete function.
+        let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
+        
+        return "\<C-x>\<C-o>\<C-p>"
+    endif
+endfunction"}}}
+
+function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
+    if a:findstart
+        " Get cursor word.
+        return len(vimshell#get_prompt()) + match(vimshell#get_cur_text(), vimshell#get_argument_pattern())
+    endif
 
     " Get command name.
     let l:args = vimshell#parser#split_args(vimshell#get_cur_text())
@@ -54,7 +76,7 @@ function! vimshell#complete#args_complete#complete()"{{{
         call add(l:args, '')
     endif
     let l:command = fnamemodify(l:args[0], ':t:r')
-    
+
     " Save option.
     let l:ignorecase_save = &ignorecase
 
@@ -75,34 +97,18 @@ function! vimshell#complete#args_complete#complete()"{{{
     else
         let l:complete_words = vimshell#complete#helper#files(l:args[-1])
     endif
-    
+
     " Restore option.
     let &ignorecase = l:ignorecase_save
-    
+
     " Trunk many items.
-    let s:complete_words = l:complete_words[: g:VimShell_MaxList-1]
-
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#args_complete#omnifunc')
-    else
-        " Set complete function.
-        let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
-        
-        return "\<C-x>\<C-o>\<C-p>"
-    endif
-endfunction"}}}
-
-function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
-    if a:findstart
-        " Get cursor word.
-        return len(vimshell#get_prompt()) + match(vimshell#get_cur_text(), '\%(\f\|\\\s\)*$')
-    endif
+    let l:complete_words = l:complete_words[: g:VimShell_MaxList-1]
     
-    if &l:omnifunc != ''
-        let &l:omnifunc = ''
+    if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
+        let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
-    return s:complete_words
+    return l:complete_words
 endfunction"}}}
 
 " vim: foldmethod=marker

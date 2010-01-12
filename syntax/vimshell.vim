@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2010
+" Last Modified: 11 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,11 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 3.8, for Vim 7.0
+" Version: 3.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
 "   3.9:
 "     - Improved directory highlight.
+"     - Deleted keywords.
 "
 "   3.8:
 "     - Added keywords.
@@ -125,12 +126,6 @@ syn match   VimShellSpecial           '[|<>;&;]' contained
 syn match   VimShellVariable          '$\h\w*' contained
 syn match   VimShellVariable          '$$\h\w*' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
-syn keyword  vimshInternal        
-            \alias bg cd clear dirs echo exe exit galias gcd gexe h hide histdel history iexe
-            \ls nop one open popd pwd repeat screen sexe shell sudo view vim vimdiff vimsh
-            \contained
-syn keyword  vimshSpecial         command internal ev let vexe
-            \contained
 if vimshell#iswin()
     syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
     syn match   VimShellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'

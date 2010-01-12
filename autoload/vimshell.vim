@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,7 +83,8 @@ function! vimshell#default_settings()"{{{
     setlocal noswapfile
     setlocal bufhidden=hide
     setlocal noreadonly
-    let &l:omnifunc = ''
+    setlocal tabstop=8
+    setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
 
     " Normal mode key-mappings."{{{
     " Execute command.
@@ -740,7 +741,7 @@ function! vimshell#get_cur_text()"{{{
     let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
     return substitute(l:cur_text[len(s:prompt):], '^\s*', '', '')
 endfunction"}}}
-function! vimshell#get_interactive_cur_text()"{{{
+function! vimshell#get_cur_line()"{{{
     let l:pos = mode() ==# 'i' ? 2 : 1
     return col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
 endfunction"}}}
@@ -748,7 +749,12 @@ function! vimshell#check_prompt()"{{{
     return getline('.')[: len(s:prompt)-1] == s:prompt
 endfunction"}}}
 function! vimshell#head_match(checkstr, headstr)"{{{
-    return a:headstr == ''? 1 : a:checkstr[: len(a:headstr)-1] ==# a:headstr
+    return a:headstr == '' || a:checkstr ==# a:headstr
+                \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
+endfunction"}}}
+function! vimshell#tail_match(checkstr, tailstr)"{{{
+    return a:tailstr == '' || a:checkstr ==# a:tailstr
+                \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
     for ext in split(a:exts, ',')
@@ -763,6 +769,9 @@ function! vimshell#trunk_string(string, max)"{{{
 endfunction"}}}
 function! vimshell#iswin()"{{{
     return has('win32') || has('win64')
+endfunction"}}}
+function! vimshell#get_argument_pattern()"{{{
+    return '\s\zs\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)*$'
 endfunction"}}}
 "}}}
 

@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Nov 2009
-" Usage: Just source this file.
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,7 +85,7 @@ function! vimshell#mappings#delete_previous_output()"{{{
         execute printf('%s,%sdelete', l:prev_line+1, l:next_line-1)
         call append(line('.')-1, "* Output was deleted *")
     endif
-    call vimshell#next_prompt()
+    call vimshell#mappings#next_prompt()
 endfunction"}}}
 function! vimshell#mappings#insert_last_word()"{{{
     let l:word = ''

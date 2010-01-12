@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2009
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,7 +28,12 @@ function! vimshell#complete#command_complete#complete()"{{{
     let &iminsert = 0
     let &imsearch = 0
 
-    if vimshell#get_cur_text() =~ '^.\+/\|^[^\\]\+\s'
+    if !vimshell#check_prompt()
+        " Ignore.
+        return ''
+    endif
+
+    if vimshell#get_cur_text() =~ '^\s*\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\+\s'
         " Args completion.
 
         return vimshell#complete#args_complete#complete()
@@ -65,14 +70,19 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
 
     " Restore option.
     let &ignorecase = l:ignorecase_save
-    if &l:omnifunc != ''
-        let &l:omnifunc = ''
+    if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
+        let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
     return l:complete_words
 endfunction"}}}
 
 function! s:get_complete_commands(cur_keyword_str)"{{{
+    if a:cur_keyword_str =~ '/'
+        " Filename completion.
+        return vimshell#complete#helper#files(a:cur_keyword_str)
+    endif
+    
     let l:directories = vimshell#complete#helper#directories(a:cur_keyword_str)
     for l:keyword in l:directories
         let l:keyword.word = './' . l:keyword.word

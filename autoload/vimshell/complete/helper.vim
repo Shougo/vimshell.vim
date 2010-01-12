@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,15 +24,29 @@
 " }}}
 "=============================================================================
 
-function! vimshell#complete#helper#files(cur_keyword_str)"{{{
+function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
+    if a:0 > 1
+        echoerr 'Too many arguments.'
+    endif
+    
+    " Not Filename pattern.
+    if a:cur_keyword_str =~ 
+                \'\.\.\+$\|[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+        return []
+    endif
+
     let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
     let l:is_win = has('win32') || has('win64')
     let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
-    " Substitute ... -> ../..
-    while l:cur_keyword_str =~ '\.\.\.'
-        let l:cur_keyword_str = substitute(l:cur_keyword_str, '\.\.\zs\.', '/\.\.', 'g')
-    endwhile
+    
+    if a:0 == 1
+        let l:mask = a:1
+    elseif l:cur_keyword_str =~ '\*$'
+        let l:mask = ''
+    else
+        let l:mask = '*'
+    endif
 
     if a:cur_keyword_str =~ '^\$\h\w*'
         let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
@@ -46,15 +60,15 @@ function! vimshell#complete#helper#files(cur_keyword_str)"{{{
     endif
 
     try
-        let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+        let l:glob = l:cur_keyword_str . l:mask
         let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         if empty(l:files)
             " Add '*' to a delimiter.
             let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-            let l:glob = (l:cur_keyword_str !~ '\*$')?  l:cur_keyword_str . '*' : l:cur_keyword_str
+            let l:glob = l:cur_keyword_str . l:mask
             let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
         endif
-    catch /.*/
+    catch
         return []
     endtry
     if empty(l:files)

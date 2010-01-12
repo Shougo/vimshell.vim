@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2010
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,7 @@
 "   1.19: 
 "     - Improved autocommand.
 "     - Improved completion.
+"     - Added powershell.exe and cmd.exe support.
 "
 "   1.18: 
 "     - Implemented Windows pty support.
@@ -42,6 +43,7 @@
 "
 "   1.16: 
 "     - Improved kill processes.
+
 "     - Send interrupt when press <C-c>.
 "     - Improved tab completion.
 "     - Use vimproc.vim.
@@ -124,38 +126,30 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     endif
 
     let l:args = a:args
-    if has_key(s:interactive_option, a:args[0])
-        call add(l:args, s:interactive_option[a:args[0]])
+    if has_key(s:interactive_option, fnamemodify(a:args[0], ':r'))
+        call add(l:args, s:interactive_option[fnamemodify(a:args[0], ':r')])
+    endif
+    
+    if vimshell#iswin() && a:args[0] =~ 'cmd\%(\.exe\)\?'
+        " Run cmdproxy.exe instead of cmd.exe.
+        if !executable('cmdproxy.exe')
+            call vimshell#error_line(a:fd, 'cmdproxy.exe is not found. Please install it.')
+            return 0
+        endif
+        
+        let l:args[0] = 'cmdproxy.exe'
     endif
 
     " Initialize.
-    let l:sub = []
+    try
+        let l:sub = [vimproc#ptyopen(l:args)]
+    catch 'list index out of range'
+        let l:error = printf('File: "%s" is not found.', command[0])
 
-    " Search pipe.
-    let l:commands = [[]]
-    for arg in l:args
-        if arg == '|'
-            call add(l:commands, [])
-        else
-            call add(l:commands[-1], arg)
-        endif
-    endfor
+        call vimshell#error_line(a:fd, l:error)
 
-    for command in l:commands
-        try
-            call add(l:sub, vimproc#ptyopen(command))
-        catch 'list index out of range'
-            if empty(command)
-                let l:error = 'Wrong pipe used.'
-            else
-                let l:error = printf('File: "%s" is not found.', command[0])
-            endif
-
-            call vimshell#error_line(a:fd, l:error)
-
-            return 0
-        endtry
-    endfor
+        return 0
+    endtry
 
     if exists('b:vimproc_sub')
         " Delete zombee process.
@@ -174,15 +168,11 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         call b:vimproc_sub[0].write(vimshell#read(a:fd))
     endif
 
-    let l:cnt = 0
-    while l:cnt < 100
-        call vimshell#interactive#execute_pty_out()
-        let l:cnt += 1
-    endwhile
+    call vimshell#interactive#execute_pty_out()
     if getline(line('$')) =~ '^\s*$'
         call setline(line('$'), '...')
     endif
-
+    
     startinsert!
 
     return 1
@@ -192,6 +182,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal wrap
+    setlocal tabstop=8
 
     " Set syntax.
     syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
@@ -215,7 +206,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
     
     imap <buffer><C-h>     <Plug>(vimshell_iexe_delete_backword_char)
     imap <buffer><BS>     <Plug>(vimshell_iexe_delete_backword_char)
-    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_complete#complete()
+    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
     imap <buffer><C-p>     <Plug>(vimshell_iexe_previous_history)
     imap <buffer><C-n>     <Plug>(vimshell_iexe_next_history)
     imap <buffer><C-y>     <Plug>(vimshell_iexe_paste_prompt)
@@ -232,6 +223,8 @@ function! vimshell#internal#iexe#default_settings()"{{{
         autocmd BufUnload <buffer>   call s:on_exit()
         autocmd CursorMovedI <buffer>  call s:on_moved()
         autocmd CursorHoldI <buffer>  call s:on_hold()
+        autocmd InsertEnter <buffer>  call s:on_insert_enter()
+        autocmd InsertLeave <buffer>  call s:on_insert_leave()
     augroup END
 endfunction"}}}
 
@@ -250,9 +243,10 @@ function! s:init_bg(sub, args, is_interactive)"{{{
         vsplit
     endif
 
-    edit `=substitute(join(a:args), '|', '_', 'g').'@'.(bufnr('$')+1)`
+    edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
     lcd `=l:cwd`
-    execute 'setfiletype int_' . a:args[0]
+    "setfiletype `='int_'.fnamemodify(a:args[0], ':r')`
+    execute 'setfiletype' 'int_'.fnamemodify(a:args[0], ':r')
 
     call vimshell#internal#iexe#default_settings()
 
@@ -265,20 +259,35 @@ function! s:on_execute()
     call vimshell#interactive#execute_pty_inout()
 endfunction
 
+function! s:on_insert_enter()
+    let s:save_updatetime = &updatetime
+    let &updatetime = 200
+endfunction
+
+function! s:on_insert_leave()
+    let &updatetime = s:save_updatetime
+endfunction
+
 function! s:on_hold()
+    let [l:linenr, l:prev_line] = [line('.'), getline('.')]
+    
     call vimshell#interactive#execute_pty_out()
     
-    if exists('b:vimproc_sub')
-        startinsert!
+    if line('$') == l:linenr && getline('$') ==# l:prev_line
     else
+        startinsert!
+    endif
+    
+    if !exists('b:vimproc_sub')
         stopinsert
     endif
 endfunction
 
 function! s:on_moved()
-    if getline('.') =~ '^\.\.\..$'
+    let l:line = getline('.')
+    if l:line =~ '^\.\.\.\.\?[^.]\+$'
         " Set prompt.
-        call setline(line('.'), '-> ' . getline('.')[3:])
+        call setline('.', '-> ' . l:line[len(matchstr(l:line, '^\.\.\.\.\?')) :])
     endif
 endfunction
 
@@ -291,7 +300,8 @@ if has('win32') || has('win64')
     " Windows only.
     let s:interactive_option = {
                 \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--simple-prompt', 
-                \ 'gosh' : '-i', 'python' : '-i'
+                \ 'gosh' : '-i', 'python' : '-i', 
+                \ 'powershell' : '-Command -'
                 \}
 else
     let s:interactive_option = {}

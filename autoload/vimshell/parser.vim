@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,9 +28,18 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
     let l:skip_prompt = 0
     " Split statements.
     for l:statement in vimshell#parser#split_statements(a:script)
+        " Skip blank.
+        let l:statement = matchstr(l:statement, '^\s*\zs.*')
+        
         " Get program.
-        let l:program = matchstr(l:statement, '^\s*\zs[^[:blank:]]*')
-        let l:script = substitute(l:statement, '^\s*'.l:program, '', '')
+        let l:program = matchstr(l:statement, '^\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\+')
+        if l:program != '' && l:program[0] == '~'
+            " Parse tilde.
+            let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
+        endif
+
+        
+        let l:script = l:statement[len(l:program) :]
 
         for galias in keys(b:vimshell_galias_table)
             let l:script = substitute(l:script, '\s\zs'.galias.'\ze\%(\s\|$\)', b:vimshell_galias_table[galias], 'g')
@@ -58,7 +67,7 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
             endif
 
             " Expand tilde.
-            if l:script =~ ' \~'
+            if l:script =~ '\~'
                 let l:script = s:parse_tilde(l:script)
             endif
 
@@ -341,8 +350,13 @@ function! s:parse_tilde(script)"{{{
         if a:script[i] == ' ' && a:script[i+1] == '~'
             " Tilde.
             " Expand home directory.
-            let l:script .= ' ' . escape($HOME, '\ ')
+            let l:script .= ' ' . escape(substitute($HOME, '\\', '/', 'g'), '\ ')
             let l:i += 2
+        elseif l:i == 0 && a:script[i] == '~'
+            " Tilde.
+            " Expand home directory.
+            let l:script .= escape(substitute($HOME, '\\', '/', 'g'), '\ ')
+            let l:i += 1
         else
             let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
         endif
