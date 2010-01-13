@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -171,16 +171,13 @@ function! vimshell#interactive#execute_pty_out()"{{{
             if !sub.eof
                 let l:read = sub.read(-1, 40)
                 while l:read != ''
-                    let l:output .= l:read
                     let l:outputed = 1
+                    
+                    call s:print_buffer(b:vimproc_fd, l:read)
+                    redraw
 
                     let l:read = sub.read(-1, 40)
                 endwhile
-
-                if l:output != ''
-                    call s:print_buffer(b:vimproc_fd, l:output)
-                    redraw
-                endif
             endif
 
             let l:i += 1
@@ -206,9 +203,9 @@ function! vimshell#interactive#execute_pty_out()"{{{
     
     if l:outputed
         let b:prompt_history[line('$')] = getline('$')
+        $
+        startinsert!
     endif
-
-    $
 endfunction"}}}
 
 function! vimshell#interactive#execute_pipe_out()"{{{
@@ -443,9 +440,6 @@ function! vimshell#interactive#highlight_escape_sequence()"{{{
         endif
     endwhile
     let @" = l:register_save
-
-    " Delete control sequences.
-    silent! .,$s/[^[:print:]\t]//g
 
     call setpos('.', l:pos)
 endfunction"}}}

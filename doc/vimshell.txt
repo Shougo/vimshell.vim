@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.02
+Version: 6.03
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,13 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.03 :
+    - Refactoringed.
+    - Improved environment detect in open.
+    - Fixed delete escape sequence bug.
+    - Improved interactive print.
+    
+ChangeLog 6.00-: {{{
     6.02 :
     - Improved autocommand in iexe.
     - Improved completion in iexe.
@@ -137,7 +144,6 @@ CHANGELOG					*vimshell-changelog*
     - Fixed interactive process error.
     - Fixed expand tilde bug.
     
-ChangeLog 6.00-: {{{
     6.01 :
      - Improved error handling.
      - Improved head match.

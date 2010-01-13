@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 10 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.02, for Vim 7.0
+" Version: 6.03, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -52,8 +52,8 @@ endif"}}}
 
 augroup VimShellAutoCmd"{{{
     autocmd!
-    autocmd BufEnter * if &filetype == 'vimshell' | call s:save_current_dir()
-    autocmd BufLeave * if &filetype == 'vimshell' | call s:restore_current_dir()
+    autocmd BufWinEnter * if &filetype == 'vimshell' | call s:save_current_dir()
+    autocmd BufWinLeave * if &filetype == 'vimshell' | call s:restore_current_dir()
 augroup end"}}}
 
 " Plugin keymappings"{{{
@@ -159,12 +159,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
     let s:hist_size = getfsize(g:VimShell_HistoryPath)
 
-    if !exists('s:prev_numbered_list')
-        let s:prev_numbered_list = []
-    endif
-    if !exists('s:prepre_numbered_list')
-        let s:prepre_numbered_list = []
-    endif
     if !exists('b:vimshell_alias_table')
         let b:vimshell_alias_table = {}
     endif

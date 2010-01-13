@@ -273,11 +273,6 @@ function! s:on_hold()
     
     call vimshell#interactive#execute_pty_out()
     
-    if line('$') == l:linenr && getline('$') ==# l:prev_line
-    else
-        startinsert!
-    endif
-    
     if !exists('b:vimproc_sub')
         stopinsert
     endif
@@ -296,7 +291,7 @@ function! s:on_exit()
 endfunction
 
 " Interactive option.
-if has('win32') || has('win64')
+if vimshell#iswin()
     " Windows only.
     let s:interactive_option = {
                 \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--simple-prompt', 
