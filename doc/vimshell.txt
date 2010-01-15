@@ -127,6 +127,7 @@ CHANGELOG					*vimshell-changelog*
     - Improved password input.
     - Implemented interactive termtter syntax.
     - Fixed syntax error.
+    - Fixed alias parse.
     
 ChangeLog 6.00-: {{{
     6.02 :

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: alias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 28 Aug 2009
+" Last Modified: 15 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
+" Version: 1.7, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.7:
+"     - Changed as special command.
+"     - Fixed parse.
+"
 "   1.6:
 "     - Fixed parse bug.
 "     - Improved error message.
@@ -57,7 +61,7 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#alias#execute(program, args, fd, other_info)
+function! vimshell#special#alias#execute(program, args, fd, other_info)
     if empty(a:args)
         " View all aliases.
         for alias in keys(b:vimshell_alias_table)
@@ -72,11 +76,24 @@ function! vimshell#internal#alias#execute(program, args, fd, other_info)
         " Define alias.
         let l:args = join(a:args)
 
-        if l:args !~ '^\h\w*\s*=\s*'
-            call vimshell#error_line(a:fd, 'Wrong syntax: ' . l:args)
+        " Parse command line.
+        let l:alias_name = matchstr(l:args, '^\h\w*')
+
+        " Next.
+        let l:args = l:args[matchend(l:args, '^\h\w*') :]
+        if l:alias_name == '' || l:args !~ '^\s*=\s*'
+            call vimshell#error_line(a:fd, 'Wrong syntax: ' . join(a:args))
             return
         endif
-        let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
-        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
+        
+        " Skip =.
+        let l:expression = l:args[matchend(l:args, '^\s*=\s*') :]
+        
+        try
+            execute printf('let b:vimshell_alias_table[%s] = %s', string(l:alias_name),  string(l:expression))
+        catch
+            call vimshell#error_line(a:fd, 'Wrong syntax: ' . join(a:args))
+            return
+        endtry
     endif
 endfunction
