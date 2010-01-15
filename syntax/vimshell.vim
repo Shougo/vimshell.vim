@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 11 Jun 2010
+" Last Modified: 15 Jun 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -26,6 +26,9 @@
 " Version: 3.9, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   3.10:
+"     - Fixed secondary prompt error.
+"
 "   3.9:
 "     - Improved directory highlight.
 "     - Deleted keywords.
@@ -140,7 +143,7 @@ syn match VimShellExe '[|;]\s*\f\+' contained contains=VimShellSpecial,VimShellA
 execute "syn region   VimShellLine start='" . vimshell#get_prompt() ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 execute "syn region   VimShellExe start='" . vimshell#get_secondary_prompt() . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
-execute "syn region   VimShellLine start='" . VimShell_SecondaryPrompt ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
+execute "syn region   VimShellLine start='" . vimshell#get_secondary_prompt() ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 if has('gui_running')
     hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE

@@ -126,6 +126,7 @@ CHANGELOG					*vimshell-changelog*
     - Open URI when press <Enter>.
     - Improved password input.
     - Implemented interactive termtter syntax.
+    - Fixed syntax error.
     
 ChangeLog 6.00-: {{{
     6.02 :

@@ -30,25 +30,10 @@
 let s:is_vimproc = exists('*vimproc#system')
 
 " Initialize."{{{
-if !exists('g:VimShell_Prompt')
-    let s:prompt = 'vimshell% '
-else
-    let s:prompt = g:VimShell_Prompt
-endif
-if !exists('g:VimShell_SecondaryPrompt')
-    let s:secondary_prompt = '%% '
-else
-    let s:secondary_prompt = g:VimShell_SecondaryPrompt
-endif
-if !exists('g:VimShell_UserPrompt')
-    let s:user_prompt = ''
-else
-    let s:user_prompt = g:VimShell_UserPrompt
-endif
-
-if !exists('g:VimShell_ExecuteFileList')
-    let g:VimShell_ExecuteFileList = {}
-endif"}}}
+let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
+let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
+let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
+"}}}
 
 augroup VimShellAutoCmd"{{{
     autocmd!

@@ -1,8 +1,8 @@
 "=============================================================================
-" FILE: vimshell.vim
-" AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
-"         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 04 Jan 2010
+" FILE: syntax/vimshell.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" Last Modified: 15 Jun 2010
+" Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,107 +23,151 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.02, for Vim 7.0
+" Version: 3.9, for Vim 7.0
+"-----------------------------------------------------------------------------
+" ChangeLog: "{{{
+"   3.10:
+"     - Fixed secondary prompt error.
+"
+"   3.9:
+"     - Improved directory highlight.
+"     - Deleted keywords.
+"
+"   3.8:
+"     - Added keywords.
+"     - Use vimshell#get_prompt().
+"
+"   3.7:
+"     - Added user prompt.
+"
+"   3.6:
+"     - Refactoringed.
+"
+"   3.5:
+"     - Added secondary prompt.
+"     - Improved arguments on Windows.
+"
+"   3.4:
+"     - Improved quote and error.
+"     - Supports system variables.
+"
+"   3.3:
+"     - Added keywords.
+"     - Improved environment variables.
+"     - Improved quote.
+"
+"   3.2:
+"     - Supports exponential digits.
+"
+"   3.1:
+"     - Optimized pattern.
+"
+"   3.0:
+"     - Added VimShellErrorHidden.
+"     - Added VimShellError.
+"
+"   2.9:
+"     - Implemented VimShellComment.
+"     - Improved VimShellDirectory.
+"     - Added VimShellSpecial.
+"     - Improved VimShellConstants.
+"
+"   2.8:
+"     - Improved VimShellArguments color on Windows.
+"     - Improved VimShellString.
+"
+"   2.7:
+"     - Improved VimShellPrompt color on console.
+"     - Improved VimShellDirectory color.
+"     - Added VimShellDotFiles color.
+"     - Improved VimShellVariable color.
+"     - Improved VimShellArguments color.
+"
+"   2.6:
+"     - Improved VimShellSpecial color.
+"     - Improved VimShellExe color.
+"     - Improved VimShellSocket color.
+"
+"   2.5:
+"     - Improved prompt color when non gui.
+""}}}
+"-----------------------------------------------------------------------------
+" TODO: "{{{
+"     - Nothing.
+""}}}
+" Bugs"{{{
+"     -
+""}}}
 "=============================================================================
 
-if v:version < 700
-    echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
-    finish
-elseif exists('g:loaded_vimshell')
-    finish
+if version < 700
+  syntax clear
+elseif exists("b:current_syntax")
+  finish
 endif
 
-let s:save_cpo = &cpo
-set cpo&vim
-
-" Global options definition."{{{
-if !exists('g:VimShell_Prompt')
-    let g:VimShell_Prompt = 'vimshell% '
-endif
-if !exists('g:VimShell_SecondaryPrompt')
-    let g:VimShell_SecondaryPrompt = '%% '
-endif
-if !exists('g:VimShell_UserPrompt')
-    let g:VimShell_UserPrompt = ''
-endif
-if !exists('g:VimShell_IgnoreCase')
-    let g:VimShell_IgnoreCase = 1
-endif
-if !exists('g:VimShell_SmartCase')
-    let g:VimShell_SmartCase = 0
-endif
-if !exists('g:VimShell_MaxKeywordWidth')
-    let g:VimShell_MaxKeywordWidth = 40
-endif
-if !exists('g:VimShell_MaxList')
-    let g:VimShell_MaxList = 100
-endif
-if !exists('g:VimShell_UseCkw')
-    let g:VimShell_UseCkw = 0
-endif
-if !exists('g:VimShell_ExecuteFileList')
-    let g:VimShell_ExecuteFileList = {}
-endif
-if !exists('g:VimShell_EnableInteractive')
-    let g:VimShell_EnableInteractive = 0
-endif
-if !exists('g:VimShell_SplitHeight')
-    let g:VimShell_SplitHeight = 30
-endif
-if !exists('g:VimShell_UsePopen2')
-    let g:VimShell_UsePopen2 = 0
-endif
-if !exists('g:VimShell_EnableAutoLs')
-    let g:VimShell_EnableAutoLs = 0
+execute 'syn match VimShellPrompt ' . "'". vimshell#get_prompt() ."'"
+execute 'syn match VimShellPrompt ' . "'". vimshell#get_secondary_prompt() ."'"
+syn match   VimShellUserPrompt   '^\[%\] .*$'
+syn region   VimShellString   start=+'+ end=+'+ oneline
+syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
+syn region   VimShellString   start=+`+ end=+`+ oneline
+syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
+syn match   VimShellErrorHidden            '!!!' contained
+syn match   VimShellComment   '#.*$' contained
+syn match   VimShellConstants         '[+-]\=\<\d\+\>'
+syn match   VimShellConstants         '[+-]\=\<0x\x\+\>'
+syn match   VimShellConstants         '[+-]\=\<0\o\+\>'
+syn match   VimShellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
+syn match   VimShellConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
+syn match   VimShellExe               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
+syn match   VimShellSocket            '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
+syn match   VimShellDotFiles          '\%(^\|\s\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
+syn match   VimShellArguments         '\s-\=-[[:alnum:]-]\+=\=' contained
+syn match   VimShellQuoted            '\\.' contained
+syn match   VimShellSpecial           '[|<>;&;]' contained
+syn match   VimShellVariable          '$\h\w*' contained
+syn match   VimShellVariable          '$$\h\w*' contained
+syn region   VimShellVariable  start=+${+ end=+}+ contained
+if vimshell#iswin()
+    syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
+    syn match   VimShellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
+    syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
+else
+    syn match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
+    syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 
-if !exists('g:VimShell_HistoryPath')
-    let g:VimShell_HistoryPath = '~/.vimshell_hist'
-endif
-let g:VimShell_HistoryPath = expand(g:VimShell_HistoryPath)
-if !isdirectory(fnamemodify(g:VimShell_HistoryPath, ':p:h'))
-    call mkdir(fnamemodify(g:VimShell_HistoryPath, ':p:h'), 'p')
-endif
-if !exists('g:VimShell_HistoryMaxSize')
-    let g:VimShell_HistoryMaxSize = 1000
-endif
-if !exists('g:VimShell_VimshrcPath')
-    let g:VimShell_VimshrcPath = '~/.vimshrc'
-endif
-let g:VimShell_VimshrcPath = expand(g:VimShell_VimshrcPath)
-if !isdirectory(fnamemodify(g:VimShell_VimshrcPath, ':p:h'))
-    call mkdir(fnamemodify(g:VimShell_VimshrcPath, ':p:h'), 'p')
-endif
-if !exists('g:VimShell_EscapeColors')
-    let g:VimShell_EscapeColors = [
-                \'#3c3c3c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0', 
-                \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff'
-                \]
-endif
-"}}}
+execute "syn region   VimShellExe start='" . vimshell#get_prompt() . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+syn match VimShellExe '[|;]\s*\f\+' contained contains=VimShellSpecial,VimShellArguments
+execute "syn region   VimShellLine start='" . vimshell#get_prompt() ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-" Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
-nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
+execute "syn region   VimShellExe start='" . vimshell#get_secondary_prompt() . "' end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
+execute "syn region   VimShellLine start='" . vimshell#get_secondary_prompt() ."' end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-if !(exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
-    silent! nmap <unique> <Leader>sp     <Plug>(vimshell_split_switch)
-    silent! nmap <unique> <Leader>sn     <Plug>(vimshell_split_create)
-    silent! nmap <unique> <Leader>sh     <Plug>(vimshell_switch)
-    silent! nmap <unique> <Leader>sc     <Plug>(vimshell_create)
+if has('gui_running')
+    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+else
+    hi def link VimShellPrompt Identifier
 endif
-"}}}
 
-command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
-command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
-command! -nargs=+ -complete=shellcmd VimShellExecute call vimshell#internal#bg#vimshell_bg(vimshell#parser#split_args(<q-args>))
-command! -nargs=+ -complete=shellcmd VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(vimshell#parser#split_args(<q-args>))
+hi def link VimShellUserPrompt Special
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
+hi def link VimShellQuoted Special
+hi def link VimShellString Constant
+hi def link VimShellArguments Type
+hi def link VimShellConstants Constant
+hi def link VimShellSpecial PreProc
+hi def link VimShellVariable Comment
+hi def link VimShellComment Identifier
+hi def link VimShellNormal Normal
 
-let g:loaded_vimshell = 1
+hi def link VimShellExe Statement
+hi def link VimShellDirectory Preproc
+hi def link VimShellSocket Constant
+hi def link VimShellLink Comment
+hi def link VimShellDotFiles Identifier
+hi def link VimShellError Error
+hi def link VimShellErrorHidden Ignore
 
-" vim: foldmethod=marker
+let b:current_syntax = 'vimshell'
