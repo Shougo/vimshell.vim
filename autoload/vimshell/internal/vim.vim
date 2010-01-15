@@ -86,7 +86,7 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
 
         try
             edit `=l:arguments`
-        catch /^.*/
+        catch
             echohl Error | echomsg v:errmsg | echohl None
         endtry
     endif

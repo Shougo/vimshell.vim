@@ -122,6 +122,10 @@ CHANGELOG					*vimshell-changelog*
     - Improved environment detect in open.
     - Fixed delete escape sequence bug.
     - Improved interactive print.
+    - Implemented execute line in iexe buffer.
+    - Open URI when press <Enter>.
+    - Improved password input.
+    - Implemented interactive termtter syntax.
     
 ChangeLog 6.00-: {{{
     6.02 :

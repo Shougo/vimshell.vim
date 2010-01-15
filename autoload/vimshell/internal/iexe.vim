@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.19, for Vim 7.0
+" Version: 1.20, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.20: 
+"     - Implemented execute line.
+"
 "   1.19: 
 "     - Improved autocommand.
 "     - Improved completion.
@@ -193,7 +196,6 @@ function! vimshell#internal#iexe#default_settings()"{{{
     nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
     inoremap <buffer><silent><C-c>       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
 
-    nnoremap <buffer><silent><CR>           :<C-u>call <SID>execute_history()<CR>
     inoremap <buffer><silent><CR>       <ESC>:<C-u>call <SID>on_execute()<CR>
 
     " Plugin key-mappings.
@@ -215,9 +217,11 @@ function! vimshell#internal#iexe#default_settings()"{{{
 
     nnoremap <buffer><silent> <Plug>(vimshell_iexe_previous_prompt)  <ESC>:<C-u>call <SID>previous_prompt()<CR>
     nnoremap <buffer><silent> <Plug>(vimshell_iexe_next_prompt)  <ESC>:<C-u>call <SID>next_prompt()<CR>
+    nnoremap <buffer><silent> <Plug>(vimshell_iexe_execute_line)  <ESC>:<C-u>call <SID>execute_line()<CR>
     
     nmap <buffer><C-p>     <Plug>(vimshell_iexe_previous_prompt)
     nmap <buffer><C-n>     <Plug>(vimshell_iexe_next_prompt)
+    nmap <buffer><CR>      <Plug>(vimshell_iexe_execute_line)
 
     augroup vimshell_iexe
         autocmd BufUnload <buffer>   call s:on_exit()
@@ -400,9 +404,6 @@ function! s:move_head()"{{{
         return
     endif
     call search(vimshell#escape_match(b:prompt_history[line('.')]), 'be', line('.'))
-    if l:col != l:mcol-1
-        normal! l
-    endif
     startinsert
 endfunction"}}}
 function! s:delete_line()"{{{
@@ -417,6 +418,42 @@ function! s:delete_line()"{{{
 
     if l:col == l:mcol-1
         startinsert!
+    endif
+endfunction"}}}
+function! s:execute_line()"{{{
+    if exists('b:prompt_history[line(".")]')
+        " Execute history.
+        call s:execute_history()
+        return
+    endif
+
+    " Search cursor file.
+    let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+    if l:filename == ''
+        return
+    endif
+
+    " Execute cursor file.
+    if l:filename =~ '^\%(https\?\|ftp\)://'
+        " Open uri.
+        
+        " Detect desktop environment.
+        if vimshell#iswin()
+            execute 'silent ! start ' l:filename
+        elseif has('mac')
+            call system('open ' . l:filename . '&')
+        elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
+            " KDE.
+            call system('kfmclient exec ' . l:filename . '&')
+        elseif exists('$GNOME_DESKTOP_SESSION_ID')
+            " GNOME.
+            call system('gnome-open ' . l:filename . '&')
+        elseif executable(vimshell#getfilename('exo-open'))
+            " Xfce.
+            call system('exo-open ' . l:filename . '&')
+        else
+            throw 'Not supported.'
+        endif
     endif
 endfunction"}}}
 "}}}

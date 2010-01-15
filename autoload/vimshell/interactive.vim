@@ -490,6 +490,8 @@ function! s:print_buffer(fd, string)"{{{
     endif
 
     if getline('$') =~ s:password_regex
+        redraw
+        
         " Password input.
         set imsearch=0
         let l:in = inputsecret('Input Secret : ')

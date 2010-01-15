@@ -167,4 +167,4 @@ hi def link VimShellDotFiles Identifier
 hi def link VimShellError Error
 hi def link VimShellErrorHidden Ignore
 
-let b:current_syntax = "vimshell"
+let b:current_syntax = 'vimshell'

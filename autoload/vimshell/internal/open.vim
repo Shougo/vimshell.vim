@@ -44,25 +44,23 @@
 function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
     " Open file.
 
+    " Detect desktop environment.
     if vimshell#iswin()
         execute printf('silent ! start %s', join(a:args))
         return 0
     elseif has('mac')
         let l:args = ['open'] + a:args
+    elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
+        " KDE.
+        let l:args = ['kfmclient', 'exec'] + a:args
+    elseif exists('$GNOME_DESKTOP_SESSION_ID')
+        " GNOME.
+        let l:args = ['gnome-open'] + a:args
+    elseif executable(vimshell#getfilename('exo-open'))
+        " Xfce.
+        let l:args = ['exo-open'] + a:args
     else
-        " Detect desktop environment.
-        if exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
-            " KDE.
-            let l:args = ['kfmclient', 'exec'] + a:args
-        elseif exists('$GNOME_DESKTOP_SESSION_ID')
-            " GNOME.
-            let l:args = ['gnome-open'] + a:args
-        elseif executable(vimshell#getfilename('exo-open'))
-            " Xfce.
-            let l:args = ['exo-open'] + a:args
-        else
-            throw 'open: Not supported.'
-        endif
+        throw 'open: Not supported.'
     endif
 
     return vimshell#execute_internal_command('gexe', l:args, a:fd, a:other_info)
