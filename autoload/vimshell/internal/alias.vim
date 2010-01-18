@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: open.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" FILE: alias.vim
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" Last Modified: 28 Aug 2009
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,14 +23,30 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
-"   1.2: Improved environment detect.
+"   1.6:
+"     - Fixed parse bug.
+"     - Improved error message.
 "
-"   1.1: Improved behaivior.
+"   1.5:
+"     - Changed alias syntax.
 "
-"   1.0: Initial version.
+"   1.4:
+"     - Optimized parse.
+"
+"   1.3:
+"     - Supported vimshell Ver.3.2.
+"
+"   1.2:
+"     - Use vimshell#print_line.
+"
+"   1.1:
+"     - Changed s:alias_table into b:vimshell_alias_table.
+"
+"   1.0:
+"     - Initial version.
 ""}}}
 "-----------------------------------------------------------------------------
 " TODO: "{{{
@@ -41,39 +57,26 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
-    " Open file.
-
-    " Detect desktop environment.
-    if vimshell#iswin()
-        let l:filename = join(a:args)
-        if &termencoding != '' && &encoding != &termencoding
-            " Convert encoding.
-            let l:filename = iconv(l:filename, &encoding, &termencoding)
+function! vimshell#internal#alias#execute(program, args, fd, other_info)
+    if empty(a:args)
+        " View all aliases.
+        for alias in keys(b:vimshell_alias_table)
+            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
+        endfor
+    elseif join(a:args) =~ '^\h\w*$'
+        if has_key(b:vimshell_alias_table, a:args[0])
+            " View alias.
+            call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
         endif
-
-        if executable('cmdproxy.exe') && exists('*vimproc#system')
-            " Use vimproc.
-            call vimproc#system(printf('cmdproxy /C "start \"\" \"%s\""', l:filename))
-        else
-            execute printf('silent ! start "" "%s"', l:filename)
-        endif
-        return 0
-    elseif has('mac')
-        let l:args = ['open'] + a:args
-    elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
-        " KDE.
-        let l:args = ['kfmclient', 'exec'] + a:args
-    elseif exists('$GNOME_DESKTOP_SESSION_ID')
-        " GNOME.
-        let l:args = ['gnome-open'] + a:args
-    elseif executable(vimshell#getfilename('exo-open'))
-        " Xfce.
-        let l:args = ['exo-open'] + a:args
     else
-        throw 'open: Not supported.'
+        " Define alias.
+        let l:args = join(a:args)
+
+        if l:args !~ '^\h\w*\s*=\s*'
+            call vimshell#error_line(a:fd, 'Wrong syntax: ' . l:args)
+            return
+        endif
+        let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
+        execute 'let ' . printf("b:vimshell_alias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
     endif
-
-    return vimshell#execute_internal_command('gexe', l:args, a:fd, a:other_info)
-endfunction"}}}
-
+endfunction

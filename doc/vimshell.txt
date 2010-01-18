@@ -128,6 +128,10 @@ CHANGELOG					*vimshell-changelog*
     - Implemented interactive termtter syntax.
     - Fixed syntax error.
     - Fixed alias parse.
+    - Improved start in Windows.
+    - Improved irb option in iexe.
+    - Improved vimshell split switch.
+    - Added :VimShellPop command.
     
 ChangeLog 6.00-: {{{
     6.02 :

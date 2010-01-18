@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 16 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 " ChangeLog: "{{{
 "   1.20: 
 "     - Implemented execute line.
+"     - Improved irb option.
 "
 "   1.19: 
 "     - Improved autocommand.
@@ -298,7 +299,7 @@ endfunction
 if vimshell#iswin()
     " Windows only.
     let s:interactive_option = {
-                \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--simple-prompt', 
+                \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
                 \ 'gosh' : '-i', 'python' : '-i', 
                 \ 'powershell' : '-Command -'
                 \}
@@ -439,7 +440,7 @@ function! s:execute_line()"{{{
         
         " Detect desktop environment.
         if vimshell#iswin()
-            execute 'silent ! start ' l:filename
+            execute printf('silent ! start "" "%s"', l:filename)
         elseif has('mac')
             call system('open ' . l:filename . '&')
         elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'

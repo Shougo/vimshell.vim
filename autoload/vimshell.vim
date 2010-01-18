@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Jun 2010
+" Last Modified: 17 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,6 +33,9 @@ let s:is_vimproc = exists('*vimproc#system')
 let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
 let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
 let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
+if !exists('g:VimShell_ExecuteFileList')
+    let g:VimShell_ExecuteFileList = {}
+endif
 "}}}
 
 augroup VimShellAutoCmd"{{{
@@ -122,8 +125,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     endwhile
 
     if a:split_flag
-        split `=l:bufname`
-        resize `=winheight(0)*g:VimShell_SplitHeight / 100`
+        execute winheight(0)*g:VimShell_SplitHeight/100 'split `=l:bufname`'
     else
         edit `=l:bufname`
     endif
@@ -244,10 +246,9 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
     while l:cnt <= bufnr('$')
         if getbufvar(l:cnt, '&filetype') == 'vimshell'
             if a:split_flag
-                execute 'sbuffer' . l:cnt
-                execute 'resize' . winheight(0)*g:VimShell_SplitHeight / 100
+                execute winheight(0)*g:VimShell_SplitHeight / 100 'sbuffer' l:cnt
             else
-                execute 'buffer' . l:cnt
+                execute 'buffer' l:cnt
             endif
 
             if a:directory != ''
@@ -743,7 +744,8 @@ function! vimshell#set_execute_file(exts, program)"{{{
     endfor
 endfunction"}}}
 function! vimshell#system(str, ...)"{{{
-    return s:is_vimproc ? vimproc#system(a:str, join(a:000)): system(a:str, join(a:000))
+    return s:is_vimproc ? (a:0 == 0 ? vimproc#system(a:str) : vimproc#system(a:str, join(a:000)))
+                \: (a:0 == 0 ? system(a:str) : system(a:str, join(a:000)))
 endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
     return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
