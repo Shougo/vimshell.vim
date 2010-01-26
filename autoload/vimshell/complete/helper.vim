@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -114,10 +114,6 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 
         let keyword.abbr = l:abbr
 
-        if !filewritable(keyword.word)
-            let keyword.menu .= ' [-]'
-        endif
-        
         " Escape word.
         let keyword.word = escape(keyword.word, ' *?[]"={}')
     endfor

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 26 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,9 +46,7 @@ function! vimshell#interactive#get_cur_text()"{{{
     endif
     
     " Get cursor text without prompt.
-    let l:pos = mode() ==# 'i' ? 2 : 1
-
-    let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    let l:cur_text = getline('.')
 
     if exists("b:prompt_history['".line('.')."']")
         let l:cur_text = l:cur_text[len(b:prompt_history[line('.')]) : ]

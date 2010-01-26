@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.03
+Version: 6.04
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,19 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.04 :
+    - Fixed history_complete bug.
+    - Trunk many candidates in history_complete.
+    - Changed g:VimShell_SplitHeight default value.
+    - Optimized complete file.
+    - Improved autocmd.
+    - Changed buffer name.
+    - Improved enter directory.
+    - Improved move to drive.
+    - Implemented auto update.
+    - Fixed multibyte input bug in iexe.
+    
+ChangeLog 6.00-: {{{
     6.03 :
     - Refactoringed.
     - Improved environment detect in open.
@@ -133,7 +146,6 @@ CHANGELOG					*vimshell-changelog*
     - Improved vimshell split switch.
     - Added :VimShellPop command.
     
-ChangeLog 6.00-: {{{
     6.02 :
     - Improved autocommand in iexe.
     - Improved completion in iexe.

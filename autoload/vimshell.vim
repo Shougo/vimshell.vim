@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.03, for Vim 7.0
+" Version: 6.04, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -40,8 +40,8 @@ endif
 
 augroup VimShellAutoCmd"{{{
     autocmd!
-    autocmd BufWinEnter * if &filetype == 'vimshell' | call s:save_current_dir()
-    autocmd BufWinLeave * if &filetype == 'vimshell' | call s:restore_current_dir()
+    autocmd BufWinEnter \[*]vimshell call s:save_current_dir()
+    autocmd BufWinLeave \[*]vimshell call s:restore_current_dir()
 augroup end"}}}
 
 " Plugin keymappings"{{{
@@ -117,7 +117,7 @@ endfunction"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{
-    let l:bufname = 'vimshell'
+    let l:bufname = '[1]vimshell'
     let l:cnt = 2
     while bufexists(l:bufname)
         let l:bufname = printf('[%d]vimshell', l:cnt)
@@ -285,7 +285,7 @@ function! vimshell#process_enter()"{{{
         if l:filename =~ '^\%(https\?\|ftp\)://'
             " Open uri.
             call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-        elseif isdirectory(l:filename)
+        elseif isdirectory(expand(l:filename))
             " Change directory.
             call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
         else
@@ -798,11 +798,19 @@ endfunction"}}}
 
 
 function! s:save_current_dir()"{{{
+    if !exists('b:vimshell_save_dir')
+        return
+    endif
+    
     let l:current_dir = getcwd()
     lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
     let b:vimshell_save_dir = l:current_dir
 endfunction"}}}
 function! s:restore_current_dir()"{{{
+    if !exists('b:vimshell_save_dir')
+        return
+    endif
+    
     let l:current_dir = getcwd()
     if l:current_dir != b:vimshell_save_dir
         lcd `=fnamemodify(b:vimshell_save_dir, ':p')`

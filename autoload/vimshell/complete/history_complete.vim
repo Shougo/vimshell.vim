@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2009
+" Last Modified: 19 Jun 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,22 +86,18 @@ function! vimshell#complete#history_complete#omnifunc_whole(findstart, base)"{{{
     endif
 
     " Collect words.
-    let l:complete_words = g:vimshell#hist_buffer
-    for l:str in split(a:base)
-        let l:words = []
-        for hist in l:complete_words
-            if hist =~ l:str
-                call add(l:words, hist)
+    let l:complete_words = []
+    for hist in g:vimshell#hist_buffer
+        let l:matched = 1
+        for l:str in split(a:base)
+            if hist !~ l:str
+                let l:matched = 0
             endif
         endfor
-
-        let l:complete_words = l:words
-    endfor
-    
-    let l:words = l:complete_words
-    let l:complete_words = []
-    for word in l:words
-        call add(l:complete_words, { 'word' : word, 'menu' : 'history' })
+        
+        if l:matched
+            call add(l:complete_words, { 'word' : hist, 'menu' : 'history' })
+        endif
     endfor
 
     " Restore options.
@@ -110,7 +106,7 @@ function! vimshell#complete#history_complete#omnifunc_whole(findstart, base)"{{{
         let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
-    return l:complete_words
+    return l:complete_words[:100]
 endfunction"}}}
 function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{{
     if a:findstart
@@ -140,7 +136,7 @@ function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{
         let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
     endif
 
-    return l:complete_words
+    return l:complete_words[:100]
 endfunction"}}}
 
 " vim: foldmethod=marker

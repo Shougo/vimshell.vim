@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2010
+" Last Modified: 26 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.20, for Vim 7.0
+" Version: 1.21, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.21: 
+"     - Implemented auto update.
+"
 "   1.20: 
 "     - Implemented execute line.
 "     - Improved irb option.
@@ -266,7 +269,7 @@ endfunction
 
 function! s:on_insert_enter()
     let s:save_updatetime = &updatetime
-    let &updatetime = 200
+    let &updatetime = 500
 endfunction
 
 function! s:on_insert_leave()
@@ -280,6 +283,8 @@ function! s:on_hold()
     
     if !exists('b:vimproc_sub')
         stopinsert
+    else
+        call feedkeys("\<C-l>\<BS>\<C-e>", 'n')
     endif
 endfunction
 
