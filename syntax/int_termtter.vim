@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 27 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
+" Version: 1.1, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.1:
+"     - Improved reply.
+"     - Improved URI.
+"
 "   1.0:
 "     - Initial version.
 ""}}}
@@ -39,16 +43,18 @@ endif
 syn region   TermtterInputLine  start='^> ' end='\n' contains=TermtterPrompt,TermtterCommand,TermtterString
 syn keyword TermtterKeyword     restore_user redo shows replies exit pause direct retweet lists hashtag add search fib remove_alias switch resume settings hashtag clear raw_update limit vi_editing_mode reply hashtag list follow show list exec emacs_editing_mode favorite profile delete eval leave alias reload plug help followers update
 syn match   TermtterURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-syn match   TermtterString      '.*' contained
+syn match   TermtterString      '.*' contained contains=TermtterReply
 syn match   TermtterCommand     '[[:alnum:]_][[:alnum:]_-]*' contained
 syn match   TermtterPrompt      '^> ' contained
-syn match   TermtterReply       '@[[:alnum:]_+-]\+'
+syn match   TermtterReply       '@[[:alnum:]_+-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syn match   TermtterName       '\s[[:alnum:]_+-]\+:\s'
 syn match   TermtterConstants   '[+-]\?\<\d\+\>'
 syn match   TermtterConstants   '[+-]\?\<0x\x\+\>'
 syn match   TermtterConstants   '[+-]\?\<0\o\+\>'
 syn match   TermtterConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
 syn match   TermtterConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
 syn match   TermtterWaiting     '^\.\.\.$'
+syn match   TermtterMessage     '^updated => '
 
 if has('gui_running')
     hi TermtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
@@ -61,7 +67,13 @@ endif
 hi def link TermtterString Comment
 hi def link TermtterConstants Constant
 hi def link TermtterCommand Statement
-hi def link TermtterURI Preproc
+if has('gui_running')
+    hi TermtterURI gui=UNDERLINE guifg=#6699ff guibg=NONE
+else
+    hi def link TermtterURI Preproc
+endif
 hi def link TermtterReply Special
+hi def link TermtterName Type
+hi def link TermtterMessage Constant
 
 let b:current_syntax = 'int_termtter'

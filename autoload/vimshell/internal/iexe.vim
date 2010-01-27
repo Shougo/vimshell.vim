@@ -124,7 +124,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
             return 0
         else
             " Use sexe.
-            return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
+            return vimshell#internal#sexe#execute('sexe', a:args, a:fd, a:other_info)
         endif
     endif
 

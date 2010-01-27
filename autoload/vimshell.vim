@@ -720,6 +720,21 @@ function! vimshell#get_cur_text()"{{{
     let l:pos = mode() ==# 'i' ? 2 : 1
 
     let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    
+    if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
+        let l:len = len(getline('.'))
+        
+        " Skip multibyte
+        let l:pos -= 1
+        let l:cur_text = getline('.')[: col('.') - l:pos]
+        let l:fchar = char2nr(l:cur_text[-1:])
+        while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
+            let l:pos -= 1
+            
+            let l:cur_text = getline('.')[: col('.') - l:pos]
+            let l:fchar = char2nr(l:cur_text[-1:])
+        endwhile
+    endif
     return substitute(l:cur_text[len(vimshell#get_prompt()):], '^\s*', '', '')
 endfunction"}}}
 function! vimshell#get_cur_line()"{{{

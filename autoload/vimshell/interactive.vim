@@ -46,7 +46,23 @@ function! vimshell#interactive#get_cur_text()"{{{
     endif
     
     " Get cursor text without prompt.
-    let l:cur_text = getline('.')
+    let l:pos = mode() ==# 'i' ? 2 : 1
+
+    let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+    if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
+        let l:len = len(getline('.'))
+
+        " Skip multibyte
+        let l:pos -= 1
+        let l:cur_text = getline('.')[: col('.') - l:pos]
+        let l:fchar = char2nr(l:cur_text[-1:])
+        while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
+            let l:pos -= 1
+
+            let l:cur_text = getline('.')[: col('.') - l:pos]
+            let l:fchar = char2nr(l:cur_text[-1:])
+        endwhile
+    endif
 
     if exists("b:prompt_history['".line('.')."']")
         let l:cur_text = l:cur_text[len(b:prompt_history[line('.')]) : ]

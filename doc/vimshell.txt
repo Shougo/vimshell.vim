@@ -127,7 +127,9 @@ CHANGELOG					*vimshell-changelog*
     - Improved enter directory.
     - Improved move to drive.
     - Implemented auto update.
-    - Fixed multibyte input bug in iexe.
+    - Fixed multibyte input bug.
+    - Improved termtter syntax.
+    - Fixed sexe error.
     
 ChangeLog 6.00-: {{{
     6.03 :
