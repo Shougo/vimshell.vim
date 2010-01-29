@@ -103,6 +103,68 @@ function! vimshell#interactive#get_cur_text()"{{{
 
     return l:cur_text
 endfunction"}}}
+function! vimshell#interactive#get_cur_line(line)"{{{
+    if getline('.') == '...'
+        " Skip input.
+        return ''
+    endif
+    
+    " Get cursor text without prompt.
+    let l:cur_text = getline(a:line)
+
+    if exists("b:prompt_history['".a:line."']")
+        let l:cur_text = l:cur_text[len(b:prompt_history[a:line]) : ]
+    elseif exists('b:prompt_history')
+        " Maybe line numbering got disrupted, search for a matching prompt.
+        let l:prompt_search = 0
+        for pnr in reverse(sort(keys(b:prompt_history)))
+            let l:prompt_length = len(b:prompt_history[pnr])
+            " In theory 0 length or ' ' prompt shouldn't exist, but still...
+            if l:prompt_length > 0 && b:prompt_history[pnr] != ' '
+                " Does the current line have this prompt?
+                if l:cur_text[: l:prompt_length - 1] == b:prompt_history[pnr]
+                    let l:cur_text = l:cur_text[l:prompt_length : ]
+                    let l:prompt_search = pnr
+                endif
+            endif
+        endfor
+        
+        " Still nothing? Maybe a multi-line command was pasted in.
+        let l:max_prompt = max(keys(b:prompt_history)) " Only count once.
+        if l:prompt_search == 0 && l:max_prompt < line('$')
+            for i in range(l:max_prompt, line('$'))
+                if i == l:max_prompt && has_key(b:prompt_history, i)
+                    let l:cur_text = getline(i)
+                    let l:cur_text = l:cur_text[len(b:prompt_history[i]) : ]
+                else
+                    let l:cur_text = l:cur_text . getline(i)
+                endif
+            endfor
+            let l:prompt_search = l:max_prompt
+        endif
+
+        " Still nothing? We give up.
+        if l:prompt_search == 0
+            echohl WarningMsg | echo "Invalid input." | echohl None
+        endif
+    endif
+
+    return l:cur_text
+endfunction"}}}
+function! vimshell#interactive#get_prompt(line)"{{{
+    " Get prompt line.
+    
+    if getline('.') == '...'
+        " Skip input.
+        return ''
+    endif
+    
+    if !exists("b:prompt_history['".a:line."']")
+        return ''
+    endif
+
+    return b:prompt_history[a:line]
+endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout()"{{{
     if !exists('b:vimproc_sub')
@@ -114,7 +176,7 @@ function! vimshell#interactive#execute_pty_inout()"{{{
         return
     endif
     
-    let l:in = vimshell#interactive#get_cur_text()
+    let l:in = vimshell#interactive#get_cur_line(line('.'))
 
     " record command history
     if !exists('b:interactive_command_history')

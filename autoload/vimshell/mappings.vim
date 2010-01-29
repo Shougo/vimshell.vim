@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-" VimShell key-mappings functions."{{{
+" VimShell key-mappings functions.
 function! vimshell#mappings#push_current_line()"{{{
     " Check current line.
     if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
@@ -144,7 +144,7 @@ function! vimshell#mappings#paste_prompt()"{{{
         " Set prompt line.
         call setline(line('$'), getline('.'))
     endif
-    normal! G
+    $
 endfunction"}}}
 function! vimshell#mappings#move_head()"{{{
     call search(vimshell#escape_match(vimshell#get_prompt()), 'be', line('.'))
@@ -203,5 +203,4 @@ function! vimshell#mappings#expand_wildcard()"{{{
                 \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
 endfunction"}}}
 
-"}}}
 " vim: foldmethod=marker

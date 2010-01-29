@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 20 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,8 +95,8 @@ function! vimshell#default_settings()"{{{
     " Execute command.
     imap <buffer> <CR> <ESC><Plug>(vimshell_enter)
     " History completion.
-    imap <buffer> <C-j>  <Plug>(vimshell_history_complete_whole)
-    imap <buffer> <C-r>c  <Plug>(vimshell_history_complete_insert)
+    imap <buffer> <C-r>  <Plug>(vimshell_history_complete_whole)
+    imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
     " Command completion.
     imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
     " Move to Beginning of command.

@@ -130,6 +130,10 @@ CHANGELOG					*vimshell-changelog*
     - Fixed multibyte input bug.
     - Improved termtter syntax.
     - Fixed sexe error.
+    - Implemented interactive mappings.
+    - Improved prompt move.
+    - Changed omni complete keymappings.
+    - Improved close popup.
     
 ChangeLog 6.00-: {{{
     6.03 :
