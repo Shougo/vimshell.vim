@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jun 2010
+" Last Modified: 05 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.21, for Vim 7.0
+" Version: 1.22, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.22: 
+"     - Reimplemented vimshell#internal#iexe#vimshell_iexe().
+"
 "   1.21: 
 "     - Implemented auto update.
 "     - Splited mappings functions.
@@ -186,6 +189,10 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     return 1
 endfunction"}}}
 
+function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
+    call vimshell#internal#iexe#execute('iexe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+endfunction"}}}
+
 function! vimshell#internal#iexe#default_settings()"{{{
     setlocal buftype=nofile
     setlocal noswapfile
@@ -308,7 +315,7 @@ if vimshell#iswin()
     " Windows only.
     let s:interactive_option = {
                 \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
-                \ 'gosh' : '-i', 'python' : '-i', 
+                \ 'gosh' : '-i', 'python' : '-i', 'zsh' : '-i', 
                 \ 'powershell' : '-Command -', 
                 \ 'termtter'   : '--monochrome'
                 \}

@@ -241,6 +241,16 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
     
     return l:ret
 endfunction"}}}
+function! vimshell#complete#helper#command_args(args)"{{{
+    " command args...
+    if len(a:args) == 1
+        " Commands.
+        return vimshell#complete#helper#commands(a:args[0])
+    else
+        " Args.
+        return vimshell#complete#args_complete#get_complete_words(a:args[0], a:args[1:])
+    endif
+endfunction"}}}
 
 function! vimshell#complete#helper#compare_rank(i1, i2)"{{{
     return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1

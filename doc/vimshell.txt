@@ -134,6 +134,12 @@ CHANGELOG					*vimshell-changelog*
     - Improved prompt move.
     - Changed omni complete keymappings.
     - Improved close popup.
+    - Improved buffer search in <Plug>(vimshell_split_create).
+    - Improved detect for mac in open.
+    - Improved filtype and update in bg.
+    - Reimplemented vimshell#internal#iexe#vimshell_iexe().
+    - Added :VimShellExecute and :VimShellInteractive commands.
+    - Implemented bg and iexe and sudo completions.
     
 ChangeLog 6.00-: {{{
     6.03 :

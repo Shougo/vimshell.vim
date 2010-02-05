@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 05 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.15, for Vim 7.0
+" Version: 1.16, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.16:
+"     - Improved filetype.
+"     - Improved update.
+"
 "   1.15:
 "     - Improved kill processes.
 "     - Use vimproc.vim.
@@ -113,7 +117,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
-    call vimshell#internal#bg#execute('bg', a:args, {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+    call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 endfunction"}}}
 
 function! s:init_bg(fd, args, is_interactive)"{{{
@@ -175,7 +179,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
     setlocal buftype=nofile
     setlocal noswapfile
     setlocal nowrap
-    execute 'setfiletype ' . a:args[0]
+    setfiletype background
 
     " Set syntax.
     syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
@@ -197,8 +201,7 @@ function! s:init_bg(fd, args, is_interactive)"{{{
         endif
     endif
 
-    autocmd vimshell_bg BufUnload <buffer>       call <SID>on_exit()
-    autocmd vimshell_bg CursorHold <buffer>  call <SID>on_execute()
+    autocmd vimshell_bg BufUnload <buffer>       call s:on_exit()
     nnoremap <buffer><silent><C-c>       :<C-u>call vimshell#interactive#interrupt()<CR>
     inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
     nnoremap <buffer><silent><CR>       :<C-u>call <SID>on_execute()<CR>
@@ -216,7 +219,6 @@ endfunction
 
 function! s:on_exit()
     augroup vimshell_bg
-        autocmd! CursorHold <buffer>
         autocmd! BufUnload <buffer>
     augroup END
 

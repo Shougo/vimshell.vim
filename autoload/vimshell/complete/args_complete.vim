@@ -88,15 +88,7 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
     endif
 
     " Get complete words.
-    if has_key(s:special_funcs, l:command)
-        let l:complete_words = call(s:special_funcs[l:command] . 'get_complete_words', [l:args[1:]])
-    elseif has_key(s:internal_funcs, l:command)
-        let l:complete_words = call(s:internal_funcs[l:command] . 'get_complete_words', [l:args[1:]])
-    elseif has_key(s:command_funcs, l:command)
-        let l:complete_words = call(s:command_funcs[l:command] . 'get_complete_words', [l:args[1:]])
-    else
-        let l:complete_words = vimshell#complete#helper#files(l:args[-1])
-    endif
+    let l:complete_words = vimshell#complete#args_complete#get_complete_words(l:command, l:args[1:])
 
     " Restore option.
     let &ignorecase = l:ignorecase_save
@@ -111,4 +103,17 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
     return l:complete_words
 endfunction"}}}
 
+function! vimshell#complete#args_complete#get_complete_words(command, args)"{{{
+    " Get complete words.
+    if has_key(s:special_funcs, a:command)
+        let l:complete_words = call(s:special_funcs[a:command] . 'get_complete_words', [a:args])
+    elseif has_key(s:internal_funcs, a:command)
+        let l:complete_words = call(s:internal_funcs[a:command] . 'get_complete_words', [a:args])
+    elseif has_key(s:command_funcs, a:command)
+        let l:complete_words = call(s:command_funcs[a:command] . 'get_complete_words', [a:args])
+    else
+        let l:complete_words = vimshell#complete#helper#files(a:args[-1])
+    endif
+    return l:complete_words
+endfunction"}}}
 " vim: foldmethod=marker

@@ -38,6 +38,11 @@ let s:character_regex = ''
 
 let s:is_win = has('win32') || has('win64')
 
+augroup VimShellInteractive
+    autocmd!
+    autocmd CursorHold * call s:check_output()
+augroup END
+
 
 function! vimshell#interactive#get_cur_text()"{{{
     if getline('.') == '...'
@@ -696,31 +701,32 @@ function! s:on_exit()"{{{
     call vimshell#interactive#exit()
 endfunction"}}}
 
-" Arguments completion by neocomplcache.
-function! s:complete_words(arglead, cmdline, cursorpos)"{{{
-    " Caching.
-    call neocomplcache#keyword_complete#word_caching_current_line()
-    
-    let l:pattern = '\v%(' .  neocomplcache#keyword_complete#current_keyword_pattern() . ')$'
-    let l:cur_keyword_str = matchstr(a:cmdline[: a:cursorpos], l:pattern)
-    let l:complete_words = neocomplcache#get_complete_words(l:cur_keyword_str)
-    let l:match = match(a:cmdline[: a:cursorpos], l:pattern)
-    if l:cur_keyword_str != ''
-        if l:match > 0
-            let l:cmdline = a:cmdline[: l:match-1]
-        else
-            let l:cmdline = ''
+" Autocmd functions.
+function! s:check_output()"{{{
+    let l:bufnr = 1
+    while l:bufnr <= bufnr('$')
+        if l:bufnr != bufnr('%') && buflisted(l:bufnr) && type(getbufvar(l:bufnr, 'vimproc_sub')) != type('')
+            " Check output.
+            let l:filetype = getbufvar(l:bufnr, '&filetype')
+            if l:filetype == 'background' || l:filetype =~ '^int_'
+                let l:pos = getpos('.')
+                
+                execute 'buffer' l:bufnr
+                
+                if l:filetype  == 'background'
+                    " Background execute.
+                    call vimshell#interactive#execute_pipe_out()
+                else
+                    " Interactive execute.
+                    call vimshell#interactive#execute_pty_out()
+                endif
+                
+                buffer #
+            endif
         endif
-    else
-        let l:cmdline = a:cmdline[: a:cursorpos]
-    endif
 
-    let l:list = []
-    for l:word in l:complete_words
-        call add(l:list, l:cmdline.l:word.word)
-    endfor
-    
-    return l:list
+        let l:bufnr += 1
+    endwhile
 endfunction"}}}
 
 " vim: foldmethod=marker

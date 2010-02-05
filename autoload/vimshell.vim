@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 28 Jun 2010
+" Last Modified: 02 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -119,7 +119,7 @@ endfunction"}}}
 function! vimshell#create_shell(split_flag, directory)"{{{
     let l:bufname = '[1]vimshell'
     let l:cnt = 2
-    while bufexists(l:bufname)
+    while buflisted(l:bufname)
         let l:bufname = printf('[%d]vimshell', l:cnt)
         let l:cnt += 1
     endwhile
