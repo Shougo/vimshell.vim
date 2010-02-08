@@ -140,6 +140,8 @@ CHANGELOG					*vimshell-changelog*
     - Reimplemented vimshell#internal#iexe#vimshell_iexe().
     - Added :VimShellExecute and :VimShellInteractive commands.
     - Implemented bg and iexe and sudo completions.
+    - Improved execute line in Normal mode.
+    - Improved keymappings.
     
 ChangeLog 6.00-: {{{
     6.03 :

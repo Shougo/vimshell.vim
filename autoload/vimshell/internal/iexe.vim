@@ -27,6 +27,7 @@
 " ChangeLog: "{{{
 "   1.22: 
 "     - Reimplemented vimshell#internal#iexe#vimshell_iexe().
+"     - Improved keymappings.
 "
 "   1.21: 
 "     - Implemented auto update.
@@ -120,208 +121,209 @@
 "=============================================================================
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
-    " Interactive execute command.
-    if !g:VimShell_EnableInteractive
-        if has('gui_running')
-            " Error.
-            call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
-            return 0
-        else
-            " Use sexe.
-            return vimshell#internal#sexe#execute('sexe', a:args, a:fd, a:other_info)
-        endif
+  " Interactive execute command.
+  if !g:VimShell_EnableInteractive
+    if has('gui_running')
+      " Error.
+      call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
+      return 0
+    else
+      " Use sexe.
+      return vimshell#internal#sexe#execute('sexe', a:args, a:fd, a:other_info)
+    endif
+  endif
+
+  if empty(a:args)
+    return 0
+  endif
+
+  let l:args = a:args
+  if has_key(s:interactive_option, fnamemodify(a:args[0], ':r'))
+    call add(l:args, s:interactive_option[fnamemodify(a:args[0], ':r')])
+  endif
+
+  if vimshell#iswin() && a:args[0] =~ 'cmd\%(\.exe\)\?'
+    " Run cmdproxy.exe instead of cmd.exe.
+    if !executable('cmdproxy.exe')
+      call vimshell#error_line(a:fd, 'cmdproxy.exe is not found. Please install it.')
+      return 0
     endif
 
-    if empty(a:args)
-        return 0
-    endif
+    let l:args[0] = 'cmdproxy.exe'
+  endif
 
-    let l:args = a:args
-    if has_key(s:interactive_option, fnamemodify(a:args[0], ':r'))
-        call add(l:args, s:interactive_option[fnamemodify(a:args[0], ':r')])
-    endif
-    
-    if vimshell#iswin() && a:args[0] =~ 'cmd\%(\.exe\)\?'
-        " Run cmdproxy.exe instead of cmd.exe.
-        if !executable('cmdproxy.exe')
-            call vimshell#error_line(a:fd, 'cmdproxy.exe is not found. Please install it.')
-            return 0
-        endif
-        
-        let l:args[0] = 'cmdproxy.exe'
-    endif
+  " Initialize.
+  try
+    let l:sub = [vimproc#ptyopen(l:args)]
+  catch 'list index out of range'
+    let l:error = printf('File: "%s" is not found.', command[0])
 
-    " Initialize.
-    try
-        let l:sub = [vimproc#ptyopen(l:args)]
-    catch 'list index out of range'
-        let l:error = printf('File: "%s" is not found.', command[0])
+    call vimshell#error_line(a:fd, l:error)
 
-        call vimshell#error_line(a:fd, l:error)
+    return 0
+  endtry
 
-        return 0
-    endtry
+  if exists('b:vimproc_sub')
+    " Delete zombee process.
+    call vimshell#interactive#force_exit()
+  endif
 
-    if exists('b:vimproc_sub')
-        " Delete zombee process.
-        call vimshell#interactive#force_exit()
-    endif
+  call s:init_bg(l:sub, l:args, a:other_info.is_interactive)
 
-    call s:init_bg(l:sub, l:args, a:other_info.is_interactive)
+  " Set variables.
+  let b:vimproc_sub = l:sub
+  let b:vimproc_fd = a:fd
+  let b:vimproc_is_secret = 0
 
-    " Set variables.
-    let b:vimproc_sub = l:sub
-    let b:vimproc_fd = a:fd
-    let b:vimproc_is_secret = 0
+  " Input from stdin.
+  if b:vimproc_fd.stdin != ''
+    call b:vimproc_sub[0].write(vimshell#read(a:fd))
+  endif
 
-    " Input from stdin.
-    if b:vimproc_fd.stdin != ''
-        call b:vimproc_sub[0].write(vimshell#read(a:fd))
-    endif
+  call vimshell#interactive#execute_pty_out()
+  if getline(line('$')) =~ '^\s*$'
+    call setline(line('$'), '...')
+  endif
 
-    call vimshell#interactive#execute_pty_out()
-    if getline(line('$')) =~ '^\s*$'
-        call setline(line('$'), '...')
-    endif
-    
-    startinsert!
+  startinsert!
 
-    return 1
+  return 1
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
-    call vimshell#internal#iexe#execute('iexe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+  call vimshell#internal#iexe#execute('iexe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
 endfunction"}}}
 
 function! vimshell#internal#iexe#default_settings()"{{{
-    setlocal buftype=nofile
-    setlocal noswapfile
-    setlocal wrap
-    setlocal tabstop=8
+  setlocal buftype=nofile
+  setlocal noswapfile
+  setlocal wrap
+  setlocal tabstop=8
 
-    " Set syntax.
-    syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
-    syn match   VimShellErrorHidden            '!!!' contained
-    hi def link VimShellError Error
-    hi def link VimShellErrorHidden Ignore
+  " Set syntax.
+  syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
+  syn match   VimShellErrorHidden            '!!!' contained
+  hi def link VimShellError Error
+  hi def link VimShellErrorHidden Ignore
 
-    nnoremap <buffer><silent><C-c>       :<C-u>call <SID>on_exit()<CR>
-    inoremap <buffer><silent><C-c>       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
+  " Plugin key-mappings.
+  inoremap <buffer><silent><expr> <Plug>(vimshell_interactive_delete_backword_char)  vimshell#int_mappings#delete_backword_char()
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_interactive_close_popup)  vimshell#int_mappings#close_popup()
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)       <ESC>:<C-u>call vimshell#int_mappings#execute_line()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
 
-    inoremap <buffer><silent><CR>       <ESC>:<C-u>call vimshell#int_mappings#execute_line()<CR>
+  imap <buffer><C-h>     <Plug>(vimshell_interactive_delete_backword_char)
+  imap <buffer><BS>     <Plug>(vimshell_interactive_delete_backword_char)
+  imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
+  imap <buffer><C-p>     <Plug>(vimshell_interactive_previous_history)
+  imap <buffer><C-n>     <Plug>(vimshell_interactive_next_history)
+  imap <buffer><C-a>     <Plug>(vimshell_interactive_move_head)
+  imap <buffer><C-u>     <Plug>(vimshell_interactive_delete_line)
+  imap <buffer><C-e>     <Plug>(vimshell_interactive_close_popup)
+  imap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
+  imap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
 
-    " Plugin key-mappings.
-    inoremap <buffer><silent><expr> <Plug>(vimshell_interactive_delete_backword_char)  vimshell#int_mappings#delete_backword_char()
-    inoremap <buffer><silent> <Plug>(vimshell_interactive_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
-    inoremap <buffer><silent> <Plug>(vimshell_interactive_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
-    inoremap <buffer><silent> <Plug>(vimshell_interactive_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
-    inoremap <buffer><silent> <Plug>(vimshell_interactive_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
-    inoremap <buffer><expr> <Plug>(vimshell_interactive_close_popup)  vimshell#int_mappings#close_popup()
-    
-    imap <buffer><C-h>     <Plug>(vimshell_interactive_delete_backword_char)
-    imap <buffer><BS>     <Plug>(vimshell_interactive_delete_backword_char)
-    imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
-    imap <buffer><C-p>     <Plug>(vimshell_interactive_previous_history)
-    imap <buffer><C-n>     <Plug>(vimshell_interactive_next_history)
-    imap <buffer><C-a>     <Plug>(vimshell_interactive_move_head)
-    imap <buffer><C-u>     <Plug>(vimshell_interactive_delete_line)
-    imap <buffer><C-e>     <Plug>(vimshell_interactive_close_popup)
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  <ESC>:<C-u>call vimshell#int_mappings#previous_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_next_prompt)  <ESC>:<C-u>call vimshell#int_mappings#next_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  <ESC>:<C-u>call vimshell#int_mappings#execute_line()<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_paste_prompt)  <ESC>:<C-u>call vimshell#int_mappings#paste_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_exit()<CR>
 
-    nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  <ESC>:<C-u>call vimshell#int_mappings#previous_prompt()<CR>
-    nnoremap <buffer><silent> <Plug>(vimshell_interactive_next_prompt)  <ESC>:<C-u>call vimshell#int_mappings#next_prompt()<CR>
-    nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  <ESC>:<C-u>call vimshell#int_mappings#execute_line()<CR>
-    nnoremap <buffer><silent> <Plug>(vimshell_interactive_paste_prompt)  <ESC>:<C-u>call vimshell#int_mappings#paste_prompt()<CR>
-    
-    nmap <buffer><C-p>     <Plug>(vimshell_interactive_previous_prompt)
-    nmap <buffer><C-n>     <Plug>(vimshell_interactive_next_prompt)
-    nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
-    nmap <buffer><C-y>     <Plug>(vimshell_interactive_paste_prompt)
+  nmap <buffer><C-p>     <Plug>(vimshell_interactive_previous_prompt)
+  nmap <buffer><C-n>     <Plug>(vimshell_interactive_next_prompt)
+  nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
+  nmap <buffer><C-y>     <Plug>(vimshell_interactive_paste_prompt)
+  nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
 
-    augroup vimshell_iexe
-        autocmd BufUnload <buffer>   call s:on_exit()
-        autocmd CursorMovedI <buffer>  call s:on_moved()
-        autocmd CursorHoldI <buffer>  call s:on_hold()
-        autocmd InsertEnter <buffer>  call s:on_insert_enter()
-        autocmd InsertLeave <buffer>  call s:on_insert_leave()
-    augroup END
+  augroup vimshell_iexe
+    autocmd BufUnload <buffer>   call s:on_exit()
+    autocmd CursorMovedI <buffer>  call s:on_moved()
+    autocmd CursorHoldI <buffer>  call s:on_hold()
+    autocmd InsertEnter <buffer>  call s:on_insert_enter()
+    autocmd InsertLeave <buffer>  call s:on_insert_leave()
+  augroup END
 endfunction"}}}
 
 function! s:init_bg(sub, args, is_interactive)"{{{
-    " Save current directiory.
-    let l:cwd = getcwd()
+  " Save current directiory.
+  let l:cwd = getcwd()
 
-    " Init buffer.
-    if a:is_interactive
-        call vimshell#print_prompt()
-    endif
-    " Split nicely.
-    if winheight(0) > &winheight
-        split
-    else
-        vsplit
-    endif
+  " Init buffer.
+  if a:is_interactive
+    call vimshell#print_prompt()
+  endif
+  " Split nicely.
+  if winheight(0) > &winheight
+    split
+  else
+    vsplit
+  endif
 
-    edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
-    lcd `=l:cwd`
-    "setfiletype `='int_'.fnamemodify(a:args[0], ':r')`
-    execute 'setfiletype' 'int_'.fnamemodify(a:args[0], ':r')
+  edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
+  lcd `=l:cwd`
+  "setfiletype `='int_'.fnamemodify(a:args[0], ':r')`
+  execute 'setfiletype' 'int_'.fnamemodify(a:args[0], ':r')
 
-    call vimshell#internal#iexe#default_settings()
+  call vimshell#internal#iexe#default_settings()
 
-    $
-    
-    startinsert!
+  $
+
+  startinsert!
 endfunction"}}}
 
 function! s:on_insert_enter()
-    let s:save_updatetime = &updatetime
-    let &updatetime = 1000
+  let s:save_updatetime = &updatetime
+  let &updatetime = 1000
 endfunction
 
 function! s:on_insert_leave()
-    let &updatetime = s:save_updatetime
+  let &updatetime = s:save_updatetime
 endfunction
 
 function! s:on_hold()
-    let [l:linenr, l:prev_line] = [line('.'), getline('.')]
-    
-    call vimshell#interactive#execute_pty_out()
-    
-    if !exists('b:vimproc_sub')
-        stopinsert
-    else
-        call feedkeys("\<C-l>\<BS>", 'n')
+  let [l:linenr, l:prev_line] = [line('.'), getline('.')]
 
-        if pumvisible()
-            call feedkeys("\<C-y>", 'n')
-        endif
+  call vimshell#interactive#execute_pty_out()
+
+  if !exists('b:vimproc_sub')
+    stopinsert
+  else
+    call feedkeys("\<C-l>\<BS>", 'n')
+
+    if pumvisible()
+      call feedkeys("\<C-y>", 'n')
     endif
+  endif
 endfunction
 
 function! s:on_moved()
-    let l:line = getline('.')
-    if l:line =~ '^\.\.\.\.\?[^.]\+$'
-        " Set prompt.
-        call setline('.', '-> ' . l:line[len(matchstr(l:line, '^\.\.\.\.\?')) :])
-    endif
+  let l:line = getline('.')
+  if l:line =~ '^\.\.\.\.\?[^.]\+$'
+    " Set prompt.
+    call setline('.', '-> ' . l:line[len(matchstr(l:line, '^\.\.\.\.\?')) :])
+  endif
 endfunction
 
 function! s:on_exit()
-    call vimshell#interactive#hang_up()
+  call vimshell#interactive#hang_up()
 endfunction
 
 " Interactive option.
 if vimshell#iswin()
-    " Windows only.
-    let s:interactive_option = {
-                \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
-                \ 'gosh' : '-i', 'python' : '-i', 'zsh' : '-i', 
-                \ 'powershell' : '-Command -', 
-                \ 'termtter'   : '--monochrome'
-                \}
+  " Windows only.
+  let s:interactive_option = {
+        \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
+        \ 'gosh' : '-i', 'python' : '-i', 'zsh' : '-i', 
+        \ 'powershell' : '-Command -', 
+        \ 'termtter'   : '--monochrome'
+        \}
 else
-    let s:interactive_option = {
-                \'termtter' : '--monochrome'
-                \}
+  let s:interactive_option = {
+        \'termtter' : '--monochrome'
+        \}
 endif
 
