@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.04
+Version: 6.05
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,6 +117,31 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+    6.05 : *Supported vimproc Ver.3 or later*
+    - Improved update timing in iexe and bg.
+    - Optimized history completion.
+    - Changed history completion keymappings.
+    - Improved execute line in iexe.
+    - Fixed <Plug>(vimshell_interactive_previous_prompt).
+    - Fixed no prompt behaivior bug in iexe.
+    - Improved interactive in Windows.
+    - Fixed interactive option bug in iexe.
+    - Improved prompt in iexe.
+    - Improved prompt syntax.
+    - Fixed parse filename modifier bug.
+    - Improved split nicely.
+    - Fixed hang up bug.
+    - Implemented background execution and interrupt in exe.
+    - Fixed paste prompt bug in iexe.
+    - Implemented --encoding in exe and bg and iexe.
+    - Added :VimShellSendString command.
+    - Implemented vimshell#interactive#send_string().
+    - Fixed convert encoding in redirecting.
+    - Improved terminal compatiblity.
+    - Deleted g:VimShell_UsePopen2 option.
+    - Improved redraw in executing.
+    
+ChangeLog 6.00-: {{{
     6.04 :
     - Fixed history_complete bug.
     - Trunk many candidates in history_complete.
@@ -142,8 +167,8 @@ CHANGELOG					*vimshell-changelog*
     - Implemented bg and iexe and sudo completions.
     - Improved execute line in Normal mode.
     - Improved keymappings.
+    - Implemented CursorHold event in iexe.
     
-ChangeLog 6.00-: {{{
     6.03 :
     - Refactoringed.
     - Improved environment detect in open.

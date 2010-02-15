@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2009
+" Last Modified: 11 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -54,38 +54,35 @@
 "=============================================================================
 
 function! vimshell#internal#view#execute(program, args, fd, other_info)
-    " View file.
+  " View file.
 
-    " Filename escape
-    let l:arguments = join(a:args, ' ')
+  " Filename escape
+  let l:arguments = join(a:args, ' ')
 
-    if isdirectory(l:arguments)
-        " Ignore.
-        return 0
-    endif
+  if isdirectory(l:arguments)
+    " Ignore.
+    return 0
+  endif
 
-    call vimshell#print_prompt()
+  if empty(l:arguments)
+    vimshell#error_line(a:fd, 'Filename required.')
+    return 0
+  endif
+  
+  call vimshell#print_prompt()
+  
+  " Save current directiory.
+  let l:cwd = getcwd()
 
-    if empty(l:arguments)
-        vimshell#error_line(a:fd, 'Filename required.')
-    else
-        " Save current directiory.
-        let l:cwd = getcwd()
+  " Split nicely.
+  call vimshell#split_nicely()
 
-        " Split nicely.
-        if winheight(0) > &winheight
-            split
-        else
-            vsplit
-        endif
+  try
+    edit `=l:arguments`
+  catch /^.*/
+    echohl Error | echomsg v:errmsg | echohl None
+  endtry
 
-        try
-            edit `=l:arguments`
-        catch /^.*/
-            echohl Error | echomsg v:errmsg | echohl None
-        endtry
-
-        lcd `=l:cwd`
-        setlocal nomodifiable
-    endif
+  lcd `=l:cwd`
+  setlocal nomodifiable
 endfunction

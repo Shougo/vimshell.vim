@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2009
+" Last Modified: 11 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.1, for Vim 7.0
+" Version: 1.2, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.2: 
+"     - Convert encoding.
+"
 "   1.1: 
 "     - Shell escape.
 "     - Improved in Windows.
@@ -42,47 +45,60 @@
 "=============================================================================
 
 function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
-    " Execute shell command.
-    let l:iswin = has('win32') || has('win64')
-    let l:cmdline = ''
-    for arg in a:args
-        if l:iswin
-            let l:arg = substitute(arg, '"', '\\"', 'g')
-            let l:arg = substitute(arg, '[<>|^]', '^\0', 'g')
-            let l:cmdline .= '"' . arg . '" '
-        else
-            let l:cmdline .= shellescape(arg) . ' '
-        endif
-    endfor
+  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+        \{ 'arg=' : ['--encoding']
+        \})
+  if !has_key(l:options, '--encoding')
+    let l:options['--encoding'] = &termencoding
+  endif
 
+  " Execute shell command.
+  let l:iswin = has('win32') || has('win64')
+  let l:cmdline = ''
+  for arg in l:args
     if l:iswin
-        let l:cmdline = '"' . l:cmdline . '"'
-    endif
-
-    " Set redirection.
-    if a:fd.stdin == ''
-        let l:stdin = ''
-    elseif a:fd.stdin == '/dev/null'
-        let l:null = tempname()
-        call writefile([], l:null)
-
-        let l:stdin = '<' . l:null
+      let l:arg = substitute(arg, '"', '\\"', 'g')
+      let l:arg = substitute(arg, '[<>|^]', '^\0', 'g')
+      let l:cmdline .= '"' . arg . '" '
     else
-        let l:stdin = '<' . a:fd.stdin
+      let l:cmdline .= shellescape(arg) . ' '
     endif
+  endfor
 
-    echo 'Running command.'
-    let l:result = system(printf('%s %s', l:cmdline, l:stdin))
-    call vimshell#print(a:fd, l:result)
-    redraw
-    echo ''
+  if l:iswin
+    let l:cmdline = '"' . l:cmdline . '"'
+  endif
 
-    if a:fd.stdin == '/dev/null'
-        call delete(l:null)
-    endif
+  " Set redirection.
+  if a:fd.stdin == ''
+    let l:stdin = ''
+  elseif a:fd.stdin == '/dev/null'
+    let l:null = tempname()
+    call writefile([], l:null)
 
-    let b:vimshell_system_variables['status'] = v:shell_error
+    let l:stdin = '<' . l:null
+  else
+    let l:stdin = '<' . a:fd.stdin
+  endif
 
-    return 0
+  echo 'Running command.'
+  
+  let l:result = system(printf('%s %s', l:cmdline, l:stdin))
+  if l:options['--encoding'] != '' && &encoding != l:options['--encoding']
+    " Convert encoding.
+    let l:result = iconv(l:result, l:options['--encoding'], &encoding)
+  endif
+  
+  call vimshell#print(a:fd, l:result)
+  redraw
+  echo ''
+
+  if a:fd.stdin == '/dev/null'
+    call delete(l:null)
+  endif
+
+  let b:vimshell_system_variables['status'] = v:shell_error
+
+  return 0
 endfunction"}}}
 

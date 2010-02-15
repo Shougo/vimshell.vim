@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Feb 2010
+" Last Modified: 11 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.04, for Vim 7.0
+" Version: 6.05, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -96,7 +96,7 @@ function! vimshell#default_settings()"{{{
   " Execute command.
   imap <buffer> <CR> <Plug>(vimshell_enter)
   " History completion.
-  imap <buffer> <C-r>  <Plug>(vimshell_history_complete_whole)
+  imap <buffer> <C-k>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
@@ -196,8 +196,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Set environment variables.
-  let $TERM = "dumb"
-  let $TERMCAP = "COLUMNS=" . winwidth(0)
+  let $TERM = 'vt100'
+  let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0) * 8 / 10
   let $LINES = winheight(0) * 8 / 10
@@ -355,7 +355,7 @@ function! vimshell#process_enter()"{{{
   try
     let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
   catch /.*/
-    let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+    let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
     call vimshell#print_prompt()
 
@@ -577,6 +577,9 @@ function! vimshell#print_line(fd, string)"{{{
       " Write to clipboard.
       let @+ .= a:string
     else
+      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+            \ iconv(a:string, &encoding, &termencoding) : a:string
+      
       " Write file.
       let l:file = add(readfile(a:fd.stdout), a:string)
       call writefile(l:file, a:fd.stdout)
@@ -600,6 +603,9 @@ function! vimshell#error_line(fd, string)"{{{
       " Write to clipboard.
       let @+ .= a:string
     else
+      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+            \ iconv(a:string, &encoding, &termencoding) : a:string
+      
       " Write file.
       let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
       call writefile(l:file, a:fd.stderr)
@@ -772,6 +778,17 @@ endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
   return '\s\zs\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)*$'
 endfunction"}}}
+function! vimshell#split_nicely()"{{{
+  " Split nicely.
+  if winwidth(0) > 2 * &winwidth
+    vsplit
+  else
+    split
+  endif
+endfunction"}}}
+function vimshell#compare_number(i1, i2)
+  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction
 "}}}
 
 " Helper functions.
