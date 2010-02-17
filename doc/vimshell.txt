@@ -117,6 +117,10 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-02-17
+    * Added vimshrc syntax file.
+    * setlocal nolist in vimshell buffer.
+
     6.05 : *Supported vimproc Ver.3 or later*
     - Improved update timing in iexe and bg.
     - Optimized history completion.

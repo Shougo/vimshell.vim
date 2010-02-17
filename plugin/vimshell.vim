@@ -107,6 +107,11 @@ command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-arg
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#internal#bg#vimshell_bg(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(<q-args>)
 
+augroup VimShell
+  " Detect vimshell rc file.
+  autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
+augroup END
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
