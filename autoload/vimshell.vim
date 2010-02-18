@@ -316,7 +316,7 @@ function! vimshell#process_enter()"{{{
   " Delete prompt string and comment.
   let l:line = substitute(vimshell#get_cur_text(), '#.*$', '', '')
 
-  if getfsize(g:VimShell_HistoryPath) != s:hist_size
+  if exists('s:hist_size') && getfsize(g:VimShell_HistoryPath) != s:hist_size
     " Reload.
     let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
   endif
@@ -777,7 +777,7 @@ function! vimshell#iswin()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
-  return '\s\zs\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)*$'
+  return '\s\zs[^[:blank:]]\+$'
 endfunction"}}}
 function! vimshell#split_nicely()"{{{
   " Split nicely.
@@ -787,7 +787,7 @@ function! vimshell#split_nicely()"{{{
     split
   endif
 endfunction"}}}
-function vimshell#compare_number(i1, i2)
+function! vimshell#compare_number(i1, i2)
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction
 "}}}

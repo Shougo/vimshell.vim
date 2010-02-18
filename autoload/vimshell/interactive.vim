@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2010
+" Last Modified: 18 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ function! vimshell#interactive#get_cur_text()"{{{
   endif
 
   if has_key(b:interactive.prompt_history, line('.'))
-    let l:cur_text = l:cur_text[len(b:prompt_history[line('.')]) : ]
+    let l:cur_text = l:cur_text[len(b:interactive.prompt_history[line('.')]) : ]
   else
     " Maybe line numbering got disrupted, search for a matching prompt.
     let l:prompt_search = 0

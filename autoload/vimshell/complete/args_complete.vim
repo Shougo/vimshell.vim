@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2009
+" Last Modified: 18 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,93 +27,98 @@
 " Initialize funcs table."{{{
 let s:special_funcs = {}
 for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/special/*.vim'), '\n')
-    let func_name = fnamemodify(list, ':t:r')
-    let s:special_funcs[func_name] = 'vimshell#complete#special#' . func_name . '#'
+  let func_name = fnamemodify(list, ':t:r')
+  let s:special_funcs[func_name] = 'vimshell#complete#special#' . func_name . '#'
 endfor
 let s:internal_funcs = {}
 for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/internal/*.vim'), '\n')
-    let func_name = fnamemodify(list, ':t:r')
-    let s:internal_funcs[func_name] = 'vimshell#complete#internal#' . func_name . '#'
+  let func_name = fnamemodify(list, ':t:r')
+  let s:internal_funcs[func_name] = 'vimshell#complete#internal#' . func_name . '#'
 endfor
 let s:command_funcs = {}
 for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/command/*.vim'), '\n')
-    let func_name = fnamemodify(list, ':t:r')
-    let s:command_funcs[func_name] = 'vimshell#complete#command#' . func_name . '#'
+  let func_name = fnamemodify(list, ':t:r')
+  let s:command_funcs[func_name] = 'vimshell#complete#command#' . func_name . '#'
 endfor
 unlet func_name
 unlet list
 "}}}
-    
+
 function! vimshell#complete#args_complete#complete()"{{{
-    let &iminsert = 0
-    let &imsearch = 0
+  let &iminsert = 0
+  let &imsearch = 0
 
-    if !vimshell#check_prompt()
-        " Ignore.
-        return ''
-    endif
+  if !vimshell#check_prompt()
+    " Ignore.
+    return ''
+  endif
 
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#args_complete#omnifunc')
-    else
-        " Set complete function.
-        let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
-        
-        return "\<C-x>\<C-o>\<C-p>"
-    endif
+  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#args_complete#omnifunc')
+  else
+    " Set complete function.
+    let &l:omnifunc = 'vimshell#complete#args_complete#omnifunc'
+
+    return "\<C-x>\<C-o>\<C-p>"
+  endif
 endfunction"}}}
 
 function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
-    if a:findstart
-        " Get cursor word.
-        return len(vimshell#get_prompt()) + match(vimshell#get_cur_text(), vimshell#get_argument_pattern())
+  if a:findstart
+    let l:match = match(vimshell#get_cur_text(), vimshell#get_argument_pattern())
+    if l:match < 0
+      return l:match
     endif
 
-    " Get command name.
-    let l:args = vimshell#parser#split_args(vimshell#get_cur_text())
-    if vimshell#get_cur_text() =~ '\s\+$'
-        " Add blank argument.
-        call add(l:args, '')
-    endif
-    let l:command = fnamemodify(l:args[0], ':t:r')
+    " Get cursor word.
+    return len(vimshell#get_prompt()) + l:match
+  endif
 
-    " Save option.
-    let l:ignorecase_save = &ignorecase
+  " Get command name.
+  let l:args = vimshell#parser#split_args(vimshell#get_cur_text())
+  if vimshell#get_cur_text() =~ '\s\+$'
+    " Add blank argument.
+    call add(l:args, '')
+  endif
+  let l:command = fnamemodify(l:args[0], ':t:r')
 
-    " Complete.
-    if g:VimShell_SmartCase && a:base =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:VimShell_IgnoreCase
-    endif
+  " Save option.
+  let l:ignorecase_save = &ignorecase
 
-    " Get complete words.
-    let l:complete_words = vimshell#complete#args_complete#get_complete_words(l:command, l:args[1:])
+  " Complete.
+  if g:VimShell_SmartCase && a:base =~ '\u'
+    let &ignorecase = 0
+  else
+    let &ignorecase = g:VimShell_IgnoreCase
+  endif
 
-    " Restore option.
-    let &ignorecase = l:ignorecase_save
+  " Get complete words.
+  let l:complete_words = vimshell#complete#args_complete#get_complete_words(l:command, l:args[1:])
 
-    " Trunk many items.
-    let l:complete_words = l:complete_words[: g:VimShell_MaxList-1]
-    
-    if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
-        let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
-    endif
+  " Restore option.
+  let &ignorecase = l:ignorecase_save
 
-    return l:complete_words
+  " Trunk many items.
+  let l:complete_words = l:complete_words[: g:VimShell_MaxList-1]
+
+  if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
+    let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
+  endif
+
+  return l:complete_words
 endfunction"}}}
 
 function! vimshell#complete#args_complete#get_complete_words(command, args)"{{{
-    " Get complete words.
-    if has_key(s:special_funcs, a:command)
-        let l:complete_words = call(s:special_funcs[a:command] . 'get_complete_words', [a:args])
-    elseif has_key(s:internal_funcs, a:command)
-        let l:complete_words = call(s:internal_funcs[a:command] . 'get_complete_words', [a:args])
-    elseif has_key(s:command_funcs, a:command)
-        let l:complete_words = call(s:command_funcs[a:command] . 'get_complete_words', [a:args])
-    else
-        let l:complete_words = vimshell#complete#helper#files(a:args[-1])
-    endif
-    return l:complete_words
+  " Get complete words.
+  if has_key(s:special_funcs, a:command)
+    let l:complete_words = call(s:special_funcs[a:command] . 'get_complete_words', [a:args])
+  elseif has_key(s:internal_funcs, a:command)
+    let l:complete_words = call(s:internal_funcs[a:command] . 'get_complete_words', [a:args])
+  elseif has_key(s:command_funcs, a:command)
+    let l:complete_words = call(s:command_funcs[a:command] . 'get_complete_words', [a:args])
+  else
+    let l:complete_words = vimshell#complete#helper#files(a:args[-1])
+  endif
+  return l:complete_words
 endfunction"}}}
 " vim: foldmethod=marker

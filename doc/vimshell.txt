@@ -117,6 +117,12 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-02-18
+    * Fixed "E121: Undefined variable: b:prompt_history" error.
+    * Fixed args_complete compltion pos bug.
+    * Fixed filename pattern.
+    * Fixed s:hist_size error.
+
 2010-02-17
     * Added vimshrc syntax file.
     * setlocal nolist in vimshell buffer.
