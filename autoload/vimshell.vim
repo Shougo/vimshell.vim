@@ -777,7 +777,7 @@ function! vimshell#iswin()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
-  return '\s\zs[^[:blank:]]\+$'
+  return '\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
 endfunction"}}}
 function! vimshell#split_nicely()"{{{
   " Split nicely.

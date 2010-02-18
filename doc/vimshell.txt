@@ -122,6 +122,7 @@ CHANGELOG					*vimshell-changelog*
     * Fixed args_complete compltion pos bug.
     * Fixed filename pattern.
     * Fixed s:hist_size error.
+    * Renamed interactive_complete.vim.
 
 2010-02-17
     * Added vimshrc syntax file.
