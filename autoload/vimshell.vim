@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Feb 2010
+" Last Modified: 24 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -270,34 +270,39 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   call vimshell#create_shell(a:split_flag, a:directory)
 endfunction"}}}
 function! vimshell#process_enter()"{{{
-  if vimshell#check_prompt() == 0
+  if !vimshell#check_prompt()
     " Prompt not found
 
-    if vimshell#check_prompt('$') == 0
+    if !vimshell#check_prompt('$')
       " Create prompt line.
       call append('$', vimshell#get_prompt())
     endif
-
-    " Search cursor file.
-    let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-    if l:filename == ''
-      return
-    endif
-
-    " Execute cursor file.
-    if l:filename =~ '^\%(https\?\|ftp\)://'
-      " Open uri.
-      call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-    elseif isdirectory(expand(l:filename))
-      " Change directory.
-      call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+    
+    if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
+      " History output execution.
+      call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
-      " Edit file.
-      call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+      " Search cursor file.
+      let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+      if l:filename == ''
+        return
+      endif
+
+      " Execute cursor file.
+      if l:filename =~ '^\%(https\?\|ftp\)://'
+        " Open uri.
+        call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
+      elseif isdirectory(expand(l:filename))
+        " Change directory.
+        call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+      else
+        " Edit file.
+        call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+      endif
     endif
   elseif line('.') != line('$')
     " History execution.
-    if vimshell#check_prompt('$') == 0
+    if !vimshell#check_prompt('$')
       " Insert prompt line.
       call append('$', getline('.'))
     else

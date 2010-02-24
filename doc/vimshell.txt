@@ -123,6 +123,7 @@ CHANGELOG					*vimshell-changelog*
     * Added g:VimShell_RightPrompt variable.
     * Improved parse in argument complete.
     * Fixed command parse.
+    * Implemented history output execution.
 
 2010-02-18
     * Fixed "E121: Undefined variable: b:prompt_history" error.
