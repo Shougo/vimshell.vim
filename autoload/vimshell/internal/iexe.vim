@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2010
+" Last Modified: 24 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,7 @@
 " ChangeLog: "{{{
 "   1.23: 
 "     - Supported vimproc Ver.3.
+"     - Fixed interactive filetype.
 "
 "   1.22: 
 "     - Reimplemented vimshell#internal#iexe#vimshell_iexe().
@@ -294,7 +295,7 @@ function! s:init_bg(sub, args, is_interactive)"{{{
 
   edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
-  execute 'setfiletype' 'int_'.fnamemodify(a:args[0], ':r')
+  execute 'setfiletype' 'int-'.fnamemodify(a:args[0], ':r')
 
   call vimshell#internal#iexe#default_settings()
 
