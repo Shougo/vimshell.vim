@@ -117,9 +117,10 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
-2010-02-25
+2010-02-24
     * Fixed interactive filetype.
     * Ignore .gitignore in vcs_git.
+    * Added g:VimShell_RightPrompt variable.
 
 2010-02-18
     * Fixed "E121: Undefined variable: b:prompt_history" error.
