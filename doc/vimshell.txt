@@ -121,6 +121,8 @@ CHANGELOG					*vimshell-changelog*
     * Fixed interactive filetype.
     * Ignore .gitignore in vcs_git.
     * Added g:VimShell_RightPrompt variable.
+    * Improved parse in argument complete.
+    * Fixed command parse.
 
 2010-02-18
     * Fixed "E121: Undefined variable: b:prompt_history" error.

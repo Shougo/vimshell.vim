@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 10 Feb 2010
+" Last Modified: 24 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,12 +32,11 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
     let l:statement = matchstr(l:statement, '^\s*\zs.*')
 
     " Get program.
-    let l:program = matchstr(l:statement, '^\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)\+')
+    let l:program = matchstr(l:statement, '^\%(\\[^[:alnum:].-]\|[[:alnum:]@/._+,#$%~=*-]\)\+')
     if l:program != '' && l:program[0] == '~'
       " Parse tilde.
       let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
     endif
-
 
     let l:script = l:statement[len(l:program) :]
 
