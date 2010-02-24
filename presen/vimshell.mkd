@@ -587,12 +587,33 @@ Ver.6.05より、exe, bg, iexe等のコマンドに対し、encodingを指定で
 省略すると、これまで通り`&termencoding`が仮定されます。
 goshなど、Windows環境であってもencodingがUTF-8なコマンドが増えてきたので、
 そのようなコマンドにはaliasで`--encoding`を自動的に付加するようにすると良いでしょう。
+
 使用例：
 `iexe --encoding=utf8 gosh`
 
+## 右プロンプトの実装
+
+Ver.6.05より、zsh風の右プロンプトが使えるようになりました。
+ウインドウの大きさを計算し、自動的に最適な位置にプロンプトを表示します。
+`let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'`
+
+## fakecygptyへの対応
+
+fakecygptyを使用すれば、Windows環境であっても、Cygwinのptyを使用できます。
+zshさえも起動することが可能です。
+ただし現状、エスケープシーケンスは化けてしまいます。
+
+使用例：
+`iexe fakecygpty c:/cygwin/bin/zsh`
+
+参考URL
+<http://www.ysnb.net/meadow/meadow-develop/x/6582>
+<http://d.hatena.ne.jp/yohei-a/20091203/1259815133>
+
 ## 私の設定
 
-    let g:VimShell_UserPrompt = 'getcwd()'
+    let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
+    let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
     let g:VimShell_EnableInteractive = 1
     let g:VimShell_EnableSmartCase = 1
     let g:VimShell_EnableAutoLs = 1

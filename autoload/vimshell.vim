@@ -33,6 +33,7 @@ let s:is_vimproc = exists('*vimproc#system')
 let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
 let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
 let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
+let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt : ''
 if !exists('g:VimShell_ExecuteFileList')
   let g:VimShell_ExecuteFileList = {}
 endif
@@ -638,7 +639,7 @@ function! vimshell#print_prompt()"{{{
     call remove(b:vimshell_commandline_stack, -1)
   endif
 
-  if s:user_prompt != ''
+  if s:user_prompt != '' || s:right_prompt != ''
     " Insert user prompt line.
     for l:user in split(s:user_prompt, "\\n")
       let l:secondary = '[%] ' . eval(l:user)
@@ -649,6 +650,20 @@ function! vimshell#print_prompt()"{{{
         $
       endif
     endfor
+    
+    " Insert user prompt line.
+    if s:right_prompt != ''
+      let l:right_prompt = eval(s:right_prompt)
+      let l:user_prompt_last = (s:user_prompt != '')? getline('$') : '[%] '
+      let l:winwidth = winwidth(0) - 10
+      let l:padding_len = (len(l:user_prompt_last)+len(s:right_prompt)+1 > l:winwidth)? 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
+      let l:secondary = printf('%s%s%s', l:user_prompt_last, repeat(' ', l:padding_len), l:right_prompt)
+      if s:user_prompt != ''
+        call setline('$', l:secondary)
+      else
+        call append('$', l:secondary)
+      endif
+    endif
   endif
 
   " Insert prompt line.
