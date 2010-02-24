@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2009
+" Last Modified: 15 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,9 +22,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.8, for Vim 7.0
+" Version: 1.10, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.10:
+"     - Supported vimproc Ver.3.
+"     - Improved redraw in executing.
+"
+"   1.9:
+"     - Fixed indent.
+"     - Implemented background execution and interrupt.
+"     - Supported encoding.
+"
 "   1.8:
 "     - Improved echo.
 "     - Use vimproc.vim.
@@ -57,79 +66,94 @@
 "=============================================================================
 
 function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
-    " Execute command.
-    if g:VimShell_EnableInteractive
-        if s:init_process(a:fd, a:args)
-            return 0
-        endif
-
-        echo 'Running command.'
-        call append(line('$'), '')
-        while exists('b:vimproc_sub')
-            call vimshell#interactive#execute_pipe_out()
-        endwhile
-        redraw
-        echo ''
-        let b:vimshell_system_variables['status'] = b:vimproc_status
-    else
-        let l:fd = a:fd
-        " Null input.
-        if l:fd.stdin == ''
-            let l:fd.stdin = '/dev/null'
-        endif
-        return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
+  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+        \{ 'arg=' : ['--encoding']
+        \})
+  if !has_key(l:options, '--encoding')
+    let l:options['--encoding'] = &termencoding
+  endif
+  
+  " Execute command.
+  if g:VimShell_EnableInteractive
+    if s:init_process(a:fd, l:args, l:options)
+      return 0
     endif
 
-    return 0
+    echo 'Running command.'
+    call append(line('$'), '')
+    
+    " Move line.
+    normal! j
+    redraw
+    while b:interactive.process.is_valid
+      call vimshell#interactive#execute_pipe_out()
+      
+      " Get input key.
+      let l:char = getchar(0)
+      if l:char != 0
+        let l:char = nr2char(l:char)
+        if l:char == "\<C-z>"
+          call vimshell#error_line(a:fd, 'Background Executed.')
+          
+          " Background execution.
+          call vimshell#internal#bg#init(l:args, a:other_info.is_interactive)
+          
+          wincmd w
+          unlet b:interactive
+          return 1
+        elseif l:char == "\<C-d>"
+          " Interrupt.
+          call vimshell#interactive#force_exit()
+          call vimshell#error_line(a:fd, 'Interrupted.')
+          return 0
+        endif
+      endif
+    endwhile
+    
+    redraw
+    echo ''
+    
+    let b:vimshell_system_variables['status'] = b:interactive.status
+  else
+    let l:fd = a:fd
+    " Null input.
+    if l:fd.stdin == ''
+      let l:fd.stdin = '/dev/null'
+    endif
+    return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
+  endif
+
+  return 0
 endfunction"}}}
 
-function! s:init_process(fd, args)
-    if exists('b:vimproc_sub')
-        " Delete zombee process.
-        call vimshell#interactive#force_exit()
-    endif
+function! s:init_process(fd, args, options)
+  if exists('b:interactive') && b:interactive.process.is_valid
+    " Delete zombee process.
+    call vimshell#interactive#force_exit()
+  endif
 
-    let l:sub = []
+  try
+    let l:sub = vimproc#popen3(join(a:args))
+  catch 'list index out of range'
+    let l:error = printf('File: "%s" is not found.', a:args[0])
 
-    " Search pipe.
-    let l:commands = [[]]
-    for arg in a:args
-        if arg == '|'
-            call add(l:commands, [])
-        else
-            call add(l:commands[-1], arg)
-        endif
-    endfor
-
-    for command in l:commands
-        try
-            if g:VimShell_UsePopen2
-                call add(l:sub, vimproc#popen2(command))
-            else
-                call add(l:sub, vimproc#popen3(command))
-            endif
-        catch 'list index out of range'
-            if empty(command)
-                let l:error = 'Wrong pipe used.'
-            else
-                let l:error = printf('File: "%s" is not found.', command[0])
-            endif
-
-            call vimshell#error_line(a:fd, l:error)
-
-            return 1
-        endtry
-    endfor
-
-    " Set variables.
-    let b:vimproc_sub = l:sub
-    let b:vimproc_fd = a:fd
-
-    " Input from stdin.
-    if b:vimproc_fd.stdin != ''
-        call b:vimproc_sub[0].stdin.write(vimshell#read(a:fd))
-    endif
-    call b:vimproc_sub[0].stdin.close()
+    call vimshell#error_line(a:fd, l:error)
 
     return 0
+  endtry
+
+  " Set variables.
+  let b:interactive = {
+        \ 'process' : l:sub, 
+        \ 'fd' : a:fd, 
+        \ 'encoding' : a:options['--encoding']
+        \}
+
+  " Input from stdin.
+  if b:interactive.fd.stdin != ''
+    call b:interactive.process.stdin.write(vimshell#read(a:fd))
+  endif
+  call b:interactive.process.stdin.close()
+
+  return 0
 endfunction

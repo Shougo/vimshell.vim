@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Feb 2010
+" Last Modified: 24 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.04, for Vim 7.0
+" Version: 6.05, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -33,6 +33,7 @@ let s:is_vimproc = exists('*vimproc#system')
 let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
 let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
 let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
+let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt : ''
 if !exists('g:VimShell_ExecuteFileList')
   let g:VimShell_ExecuteFileList = {}
 endif
@@ -72,6 +73,7 @@ function! vimshell#default_settings()"{{{
   setlocal noswapfile
   setlocal bufhidden=hide
   setlocal noreadonly
+  setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
 
@@ -96,7 +98,7 @@ function! vimshell#default_settings()"{{{
   " Execute command.
   imap <buffer> <CR> <Plug>(vimshell_enter)
   " History completion.
-  imap <buffer> <C-r>  <Plug>(vimshell_history_complete_whole)
+  imap <buffer> <C-k>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
@@ -196,8 +198,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Set environment variables.
-  let $TERM = "dumb"
-  let $TERMCAP = "COLUMNS=" . winwidth(0)
+  let $TERM = 'vt100'
+  let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0) * 8 / 10
   let $LINES = winheight(0) * 8 / 10
@@ -268,34 +270,39 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   call vimshell#create_shell(a:split_flag, a:directory)
 endfunction"}}}
 function! vimshell#process_enter()"{{{
-  if vimshell#check_prompt() == 0
+  if !vimshell#check_prompt()
     " Prompt not found
 
-    if vimshell#check_prompt('$') == 0
+    if !vimshell#check_prompt('$')
       " Create prompt line.
       call append('$', vimshell#get_prompt())
     endif
-
-    " Search cursor file.
-    let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-    if l:filename == ''
-      return
-    endif
-
-    " Execute cursor file.
-    if l:filename =~ '^\%(https\?\|ftp\)://'
-      " Open uri.
-      call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-    elseif isdirectory(expand(l:filename))
-      " Change directory.
-      call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+    
+    if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
+      " History output execution.
+      call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
-      " Edit file.
-      call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+      " Search cursor file.
+      let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+      if l:filename == ''
+        return
+      endif
+
+      " Execute cursor file.
+      if l:filename =~ '^\%(https\?\|ftp\)://'
+        " Open uri.
+        call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
+      elseif isdirectory(expand(l:filename))
+        " Change directory.
+        call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+      else
+        " Edit file.
+        call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+      endif
     endif
   elseif line('.') != line('$')
     " History execution.
-    if vimshell#check_prompt('$') == 0
+    if !vimshell#check_prompt('$')
       " Insert prompt line.
       call append('$', getline('.'))
     else
@@ -315,7 +322,7 @@ function! vimshell#process_enter()"{{{
   " Delete prompt string and comment.
   let l:line = substitute(vimshell#get_cur_text(), '#.*$', '', '')
 
-  if getfsize(g:VimShell_HistoryPath) != s:hist_size
+  if exists('s:hist_size') && getfsize(g:VimShell_HistoryPath) != s:hist_size
     " Reload.
     let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
   endif
@@ -355,7 +362,7 @@ function! vimshell#process_enter()"{{{
   try
     let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
   catch /.*/
-    let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+    let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
     call vimshell#print_prompt()
 
@@ -577,6 +584,9 @@ function! vimshell#print_line(fd, string)"{{{
       " Write to clipboard.
       let @+ .= a:string
     else
+      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+            \ iconv(a:string, &encoding, &termencoding) : a:string
+      
       " Write file.
       let l:file = add(readfile(a:fd.stdout), a:string)
       call writefile(l:file, a:fd.stdout)
@@ -600,6 +610,9 @@ function! vimshell#error_line(fd, string)"{{{
       " Write to clipboard.
       let @+ .= a:string
     else
+      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
+            \ iconv(a:string, &encoding, &termencoding) : a:string
+      
       " Write file.
       let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
       call writefile(l:file, a:fd.stderr)
@@ -631,7 +644,7 @@ function! vimshell#print_prompt()"{{{
     call remove(b:vimshell_commandline_stack, -1)
   endif
 
-  if s:user_prompt != ''
+  if s:user_prompt != '' || s:right_prompt != ''
     " Insert user prompt line.
     for l:user in split(s:user_prompt, "\\n")
       let l:secondary = '[%] ' . eval(l:user)
@@ -642,6 +655,20 @@ function! vimshell#print_prompt()"{{{
         $
       endif
     endfor
+    
+    " Insert user prompt line.
+    if s:right_prompt != ''
+      let l:right_prompt = eval(s:right_prompt)
+      let l:user_prompt_last = (s:user_prompt != '')? getline('$') : '[%] '
+      let l:winwidth = winwidth(0) - 10
+      let l:padding_len = (len(l:user_prompt_last)+len(s:right_prompt)+1 > l:winwidth)? 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
+      let l:secondary = printf('%s%s%s', l:user_prompt_last, repeat(' ', l:padding_len), l:right_prompt)
+      if s:user_prompt != ''
+        call setline('$', l:secondary)
+      else
+        call append('$', l:secondary)
+      endif
+    endif
   endif
 
   " Insert prompt line.
@@ -770,8 +797,19 @@ function! vimshell#iswin()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
-  return '\s\zs\%(\\[^[:alnum:].-]\|[[:alnum:]@/.-_+,#$%~=*]\)*$'
+  return '\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
 endfunction"}}}
+function! vimshell#split_nicely()"{{{
+  " Split nicely.
+  if winwidth(0) > 2 * &winwidth
+    vsplit
+  else
+    split
+  endif
+endfunction"}}}
+function! vimshell#compare_number(i1, i2)
+  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction
 "}}}
 
 " Helper functions.

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 Feb 2010
+" Last Modified: 12 Feb 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.04, for Vim 7.0
+" Version: 6.05, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -57,9 +57,6 @@ if !exists('g:VimShell_EnableInteractive')
 endif
 if !exists('g:VimShell_SplitHeight')
     let g:VimShell_SplitHeight = 30
-endif
-if !exists('g:VimShell_UsePopen2')
-    let g:VimShell_UsePopen2 = 0
 endif
 if !exists('g:VimShell_EnableAutoLs')
     let g:VimShell_EnableAutoLs = 0
@@ -109,6 +106,11 @@ command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#internal#bg#vimshell_bg(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(<q-args>)
+
+augroup VimShell
+  " Detect vimshell rc file.
+  autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
+augroup END
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

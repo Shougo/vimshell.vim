@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Aug 2009
+" Last Modified: 11 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -54,44 +54,44 @@
 "=============================================================================
 
 function! vimshell#internal#vim#execute(program, args, fd, other_info)
-    " Edit file.
+  " Edit file.
 
-    " Filename escape
-    let l:arguments = join(a:args, ' ')
+  " Filename escape
+  let l:arguments = join(a:args, ' ')
 
-    call vimshell#print_prompt()
+  call vimshell#print_prompt()
 
-    " Save current directiory.
-    let l:cwd = getcwd()
+  " Save current directiory.
+  let l:cwd = getcwd()
 
-    " Split nicely.
-    if winheight(0) > &winheight
-        let l:is_split = 1
+  " Split nicely.
+  if winwidth(0) > 2 * &winwidth
+    let l:is_split = 0
+  else
+    let l:is_split = 1
+  endif
+
+  if empty(l:arguments)
+    if l:is_split
+      new
     else
-        let l:is_split = 0
+      vnew
+    endif
+  else
+    if l:is_split
+      split
+    else
+      vsplit
     endif
 
-    if empty(l:arguments)
-        if l:is_split
-            new
-        else
-            vnew
-        endif
-    else
-        if l:is_split
-            split
-        else
-            vsplit
-        endif
+    try
+      edit `=l:arguments`
+    catch
+      echohl Error | echomsg v:errmsg | echohl None
+    endtry
+  endif
 
-        try
-            edit `=l:arguments`
-        catch
-            echohl Error | echomsg v:errmsg | echohl None
-        endtry
-    endif
+  lcd `=l:cwd`
 
-    lcd `=l:cwd`
-
-    return 1
+  return 1
 endfunction
