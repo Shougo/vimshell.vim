@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2010
+" Last Modified: 26 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.6:
+"     - Revised.
+"
 "   1.5:
 "     - Catch error.
 "
@@ -56,8 +59,12 @@
 function! vimshell#internal#vim#execute(program, args, fd, other_info)
   " Edit file.
 
-  " Filename escape
-  let l:arguments = join(a:args, ' ')
+  if empty(a:args)
+    " Read from stdin.
+    let l:filename = a:fd.stdin
+  else
+    let l:filename = a:args[0]
+  endif
 
   call vimshell#print_prompt()
 
@@ -71,7 +78,7 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
     let l:is_split = 1
   endif
 
-  if empty(l:arguments)
+  if l:filename == ''
     if l:is_split
       new
     else
@@ -85,7 +92,7 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
     endif
 
     try
-      edit `=l:arguments`
+      edit `=l:filename`
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry

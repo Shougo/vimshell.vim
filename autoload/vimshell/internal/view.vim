@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2010
+" Last Modified: 26 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,9 +23,13 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.5, for Vim 7.0
+" Version: 1.6, for Vim 7.0
 "-----------------------------------------------------------------------------
 " ChangeLog: "{{{
+"   1.6:
+"     - Print lines if one screen.
+"     - Fixed nomodifiable error.
+"
 "   1.5:
 "     - Catch error.
 "
@@ -56,16 +60,30 @@
 function! vimshell#internal#view#execute(program, args, fd, other_info)
   " View file.
 
-  " Filename escape
-  let l:arguments = join(a:args, ' ')
+  if empty(a:args)
+    if a:fd.stdin == ''
+      vimshell#error_line(a:fd, 'Filename required.')
+      return 0
+    endif
+    
+    " Read from stdin.
+    let l:filename = a:fd.stdin
+  else
+    let l:filename = a:args[0]
+  endif
 
-  if isdirectory(l:arguments)
+  if isdirectory(l:filename)
     " Ignore.
     return 0
   endif
 
-  if empty(l:arguments)
-    vimshell#error_line(a:fd, 'Filename required.')
+  let l:lines = readfile(l:filename)
+  if len(l:lines) < winheight(0)
+    " Print lines if one screen.
+    for l:line in l:lines
+      call vimshell#print_line(a:fd, l:line)
+    endfor
+    
     return 0
   endif
   
@@ -78,11 +96,12 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
   call vimshell#split_nicely()
 
   try
-    edit `=l:arguments`
+    edit `=l:filename`
   catch /^.*/
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
   lcd `=l:cwd`
   setlocal nomodifiable
+  return 1
 endfunction
