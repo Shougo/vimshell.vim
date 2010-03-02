@@ -55,6 +55,10 @@ function! vimshell#interactive#get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
 
   let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+  if l:cur_text =~ '^-> '
+    let l:cur_text = l:cur_text[3:]
+  endif
+  
   if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
     let l:len = len(getline('.'))
 
@@ -162,6 +166,8 @@ function! vimshell#interactive#get_prompt(line)"{{{
 
   if getline('.') == '...' || !has_key(b:interactive.prompt_history, a:line)
     return ''
+  elseif getline('.') =~ '^-> '
+    return '-> '
   endif
 
   return b:interactive.prompt_history[a:line]

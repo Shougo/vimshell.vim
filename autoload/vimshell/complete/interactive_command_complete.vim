@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 02 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,121 +25,111 @@
 "=============================================================================
 
 function! vimshell#complete#interactive_command_complete#complete()"{{{
-    let &iminsert = 0
-    let &imsearch = 0
+  let &iminsert = 0
+  let &imsearch = 0
 
-    " Interactive completion.
+  " Interactive completion.
 
-    if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-        return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#interactive_command_complete#omnifunc')
-    else
-        " Set complete function.
-        let &l:omnifunc = 'vimshell#complete#interactive_command_complete#omnifunc'
-        
-        return "\<C-x>\<C-o>\<C-p>"
-    endif
+  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
+    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#interactive_command_complete#omnifunc')
+  else
+    " Set complete function.
+    let &l:omnifunc = 'vimshell#complete#interactive_command_complete#omnifunc'
+
+    return "\<C-x>\<C-o>\<C-p>"
+  endif
 endfunction"}}}
 
 function! vimshell#complete#interactive_command_complete#omnifunc(findstart, base)"{{{
-    if a:findstart
-        return match(vimshell#interactive#get_cur_text(), vimshell#get_argument_pattern())
+  if a:findstart
+    let l:cur_text = vimshell#interactive#get_cur_text()
+    let l:match = (l:cur_text !~ '\s')? 0 : match(l:cur_text, vimshell#get_argument_pattern())
+
+    if l:match < 0
+      return -1
     endif
 
-    " Save option.
-    let l:ignorecase_save = &ignorecase
+    return len(vimshell#interactive#get_prompt(line('.'))) + l:match
+  endif
 
-    " Complete.
-    if g:VimShell_SmartCase && a:base =~ '\u'
-        let &ignorecase = 0
-    else
-        let &ignorecase = g:VimShell_IgnoreCase
-    endif
+  " Save option.
+  let l:ignorecase_save = &ignorecase
 
-    let l:complete_words = s:get_complete_candidates(a:base)
+  " Complete.
+  if g:VimShell_SmartCase && a:base =~ '\u'
+    let &ignorecase = 0
+  else
+    let &ignorecase = g:VimShell_IgnoreCase
+  endif
 
-    " Restore option.
-    let &ignorecase = l:ignorecase_save
-    if &l:omnifunc != ''
-        let &l:omnifunc = ''
-    endif
+  let l:complete_words = s:get_complete_candidates(a:base)
 
-    return l:complete_words
+  " Restore option.
+  let &ignorecase = l:ignorecase_save
+  if &l:omnifunc != ''
+    let &l:omnifunc = ''
+  endif
+
+  return l:complete_words
 endfunction"}}}
 
 function! s:get_complete_candidates(cur_keyword_str)"{{{
-    let l:list = []
+  let l:list = []
 
-    " Do command completion.
-    let l:in = vimshell#interactive#get_cur_text()
-    let l:prompt = getline('.')
+  " Do command completion.
+  let l:in = vimshell#interactive#get_cur_text()
+  let l:prompt = getline('.')
 
-    if &termencoding != '' && &encoding != &termencoding
-        " Convert encoding.
-        let l:in = iconv(l:in, &encoding, &termencoding)
-    endif
-    
-    call b:vimproc_sub[0].write(l:in . s:get_complete_key())
-    
-    " Get output.
-    let l:read = b:vimproc_sub[0].read(-1, 40)
-    let l:output = ''
-    let l:cnt = 0
-    while !vimshell#head_match(split(l:output, '\r\n\|\n', 1)[-1], l:prompt)
-        let l:output .= l:read
+  if b:interactive.encoding != '' && &encoding != &termencoding
+    " Convert encoding.
+    let l:in = iconv(l:in, &encoding, b:interactive.encoding)
+  endif
 
-        let l:read = b:vimproc_sub[0].read(-1, 40)
-        
-        let l:cnt += 1
-        if l:cnt > 300
-            " Timeout.
-            return []
-        endif
-    endwhile
-    
-    if &termencoding != '' && &encoding != &termencoding
-        " Convert encoding.
-        let l:output = iconv(l:output, &termencoding, &encoding)
-    endif
+  call b:interactive.process.write(l:in . s:get_complete_key())
 
-    let l:candidates = split(join(split(l:output, '\r\n\|\n')[1: -2], '  '), '\s\s\+')
-    let l:cnt = 0
-    let l:ignore_input = l:in[: -len(a:cur_keyword_str)-1]
-    for l:candidate in l:candidates
-        if vimshell#head_match(l:candidate, l:ignore_input)
-            " Delete input line.
-            let l:candidates[l:cnt] = l:candidate[len(l:ignore_input) :]
-        endif
-        
-        let l:cnt += 1
-    endfor 
-    
-    " Delete input.
-    call b:vimproc_sub[0].write(repeat("\<C-h>", len(l:in)))
-    
-    let l:candidates = vimshell#complete#helper#keyword_filter(l:candidates, a:cur_keyword_str)
-    
-    let l:ret = []
-    for l:candidate in l:candidates
-        " Delete last "/".
-        let l:dict = {
-                    \'word' : l:candidate =~ '/$' ? l:candidate[: -2] : l:candidate, 
-                    \'abbr' : l:candidate
-                    \}
-        call add(l:ret, l:dict)
-    endfor
+  " Get output.
+  let l:output = ''
+  let l:cnt = 0
+  while l:cnt <= 100
+    let l:output .= b:interactive.process.read(-1, 40)
 
-    return l:ret
+    let l:cnt += 1
+  endwhile
+
+  if b:interactive.encoding != '' && &encoding != &termencoding
+    " Convert encoding.
+    let l:output = iconv(l:output, b:interactive.encoding, &encoding)
+  endif
+
+  let l:candidates = split(join(split(l:output, '\r\n\|\n')[: -2], '  '), '\s')
+  let l:cnt = 0
+  let l:ignore_input = l:in[: -len(a:cur_keyword_str)-1]
+
+  " Delete input.
+  call b:interactive.process.write(repeat("\<C-h>", len(l:in)))
+
+  let l:ret = []
+  for l:candidate in l:candidates
+    " Delete last "/".
+    let l:dict = {
+          \'word' : l:candidate =~ '/$' ? l:candidate[: -2] : l:candidate, 
+          \'abbr' : l:candidate
+          \}
+    call add(l:ret, l:dict)
+  endfor
+
+  return l:ret
 endfunction"}}}
 
 function! s:get_complete_key()"{{{
-    if !vimshell#iswin()
-        " For pty program.
-        return "\<TAB>"
-    elseif &filetype == 'iexe_zsh' || &filetype == 'iexe_nyaos' 
-        return "\<C-d>"
-    else
-        " For readline program.
-        return "\<ESC>?"
-    endif
+  if !vimshell#iswin()
+    " For pty program.
+    return "\<TAB>"
+  elseif &filetype == 'int-zsh' || &filetype == 'int-nyaos' 
+    return "\<C-d>"
+  else
+    " For readline program.
+    return "\<ESC>?"
+  endif
 endfunction"}}}
 " vim: foldmethod=marker

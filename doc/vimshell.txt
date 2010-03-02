@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.05
+Version: 6.50
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -117,10 +117,16 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-03-02
+    * Fixed interactive_command_complete error.
+    * Fixed vimshell#interactive#get_cur_text().
+
+ChangeLog 6.00-: {{{
 2010-02-26
     * Print lines if one screen in view.
     * Fixed nomodifiable error in view.
     * Revised internal vim command.
+    * Marked As Ver.6.05.
 
 2010-02-24
     * Fixed interactive filetype.
@@ -165,7 +171,6 @@ CHANGELOG					*vimshell-changelog*
     - Deleted g:VimShell_UsePopen2 option.
     - Improved redraw in executing.
     
-ChangeLog 6.00-: {{{
     6.04 :
     - Fixed history_complete bug.
     - Trunk many candidates in history_complete.
