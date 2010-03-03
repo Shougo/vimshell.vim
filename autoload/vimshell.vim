@@ -806,9 +806,9 @@ function! vimshell#split_nicely()"{{{
     split
   endif
 endfunction"}}}
-function! vimshell#compare_number(i1, i2)
+function! vimshell#compare_number(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
-endfunction
+endfunction"}}}
 "}}}
 
 " Helper functions.

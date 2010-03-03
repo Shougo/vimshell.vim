@@ -123,6 +123,7 @@ CHANGELOG					*vimshell-changelog*
     * Improved gcd command.
     * Supported fakecygpty.
     * Fixed error message in interactive.vim.
+    * Improved cd.
 
 2010-03-02
     * Fixed interactive_command_complete error.

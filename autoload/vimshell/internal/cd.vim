@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 03 Mar 2009
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,95 +22,56 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.9, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.9:
-"     - Implemented 'cd -'.
-"     - Implemented 'cd name1 name2'.
-"     - Fixed restore directory bug.
-"
-"   1.8:
-"     - Check cd path.
-"
-"   1.7:
-"     - Improved pushd timing.
-"
-"   1.6:
-"     - Move to parent directory if argument isn't directory.
-"
-"   1.5:
-"     - Implemented exchange ~ into $HOME.
-"
-"   1.4:
-"     - Fixed error.
-"
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.2:
-"     - Improved escape sequence.
-"
-"   1.1:
-"     - Interpret cd of no argument as cd $HOME
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#cd#execute(program, args, fd, other_info)
-    " Change the working directory.
+  " Change the working directory.
 
-    if empty(a:args)
-        " Move to HOME directory.
-        let l:arguments = $HOME
-    elseif len(a:args) == 2
-        " Substitute current directory.
-        let l:arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
-    elseif len(a:args) > 2
-        call vimshell#error_line(a:fd, 'Too many arguments.')
-        return
+  if empty(a:args)
+    " Move to HOME directory.
+    let l:dir = $HOME
+  elseif len(a:args) == 2
+    " Substitute current directory.
+    let l:dir = substitute(getcwd(), a:args[0], a:args[1], 'g')
+  elseif len(a:args) > 2
+    call vimshell#error_line(a:fd, 'Too many arguments.')
+    return
+  else
+    " Filename escape.
+    let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
+  endif
+
+  if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
+    " Push current directory.
+    call insert(w:vimshell_directory_stack, getcwd())
+  endif
+
+  if isdirectory(l:dir)
+    " Move to directory.
+    let b:vimshell_save_dir = fnamemodify(l:dir, ':p')
+    lcd `=b:vimshell_save_dir`
+  elseif l:arguments == '-'
+    " Popd.
+    return vimshell#internal#popd#execute('popd', [ 1 ], 
+          \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
+          \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
+  elseif filereadable(l:dir)
+    " Move to parent directory.
+    let b:vimshell_save_dir = fnamemodify(l:dir, ':p:h')
+    lcd `=b:vimshell_save_dir`
+  else
+    " Check cd path.
+    let l:dirs = split(globpath(&cdpath, l:dir), '\n')
+    if !empty(l:dirs) && isdirectory(l:dirs[0])
+      let b:vimshell_save_dir = fnamemodify(l:dirs[0], ':p')
+      lcd `=b:vimshell_save_dir`
     else
-        " Filename escape.
-        let l:arguments = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
-    endif
+      call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
 
-    if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
-        " Push current directory.
-        call insert(w:vimshell_directory_stack, getcwd())
+      if getcwd() == w:vimshell_directory_stack[0]
+        " Restore directory.
+        let w:vimshell_directory_stack = w:vimshell_directory_stack[1:]
+      endif
     endif
-
-    if isdirectory(l:arguments)
-        " Move to directory.
-        lcd `=fnamemodify(l:arguments, ':p')`
-    elseif l:arguments == '-'
-        " Popd.
-        return vimshell#internal#popd#execute('popd', [ 1 ], 
-                    \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
-                    \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
-    elseif filereadable(l:arguments)
-        " Move to parent directory.
-        lcd `=fnamemodify(l:arguments, ':p:h')`
-    else
-        " Check cd path.
-        let l:dirs = split(globpath(&cdpath, l:arguments), '\n')
-        if !empty(l:dirs) && isdirectory(l:dirs[0])
-            lcd `=fnamemodify(l:dirs[0], ':p')`
-        else
-            call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
-
-            if getcwd() == w:vimshell_directory_stack[0]
-                " Restore directory.
-                let w:vimshell_directory_stack = w:vimshell_directory_stack[1:]
-            endif
-        endif
-    endif
+  endif
 endfunction
