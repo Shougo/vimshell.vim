@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2010
+" Last Modified: 03 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -122,7 +122,7 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
 endfunction"}}}
 
 function! s:get_complete_key()"{{{
-  if !vimshell#iswin()
+  if b:interactive.is_pty
     " For pty program.
     return "\<TAB>"
   elseif &filetype == 'int-zsh' || &filetype == 'int-nyaos' 

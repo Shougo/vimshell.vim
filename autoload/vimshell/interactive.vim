@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Feb 2010
+" Last Modified: 03 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,8 +35,6 @@ let s:password_regex =
       \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
       \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
 let s:character_regex = ''
-
-let s:is_win = has('win32') || has('win64')
 
 augroup VimShellInteractive
   autocmd!
@@ -197,7 +195,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   try
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (s:is_win ? "\<C-z>" : "\<C-d>"))
+      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
       let b:interactive.skip_echoback = l:in[:-2]
       call vimshell#interactive#execute_pty_out(a:is_insert)
 
@@ -260,7 +258,7 @@ function! vimshell#interactive#send_string(string)"{{{
   try
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (s:is_win ? "\<C-z>" : "\<C-d>"))
+      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
       let b:interactive.skip_echoback = l:in[:-2]
       call vimshell#interactive#execute_pty_out(1)
 
@@ -422,7 +420,6 @@ function! vimshell#interactive#hang_up()"{{{
           try
             " 15 == SIGTERM
             call sub.kill(15)
-            echomsg 'Killed'
           catch /No such process/
           endtry
         endfor
@@ -549,7 +546,6 @@ function! s:print_buffer(fd, string)"{{{
   endif
 
   if a:fd.stdout != ''
-    echomsg a:fd.stdout
     if a:fd.stdout == '/dev/null'
       " Nothing.
     elseif a:fd.stdout == '/dev/clip'
@@ -573,7 +569,7 @@ function! s:print_buffer(fd, string)"{{{
   endif
 
   " Strip <CR>.
-  let l:string = substitute(l:string, '\r\n', '\n', 'g')
+  let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
   if l:string =~ '\r'
     for l:line in split(getline('$') . l:string, '\n', 1)
       call append('$', '')
@@ -637,7 +633,7 @@ function! s:error_buffer(fd, string)"{{{
   endif
 
   " Strip <CR>.
-  let l:string = substitute(l:string, '\r\n', '\n', 'g')
+  let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
   if l:string =~ '\r'
     for l:line in split(getline('$') . l:string, '\n', 1)
       call append('$', '')
@@ -663,7 +659,6 @@ endfunction"}}}
 function! s:send_string(line1, line2)"{{{
   " Check alternate buffer.
   let l:filetype = getwinvar(winnr('#'), '&filetype')
-  echomsg l:filetype
   if l:filetype == 'background' || l:filetype =~ '^int_'
     let l:line = getline(a:line1)
     let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"

@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 24 Feb 2010
+" Last Modified: 03 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.05, for Vim 7.0
+" Version: 6.50, for Vim 7.0
 "=============================================================================
 
 " Check vimproc.
@@ -41,8 +41,7 @@ endif
 
 augroup VimShellAutoCmd"{{{
   autocmd!
-  autocmd BufWinEnter \[*]vimshell call s:save_current_dir()
-  autocmd BufWinLeave \[*]vimshell call s:restore_current_dir()
+  autocmd BufWinEnter \[*]vimshell call s:restore_current_dir()
 augroup end"}}}
 
 " Plugin keymappings"{{{
@@ -851,25 +850,12 @@ endfunction"}}}
 "}}}
 
 
-function! s:save_current_dir()"{{{
-  if !exists('b:vimshell_save_dir')
-    return
-  endif
-
-  let l:current_dir = getcwd()
-  lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
-  let b:vimshell_save_dir = l:current_dir
-endfunction"}}}
 function! s:restore_current_dir()"{{{
   if !exists('b:vimshell_save_dir')
     return
   endif
 
-  let l:current_dir = getcwd()
-  if l:current_dir != b:vimshell_save_dir
-    lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
-    let b:vimshell_save_dir = l:current_dir
-  endif
+  lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
 endfunction"}}}
 
 " vim: foldmethod=marker

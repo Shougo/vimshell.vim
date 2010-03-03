@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2010
+" Last Modified: 03 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,65 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.17, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.17:
-"     - Supported vimproc Ver.3.
-"     - Subsitute redirection.
-"
-"   1.16:
-"     - Improved filetype.
-"     - Improved update.
-"     - Improved syntax.
-"     - Supported encoding.
-"
-"   1.15:
-"     - Improved kill processes.
-"     - Use vimproc.vim.
-"
-"   1.14:
-"     - Improved error message.
-"     - Set syntax.
-"     - Improved execute message.
-"
-"   1.13:
-"     - Extend current directory.
-"
-"   1.12:
-"     - Set filetype.
-"
-"   1.11:
-"     - Kill zombee process.
-"
-"   1.10: Improved CursorHold event.
-"
-"   1.9: Fixed error on Linux.
-"
-"   1.8: Supported pipe.
-"
-"   1.7: Improved error catch.
-"     - Get status. 
-"
-"   1.6: Use interactive.
-"
-"   1.5: Improved autocmd.
-"
-"   1.4: Split nicely.
-"
-"   1.3:
-"     - Use g:VimShell_EnableInteractive option.
-"     - Use utls/process.vim.
-"
-"   1.2:
-"     - Use vimproc.
-"
-"   1.1:
-"     - Fixed in *nix.
-"
-"   1.0:
-"     - Initial version.
-""}}}
 "=============================================================================
 
 augroup vimshell_bg
@@ -135,7 +76,8 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
     let b:interactive = {
           \ 'process' : l:sub, 
           \ 'fd' : a:fd, 
-          \ 'encoding' : l:options['--encoding']
+          \ 'encoding' : l:options['--encoding'], 
+          \ 'is_pty' : !vimshell#iswin(), 
           \}
 
     " Input from stdin.

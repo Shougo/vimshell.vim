@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Feb 2010
+" Last Modified: 03 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,113 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.23, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.23: 
-"     - Supported vimproc Ver.3.
-"     - Fixed interactive filetype.
-"
-"   1.22: 
-"     - Reimplemented vimshell#internal#iexe#vimshell_iexe().
-"     - Improved keymappings.
-"     - Implemented CursorHold event.
-"     - Fixed update timing.
-"     - Fixed no prompt behavior bug.
-"     - Fixed interactive option bug.
-"     - Improved prompt. 
-"     - Improved syntax.
-"     - Supported encoding.
-"
-"   1.21: 
-"     - Implemented auto update.
-"     - Splited mappings functions.
-"
-"   1.20: 
-"     - Implemented execute line.
-"     - Improved irb option.
-"
-"   1.19: 
-"     - Improved autocommand.
-"     - Improved completion.
-"     - Added powershell.exe and cmd.exe support.
-"
-"   1.18: 
-"     - Implemented Windows pty support.
-"     - Improved CursorHoldI event.
-"     - Set interactive option in Windows.
-"
-"   1.17: 
-"     - Use updatetime.
-"     - Deleted CursorHold event.
-"     - Deleted echo.
-"     - Improved filetype.
-"
-"   1.16: 
-"     - Improved kill processes.
-
-"     - Send interrupt when press <C-c>.
-"     - Improved tab completion.
-"     - Use vimproc.vim.
-"
-"   1.15: 
-"     - Implemented delete line and move head.
-"     - Deleted normal iexe.
-"
-"   1.14: 
-"     - Use plugin Key-mappings.
-"     - Improved execute message.
-"     - Use sexe.
-"     - Setfiletype iexe.
-"
-"   1.13: 
-"     - Improved error message.
-"     - Set syntax.
-"
-"   1.12: 
-"     - Applyed backspace patch(Thanks Nico!).
-"     - Implemented paste prompt.
-"     - Implemented move to prompt.
-"
-"   1.11: 
-"     - Improved completion.
-"     - Set filetype.
-"     - Improved initialize on pty.
-"
-"   1.10: 
-"     - Improved behavior.
-"     - Kill zombee process.
-"     - Supported completion on pty.
-"     - Improved initialize program.
-"     - Implemented command history on pty.
-"     - <C-c> as <C-v><C-d>.
-"
-"   1.9: 
-"     - Fixed error when file not found.
-"     - Improved in console.
-"
-"   1.8: 
-"     - Supported pipe.
-"
-"   1.7: Refactoringed.
-"     - Get status. 
-"
-"   1.6: Use interactive.
-"
-"   1.5: Improved autocmd.
-"
-"   1.4: Split nicely.
-"
-"   1.3:
-"     - Use g:VimShell_EnableInteractive option.
-"     - Use utls/process.vim.
-"
-"   1.2: Implemented background execution.
-"
-"   1.1: Use vimproc.
-"
-"   1.0: Initial version.
-""}}}
 "=============================================================================
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
@@ -197,7 +90,8 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'encoding' : l:options['--encoding'],
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
-        \ 'command_history' : []
+        \ 'command_history' : [], 
+        \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \}
 
   " Input from stdin.
@@ -355,11 +249,12 @@ if vimshell#iswin()
         \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
         \ 'gosh' : '-i', 'python' : '-i', 'zsh' : '-i', 
         \ 'powershell' : '-Command -', 
-        \ 'termtter'   : '--monochrome'
+        \ 'termtter'   : '--monochrome', 
+        \ 'scala'   : '--Xnojline', 
         \}
 else
   let s:interactive_option = {
-        \'termtter' : '--monochrome'
+        \'termtter' : '--monochrome', 
         \}
 endif
 

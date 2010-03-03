@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: gcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2009
+" Last Modified: 03 Mar 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,30 +23,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#gcd#execute(program, args, fd, other_info)
-    " Change the global working directory.
+  " Change the global working directory.
 
-    if empty(a:args)
-        " Move to same directory.
-        let l:arguments = getcwd()
-    else
-        " Filename escape.
-        let l:arguments = substitute(join(a:args, ' '), '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
-    endif
-    let b:vimshell_save_dir = l:arguments
+  let b:vimshell_save_dir = empty(a:args)? getcwd() : a:args[0]
+
+  cd `=b:vimshell_save_dir`
 endfunction
