@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2010
+" Last Modified: 19 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -415,14 +415,12 @@ function! vimshell#interactive#hang_up()"{{{
     if !buflisted(l:bufnr) && type(getbufvar(l:bufnr, 'vimproc')) != type('')
       let l:vimproc = getbufvar(l:bufnr, 'b:interactive')
       if b:interactive.process.is_valid
-        " Kill processes.
-        for sub in l:vimproc.process
-          try
-            " 15 == SIGTERM
-            call sub.kill(15)
-          catch /No such process/
-          endtry
-        endfor
+        " Kill process.
+        try
+          " 15 == SIGTERM
+          call l:vimproc.process.kill(15)
+        catch /No such process/
+        endtry
       endif
     endif
 
@@ -435,14 +433,12 @@ function! vimshell#interactive#interrupt()"{{{
     return
   endif
 
-  " Kill processes.
-  for sub in b:interactive.process
-    try
-      " 1 == SIGINT
-      call sub.kill(1)
-    catch /No such process/
-    endtry
-  endfor
+  " Kill process.
+  try
+    " 1 == SIGINT
+    call b:interactive.process.kill(1)
+  catch /No such process/
+  endtry
 
   call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}

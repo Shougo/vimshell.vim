@@ -117,6 +117,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-03-19
+    * Fixed interrupt error.
+
 2010-03-03
     * Improved restore current directory.
     * Added scala support in iexe.
