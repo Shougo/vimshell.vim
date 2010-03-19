@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 24 Feb 2010
+" Last Modified: 19 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,6 +162,9 @@ function! vimshell#parser#split_statements(script)"{{{
 
       let l:statement .= a:script[l:i]
       let l:i += 1
+    elseif a:script[l:i] == '#'
+      " Comment.
+      break
     else
       let l:statement .= a:script[l:i]
       let l:i += 1
@@ -267,6 +270,74 @@ function! vimshell#parser#split_args(script)"{{{
   endfor
 
   return l:ret
+endfunction"}}}
+function! vimshell#parser#split_commands(script)"{{{
+  let l:script = a:script
+  let l:max = len(l:script)
+  let l:commands = []
+  let l:command = ''
+  let i = 0
+  while i < l:max
+    if l:script[i] == "'"
+      " Single quote.
+      let l:end = matchend(l:script, "^'\\zs[^']*'", i)
+      if l:end == -1
+        throw 'Quote error'
+      endif
+
+      let l:command .= l:script[i: l:end]
+      let i = l:end
+    elseif l:script[i] == '"'
+      " Double quote.
+      let l:end = matchend(l:script, '^"\zs\%([^"]\|\"\)*"', i)
+      if l:end == -1
+        throw 'Quote error'
+      endif
+
+      let l:command .= l:script[i: l:end]
+      let i = l:end
+    elseif l:script[i] == '`'
+      " Back quote.
+      if l:script[i :] =~ '^`='
+        let l:quote = matchstr(l:script, '^`=\zs[^`]*\ze`', i)
+        let l:end = matchend(l:script, '^`=[^`]*`', i)
+      else
+        let l:quote = matchstr(l:script, '^`\zs[^`]*\ze`', i)
+        let l:end = matchend(l:script, '^`[^`]*`', i)
+      endif
+
+      let l:command .= l:script[i]
+      let i = l:end
+    elseif l:script[i] == '\'
+      " Escape.
+      let l:command .= l:script[i]
+      let i += 1
+
+      if i > l:max
+        throw 'Escape error'
+      endif
+
+      let l:command .= l:script[i]
+      let i += 1
+    elseif l:script[i] == '|'
+      if l:command != ''
+        call add(l:commands, l:command)
+      endif
+      let l:command = ''
+      
+      let l:i += 1
+    else
+
+      let l:command .= l:script[i]
+      let i += 1
+    endif
+  endwhile
+
+  if l:command != ''
+    call add(l:commands, l:command)
+  endif
+
+  return l:commands
 endfunction"}}}
 function! vimshell#parser#check_wildcard()"{{{
   let l:wildcard = matchstr(vimshell#get_cur_text(), '[^[:blank:]]*$')

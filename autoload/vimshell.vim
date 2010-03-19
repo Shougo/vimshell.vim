@@ -768,6 +768,19 @@ function! vimshell#get_cur_line()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
   return col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
 endfunction"}}}
+function! vimshell#get_current_args()"{{{
+  let l:statements = vimshell#parser#split_statements(vimshell#get_cur_text())
+  if empty(l:statements)
+    return []
+  endif
+  
+  let l:commands = vimshell#parser#split_commands(l:statements[-1])
+  if empty(l:commands)
+    return []
+  endif
+  
+  return vimshell#parser#split_args(l:commands[-1])
+endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_prompt())

@@ -78,6 +78,8 @@ EXAMPLES					*vimshell-examples*
 	let g:VimShell_ExecuteFileList['py'] = 'python'
 	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 	
+	let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
+	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:VimShell_EnableInteractive = 1
 	let g:VimShell_EnableSmartCase = 1
 	let g:VimShell_EnableAutoLs = 1
@@ -95,6 +97,9 @@ EXAMPLES					*vimshell-examples*
 	    call vimshell#set_execute_file('tgz,gz', 'gzcat')
 	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 	endif
+	
+	autocmd FileType vimshell
+	\ call vimshell#altercmd#define('ls', 'ls -la')
 <
 ==============================================================================
 INTERNAL COMMANDS				*vimshell-internal-commands*
@@ -119,6 +124,8 @@ CHANGELOG					*vimshell-changelog*
 
 2010-03-19
     * Fixed interrupt error.
+    * Supported comment in .vimshrc.
+    * Implemented altercmd.
 
 2010-03-03
     * Improved restore current directory.
