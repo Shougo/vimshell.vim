@@ -32,13 +32,17 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
     if l:line =~ '[[:cntrl:]]'
       let l:newline = ''
       let l:pos = 0
-      while l:pos < col('$')
+      let l:max = len(l:line)
+      while l:pos < l:max
+        let l:matched = 0
+        
         if l:line[l:pos] == "\<ESC>"
           " Check escape sequence.
           for [l:pattern, l:Func] in items(s:escape_sequence)
             let l:matchend = matchend(l:line, '^'.l:pattern, l:pos)
             if l:matchend >= 0
-              let l:pos = l:matchend - 1
+              let l:pos = l:matchend
+              let l:matched = 1
               
               " Interpret.
               call call(l:Func, [])
@@ -48,11 +52,11 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
           endfor
         else
           " Check other pattern.
-          let l:matched = 0
           for [l:pattern, l:Func] in items(s:control_sequence)
             let l:matchend = matchend(l:line, '^'.l:pattern, l:pos)
             if l:matchend >= 0
-              let l:pos = l:matchend - 1
+              let l:pos = l:matchend
+              let l:matched = 1
 
               " Interpret.
               call call(l:Func, [])
@@ -60,13 +64,12 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
               break
             endif
           endfor
-
-          if !l:matched
-            let l:newline .= l:line[l:pos]
-          endif
         endif
 
-        let l:pos += 1
+        if !l:matched
+          let l:newline .= l:line[l:pos]
+          let l:pos += 1
+        endif
       endwhile
 
       call setline(l:lnum, l:newline)

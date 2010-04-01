@@ -124,6 +124,8 @@ CHANGELOG					*vimshell-changelog*
 
 2010-04-01
     * Interpret escape sequence(experimental).
+    * Added internal command description.
+    * Fixed escape color.
 
 2010-03-19
     * Fixed interrupt error.
