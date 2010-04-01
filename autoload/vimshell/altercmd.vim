@@ -27,8 +27,7 @@
 function! vimshell#altercmd#define(original, alternative)"{{{
   execute 'inoreabbrev <buffer><expr>' a:original
         \ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
-        \ ('"' . a:alternative . '"')
-        \ ':' ('"' . a:original . '"')
+        \ string(a:alternative) ':' string(a:original)
 endfunction"}}}
 
 " vim: foldmethod=marker

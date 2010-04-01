@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 01 Apr 2010
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,7 +74,6 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#process_enter()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_dummy_enter) pumvisible()? "\<C-y>\<CR>\<BS>" : "\<CR>\<BS>"
   "}}}
 
   " Normal mode key-mappings."{{{
@@ -96,7 +95,9 @@ function! vimshell#default_settings()"{{{
 
   " Insert mode key-mappings."{{{
   " Execute command.
-  imap <buffer> <CR> <Plug>(vimshell_dummy_enter)<Plug>(vimshell_enter)
+  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[-1:] ==# "\<C-]>" ? "\<BS>" : ''
+  imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
+  imap <buffer> <CR> <C-]><Plug>(vimshell_enter)
   " History completion.
   imap <buffer> <C-k>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
@@ -109,7 +110,7 @@ function! vimshell#default_settings()"{{{
   " Push current line to stack.
   imap <buffer> <C-z> <Plug>(vimshell_push_current_line)
   " Insert last word.
-  imap <buffer> <C-]> <Plug>(vimshell_insert_last_word)
+  imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Run help.
   imap <buffer> <C-r>h <Plug>(vimshell_run_help)
   " Clear.

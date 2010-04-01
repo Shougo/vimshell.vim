@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Apr 2010
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -152,7 +152,9 @@ function! vimshell#internal#iexe#default_settings()"{{{
   imap <buffer><C-a>     <Plug>(vimshell_interactive_move_head)
   imap <buffer><C-u>     <Plug>(vimshell_interactive_delete_line)
   imap <buffer><C-e>     <Plug>(vimshell_interactive_close_popup)
-  imap <buffer><CR>      <Plug>(vimshell_interactive_dummy_enter)<Plug>(vimshell_interactive_execute_line)
+  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[-1:] ==# "\<C-]>" ? "\<BS>" : ''
+  imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
+  imap <buffer><CR>      <C-]><Plug>(vimshell_interactive_execute_line)
   imap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
 
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
