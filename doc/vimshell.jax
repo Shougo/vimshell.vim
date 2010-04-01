@@ -1,4 +1,4 @@
-*vimshell.txt*	VimScriptで実装された強力なシェル
+*vimshell.txt*	Vim Scriptで実装された強力なシェル
 
 Version: 6.05
 Author : Shougo <Shougo.Matsu@gmail.com>
@@ -41,7 +41,7 @@ Changelog		|vimshell-changelog|
 ==============================================================================
 INTRODUCTION					*vimshell-introduction*
 
-vimshellは外部のシェルを使わず、100% VimScriptによって実装された究極のシェル
+vimshellは外部のシェルを使わず、100% Vim Scriptによって実装された究極のシェル
 です。 ただし、eshellとは違ってまだまだ未完成です。 一番の特徴としては、Vim
 のプラグインと連携ができることです。 特にWindowsはシェルが貧弱なので、使用し
 ていてイライラしますが、vimshellはWindowsでも動作するので安心です。 ただし
@@ -89,14 +89,8 @@ KEY MAPPINGS 					*vimshell-key-mappings*
 ==============================================================================
 EXAMPLES					*vimshell-examples*
 >
-	" Initialize execute file list.
-	let g:VimShell_ExecuteFileList = {}
-	call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
-	let g:VimShell_ExecuteFileList['rb'] = 'ruby'
-	let g:VimShell_ExecuteFileList['pl'] = 'perl'
-	let g:VimShell_ExecuteFileList['py'] = 'python'
-	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
-	
+	let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
+	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:VimShell_EnableInteractive = 1
 	let g:VimShell_EnableSmartCase = 1
 	let g:VimShell_EnableAutoLs = 1
@@ -118,21 +112,171 @@ EXAMPLES					*vimshell-examples*
 ==============================================================================
 INTERNAL COMMANDS				*vimshell-internal-commands*
 
-alias {alias-name} = {command}						*alias*
-		vimshellにaliasを定義します。vimshellは{alias-name}がコマン
-		ド名として使用されると、 自動的に{command}に置き換えます。普
-		通のシェルとは違い、 = の前後に空白があっても動作します。
+bcd {buffer-name}					*bcd*
+		{buffer}のディレクトリへ移動します。
 
 bg {command}						*bg*
-		commandをバックグラウンドで起動します。非同期実行機能が有効
+		{command}をバックグラウンドで起動します。非同期実行機能が有効
 		でないと動作しません。 vimshellのバックグラウンド実行は新た
 		にバッファを開き、そこに{command}の出力を書き出します。 bgの
 		場合、ユーザーからの入力は一切受け付けません。 バックグラウ
 		ンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に
 		終了させます。
 
+cd {directory-path} [{substitute-pattern}]		*cd*
+		カレントディレクトリを{directory-path}に変更します。
+		引数が空の場合、ホームディレクトリへ移動します。 引数が二つ
+		与えられた場合、{directory-path}を {substitute-pattern}へ置
+		き換えます。 引数がディレクトリでなかった場合、ファイルの親
+		ディレクトリへ移動します。 ファイルが見つからなかった場合、
+		'cdpath'を参照して移動しようとします。 引数に-を与えると、
+		|popd|と同じ意味になります。
+
+clear 							*clear*
+		画面を消去します。
+
+dirs [{max}]						*dirs*
+		ディレクトリスタックの一覧を{max}個表示します。
+		{max}を省略すると、10になります。
+		この一覧上で<Enter>を押すことで、そのディレクトリへ移動でき
+		ます。
+
+echo [{argument}...]					*echo*
+		引数を出力します。
+
+exe {command} 						*exe*
+		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
+		れます。非同期実行機能が有効になっていない場合、挙動は|sexe|
+		と同様になります。
+
+exit 							*exit*
+		vimshellを終了します。
+
+gailias {global-alias-name} = {command}			*gailias*
+		vimshellにグローバルなaliasを定義します。vimshellは
+		{global-alias-name}がコマン ドライン中に現われると、自動的に
+		{command}に置き換えます。 |alias|とは違い、引数でも展開され
+		ます。zshのグローバルエイリアスと良く似た機能です。
+
+gcd [{directory-path}]					*gcd*
+		vimshellのカレントディレクトリを変更し、かつグローバルなカレ
+		ントディレクトリも変更します。 vimshellのカレントディレクト
+		リはVimのカレントディレクトリとは異なっているので、 Vimのカ
+		レントディレクトリを変更したい場合に便利でしょう。
+		{directory-path}を省略すると、vimshellのカレントディレクトリ
+		に移動します。
+
+gexe {command} 						*gexe*
+		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
+		れます。exeとは違い、GUIコマンドを実行することに特化していま
+		す。
+
+h [{pattern}]						*h*
+		{pattern}に一致するヒストリを実行します。{pattern}が数字で
+		与えられた場合、{pattern}をヒストリ番号として検索します。 ヒ
+		ストリ番号は|history|で確認できます。{pattern}を省略すると、
+		直前のコマンドを実行します。|h|により実行したコマンドはヒス
+		トリに登録されません。
+
+hide							*hide*
+		vimshellバッファを裏に隠します。|exit|とは違い、終了はしませ
+		ん。
+
+histdel [{history-number}]				*histdel*
+		{history-number}に一致するヒストリを削除します。ヒストリ番
+		号は|history|で確認できます。{history-number}を省略すると、
+		無視されます。
+
+history [{history-number}]				*histdel*
+		ディレクトリスタックの一覧を{max}個表示します。
+		{max}を省略すると、10になります。
+		この一覧上で<Enter>を押すことで、その履歴を実行できます。
+
+iexe {command}						*gexe*
+		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
+		れます。非同期実行機能が有効化されていないとエラーになります。
+		exeとは違い、対話コマンドを実行することに特化しています。入
+		出力を行なうために新しいバッファが生成されます。
+
+ls [{argument}...]					*ls*
+		外部コマンドのlsを適切な引数を与えて実行します。
+
+mkcd {directory-name}					*mkcd*
+		{directory-name}を作成してから、そのディレクトリへ|cd|します。
+
+nop 							*nop*
+		何もしません。
+
+open {filename}						*open*
+		{filename}を関連付け実行します。何が実行されるかはOSやデスク
+		トップ環境に依存します。
+
+popd [{filename}]					*popd*
+		{filename}を関連付け実行します。何が実行されるかはOSやデスク
+		トップ環境に依存します。
+
+pwd 							*pwd*
+		vimshellのカレントディレクトリを表示します。
+
+repeat {cnt} {command}					*repeat*
+		{command}を{cnt}回実行します。
+
+screen {command}					*screen*
+		{command}をscreen上で実行します。端末の機能を用いるプログラ
+		ムを起動したいときに便利です。当然Windows上では動作しません。
+
+sexe {command}						*sexe*
+		{command}を'shell'上で実行します。 vimshellでの起動に不具合
+		があるときに使用します。 'shell'が適切に設定されていないと動
+		作がおかしくなります。Windows環境では一瞬DOS窓が表示されてし
+		まいます。
+
+shell 							*shell*
+		|:shell|を用いて'shell'を起動します。Windows上のGVimでかつ
+		|g:VimShell_UseCkw| が設定されている場合、DOSプロンプトでは
+		なく、ckw上でシェルを起動します。
+
+sudo {command}						*sudo*
+		管理者権限が必要な外部コマンドを実行します。 Windows環境では
+		動作しません。さらに、非同期実行機能が必要です。 {command}が
+		vimの場合、|sudo.vim|を用いて編集しようとします。
+
+view {filename}						*view*
+		{filename}を読み取り専用で別バッファに開きます。ファイルの行
+		数がウインドウサイズよりも少ない場合、 別バッファを開かず、
+		catのように動作します。ファイルの中身をちょっと見てみたいと
+		きに便利です。
+
+vim [{filename}]					*vim*
+		{filename}を別バッファに開きます。カレントディレクトリにある
+		ファイルを手軽に編集したいときに便利です。
+		{filename}を省略すると、無名バッファを開きます。
+
+vimdiff {filename1} {filename2}				*vimdiff*
+		{filename1}と{filename2}を|:vimdiff|で比較します。
+
+vimsh [{filename}]					*vimsh*
+		{filename}で表されるvimshellスクリプトファイルを実行します。
+		{filename}を省略すると、新しいvimshellバッファを開きます。
+
 ==============================================================================
 SPECIAL COMMANDS				*vimshell-special-commands*
+
+alias {alias-name} = {command}				*alias*
+		vimshellにaliasを定義します。vimshellは{alias-name}がコマン
+		ド名として使用されると、 自動的に{command}に置き換えます。普
+		通のシェルとは違い、 = の前後に空白があっても動作します。
+
+ev {expression}						*expression*
+		{expression}をVim Scriptとして解釈し、評価結果を表示します。
+		Vim7.2以上の環境なら、簡易電卓として使用することもできます。
+
+let ${var-name} = {expression}				*let*
+		{var-name}の変数へ{expression}を代入します。
+		{var-name}の先頭には$を付加しなければなりません。
+
+vexe {expression}				*let*
+		{expression}をVim Scriptの文として実行します。
 
 ==============================================================================
 TODO						*vimshell-todo*

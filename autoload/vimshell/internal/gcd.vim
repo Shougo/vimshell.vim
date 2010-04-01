@@ -2,7 +2,6 @@
 " FILE: gcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 03 Mar 2010
-" Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
