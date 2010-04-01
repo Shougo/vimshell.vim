@@ -92,19 +92,21 @@ function! s:funcref(funcname)
   return function(s:SID_PREFIX().a:funcname)
 endfunction
 
+" escape sequence list. {{{
 " pattern: function
-let s:escape_sequence = {"{{{
+let s:escape_sequence = {
       \ '\e\[0G' : s:funcref('ignore'),
       \ '\e\[H' : s:funcref('ignore'),
       \ '\e\[J' : s:funcref('ignore'),
       \ '\e\[K' : s:funcref('ignore'),
       \ '\e\[>5l' : s:funcref('ignore'),
-      \}"}}}
-let s:control_sequence = {"{{{
+      \}
+let s:control_sequence = {
       \ "\<C-h>" : s:funcref('ignore'),
       \ "\<BS>" : s:funcref('ignore'),
       \ "\<Del>" : s:funcref('ignore'),
       \ "\<C-l>" : s:funcref('ignore'),
-      \}"}}}
+      \}
+"}}}
 
 " vim: foldmethod=marker
