@@ -44,28 +44,6 @@ augroup VimShellAutoCmd"{{{
   autocmd BufWinEnter \[*]vimshell call s:restore_current_dir()
 augroup end"}}}
 
-" Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR><ESC>
-nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
-nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
-nnoremap <silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
-
-inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
-inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
-inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
-      \ vimshell#mappings#expand_wildcard() : vimshell#complete#command_complete#complete()
-inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
-inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
-inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
-inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
-inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
-inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
-inoremap <silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#process_enter()<CR>
-"}}}
-
 " User utility functions."{{{
 function! vimshell#default_settings()"{{{
   setlocal buftype=nofile
@@ -75,6 +53,29 @@ function! vimshell#default_settings()"{{{
   setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
+
+  " Plugin keymappings"{{{
+  nnoremap <buffer><silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
+
+  inoremap <buffer><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
+  inoremap <buffer><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
+  inoremap <buffer><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
+        \ vimshell#mappings#expand_wildcard() : vimshell#complete#command_complete#complete()
+  inoremap <buffer><silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#process_enter()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_dummy_enter) pumvisible()? "\<C-y>\<CR>\<BS>" : "\<CR>\<BS>"
+  "}}}
 
   " Normal mode key-mappings."{{{
   " Execute command.
@@ -95,7 +96,7 @@ function! vimshell#default_settings()"{{{
 
   " Insert mode key-mappings."{{{
   " Execute command.
-  imap <buffer> <CR> <CR><BS><Plug>(vimshell_enter)
+  imap <buffer> <CR> <Plug>(vimshell_dummy_enter)<Plug>(vimshell_enter)
   " History completion.
   imap <buffer> <C-k>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)

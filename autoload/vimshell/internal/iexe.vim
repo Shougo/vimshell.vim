@@ -144,6 +144,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   inoremap <buffer><expr> <Plug>(vimshell_interactive_close_popup)  vimshell#int_mappings#close_popup()
   inoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)       <ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       <C-o>:<C-u>call vimshell#interactive#interrupt()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_interactive_dummy_enter) pumvisible()? "\<C-y>\<CR>\<BS>" : "\<CR>\<BS>"
 
   imap <buffer><C-h>     <Plug>(vimshell_interactive_delete_backword_char)
   imap <buffer><BS>     <Plug>(vimshell_interactive_delete_backword_char)
@@ -151,7 +152,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   imap <buffer><C-a>     <Plug>(vimshell_interactive_move_head)
   imap <buffer><C-u>     <Plug>(vimshell_interactive_delete_line)
   imap <buffer><C-e>     <Plug>(vimshell_interactive_close_popup)
-  imap <buffer><CR>      <CR><BS><Plug>(vimshell_interactive_execute_line)
+  imap <buffer><CR>      <Plug>(vimshell_interactive_dummy_enter)<Plug>(vimshell_interactive_execute_line)
   imap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
 
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
