@@ -112,10 +112,10 @@ EXAMPLES					*vimshell-examples*
 ==============================================================================
 INTERNAL COMMANDS				*vimshell-internal-commands*
 
-bcd {buffer-name}					*bcd*
+bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
 
-bg {command}						*bg*
+bg {command}						*vimshell-internal-bg*
 		{command}をバックグラウンドで起動します。非同期実行機能が有効
 		でないと動作しません。 vimshellのバックグラウンド実行は新た
 		にバッファを開き、そこに{command}の出力を書き出します。 bgの
@@ -123,42 +123,43 @@ bg {command}						*bg*
 		ンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に
 		終了させます。
 
-cd {directory-path} [{substitute-pattern}]		*cd*
+cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		カレントディレクトリを{directory-path}に変更します。
 		引数が空の場合、ホームディレクトリへ移動します。 引数が二つ
 		与えられた場合、{directory-path}を {substitute-pattern}へ置
 		き換えます。 引数がディレクトリでなかった場合、ファイルの親
 		ディレクトリへ移動します。 ファイルが見つからなかった場合、
 		'cdpath'を参照して移動しようとします。 引数に-を与えると、
-		|popd|と同じ意味になります。
+		|vimshell-internal-popd|と同じ意味になります。
 
-clear 							*clear*
+clear 							*vimshell-internal-clear*
 		画面を消去します。
 
-dirs [{max}]						*dirs*
+dirs [{max}]						*vimshell-internal-dirs*
 		ディレクトリスタックの一覧を{max}個表示します。
 		{max}を省略すると、10になります。
 		この一覧上で<Enter>を押すことで、そのディレクトリへ移動でき
 		ます。
 
-echo [{argument}...]					*echo*
+echo [{argument}...]					*vimshell-internal-echo*
 		引数を出力します。
 
-exe {command} 						*exe*
+exe {command} 						*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
-		れます。非同期実行機能が有効になっていない場合、挙動は|sexe|
-		と同様になります。
+		れます。非同期実行機能が有効になっていない場合、挙動は
+		|vimshell-internal-sexe| と同様になります。
 
-exit 							*exit*
+exit 							*vimshell-internal-exit*
 		vimshellを終了します。
 
-gailias {global-alias-name} = {command}			*gailias*
+gailias {global-alias-name} = {command}			*vimshell-internal-gailias*
 		vimshellにグローバルなaliasを定義します。vimshellは
 		{global-alias-name}がコマン ドライン中に現われると、自動的に
-		{command}に置き換えます。 |alias|とは違い、引数でも展開され
-		ます。zshのグローバルエイリアスと良く似た機能です。
+		{command}に置き換えます。 |vimshell-internal-alias|とは違い、
+		引数でも展開されます。zshのグローバルエイリアスと良く似た機
+		能です。
 
-gcd [{directory-path}]					*gcd*
+gcd [{directory-path}]					*vimshell-internal-gcd*
 		vimshellのカレントディレクトリを変更し、かつグローバルなカレ
 		ントディレクトリも変更します。 vimshellのカレントディレクト
 		リはVimのカレントディレクトリとは異なっているので、 Vimのカ
@@ -166,116 +167,118 @@ gcd [{directory-path}]					*gcd*
 		{directory-path}を省略すると、vimshellのカレントディレクトリ
 		に移動します。
 
-gexe {command} 						*gexe*
+gexe {command} 						*vimshell-internal-gexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。exeとは違い、GUIコマンドを実行することに特化していま
 		す。
 
-h [{pattern}]						*h*
+h [{pattern}]						*vimshell-internal-h*
 		{pattern}に一致するヒストリを実行します。{pattern}が数字で
 		与えられた場合、{pattern}をヒストリ番号として検索します。 ヒ
-		ストリ番号は|history|で確認できます。{pattern}を省略すると、
-		直前のコマンドを実行します。|h|により実行したコマンドはヒス
-		トリに登録されません。
+		ストリ番号は|vimshell-internal-history|で確認できます。
+		{pattern}を省略すると、 直前のコマンドを実行します。
+		|vimshell-internal-h|により実行したコマンドはヒストリに登録
+		されません。
 
-hide							*hide*
-		vimshellバッファを裏に隠します。|exit|とは違い、終了はしませ
-		ん。
+hide							*vimshell-internal-hide*
+		vimshellバッファを裏に隠します。|vimshell-internal-exit|とは
+		違い、終了はしません。
 
-histdel [{history-number}]				*histdel*
+histdel [{history-number}]				*vimshell-internal-histdel*
 		{history-number}に一致するヒストリを削除します。ヒストリ番
-		号は|history|で確認できます。{history-number}を省略すると、
-		無視されます。
+		号は|vimshell-internal-history|で確認できます。
+		{history-number}を省略すると、 無視されます。
 
-history [{history-number}]				*histdel*
+history [{history-number}]				*vimshell-internal-histdel*
 		ディレクトリスタックの一覧を{max}個表示します。
 		{max}を省略すると、10になります。
 		この一覧上で<Enter>を押すことで、その履歴を実行できます。
 
-iexe {command}						*gexe*
+iexe {command}						*vimshell-internal-gexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効化されていないとエラーになります。
 		exeとは違い、対話コマンドを実行することに特化しています。入
 		出力を行なうために新しいバッファが生成されます。
 
-ls [{argument}...]					*ls*
+ls [{argument}...]					*vimshell-internal-ls*
 		外部コマンドのlsを適切な引数を与えて実行します。
 
-mkcd {directory-name}					*mkcd*
-		{directory-name}を作成してから、そのディレクトリへ|cd|します。
+mkcd {directory-name}					*vimshell-internal-mkcd*
+		{directory-name}を作成してから、そのディレクトリへ
+		|vimshell-internal-cd|します。
 
-nop 							*nop*
+nop 							*vimshell-internal-nop*
 		何もしません。
 
-open {filename}						*open*
+open {filename}						*vimshell-internal-open*
 		{filename}を関連付け実行します。何が実行されるかはOSやデスク
 		トップ環境に依存します。
 
-popd [{filename}]					*popd*
+popd [{filename}]					*vimshell-internal-popd*
 		{filename}を関連付け実行します。何が実行されるかはOSやデスク
 		トップ環境に依存します。
 
-pwd 							*pwd*
+pwd 							*vimshell-internal-pwd*
 		vimshellのカレントディレクトリを表示します。
 
-repeat {cnt} {command}					*repeat*
+repeat {cnt} {command}					*vimshell-internal-repeat*
 		{command}を{cnt}回実行します。
 
-screen {command}					*screen*
+screen {command}					*vimshell-internal-screen*
 		{command}をscreen上で実行します。端末の機能を用いるプログラ
 		ムを起動したいときに便利です。当然Windows上では動作しません。
 
-sexe {command}						*sexe*
+sexe {command}						*vimshell-internal-sexe*
 		{command}を'shell'上で実行します。 vimshellでの起動に不具合
 		があるときに使用します。 'shell'が適切に設定されていないと動
 		作がおかしくなります。Windows環境では一瞬DOS窓が表示されてし
 		まいます。
 
-shell 							*shell*
+shell 							*vimshell-internal-shell*
 		|:shell|を用いて'shell'を起動します。Windows上のGVimでかつ
 		|g:VimShell_UseCkw| が設定されている場合、DOSプロンプトでは
 		なく、ckw上でシェルを起動します。
 
-sudo {command}						*sudo*
+sudo {command}						*vimshell-internal-sudo*
 		管理者権限が必要な外部コマンドを実行します。 Windows環境では
 		動作しません。さらに、非同期実行機能が必要です。 {command}が
 		vimの場合、|sudo.vim|を用いて編集しようとします。
 
-view {filename}						*view*
+view {filename}						*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開きます。ファイルの行
 		数がウインドウサイズよりも少ない場合、 別バッファを開かず、
 		catのように動作します。ファイルの中身をちょっと見てみたいと
 		きに便利です。
 
-vim [{filename}]					*vim*
+vim [{filename}]					*vimshell-internal-vim*
 		{filename}を別バッファに開きます。カレントディレクトリにある
 		ファイルを手軽に編集したいときに便利です。
 		{filename}を省略すると、無名バッファを開きます。
 
-vimdiff {filename1} {filename2}				*vimdiff*
+vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
 		{filename1}と{filename2}を|:vimdiff|で比較します。
 
-vimsh [{filename}]					*vimsh*
+vimsh [{filename}]					*vimshell-internal-vimsh*
 		{filename}で表されるvimshellスクリプトファイルを実行します。
 		{filename}を省略すると、新しいvimshellバッファを開きます。
 
 ==============================================================================
 SPECIAL COMMANDS				*vimshell-special-commands*
 
-alias {alias-name} = {command}				*alias*
+alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshellにaliasを定義します。vimshellは{alias-name}がコマン
 		ド名として使用されると、 自動的に{command}に置き換えます。普
 		通のシェルとは違い、 = の前後に空白があっても動作します。
 
-ev {expression}						*expression*
+ev {expression}						*vimshell-special-expression*
 		{expression}をVim Scriptとして解釈し、評価結果を表示します。
 		Vim7.2以上の環境なら、簡易電卓として使用することもできます。
 
-let ${var-name} = {expression}				*let*
+let ${var-name} = {expression}				*vimshell-special-let*
 		{var-name}の変数へ{expression}を代入します。
 		{var-name}の先頭には$を付加しなければなりません。
 
-vexe {expression}				*let*
+vexe {expression}					*vimshell-special-vexe*
 		{expression}をVim Scriptの文として実行します。
 
 ==============================================================================
