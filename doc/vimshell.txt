@@ -122,6 +122,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-04-01
+    * Interpret escape sequence(experimental).
+
 2010-03-19
     * Fixed interrupt error.
     * Supported comment in .vimshrc.

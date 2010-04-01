@@ -596,7 +596,7 @@ function! s:print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  call vimshell#interactive#highlight_escape_sequence()
+  call vimshell#terminal#interpret_escape_sequence()
 endfunction"}}}
 
 function! s:error_buffer(fd, string)"{{{
@@ -645,7 +645,7 @@ function! s:error_buffer(fd, string)"{{{
     call append('$', l:lines[1:])
   endif
 
-  call vimshell#interactive#highlight_escape_sequence()
+  call vimshell#terminal#interpret_escape_sequence()
 
   " Set cursor.
   $
