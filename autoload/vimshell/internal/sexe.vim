@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: sexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2010
-" Usage: Just source this file.
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,25 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.2: 
-"     - Convert encoding.
-"
-"   1.1: 
-"     - Shell escape.
-"     - Improved in Windows.
-"
-"   1.0: Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
@@ -97,7 +77,7 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
     call delete(l:null)
   endif
 
-  let b:vimshell_system_variables['status'] = v:shell_error
+  let b:vimshell.system_variables['status'] = v:shell_error
 
   return 0
 endfunction"}}}

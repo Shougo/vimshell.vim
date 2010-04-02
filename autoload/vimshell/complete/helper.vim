@@ -159,16 +159,16 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
     let l:ret = []
-    for keyword in filter(keys(b:vimshell_alias_table), printf('v:val =~ "^%s"', a:cur_keyword_str))
+    for keyword in filter(keys(b:vimshell.alias_table), printf('v:val =~ "^%s"', a:cur_keyword_str))
         let l:dict = { 'word' : keyword, 'icase' : 1 }
         
         let l:dict.abbr = len(keyword) > g:VimShell_MaxKeywordWidth ? 
                     \vimshell#trunk_string(keyword, g:VimShell_MaxKeywordWidth) : keyword
         
-        if len(b:vimshell_alias_table[keyword]) > 15
-            let l:dict.menu = 'alias ' . printf("%s..%s", b:vimshell_alias_table[keyword][:8], b:vimshell_alias_table[keyword][-4:])
+        if len(b:vimshell.alias_table[keyword]) > 15
+            let l:dict.menu = 'alias ' . printf("%s..%s", b:vimshell.alias_table[keyword][:8], b:vimshell.alias_table[keyword][-4:])
         else
-            let l:dict.menu = 'alias ' . b:vimshell_alias_table[keyword]
+            let l:dict.menu = 'alias ' . b:vimshell.alias_table[keyword]
         endif
         
         call add(l:ret, l:dict)

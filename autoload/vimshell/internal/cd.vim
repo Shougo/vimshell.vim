@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2009
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,15 +41,15 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
+  if empty(b:vimshell.directory_stack) || getcwd() != b:vimshell.directory_stack[0]
     " Push current directory.
-    call insert(w:vimshell_directory_stack, getcwd())
+    call insert(b:vimshell.directory_stack, getcwd())
   endif
 
   if isdirectory(l:dir)
     " Move to directory.
-    let b:vimshell_save_dir = fnamemodify(l:dir, ':p')
-    lcd `=b:vimshell_save_dir`
+    let b:vimshell.save_dir = fnamemodify(l:dir, ':p')
+    lcd `=b:vimshell.save_dir`
   elseif l:arguments == '-'
     " Popd.
     return vimshell#internal#popd#execute('popd', [ 1 ], 
@@ -57,20 +57,20 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
           \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
   elseif filereadable(l:dir)
     " Move to parent directory.
-    let b:vimshell_save_dir = fnamemodify(l:dir, ':p:h')
-    lcd `=b:vimshell_save_dir`
+    let b:vimshell.save_dir = fnamemodify(l:dir, ':p:h')
+    lcd `=b:vimshell.save_dir`
   else
     " Check cd path.
     let l:dirs = split(globpath(&cdpath, l:dir), '\n')
     if !empty(l:dirs) && isdirectory(l:dirs[0])
-      let b:vimshell_save_dir = fnamemodify(l:dirs[0], ':p')
-      lcd `=b:vimshell_save_dir`
+      let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
+      lcd `=b:vimshell.save_dir`
     else
       call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:arguments))
 
-      if getcwd() == w:vimshell_directory_stack[0]
+      if getcwd() == b:vimshell.directory_stack[0]
         " Restore directory.
-        let w:vimshell_directory_stack = w:vimshell_directory_stack[1:]
+        let b:vimshell.directory_stack = b:vimshell.directory_stack[1:]
       endif
     endif
   endif

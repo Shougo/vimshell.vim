@@ -40,17 +40,17 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
 
     let l:script = l:statement[len(l:program) :]
 
-    for galias in keys(b:vimshell_galias_table)
-      let l:script = substitute(l:script, '\s\zs'.galias.'\ze\%(\s\|$\)', b:vimshell_galias_table[galias], 'g')
+    for galias in keys(b:vimshell.galias_table)
+      let l:script = substitute(l:script, '\s\zs'.galias.'\ze\%(\s\|$\)', b:vimshell.galias_table[galias], 'g')
     endfor
 
     " Check alias."{{{
-    if has_key(b:vimshell_alias_table, l:program) && !empty(b:vimshell_alias_table[l:program])
-      let l:alias_prog = matchstr(b:vimshell_alias_table[l:program], '^\s*\zs[^[:blank:]]*')
+    if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
+      let l:alias_prog = matchstr(b:vimshell.alias_table[l:program], '^\s*\zs[^[:blank:]]*')
 
       if l:program != l:alias_prog
         " Expand alias.
-        let l:skip_prompt = vimshell#parser#eval_script(b:vimshell_alias_table[l:program] . ' ' . l:script, a:other_info)
+        let l:skip_prompt = vimshell#parser#eval_script(b:vimshell.alias_table[l:program] . ' ' . l:script, a:other_info)
         continue
       endif
     endif"}}}
@@ -523,9 +523,9 @@ function! s:parse_variables(script)"{{{
     if a:script[l:i] == '$'
       " Eval variables.
       if match(a:script, '^$\l', l:i) >= 0
-        let l:script .= string(eval(printf("b:vimshell_variables['%s']", matchstr(a:script, '^$\zs\l\w*', l:i))))
+        let l:script .= string(eval(printf("b:vimshell.variables['%s']", matchstr(a:script, '^$\zs\l\w*', l:i))))
       elseif match(a:script, '^$$', l:i) >= 0
-        let l:script .= string(eval(printf("b:vimshell_system_variables['%s']", matchstr(a:script, '^$$\zs\h\w*', l:i))))
+        let l:script .= string(eval(printf("b:vimshell.system_variables['%s']", matchstr(a:script, '^$$\zs\h\w*', l:i))))
       else
         let l:script .= string(eval(matchstr(a:script, '^$\h\w*', l:i)))
       endif

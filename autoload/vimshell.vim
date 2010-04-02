@@ -136,26 +136,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
 
   call vimshell#default_settings()
   setfiletype vimshell
-
-  " Change current directory.
-  let b:vimshell_save_dir = getcwd()
-  let l:current = (a:directory != '')? a:directory : getcwd()
-  lcd `=fnamemodify(l:current, ':p')`
-
-  " Load history.
-  if !filereadable(g:VimShell_HistoryPath)
-    " Create file.
-    call writefile([], g:VimShell_HistoryPath)
-  endif
-  let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
-  let s:hist_size = getfsize(g:VimShell_HistoryPath)
-
-  if !exists('b:vimshell_alias_table')
-    let b:vimshell_alias_table = {}
-  endif
-  if !exists('b:vimshell_galias_table')
-    let b:vimshell_galias_table = {}
-  endif
+  
+  " Initialize functions table.
   if !exists('g:vimshell#internal_func_table')
     let g:vimshell#internal_func_table = {}
 
@@ -178,25 +160,36 @@ function! vimshell#create_shell(split_flag, directory)"{{{
       let g:vimshell#special_func_table[l:func_name] = 'vimshell#special#' . l:func_name . '#execute'
     endfor
   endif
-  if !exists('w:vimshell_directory_stack')
-    let w:vimshell_directory_stack = []
-    let w:vimshell_directory_stack[0] = getcwd()
+
+  " Load history.
+  if !filereadable(g:VimShell_HistoryPath)
+    " Create file.
+    call writefile([], g:VimShell_HistoryPath)
   endif
+  let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
+  let s:hist_size = getfsize(g:VimShell_HistoryPath)
+
+  " Initialize variables.
+  let b:vimshell = {}
+
+  " Change current directory.
+  let b:vimshell.save_dir = getcwd()
+  let l:current = (a:directory != '')? a:directory : getcwd()
+  lcd `=fnamemodify(l:current, ':p')`
+
+  let b:vimshell.alias_table = {}
+  let b:vimshell.galias_table = {}
   " Load rc file.
-  if filereadable(g:VimShell_VimshrcPath) && !exists('b:vimshell_loaded_vimshrc')
+  if filereadable(g:VimShell_VimshrcPath)
     call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
           \{ 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 })
-    let b:vimshell_loaded_vimshrc = 1
+    let b:vimshell.loaded_vimshrc = 1
   endif
-  if !exists('b:vimshell_commandline_stack')
-    let b:vimshell_commandline_stack = []
-  endif
-  if !exists('b:vimshell_variables')
-    let b:vimshell_variables = {}
-  endif
-  if !exists('b:vimshell_system_variables')
-    let b:vimshell_system_variables = { 'status' : 0 }
-  endif
+  let b:vimshell.commandline_stack = []
+  let b:vimshell.variables = {}
+  let b:vimshell.system_variables = { 'status' : 0 }
+  let b:vimshell.directory_stack = []
+  let b:vimshell.directory_stack[0] = getcwd()
 
   " Set environment variables.
   let $TERM = 'vt100'
@@ -314,11 +307,6 @@ function! vimshell#process_enter()"{{{
 
   $
   normal! $
-
-  " Check current directory.
-  if !exists('w:vimshell_directory_stack')
-    let w:vimshell_directory_stack = []
-  endif
 
   " Delete prompt string and comment.
   let l:line = substitute(vimshell#get_cur_text(), '#.*$', '', '')
@@ -635,14 +623,11 @@ function! vimshell#error_line(fd, string)"{{{
 endfunction"}}}
 function! vimshell#print_prompt()"{{{
   " Search prompt
-  if !exists('b:vimshell_commandline_stack')
-    let b:vimshell_commandline_stack = []
-  endif
-  if empty(b:vimshell_commandline_stack)
+  if empty(b:vimshell.commandline_stack)
     let l:new_prompt = vimshell#get_prompt()
   else
-    let l:new_prompt = b:vimshell_commandline_stack[-1]
-    call remove(b:vimshell_commandline_stack, -1)
+    let l:new_prompt = b:vimshell.commandline_stack[-1]
+    call remove(b:vimshell.commandline_stack, -1)
   endif
 
   if s:user_prompt != '' || s:right_prompt != ''
@@ -866,11 +851,11 @@ endfunction"}}}
 
 
 function! s:restore_current_dir()"{{{
-  if !exists('b:vimshell_save_dir')
+  if !exists('b:vimshell')
     return
   endif
 
-  lcd `=fnamemodify(b:vimshell_save_dir, ':p')`
+  lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -25,7 +25,10 @@
 "=============================================================================
 
 function! vimshell#altercmd#define(original, alternative)"{{{
-  execute 'inoreabbrev <buffer><expr>' a:original
+  "execute 'inoreabbrev <buffer><expr>' a:original
+        "\ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
+        "\ string(a:alternative) ':' string(a:original)
+  execute 'iabbrev <buffer><expr>' a:original
         \ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
         \ string(a:alternative) ':' string(a:original)
 endfunction"}}}

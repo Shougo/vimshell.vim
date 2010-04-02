@@ -2,7 +2,6 @@
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
 " Last Modified: 12 Jul 2009
-" Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,34 +22,12 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.3:
-"     - Improved error message.
-"
-"   1.2:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.1:
-"     - Use vimshell#error_line.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#popd#execute(program, args, fd, other_info)
     " Pop directory.
 
-    if empty(w:vimshell_directory_stack)
+    if empty(b:vimshell.directory_stack)
         " Error.
         call vimshell#error_line(a:fd, 'Directory stack is empty.')
         return
@@ -69,14 +46,14 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
         return
     endif
     
-    if l:pop >= len(w:vimshell_directory_stack)
+    if l:pop >= len(b:vimshell.directory_stack)
         " Overflow.
         call vimshell#error_line(a:fd, printf("Not found '%d' in directory stack.", l:pop))
         return
     endif
 
-    lcd `=w:vimshell_directory_stack[l:pop]`
+    lcd `=b:vimshell.directory_stack[l:pop]`
 
     " Pop from stack.
-    let w:vimshell_directory_stack = w:vimshell_directory_stack[l:pop+1:]
+    let b:vimshell.directory_stack = w:vimshell.directory_stack[l:pop+1:]
 endfunction

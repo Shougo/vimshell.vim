@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: galias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Aug 2009
-" Usage: Just source this file.
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,31 +22,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#galias#execute(program, args, fd, other_info)
     if empty(a:args)
         " View all global aliases.
-        for alias in keys(b:vimshell_galias_table)
-            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
+        for alias in keys(b:vimshell.galias_table)
+            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell.alias_table[alias]))
         endfor
     elseif join(a:args) =~ '^\h\w*$'
-        if has_key(b:vimshell_galias_table, a:args[0])
+        if has_key(b:vimshell.galias_table, a:args[0])
             " View global alias.
-            call vimshell#print_line(a:fd, b:vimshell_galias_table[a:args[0]])
+            call vimshell#print_line(a:fd, b:vimshell.galias_table[a:args[0]])
         endif
     else
         " Define global alias.
@@ -58,6 +44,6 @@ function! vimshell#internal#galias#execute(program, args, fd, other_info)
             return
         endif
         let l:expression = l:args[matchend(l:args, '^\h\w*\s*=\s*') :]
-        execute 'let ' . printf("b:vimshell_galias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
+        execute 'let ' . printf("b:vimshell.galias_table['%s'] = '%s'", matchstr(l:args, '^\h\w*'),  substitute(l:expression, "'", "''", 'g'))
     endif
 endfunction

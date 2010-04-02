@@ -27,7 +27,7 @@
 function! vimshell#internal#gcd#execute(program, args, fd, other_info)
   " Change the global working directory.
 
-  let b:vimshell_save_dir = empty(a:args)? getcwd() : a:args[0]
+  let b:vimshell.save_dir = empty(a:args)? getcwd() : a:args[0]
 
-  cd `=b:vimshell_save_dir`
+  cd `=b:vimshell.save_dir`
 endfunction

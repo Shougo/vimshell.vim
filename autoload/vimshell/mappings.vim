@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 28 Jun 2010
+" Last Modified: 04 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,7 +31,7 @@ function! vimshell#mappings#push_current_line()"{{{
         return
     endif
 
-    call add(b:vimshell_commandline_stack, getline('.'))
+    call add(b:vimshell.commandline_stack, getline('.'))
 
     " Set prompt line.
     call setline(line('.'), vimshell#get_prompt())
@@ -44,7 +44,7 @@ function! vimshell#mappings#push_and_execute(command)"{{{
         return
     endif
 
-    call add(b:vimshell_commandline_stack, getline('.'))
+    call add(b:vimshell.commandline_stack, getline('.'))
 
     " Set prompt line.
     call setline(line('.'), vimshell#get_prompt() . a:command)
@@ -117,10 +117,10 @@ function! vimshell#mappings#run_help()"{{{
     if l:program !~ '\h\w*'
         startinsert!
         return
-    elseif has_key(b:vimshell_alias_table, l:program)
-        let l:program = b:vimshell_alias_table[l:program]
-    elseif has_key(b:vimshell_galias_table, l:program)
-        let l:program = b:vimshell_galias_table[l:program]
+    elseif has_key(b:vimshell.alias_table, l:program)
+        let l:program = b:vimshell.alias_table[l:program]
+    elseif has_key(b:vimshell.galias_table, l:program)
+        let l:program = b:vimshell.galias_table[l:program]
     endif
 
     if exists(':Man')

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: alias.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 Jun 2010
+" Last Modified: 02 Apr 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -23,54 +23,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.7, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.7:
-"     - Changed as special command.
-"     - Fixed parse.
-"
-"   1.6:
-"     - Fixed parse bug.
-"     - Improved error message.
-"
-"   1.5:
-"     - Changed alias syntax.
-"
-"   1.4:
-"     - Optimized parse.
-"
-"   1.3:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.2:
-"     - Use vimshell#print_line.
-"
-"   1.1:
-"     - Changed s:alias_table into b:vimshell_alias_table.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#special#alias#execute(program, args, fd, other_info)
     if empty(a:args)
         " View all aliases.
-        for alias in keys(b:vimshell_alias_table)
-            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell_alias_table[alias]))
+        for alias in keys(b:vimshell.alias_table)
+            call vimshell#print_line(a:fd, printf('%s=%s', alias, b:vimshell.alias_table[alias]))
         endfor
     elseif join(a:args) =~ '^\h\w*$'
-        if has_key(b:vimshell_alias_table, a:args[0])
+        if has_key(b:vimshell.alias_table, a:args[0])
             " View alias.
-            call vimshell#print_line(a:fd, b:vimshell_alias_table[a:args[0]])
+            call vimshell#print_line(a:fd, b:vimshell.alias_table[a:args[0]])
         endif
     else
         " Define alias.
@@ -90,7 +54,7 @@ function! vimshell#special#alias#execute(program, args, fd, other_info)
         let l:expression = l:args[matchend(l:args, '^\s*=\s*') :]
         
         try
-            execute printf('let b:vimshell_alias_table[%s] = %s', string(l:alias_name),  string(l:expression))
+            execute printf('let b:vimshell.alias_table[%s] = %s', string(l:alias_name),  string(l:expression))
         catch
             call vimshell#error_line(a:fd, 'Wrong syntax: ' . join(a:args))
             return
