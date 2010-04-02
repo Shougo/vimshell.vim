@@ -134,9 +134,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     edit `=l:bufname`
   endif
 
-  call vimshell#default_settings()
-  setfiletype vimshell
-  
   " Initialize functions table.
   if !exists('g:vimshell#internal_func_table')
     let g:vimshell#internal_func_table = {}
@@ -179,6 +176,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
 
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
+  let b:vimshell.altercmd_table = {}
   " Load rc file.
   if filereadable(g:VimShell_VimshrcPath)
     call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
@@ -197,6 +195,11 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0) * 8 / 10
   let $LINES = winheight(0) * 8 / 10
+  let $SHELL = 'vimshell'
+  
+  " Default settings.
+  call vimshell#default_settings()
+  setfiletype vimshell
 
   call vimshell#print_prompt()
 

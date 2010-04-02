@@ -25,12 +25,31 @@
 "=============================================================================
 
 function! vimshell#altercmd#define(original, alternative)"{{{
-  "execute 'inoreabbrev <buffer><expr>' a:original
-        "\ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
-        "\ string(a:alternative) ':' string(a:original)
-  execute 'iabbrev <buffer><expr>' a:original
+  execute 'inoreabbrev <buffer><expr>' a:original
         \ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
-        \ string(a:alternative) ':' string(a:original)
+        \ s:SID_PREFIX().'recursive_expand_altercmd('.string(a:original).')' ':' string(a:original)
+  let b:vimshell.altercmd_table[a:original] = a:alternative
 endfunction"}}}
+
+function! s:SID_PREFIX()
+  return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
+endfunction
+
+function! s:recursive_expand_altercmd(string)
+  " Recursive expand altercmd.
+  let l:abbrev = b:vimshell.altercmd_table[a:string]
+  let l:expanded = {}
+  while 1
+    let l:key = vimshell#parser#split_args(l:abbrev)[-1]
+    if has_key(l:expanded, l:abbrev) || !has_key(b:vimshell.altercmd_table, l:abbrev)
+      break
+    endif
+    
+    let l:expanded[l:abbrev] = 1
+    let l:abbrev = b:vimshell.altercmd_table[l:abbrev]
+  endwhile
+
+  return l:abbrev
+endfunction
 
 " vim: foldmethod=marker

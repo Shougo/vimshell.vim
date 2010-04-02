@@ -125,6 +125,7 @@ CHANGELOG					*vimshell-changelog*
 2010-04-03
     * Fixed autocd.
     * Refactoringed.
+    * Implemented recursive altercmd and alias.
 
 2010-04-02
     * Fixed vimshell#altercmd.

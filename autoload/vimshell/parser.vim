@@ -28,32 +28,29 @@ function! vimshell#parser#eval_script(script, other_info)"{{{
   let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
-    " Skip blank.
-    let l:statement = matchstr(l:statement, '^\s*\zs.*')
-
     " Get program.
-    let l:program = matchstr(l:statement, '^\%(\\[^[:alnum:].-]\|[[:alnum:]@/._+,#$%~=*-]\)\+')
+    let l:args = vimshell#parser#split_args(l:statement)
+
+    " Expand global alias.
+    for l:arg in l:args
+      if has_key(b:vimshell.galias_table, l:arg)
+        let l:arg = b:vimshell.galias_table[l:arg]
+      endif
+    endfor
+    
+    let l:program = l:args[0]
+
+    if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
+      " Expand alias.
+      let l:alias = s:recursive_expand_alias(l:program)
+      let l:args = vimshell#parser#split_args(l:alias . ' ' . join(l:args[1:])) 
+      let l:program = l:args[0]
+    endif
     if l:program != '' && l:program[0] == '~'
       " Parse tilde.
       let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
     endif
-
-    let l:script = l:statement[len(l:program) :]
-
-    for galias in keys(b:vimshell.galias_table)
-      let l:script = substitute(l:script, '\s\zs'.galias.'\ze\%(\s\|$\)', b:vimshell.galias_table[galias], 'g')
-    endfor
-
-    " Check alias."{{{
-    if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
-      let l:alias_prog = matchstr(b:vimshell.alias_table[l:program], '^\s*\zs[^[:blank:]]*')
-
-      if l:program != l:alias_prog
-        " Expand alias.
-        let l:skip_prompt = vimshell#parser#eval_script(b:vimshell.alias_table[l:program] . ' ' . l:script, a:other_info)
-        continue
-      endif
-    endif"}}}
+    let l:script = join(l:args[1:])
 
     if has_key(g:vimshell#special_func_table, l:program)
       " Special commands.
@@ -653,5 +650,22 @@ function! s:skip_else(args, script, i)"{{{
 
   return [l:script, l:i]
 endfunction"}}}
+
+function! s:recursive_expand_alias(string)
+  " Recursive expand alias.
+  let l:alias = b:vimshell.alias_table[a:string]
+  let l:expanded = {}
+  while 1
+    let l:key = vimshell#parser#split_args(l:alias)[-1]
+    if has_key(l:expanded, l:alias) || !has_key(b:vimshell.alias_table, l:alias)
+      break
+    endif
+    
+    let l:expanded[l:alias] = 1
+    let l:alias = b:vimshell.alias_table[l:alias]
+  endwhile
+
+  return l:alias
+endfunction
 
 " vim: foldmethod=marker
