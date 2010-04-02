@@ -115,13 +115,15 @@ INTERNAL COMMANDS				*vimshell-internal-commands*
 bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
 
-bg {command}						*vimshell-internal-bg*
+bg [{option}...] {command}						*vimshell-internal-bg*
 		{command}をバックグラウンドで起動します。非同期実行機能が有効
 		でないと動作しません。 vimshellのバックグラウンド実行は新た
 		にバッファを開き、そこに{command}の出力を書き出します。 bgの
 		場合、ユーザーからの入力は一切受け付けません。 バックグラウ
 		ンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に
 		終了させます。
+		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
+		詳しくは|vimshell-execute-options|を参照してください。
 
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		カレントディレクトリを{directory-path}に変更します。
@@ -144,10 +146,19 @@ dirs [{max}]						*vimshell-internal-dirs*
 echo [{argument}...]					*vimshell-internal-echo*
 		引数を出力します。
 
-exe {command} 						*vimshell-internal-exe*
+exe [{option}...] {command} 						*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効になっていない場合、挙動は
 		|vimshell-internal-sexe| と同様になります。
+		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
+		詳しくは|vimshell-execute-options|を参照してください。
+		
+									*vimshell-execute-options*
+		--encoding = {encoding-name}				*vimshell-execute-options-encoding*
+		起動するプログラムのエンコーディングを{encoding-name}に変更
+		します。 'encoding'と{encoding-name}が異なる場合、vimshellは
+		入出力のエンコーディング変換を自動的に行います。 このオプショ
+		ンが省略された場合、'termencoding'の値が使用されます。
 
 exit 							*vimshell-internal-exit*
 		vimshellを終了します。
@@ -194,11 +205,13 @@ history [{history-number}]				*vimshell-internal-histdel*
 		{max}を省略すると、10になります。
 		この一覧上で<Enter>を押すことで、その履歴を実行できます。
 
-iexe {command}						*vimshell-internal-gexe*
+iexe [{options}...] {command}						*vimshell-internal-gexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効化されていないとエラーになります。
 		exeとは違い、対話コマンドを実行することに特化しています。入
 		出力を行なうために新しいバッファが生成されます。
+		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
+		詳しくは|vimshell-execute-options|を参照してください。
 
 ls [{argument}...]					*vimshell-internal-ls*
 		外部コマンドのlsを適切な引数を与えて実行します。

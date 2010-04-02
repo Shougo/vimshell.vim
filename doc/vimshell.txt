@@ -127,6 +127,7 @@ CHANGELOG					*vimshell-changelog*
     * Refactoringed.
     * Implemented recursive altercmd and alias.
     * Fixed auto complete bug when path contains blanks.
+    * Added execute option description.
 
 2010-04-02
     * Fixed vimshell#altercmd.
