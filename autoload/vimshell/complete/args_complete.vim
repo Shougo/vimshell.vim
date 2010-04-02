@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Feb 2010
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,9 +65,13 @@ endfunction"}}}
 
 function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
   if a:findstart
+    if !vimshell#check_prompt()
+      return -1
+    endif
+    
     let l:match = match(vimshell#get_cur_text(), vimshell#get_argument_pattern())
     if l:match < 0
-      return l:match
+      return len(vimshell#get_prompt())
     endif
 
     " Get cursor word.
