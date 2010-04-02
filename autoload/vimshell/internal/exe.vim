@@ -107,6 +107,7 @@ function! s:init_process(fd, args, options)
         \ 'fd' : a:fd, 
         \ 'encoding' : a:options['--encoding'], 
         \ 'is_pty' : !vimshell#iswin(), 
+        \ 'is_background': 0, 
         \}
 
   " Input from stdin.

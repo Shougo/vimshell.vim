@@ -60,7 +60,7 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
         if filereadable(l:filename)
             let l:scripts = readfile(l:filename)
 
-            let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 }
+            let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 0 }
             let l:i = 0
             let l:skip_prompt = 0
             for l:script in l:scripts

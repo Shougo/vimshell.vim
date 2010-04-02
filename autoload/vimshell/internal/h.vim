@@ -97,7 +97,9 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
         call vimshell#print_prompt()
         call vimshell#interactive#highlight_escape_sequence()
 
-        call vimshell#start_insert()
+        if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+          call vimshell#start_insert()
+        endif
         return
     endtry
 
@@ -110,8 +112,9 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
 
     if a:other_info.is_interactive
         call vimshell#print_prompt()
-        call vimshell#start_insert()
-        startinsert!
+        if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+          call vimshell#start_insert()
+        endif
     endif
 
     return 1

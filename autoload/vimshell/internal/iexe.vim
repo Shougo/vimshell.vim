@@ -92,6 +92,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'prompt_history' : {}, 
         \ 'command_history' : [], 
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
+        \ 'is_background': 0, 
         \}
 
   " Input from stdin.
@@ -111,7 +112,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
-  call vimshell#internal#iexe#execute('iexe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+  call vimshell#internal#iexe#execute('iexe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
 endfunction"}}}
 
 function! vimshell#internal#iexe#default_settings()"{{{

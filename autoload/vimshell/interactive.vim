@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Mar 2010
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -655,7 +655,7 @@ endfunction"}}}
 function! s:send_string(line1, line2)"{{{
   " Check alternate buffer.
   let l:filetype = getwinvar(winnr('#'), '&filetype')
-  if l:filetype == 'background' || l:filetype =~ '^int_'
+  if l:filetype =~ '^int-'
     let l:line = getline(a:line1)
     let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
     execute winnr('#') 'wincmd w'
@@ -683,15 +683,16 @@ endfunction"}}}
 function! s:check_output()"{{{
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
-    if l:bufnr != bufnr('%') && buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'vimproc')) != type('')
+    if l:bufnr != bufnr('%') && buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       " Check output.
       let l:filetype = getbufvar(l:bufnr, '&filetype')
-      if l:filetype == 'background' || l:filetype =~ '^int_'
+      let l:is_background = getbufvar(l:bufnr, 'interactive').is_background
+      if l:is_background || l:filetype =~ '^int-'
         let l:pos = getpos('.')
 
         execute 'buffer' l:bufnr
 
-        if l:filetype  == 'background'
+        if l:is_background
           " Background execute.
           call vimshell#interactive#execute_pipe_out()
         else

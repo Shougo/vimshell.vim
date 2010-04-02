@@ -55,7 +55,7 @@ function! vimshell#default_settings()"{{{
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
 
   " Plugin keymappings"{{{
-  nnoremap <buffer><silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#process_enter()<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#mappings#execute_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
@@ -73,7 +73,7 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#process_enter()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   "}}}
 
   " Normal mode key-mappings."{{{
@@ -164,7 +164,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     call writefile([], g:VimShell_HistoryPath)
   endif
   let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
-  let s:hist_size = getfsize(g:VimShell_HistoryPath)
+  let g:vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
 
   " Initialize variables.
   let b:vimshell = {}
@@ -180,7 +180,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Load rc file.
   if filereadable(g:VimShell_VimshrcPath)
     call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
-          \{ 'has_head_spaces' : 0, 'is_interactive' : 0, 'is_background' : 0 })
+          \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
     let b:vimshell.loaded_vimshrc = 1
   endif
   let b:vimshell.commandline_stack = []
@@ -265,110 +265,6 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
 
   " Create window.
   call vimshell#create_shell(a:split_flag, a:directory)
-endfunction"}}}
-function! vimshell#process_enter()"{{{
-  if !vimshell#check_prompt()
-    " Prompt not found
-
-    if !vimshell#check_prompt('$')
-      " Create prompt line.
-      call append('$', vimshell#get_prompt())
-    endif
-    
-    if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
-      " History output execution.
-      call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
-    else
-      " Search cursor file.
-      let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-      if l:filename == ''
-        return
-      endif
-
-      " Execute cursor file.
-      if l:filename =~ '^\%(https\?\|ftp\)://'
-        " Open uri.
-        call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-      elseif isdirectory(expand(l:filename))
-        " Change directory.
-        call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
-      else
-        " Edit file.
-        call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
-      endif
-    endif
-  elseif line('.') != line('$')
-    " History execution.
-    if !vimshell#check_prompt('$')
-      " Insert prompt line.
-      call append('$', getline('.'))
-    else
-      " Set prompt line.
-      call setline('$', getline('.'))
-    endif
-  endif
-
-  $
-  normal! $
-
-  " Delete prompt string and comment.
-  let l:line = substitute(vimshell#get_cur_text(), '#.*$', '', '')
-
-  if exists('s:hist_size') && getfsize(g:VimShell_HistoryPath) != s:hist_size
-    " Reload.
-    let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
-  endif
-  " Not append history if starts spaces or dups.
-  if l:line !~ '^\s'
-    call vimshell#append_history(l:line)
-  endif
-
-  " Delete head spaces.
-  let l:line = substitute(l:line, '^\s\+', '', '')
-  if l:line =~ '^\s*$'
-    if g:VimShell_EnableAutoLs
-      call setline('.', vimshell#get_prompt() . 'ls')
-      call vimshell#execute_internal_command('ls', [], {}, {})
-
-      call vimshell#print_prompt()
-
-      call vimshell#start_insert()
-    else
-      " Ignore empty command line.
-      call setline('.', vimshell#get_prompt())
-
-      call vimshell#start_insert()
-    endif
-    return
-  elseif l:line =~ '^\s*-\s*$'
-    " Popd.
-    call vimshell#execute_internal_command('cd', ['-'], {}, {})
-
-    call vimshell#print_prompt()
-
-    call vimshell#start_insert()
-    return
-  endif
-
-  let l:other_info = { 'has_head_spaces' : l:line =~ '^\s\+', 'is_interactive' : 1, 'is_background' : 0 }
-  try
-    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
-  catch /.*/
-    let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, l:message)
-    call vimshell#print_prompt()
-
-    call vimshell#start_insert()
-    return
-  endtry
-
-  if l:skip_prompt
-    " Skip prompt.
-    return
-  endif
-
-  call vimshell#print_prompt()
-  call vimshell#start_insert()
 endfunction"}}}
 
 function! vimshell#execute_command(program, args, fd, other_info)"{{{
@@ -496,7 +392,7 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
   endif
 
   if empty(a:other_info)
-    let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 }
+    let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
   else
     let l:other_info = a:other_info
   endif
@@ -680,7 +576,7 @@ function! vimshell#append_history(command)"{{{
 
   call writefile(g:vimshell#hist_buffer, g:VimShell_HistoryPath)
 
-  let s:hist_size = getfsize(g:VimShell_HistoryPath)
+  let vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
 endfunction"}}}
 function! vimshell#remove_history(command)"{{{
   " Filtering.
@@ -688,7 +584,7 @@ function! vimshell#remove_history(command)"{{{
 
   call writefile(g:vimshell#hist_buffer, g:VimShell_HistoryPath)
 
-  let s:hist_size = getfsize(g:VimShell_HistoryPath)
+  let vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
 endfunction"}}}
 function! vimshell#getfilename(program)"{{{
   " Command search.

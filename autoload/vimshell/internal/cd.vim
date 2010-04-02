@@ -54,7 +54,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     " Popd.
     return vimshell#internal#popd#execute('popd', [ 1 ], 
           \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
-          \{ 'has_head_spaces' : 0, 'is_interactive' : 1, 'is_background' : 0 })
+          \{ 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(l:dir)
     " Move to parent directory.
     let b:vimshell.save_dir = fnamemodify(l:dir, ':p:h')

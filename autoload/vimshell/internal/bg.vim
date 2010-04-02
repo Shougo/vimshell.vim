@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2010
+" Last Modified: 02 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,10 +31,13 @@ augroup END
 function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   " Execute program in background.
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
-        \{ 'arg=' : ['--encoding']
+        \{ 'arg=' : ['--encoding', '--filetype']
         \})
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
+  endif
+  if !has_key(l:options, '--filetype')
+    let l:options['--filetype'] = 'background'
   endif
 
   if empty(l:args)
@@ -78,6 +81,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
           \ 'fd' : a:fd, 
           \ 'encoding' : l:options['--encoding'], 
           \ 'is_pty' : !vimshell#iswin(), 
+          \ 'is_background' : 1, 
           \}
 
     " Input from stdin.
@@ -86,7 +90,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
     endif
     call b:interactive.process.stdin.close()
     
-    return vimshell#internal#bg#init(l:args, a:other_info.is_interactive)
+    return vimshell#internal#bg#init(l:args, a:other_info, l:options['--filetype'])
   else
     " Execute in screen.
     let l:other_info = a:other_info
@@ -95,14 +99,14 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
-  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0, 'is_background' : 1})
+  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
 endfunction"}}}
 
-function! vimshell#internal#bg#init(args, is_interactive)"{{{
+function! vimshell#internal#bg#init(args, other_info, filetype)"{{{
   let l:vimproc = b:interactive
   
   " Init buffer.
-  if a:is_interactive
+  if a:other_info.is_interactive
     call vimshell#print_prompt()
   endif
 
@@ -117,7 +121,7 @@ function! vimshell#internal#bg#init(args, is_interactive)"{{{
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
-  setfiletype background
+  let &filetype = a:filetype
   let b:interactive = l:vimproc
 
   " Set syntax.
@@ -135,6 +139,11 @@ function! vimshell#internal#bg#init(args, is_interactive)"{{{
   inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
   nnoremap <buffer><silent><CR>       :<C-u>call <SID>on_execute()<CR>
   call s:on_execute()
+
+  wincmd w
+  if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+    call vimshell#start_insert()
+  endif
 
   return 1
 endfunction"}}}

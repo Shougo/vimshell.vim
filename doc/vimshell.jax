@@ -124,6 +124,11 @@ bg [{option}...] {command}						*vimshell-internal-bg*
 		終了させます。
 		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
 		詳しくは|vimshell-execute-options|を参照してください。
+		ここでは、bgのみに存在するオプションを解説します。
+		
+		--filetype = {filetype-name}
+		出力バッファの'filetype'を{filetype-name}に変更します。
+		このオプションが省略された場合、"background"となります。
 
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		カレントディレクトリを{directory-path}に変更します。
