@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 02 Apr 2010
+" Last Modified: 03 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -436,7 +436,14 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
 
     return l:ret
     "}}}
-  elseif l:command != '' || executable(l:program)
+  elseif isdirectory(l:dir)"{{{
+    " Directory.
+    " Change the working directory like zsh.
+
+    " Call internal cd command.
+    return vimshell#execute_internal_command('cd', [l:dir], a:fd, a:other_info)
+    "}}}
+  elseif l:command != '' || executable(l:program)"{{{
     " Execute external commands.
 
     " Suffix execution.
@@ -482,14 +489,7 @@ function! vimshell#execute_command(program, args, fd, other_info)"{{{
       call delete(l:temp)
     endif
 
-    return l:ret
-  elseif isdirectory(l:dir)"{{{
-    " Directory.
-    " Change the working directory like zsh.
-
-    " Call internal cd command.
-    return vimshell#execute_internal_command('cd', [l:dir], a:fd, a:other_info)
-    "}}}
+    return l:ret"}}}
   else"{{{
     throw printf('File: "%s" is not found.', l:program)
   endif
