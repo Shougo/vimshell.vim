@@ -126,6 +126,7 @@ CHANGELOG					*vimshell-changelog*
     * Fixed help file.
     * Changed gailias as special command.
     * Fixed popd error.
+    * Disable output when inputing in iexe.
 
 2010-04-03
     * Fixed autocd.
