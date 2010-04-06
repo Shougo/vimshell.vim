@@ -117,7 +117,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
       let l:program = 'cat'
     endif
 
-    let l:skip_prompt = vimshell#execute_command(l:program, l:args, l:fd, a:context)
+    let l:skip_prompt = vimshell#parser#execute_command(l:program, l:args, l:fd, a:context)
     redraw
   endfor
 

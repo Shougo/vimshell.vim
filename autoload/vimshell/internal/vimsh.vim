@@ -40,7 +40,7 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
       let l:context = { 
             \'has_head_spaces' : 0, 'is_interactive' : 0, 
             \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-      }
+            \}
       let l:i = 0
       let l:skip_prompt = 0
       for l:script in l:scripts

@@ -53,6 +53,12 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
   endif
 
   lcd `=b:vimshell.directory_stack[l:pop]`
+  " Call chpwd hook.
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  for l:func_name in values(b:vimshell.hook_functions_table['chpwd'])
+    call call(l:func_name, [l:context])
+  endfor
 
   " Pop from stack.
   let b:vimshell.directory_stack = b:vimshell.directory_stack[l:pop+1:]

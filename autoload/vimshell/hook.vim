@@ -29,7 +29,7 @@ function! vimshell#hook#add(hook_point, func_name)"{{{
     throw 'Hook point "' . a:hook_point . '" is not supported.'
   endif
   
-  let b:vimshell.hook_functions_table[a:hook_point] = a:func_name
+  let b:vimshell.hook_functions_table[a:hook_point][a:func_name] = a:func_name
 endfunction"}}}
 function! vimshell#hook#del(hook_point, func_name)"{{{
   if !has_key(b:vimshell.hook_functions_table, a:hook_point)

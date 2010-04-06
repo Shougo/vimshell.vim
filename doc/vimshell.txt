@@ -99,7 +99,15 @@ EXAMPLES					*vimshell-examples*
 	endif
 	
 	autocmd FileType vimshell
-	\ call vimshell#altercmd#define('ls', 'ls -la')
+	\ call vimshell#altercmd#define('g', 'git')
+	\| call vimshell#altercmd#define('i', 'iexe')
+	\| call vimshell#altercmd#define('l', 'll')
+	\| call vimshell#altercmd#define('ll', 'ls -l')
+	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	
+	function! g:my_chpwd(context)
+		call vimshell#execute('ls', a:context)
+	endfunction
 <
 ==============================================================================
 INTERNAL COMMANDS				*vimshell-internal-commands*
@@ -127,6 +135,8 @@ CHANGELOG					*vimshell-changelog*
     * Changed gailias as special command.
     * Fixed popd error.
     * Disable output when inputing in iexe.
+    * Implemented hook.
+    * Added chpwd hook.
 
 2010-04-03
     * Fixed autocd.

@@ -53,8 +53,8 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
   elseif l:arguments == '-'
     " Popd.
     return vimshell#internal#popd#execute('popd', [ 1 ], 
-          \{ 'stdin' : '', 'stdout' : '', 'stderr' : '' },
-          \{ 'has_head_spaces' : 0, 'is_interactive' : 1 })
+          \ a:fd,
+          \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(l:dir)
     " Move to parent directory.
     let b:vimshell.save_dir = fnamemodify(l:dir, ':p:h')
@@ -74,4 +74,11 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
       endif
     endif
   endif
+  
+  " Call chpwd hook.
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  for l:func_name in values(b:vimshell.hook_functions_table['chpwd'])
+    call call(l:func_name, [l:context])
+  endfor
 endfunction

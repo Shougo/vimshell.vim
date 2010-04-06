@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: gcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2010
+" Last Modified: 06 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +27,9 @@
 function! vimshell#internal#gcd#execute(program, args, fd, other_info)
   " Change the global working directory.
 
-  let b:vimshell.save_dir = empty(a:args)? getcwd() : a:args[0]
-
-  cd `=b:vimshell.save_dir`
+  let l:dir = empty(a:args)? getcwd() : a:args[0]
+  let b:vimshell.save_dir = l:dir
+  
+  return vimshell#internal#cd#execute('cd', [ l:dir ], 
+        \ a:fd, a:other_info)
 endfunction
