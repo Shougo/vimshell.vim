@@ -122,6 +122,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-04-06
+    * Fixed help file.
+
 2010-04-03
     * Fixed autocd.
     * Refactoringed.

@@ -168,7 +168,7 @@ exe [{option}...] {command} 						*vimshell-internal-exe*
 exit 							*vimshell-internal-exit*
 		vimshellを終了します。
 
-gailias {global-alias-name} = {command}			*vimshell-internal-gailias*
+galias {global-alias-name} = {command}			*vimshell-internal-galias*
 		vimshellにグローバルなaliasを定義します。vimshellは
 		{global-alias-name}がコマン ドライン中に現われると、自動的に
 		{command}に置き換えます。 |vimshell-internal-alias|とは違い、
@@ -205,12 +205,12 @@ histdel [{history-number}]				*vimshell-internal-histdel*
 		号は|vimshell-internal-history|で確認できます。
 		{history-number}を省略すると、 無視されます。
 
-history [{history-number}]				*vimshell-internal-histdel*
+history [{history-number}]				*vimshell-internal-history*
 		ディレクトリスタックの一覧を{max}個表示します。
 		{max}を省略すると、10になります。
 		この一覧上で<Enter>を押すことで、その履歴を実行できます。
 
-iexe [{options}...] {command}						*vimshell-internal-gexe*
+iexe [{options}...] {command}						*vimshell-internal-iexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効化されていないとエラーになります。
 		exeとは違い、対話コマンドを実行することに特化しています。入
