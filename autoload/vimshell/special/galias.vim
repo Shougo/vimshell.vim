@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#galias#execute(program, args, fd, other_info)
+function! vimshell#special#galias#execute(program, args, fd, other_info)
     if empty(a:args)
         " View all global aliases.
         for alias in keys(b:vimshell.galias_table)
