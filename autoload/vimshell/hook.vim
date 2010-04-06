@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: vimsh.vim
+" FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 06 Apr 2010
 " License: MIT license  {{{
@@ -24,46 +24,22 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
-  " Create new vimshell or execute script.
-  if empty(a:args)
-    call vimshell#print_prompt()
-    call vimshell#create_shell(0)
-    return 1
-  else
-    " Filename escape.
-    let l:filename = join(a:args, ' ')
-
-    if filereadable(l:filename)
-      let l:scripts = readfile(l:filename)
-
-      let l:context = { 
-            \'has_head_spaces' : 0, 'is_interactive' : 0, 
-            \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-      }
-      let l:i = 0
-      let l:skip_prompt = 0
-      for l:script in l:scripts
-        try
-          let l:skip_prompt = vimshell#parser#eval_script(l:script, l:context)
-        catch /.*/
-          let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args, ' '), l:i, l:message))
-          return 0
-        endtry
-
-        let l:i += 1
-      endfor
-
-      if l:skip_prompt
-        " Skip prompt.
-        return 1
-      endif
-    else
-      " Error.
-      call vimshell#error_line(a:fd, printf('Not found the script "%s".', l:filename))
-    endif
+function! vimshell#hook#add(hook_point, func_name)"{{{
+  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
+    throw 'Hook point "' . a:hook_point . '" is not supported.'
   endif
+  
+  let b:vimshell.hook_functions_table[a:hook_point] = a:func_name
+endfunction"}}}
+function! vimshell#hook#del(hook_point, func_name)"{{{
+  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
+    throw 'Hook point "' . a:hook_point . '" is not supported.'
+  endif
+  if !has_key(b:vimshell.hook_functions_table[a:hook_point], a:func_name)
+    throw 'Hook function "' . a:func_name . '" is not found.'
+  endif
+  
+  call remove(b:vimshell.hook_functions_table[a:hook_point], a:func_name)
+endfunction"}}}
 
-  return 0
-endfunction
+" vim: foldmethod=marker

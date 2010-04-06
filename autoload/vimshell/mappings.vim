@@ -143,13 +143,14 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     return
   endif
 
-  let l:other_info = {
+  let l:context = {
         \ 'has_head_spaces' : l:line =~ '^\s\+',
         \ 'is_interactive' : 1, 
         \ 'is_insert' : a:is_insert, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
   try
-    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:other_info)
+    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
