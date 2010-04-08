@@ -518,6 +518,16 @@ endfunction"}}}
 function! vimshell#get_prompt()"{{{
   return s:prompt
 endfunction"}}}
+function! vimshell#set_prompt(string)"{{{
+  if !vimshell#check_prompt()
+    " Search prompt.
+    let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+  else
+    let l:lnum = '.'
+  endif
+
+  call setline(l:lnum, vimshell#get_prompt() . a:string)
+endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
   return s:secondary_prompt
 endfunction"}}}

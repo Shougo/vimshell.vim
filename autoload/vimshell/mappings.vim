@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 02 Apr 2010
+" Last Modified: 08 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,10 +95,28 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   endif
 
   $
-  normal! $
 
-  " Delete prompt string and comment.
-  let l:line = substitute(vimshell#get_cur_text(), '#.*$', '', '')
+  " Get command line.
+  let l:line = vimshell#get_cur_text()
+  if l:line =~ '^\s*$'
+    " Call emptycmd hook.
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    for l:func_name in values(b:vimshell.hook_functions_table['emptycmd'])
+      call call(l:func_name, [l:context])
+    endfor
+  else
+    " Call preexec hook.
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    for l:func_name in values(b:vimshell.hook_functions_table['preexec'])
+      call call(l:func_name, [l:context])
+    endfor
+  endif
+
+  " Get command line again.
+  " Because: hook functions may change command line.
+  let l:line = vimshell#get_cur_text()
 
   if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
     " Reload.
@@ -117,14 +135,9 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       call vimshell#execute_internal_command('ls', [], {}, {})
 
       call vimshell#print_prompt()
-
     else
       " Ignore empty command line.
       call setline('.', vimshell#get_prompt())
-
-      if a:is_insert
-        call vimshell#start_insert()
-      endif
     endif
 
     if a:is_insert
@@ -161,6 +174,13 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     endif
     return
   endtry
+
+  " Call precmd hook.
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
+    call call(l:func_name, [l:context])
+  endfor
 
   if l:skip_prompt
     " Skip prompt.
