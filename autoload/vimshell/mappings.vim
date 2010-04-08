@@ -98,17 +98,20 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
   " Get command line.
   let l:line = vimshell#get_cur_text()
+  let l:context = {
+        \ 'has_head_spaces' : l:line =~ '^\s\+',
+        \ 'is_interactive' : 1, 
+        \ 'is_insert' : a:is_insert, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \}
+
   if l:line =~ '^\s*$'
     " Call emptycmd hook.
-    let l:context = a:other_info
-    let l:context.fd = a:fd
     for l:func_name in values(b:vimshell.hook_functions_table['emptycmd'])
       call call(l:func_name, [l:context])
     endfor
   else
     " Call preexec hook.
-    let l:context = a:other_info
-    let l:context.fd = a:fd
     for l:func_name in values(b:vimshell.hook_functions_table['preexec'])
       call call(l:func_name, [l:context])
     endfor
@@ -156,12 +159,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     return
   endif
 
-  let l:context = {
-        \ 'has_head_spaces' : l:line =~ '^\s\+',
-        \ 'is_interactive' : 1, 
-        \ 'is_insert' : a:is_insert, 
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-        \}
   try
     let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
   catch /.*/
@@ -176,8 +173,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   endtry
 
   " Call precmd hook.
-  let l:context = a:other_info
-  let l:context.fd = a:fd
   for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
     call call(l:func_name, [l:context])
   endfor
