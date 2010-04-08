@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2010
+" Last Modified: 08 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -213,7 +213,7 @@ endfunction
 
 function! s:on_hold_i()
   let l:cur_text = vimshell#interactive#get_cur_text()
-  if l:cur_text != ''
+  if l:cur_text != '' && l:cur_text !~# '*\%(Killed\|Exit\)*'
     return
   endif
   

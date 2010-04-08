@@ -130,6 +130,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-04-08
+    * Fixed output check when program exited.
+
 2010-04-06
     * Fixed help file.
     * Changed gailias as special command.
