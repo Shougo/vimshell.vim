@@ -132,6 +132,7 @@ CHANGELOG					*vimshell-changelog*
 
 2010-04-08
     * Fixed output check when program exited.
+    * Call hook functions if interactive only.
 
 2010-04-06
     * Fixed help file.
