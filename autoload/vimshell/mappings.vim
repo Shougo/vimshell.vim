@@ -120,6 +120,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   " Get command line again.
   " Because: hook functions may change command line.
   let l:line = vimshell#get_cur_text()
+  echomsg l:line
 
   if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
     " Reload.
@@ -132,24 +133,16 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
   " Delete head spaces.
   let l:line = substitute(l:line, '^\s\+', '', '')
-  if l:line =~ '^\s*$'
-    if g:VimShell_EnableAutoLs
-      call setline('.', vimshell#get_prompt() . 'ls')
-      call vimshell#execute_internal_command('ls', [], {}, {})
-
-      call vimshell#print_prompt()
-    else
-      " Ignore empty command line.
-      call setline('.', vimshell#get_prompt())
-    endif
-
-    if a:is_insert
-      call vimshell#start_insert()
-    endif
-    return
-  elseif l:line =~ '^\s*-\s*$'
+  if l:line =~ '^\s*-\s*$'
     " Popd.
     call vimshell#execute_internal_command('cd', ['-'], {}, {})
+  endif
+
+  if l:line =~ '^\s*$\|^\s*-\s*$'
+    " Call precmd hook.
+    for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
+      call call(l:func_name, [l:context])
+    endfor
 
     call vimshell#print_prompt()
 
@@ -164,6 +157,11 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
+    
+    " Call precmd hook.
+    for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
+      call call(l:func_name, [l:context])
+    endfor
     call vimshell#print_prompt()
 
     if a:is_insert
