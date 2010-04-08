@@ -189,7 +189,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.directory_stack = []
   let b:vimshell.directory_stack[0] = getcwd()
   let b:vimshell.hook_functions_table = {
-        \ 'precmd' : {}, 'postcmd' : {}, 'emptycmd' : {}, 
+        \ 'precmd' : {}, 'preexec' : {}, 'emptycmd' : {}, 
         \ 'chpwd' : {}, 
         \}
 
