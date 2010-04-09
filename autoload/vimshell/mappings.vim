@@ -147,6 +147,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
     if a:is_insert
       call vimshell#start_insert()
+    else
+      normal! $
     endif
     return
   endif
@@ -165,6 +167,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
     if a:is_insert
       call vimshell#start_insert()
+    else
+      normal! $
     endif
     return
   endtry
@@ -182,6 +186,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   call vimshell#print_prompt()
   if a:is_insert
     call vimshell#start_insert()
+  else
+    normal! $
   endif
 endfunction"}}}
 function! vimshell#mappings#previous_prompt()"{{{
