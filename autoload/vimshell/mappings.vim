@@ -97,7 +97,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   $
 
   " Get command line.
-  let l:line = vimshell#get_cur_text()
+  let l:line = vimshell#get_prompt_command()
   let l:context = {
         \ 'has_head_spaces' : l:line =~ '^\s\+',
         \ 'is_interactive' : 1, 
@@ -119,8 +119,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
   " Get command line again.
   " Because: hook functions may change command line.
-  let l:line = vimshell#get_cur_text()
-  echomsg l:line
+  let l:line = vimshell#get_prompt_command()
 
   if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
     " Reload.

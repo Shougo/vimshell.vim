@@ -1,6 +1,6 @@
 *vimshell.txt*	Vim Scriptで実装された強力なシェル
 
-Version: 6.05
+Version: 6.50
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -93,7 +93,6 @@ EXAMPLES					*vimshell-examples*
 	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:VimShell_EnableInteractive = 1
 	let g:VimShell_EnableSmartCase = 1
-	let g:VimShell_EnableAutoLs = 1
 	
 	if has('win32') || has('win64') 
 	    " Display user name on Windows.
@@ -115,9 +114,22 @@ EXAMPLES					*vimshell-examples*
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
 	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
-	
+	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	\| call vimshell#hook#add('emptycmd', 'g:my_emptycmd')
+	\| call vimshell#hook#add('precmd', 'g:my_precmd')
+	\| call vimshell#hook#add('preexec', 'g:my_preexec')
+
 	function! g:my_chpwd(context)
-		call vimshell#execute('ls', a:context)
+	  call vimshell#execute('echo "chpwd"', a:context)
+	endfunction
+	function! g:my_emptycmd(context)
+	  call vimshell#execute('echo "emptycmd"', a:context)
+	endfunction
+	function! g:my_precmd(context)
+	  call vimshell#execute('echo "precmd"', a:context)
+	endfunction
+	function! g:my_preexec(context)
+	  call vimshell#execute('echo "preexec"', a:context)
 	endfunction
 <
 ==============================================================================

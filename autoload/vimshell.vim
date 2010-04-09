@@ -538,29 +538,33 @@ function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
   let l:pos = mode() ==# 'i' ? 2 : 1
 
+  let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
+
+  if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
+    let l:len = len(getline('.'))
+
+    " Skip multibyte
+    let l:pos -= 1
+    let l:cur_text = getline('.')[: col('.') - l:pos]
+    let l:fchar = char2nr(l:cur_text[-1:])
+    while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
+      let l:pos -= 1
+
+      let l:cur_text = getline('.')[: col('.') - l:pos]
+      let l:fchar = char2nr(l:cur_text[-1:])
+    endwhile
+  endif
+  return l:cur_text[len(vimshell#get_prompt()):]
+endfunction"}}}
+function! vimshell#get_prompt_command()"{{{
+  " Get command without prompt.
   if !vimshell#check_prompt()
     " Search prompt.
     let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
   else
     let l:lnum = '.'
   endif
-  let l:cur_text = col('.') < l:pos ? '' : getline(l:lnum)[: col('.') - l:pos]
-
-  if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
-    let l:len = len(getline(l:lnum))
-
-    " Skip multibyte
-    let l:pos -= 1
-    let l:cur_text = getline(l:lnum)[: col('.') - l:pos]
-    let l:fchar = char2nr(l:cur_text[-1:])
-    while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
-      let l:pos -= 1
-
-      let l:cur_text = getline(l:lnum)[: col('.') - l:pos]
-      let l:fchar = char2nr(l:cur_text[-1:])
-    endwhile
-  endif
-  return l:cur_text[len(vimshell#get_prompt()):]
+  return getline(l:lnum)[len(vimshell#get_prompt()):]
 endfunction"}}}
 function! vimshell#get_cur_line()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1

@@ -616,7 +616,6 @@ zshさえも起動することが可能です。
     let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
     let g:VimShell_EnableInteractive = 1
     let g:VimShell_EnableSmartCase = 1
-    let g:VimShell_EnableAutoLs = 1
 
     " Initialize execute file list.
     let g:VimShell_ExecuteFileList = {}
