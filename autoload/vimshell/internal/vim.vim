@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Feb 2010
-" Usage: Just source this file.
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,37 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.6, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.6:
-"     - Revised.
-"
-"   1.5:
-"     - Catch error.
-"
-"   1.4:
-"     - Extend current directory.
-"
-"   1.3:
-"     - Open directory.
-"
-"   1.2:
-"     - Ignore directory.
-"
-"   1.1:
-"     - Split nicely.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#vim#execute(program, args, fd, other_info)
@@ -66,7 +34,9 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
     let l:filename = a:args[0]
   endif
 
-  call vimshell#print_prompt()
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  call vimshell#print_prompt(l:context)
 
   " Save current directiory.
   let l:cwd = getcwd()

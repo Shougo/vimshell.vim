@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Apr 2010
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -81,7 +81,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     call vimshell#interactive#force_exit()
   endif
 
-  call s:init_bg(l:sub, l:args, a:other_info.is_interactive)
+  call s:init_bg(l:sub, l:args, a:fd, a:other_info)
 
   " Set variables.
   let b:interactive = {
@@ -180,13 +180,15 @@ function! vimshell#internal#iexe#default_settings()"{{{
   augroup END
 endfunction"}}}
 
-function! s:init_bg(sub, args, is_interactive)"{{{
+function! s:init_bg(sub, args, fd, other_info)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
   " Init buffer.
-  if a:is_interactive
-    call vimshell#print_prompt()
+  if a:other_info.is_interactive
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
   endif
   " Split nicely.
   call vimshell#split_nicely()

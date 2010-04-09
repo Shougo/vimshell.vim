@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: vimdiff.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2009
-" Usage: Just source this file.
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,51 +22,36 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#vimdiff#execute(program, args, fd, other_info)
-    " Diff file1 file2.
+  " Diff file1 file2.
 
-    if len(a:args) != 2
-        " Error.
-        call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
-        return 0
-    endif
+  if len(a:args) != 2
+    " Error.
+    call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
+    return 0
+  endif
 
-    call vimshell#print_prompt()
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  call vimshell#print_prompt(l:context)
 
-    " Save current directiory.
-    let l:cwd = getcwd()
+  " Save current directiory.
+  let l:cwd = getcwd()
 
-    " Split nicely.
-    if winheight(0) > &winheight
-        split
-    else
-        vsplit
-    endif
+  " Split nicely.
+  call vimshell#split_nicely()
 
-    try
-        edit `=a:args[0]`
-    catch /^.*/
-        echohl Error | echomsg v:errmsg | echohl None
-    endtry
+  try
+    edit `=a:args[0]`
+  catch /^.*/
+    echohl Error | echomsg v:errmsg | echohl None
+  endtry
 
-    lcd `=l:cwd`
+  lcd `=l:cwd`
 
-    vertical diffsplit `=a:args[1]`
+  vertical diffsplit `=a:args[1]`
 
-    return 1
+  return 1
 endfunction

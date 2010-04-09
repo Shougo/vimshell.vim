@@ -134,6 +134,8 @@ CHANGELOG					*vimshell-changelog*
     * Call hook functions if interactive only.
     * Implemented emptycmd, precmd, preexec hooks.
     * Deleted g:VimShell_EnableAutoLs option.
+    * Fixed s:check_output() error.
+    * Improved vimshell#print_prompt().
 
 2010-04-06
     * Fixed help file.

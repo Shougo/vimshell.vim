@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: hide.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2009
-" Usage: Just source this file.
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,29 +22,18 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#hide#execute(program, args, fd, other_info)
-    " Hide vimshell.
-    if a:other_info.is_interactive
-        " Insert prompt line.
-        call vimshell#print_prompt()
-        buffer #
-        return 1
-    else
-        return 0
-    endif
+  " Hide vimshell.
+  if a:other_info.is_interactive
+    " Insert prompt line.
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
+    buffer #
+    return 1
+  else
+    return 0
+  endif
 endfunction

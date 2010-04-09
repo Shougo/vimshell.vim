@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,99 +22,81 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.3, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.3:
-"     - Use startinsert!.
-"
-"   1.2:
-"     - Refactoringed.
-"
-"   1.1:
-"     - Implemented "h string".
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#h#execute(program, args, fd, other_info)
-    " Execute from history.
+  " Execute from history.
 
-    " Delete from history.
-    call vimshell#remove_history('h')
+  " Delete from history.
+  call vimshell#remove_history('h')
 
-    if empty(a:args) || a:args[0] =~ '^\d\+'
-        if empty(a:args)
-            let l:num = 0
-        else
-            let l:num = str2nr(a:args[0])
-        endif
-
-        if l:num >= len(g:vimshell#hist_buffer)
-            " Error.
-            call vimshell#error_line(a:fd, 'Not found in history.')
-            return 0
-        endif
-
-        let l:hist = g:vimshell#hist_buffer[l:num]
+  if empty(a:args) || a:args[0] =~ '^\d\+'
+    if empty(a:args)
+      let l:num = 0
     else
-        let l:args = '^' . escape(join(a:args), '~" \.^$[]*')
-        for h in g:vimshell#hist_buffer
-            if h =~ l:args
-                let l:hist = h
-                break
-            endif
-        endfor
-
-        if !exists('l:hist')
-            " Error.
-            call vimshell#error_line(a:fd, 'Not found in history.')
-            return 0
-        endif
+      let l:num = str2nr(a:args[0])
     endif
 
-    if a:other_info.has_head_spaces
-        " Don't append history.
-        call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:hist))
-    else
-        call setline(line('.'), g:VimShell_Prompt . l:hist)
+    if l:num >= len(g:vimshell#hist_buffer)
+      " Error.
+      call vimshell#error_line(a:fd, 'Not found in history.')
+      return 0
     endif
 
-    try
-        let l:skip_prompt = vimshell#parser#eval_script(l:hist, a:other_info)
-    catch /.*/
-        call vimshell#error_line({}, v:exception)
-        call vimshell#print_prompt()
-        call vimshell#interactive#highlight_escape_sequence()
+    let l:hist = g:vimshell#hist_buffer[l:num]
+  else
+    let l:args = '^' . escape(join(a:args), '~" \.^$[]*')
+    for h in g:vimshell#hist_buffer
+      if h =~ l:args
+        let l:hist = h
+        break
+      endif
+    endfor
 
-        if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
-          call vimshell#start_insert()
-        endif
-        return
-    endtry
-
-    if l:skip_prompt
-        " Skip prompt.
-        return
+    if !exists('l:hist')
+      " Error.
+      call vimshell#error_line(a:fd, 'Not found in history.')
+      return 0
     endif
+  endif
 
+  if a:other_info.has_head_spaces
+    " Don't append history.
+    call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:hist))
+  else
+    call setline(line('.'), g:VimShell_Prompt . l:hist)
+  endif
+
+  try
+    let l:skip_prompt = vimshell#parser#eval_script(l:hist, a:other_info)
+  catch /.*/
+    call vimshell#error_line({}, v:exception)
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
     call vimshell#interactive#highlight_escape_sequence()
 
-    if a:other_info.is_interactive
-        call vimshell#print_prompt()
-        if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
-          call vimshell#start_insert()
-        endif
+    if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+      call vimshell#start_insert()
     endif
+    return
+  endtry
 
-    return 1
+  if l:skip_prompt
+    " Skip prompt.
+    return
+  endif
+
+  call vimshell#interactive#highlight_escape_sequence()
+
+  if a:other_info.is_interactive
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
+    if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+      call vimshell#start_insert()
+    endif
+  endif
+
+  return 1
 endfunction

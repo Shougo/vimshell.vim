@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2010
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
     endtry
 
     " Set variables.
-    let b:interactive = {
+    let l:interactive = {
           \ 'process' : l:sub, 
           \ 'fd' : a:fd, 
           \ 'encoding' : l:options['--encoding'], 
@@ -85,12 +85,12 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
           \}
 
     " Input from stdin.
-    if b:interactive.fd.stdin != ''
-      call b:interactive.process.stdin.write(vimshell#read(a:fd))
+    if l:interactive.fd.stdin != ''
+      call l:interactive.process.stdin.write(vimshell#read(a:fd))
     endif
-    call b:interactive.process.stdin.close()
+    call l:interactive.process.stdin.close()
     
-    return vimshell#internal#bg#init(l:args, a:other_info, l:options['--filetype'])
+    return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], interactive)
   else
     " Execute in screen.
     let l:other_info = a:other_info
@@ -102,12 +102,12 @@ function! vimshell#internal#bg#vimshell_bg(args)"{{{
   call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
 endfunction"}}}
 
-function! vimshell#internal#bg#init(args, other_info, filetype)"{{{
-  let l:vimproc = b:interactive
-  
+function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)"{{{
   " Init buffer.
   if a:other_info.is_interactive
-    call vimshell#print_prompt()
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
   endif
 
   " Save current directiory.
@@ -122,7 +122,7 @@ function! vimshell#internal#bg#init(args, other_info, filetype)"{{{
   setlocal noswapfile
   setlocal nowrap
   let &filetype = a:filetype
-  let b:interactive = l:vimproc
+  let b:interactive = a:interactive
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline

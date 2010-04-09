@@ -205,11 +205,24 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call vimshell#default_settings()
   setfiletype vimshell
 
-  call vimshell#print_prompt()
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 1, 
+        \ 'is_insert' : 1, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \}
+  call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
 endfunction"}}}
 function! vimshell#switch_shell(split_flag, directory)"{{{
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 1, 
+        \ 'is_insert' : 1, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \}
+  
   if &filetype == 'vimshell'
     if winnr('$') != 1
       close
@@ -220,7 +233,8 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
     if a:directory != ''
       " Change current directory.
       lcd `=fnamemodify(a:directory, ':p')`
-      call vimshell#print_prompt()
+
+      call vimshell#print_prompt(l:context)
     endif
     call vimshell#start_insert()
     return
@@ -236,7 +250,7 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
       if a:directory != ''
         " Change current directory.
         lcd `=fnamemodify(a:directory, ':p')`
-        call vimshell#print_prompt()
+        call vimshell#print_prompt(l:context)
       endif
       call vimshell#start_insert()
       return
@@ -258,7 +272,7 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
       if a:directory != ''
         " Change current directory.
         lcd `=fnamemodify(a:directory, ':p')`
-        call vimshell#print_prompt()
+        call vimshell#print_prompt(l:context)
       endif
       call vimshell#start_insert()
       return
@@ -416,7 +430,12 @@ function! vimshell#error_line(fd, string)"{{{
   call vimshell#interactive#highlight_escape_sequence()
   $
 endfunction"}}}
-function! vimshell#print_prompt()"{{{
+function! vimshell#print_prompt(context)"{{{
+  " Call precmd hook.
+  for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
+    call call(l:func_name, [a:context])
+  endfor
+  
   " Search prompt
   if empty(b:vimshell.commandline_stack)
     let l:new_prompt = vimshell#get_prompt()

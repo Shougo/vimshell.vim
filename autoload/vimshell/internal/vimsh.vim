@@ -27,7 +27,9 @@
 function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
   " Create new vimshell or execute script.
   if empty(a:args)
-    call vimshell#print_prompt()
+    let l:context = a:other_info
+    let l:context.fd = a:fd
+    call vimshell#print_prompt(l:context)
     call vimshell#create_shell(0)
     return 1
   else

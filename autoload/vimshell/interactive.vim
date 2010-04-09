@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2010
+" Last Modified: 09 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -681,6 +681,8 @@ endfunction"}}}
 
 " Autocmd functions.
 function! s:check_output()"{{{
+  let l:bufnr_save = bufnr('%')
+
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
     if l:bufnr != bufnr('%') && buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
@@ -700,7 +702,9 @@ function! s:check_output()"{{{
           call vimshell#interactive#execute_pty_out(0)
         endif
 
-        buffer #
+        if bufexists(l:bufnr_save)
+          execute 'buffer' l:bufnr_save
+        endif
       endif
     endif
 

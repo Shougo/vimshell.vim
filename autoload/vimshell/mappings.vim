@@ -138,12 +138,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   endif
 
   if l:line =~ '^\s*$\|^\s*-\s*$'
-    " Call precmd hook.
-    for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
-      call call(l:func_name, [l:context])
-    endfor
-
-    call vimshell#print_prompt()
+    call vimshell#print_prompt(l:context)
 
     if a:is_insert
       call vimshell#start_insert()
@@ -159,11 +154,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
     
-    " Call precmd hook.
-    for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
-      call call(l:func_name, [l:context])
-    endfor
-    call vimshell#print_prompt()
+    call vimshell#print_prompt(l:context)
 
     if a:is_insert
       call vimshell#start_insert()
@@ -173,17 +164,12 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     return
   endtry
 
-  " Call precmd hook.
-  for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
-    call call(l:func_name, [l:context])
-  endfor
-
   if l:skip_prompt
     " Skip prompt.
     return
   endif
 
-  call vimshell#print_prompt()
+  call vimshell#print_prompt(l:context)
   if a:is_insert
     call vimshell#start_insert()
   else
