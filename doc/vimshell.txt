@@ -129,6 +129,10 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG					*vimshell-changelog*
 
+2010-04-12
+    * Fixed command_complete bug.
+    * Improved expand wildcard.
+
 2010-04-08
     * Fixed output check when program exited.
     * Call hook functions if interactive only.

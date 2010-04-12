@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 06 Apr 2010
+" Last Modified: 12 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -455,8 +455,8 @@ function! vimshell#parser#split_commands(script)"{{{
   return l:commands
 endfunction"}}}
 function! vimshell#parser#check_wildcard()"{{{
-  let l:wildcard = matchstr(vimshell#get_cur_text(), '[^[:blank:]]*$')
-  return l:wildcard =~ '[[*?]\|^\\[()|]'
+  let l:args = vimshell#get_current_args()
+  return !empty(l:args) && l:args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
 function! vimshell#parser#expand_wildcard(wildcard)"{{{
   " Exclude wildcard.

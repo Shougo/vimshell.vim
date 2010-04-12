@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 06 Apr 2010
+" Last Modified: 12 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -600,7 +600,12 @@ function! vimshell#get_current_args()"{{{
     return []
   endif
   
-  return vimshell#parser#split_args(l:commands[-1])
+  let l:args = vimshell#parser#split_args(l:commands[-1])
+  if vimshell#get_cur_text() =~ '\s\+$'
+    " Add blank argument.
+    call add(l:args, '')
+  endif
+  return l:args
 endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)

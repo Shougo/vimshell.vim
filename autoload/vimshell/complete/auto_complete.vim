@@ -25,18 +25,18 @@
 "=============================================================================
 
 function! vimshell#complete#auto_complete#omnifunc(findstart, base)"{{{
-    if a:findstart && !vimshell#check_prompt()
-        " Ignore.
-        return -1
-    endif
+  if a:findstart && !vimshell#check_prompt()
+    " Ignore.
+    return -1
+  endif
 
-    if vimshell#get_cur_text() =~ vimshell#get_argument_pattern()
-        " Args completion.
-        return vimshell#complete#args_complete#omnifunc(a:findstart, a:base)
-    else
-        " Command completion.
-        return vimshell#complete#command_complete#omnifunc(a:findstart, a:base)
-    endif
+  if len(vimshell#get_current_args()) > 1
+    " Args completion.
+    return vimshell#complete#args_complete#omnifunc(a:findstart, a:base)
+  else
+    " Command completion.
+    return vimshell#complete#command_complete#omnifunc(a:findstart, a:base)
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

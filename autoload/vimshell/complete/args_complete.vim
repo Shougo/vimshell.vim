@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2010
+" Last Modified: 12 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,17 +69,17 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
       return -1
     endif
     
-    let l:match = match(vimshell#get_cur_text(), vimshell#get_argument_pattern())
-    if l:match < 0
-      return len(vimshell#get_prompt())
+    let l:args = vimshell#get_current_args()
+    if len(l:args) <= 1
+      return -1
     endif
 
     " Get cursor word.
-    return len(vimshell#get_prompt()) + l:match
+    return col('.')-len(l:args[-1])
   endif
 
   " Get command name.
-  let l:args = vimshell#parser#split_args(vimshell#get_cur_text())
+  let l:args = vimshell#get_current_args()
   if vimshell#get_cur_text() =~ '\s\+$'
     " Add blank argument.
     call add(l:args, '')
