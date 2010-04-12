@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,13 +50,14 @@ function! vimshell#parser#eval_script(script, context)"{{{
       " Parse tilde.
       let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
     endif
-    let l:script = join(l:args[1:])
 
     if has_key(g:vimshell#special_func_table, l:program)
       " Special commands.
       let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-      let l:args = split(l:script)
+      let l:script = join(l:args[1:])
     else
+      let l:script = l:statement
+      
       " Expand block.
       if l:script =~ '{'
         let l:script = s:parse_block(l:script)
@@ -73,7 +74,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
 
       " Expand variables.
-      if l:script =~ '$'
+      if l:script =~ '\$'
         let l:script = s:parse_variables(l:script)
       endif
 
@@ -95,7 +96,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
 
       " Split args.
-      let l:args = vimshell#parser#split_args(l:script)
+      let l:args = vimshell#parser#split_args(l:script)[1:]
     endif
 
     if l:fd.stdout != ''
@@ -256,7 +257,7 @@ function! vimshell#parser#split_statements(script)"{{{
       let l:i += 1
     elseif a:script[l:i] == "'"
       " Single quote.
-      let [l:string, l:i] = s:skip_quote(a:script, l:i)
+      let [l:string, l:i] = s:skip_single_quote(a:script, l:i)
       let l:statement .= l:string
     elseif a:script[l:i] == '"'
       " Double quote.
@@ -301,46 +302,26 @@ function! vimshell#parser#split_args(script)"{{{
   while l:i < l:max
     if l:script[l:i] == "'"
       " Single quote.
-      let l:end = matchend(l:script, "^'\\zs[^']*'", l:i)
-      if l:end == -1
-        throw 'Quote error'
-      endif
-
-      let l:arg .= l:script[l:i+1 : l:end-2]
+      echomsg string([l:script, l:i])
+      let [l:arg_quote, l:i] = s:parse_single_quote(l:script, l:i)
+      let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
-
-      let l:i = l:end
     elseif l:script[l:i] == '"'
       " Double quote.
-      let l:end = matchend(l:script, '^"\zs\%([^"]\|\"\)*"', l:i)
-      if l:end == -1
-        throw 'Quote error'
-      endif
-
-      let l:arg .= substitute(l:script[l:i+1 : l:end-2], '\\"', '"', 'g')
+      let [l:arg_quote, l:i] = s:parse_double_quote(l:script, l:i)
+      let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
-
-      let l:i = l:end
     elseif l:script[l:i] == '`'
       " Back quote.
-      if l:script[l:i :] =~ '^`='
-        let l:quote = matchstr(l:script, '^`=\zs[^`]*\ze`', l:i)
-        let l:end = matchend(l:script, '^`=[^`]*`', l:i)
-        let l:arg .= string(eval(l:quote))
-      else
-        let l:quote = matchstr(l:script, '^`\zs[^`]*\ze`', l:i)
-        let l:end = matchend(l:script, '^`[^`]*`', l:i)
-        let l:arg .= substitute(system(l:quote), '\n', ' ', 'g')
-      endif
+      let [l:arg_quote, l:i] = s:parse_back_quote(l:script, l:i)
+      let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
-
-      let l:i = l:end
     elseif l:script[i] == '\'
       " Escape.
       let l:i += 1
@@ -393,37 +374,7 @@ function! vimshell#parser#split_commands(script)"{{{
   let l:command = ''
   let i = 0
   while i < l:max
-    if l:script[i] == "'"
-      " Single quote.
-      let l:end = matchend(l:script, "^'\\zs[^']*'", i)
-      if l:end == -1
-        throw 'Quote error'
-      endif
-
-      let l:command .= l:script[i: l:end]
-      let i = l:end
-    elseif l:script[i] == '"'
-      " Double quote.
-      let l:end = matchend(l:script, '^"\zs\%([^"]\|\"\)*"', i)
-      if l:end == -1
-        throw 'Quote error'
-      endif
-
-      let l:command .= l:script[i: l:end]
-      let i = l:end
-    elseif l:script[i] == '`'
-      " Back quote.
-      if l:script[i :] =~ '^`='
-        let l:quote = matchstr(l:script, '^`=\zs[^`]*\ze`', i)
-        let l:end = matchend(l:script, '^`=[^`]*`', i)
-      else
-        let l:quote = matchstr(l:script, '^`\zs[^`]*\ze`', i)
-        let l:end = matchend(l:script, '^`[^`]*`', i)
-      endif
-
-      let l:command .= l:script[i]
-      let i = l:end
-    elseif l:script[i] == '\'
+    if l:script[i] == '\'
       " Escape.
       let l:command .= l:script[i]
       let i += 1
@@ -722,8 +673,102 @@ function! s:parse_pipe(script)"{{{
   return l:script
 endfunction"}}}
 
+function! s:parse_single_quote(script, i)"{{{
+  if a:script[a:i] != "'"
+    return ['', a:i]
+  endif
+
+  let l:arg = ''
+  let i = a:i + 1
+  let l:max = len(a:script)
+  while i < l:max
+    if a:script[i] == "'"
+      if i+1 < l:max && a:script[i+1] == "'"
+        " Escape quote.
+        let l:arg .= "'"
+        let i += 2
+      else
+        " Quote end.
+        return [l:arg, i+1]
+      endif
+    else
+      let l:arg .= a:script[i]
+      let i += 1
+    endif
+  endwhile
+
+  throw 'Quote error'
+endfunction"}}}
+function! s:parse_double_quote(script, i)"{{{
+  if a:script[a:i] != '"'
+    return ['', a:i]
+  endif
+
+  let l:arg = ''
+  let i = a:i + 1
+  let l:max = len(a:script)
+  while i < l:max
+    if a:script[i] == '"'
+      " Quote end.
+      return [l:arg, i+1]
+    elseif a:script[i] == '\'
+      " Escape.
+      let l:i += 1
+
+      if l:i > l:max
+        throw 'Escape error'
+      endif
+
+      let l:arg .= a:script[i]
+      let l:i += 1
+    else
+      let l:arg .= a:script[i]
+      let i += 1
+    endif
+  endwhile
+
+  throw 'Quote error'
+endfunction"}}}
+function! s:parse_back_quote(script, i)"{{{
+  if a:script[a:i] != '`'
+    return ['', a:i]
+  endif
+  
+  let l:arg = ''
+  let l:max = len(a:script)
+  if i + 1 < l:max && a:script[a:i + 1] == '='
+    " Vim eval quote.
+    let i = a:i + 2
+    
+    while i < l:max
+      if a:script[i] == '`'
+        " Quote end.
+        return [eval(l:arg), i+1]
+      else
+        let l:arg .= a:script[i]
+        let i += 1
+      endif
+    endwhile
+  else
+    " Eval quote.
+    let i = a:i + 1
+    
+    while i < l:max
+      if a:script[i] == '`'
+        " Quote end.
+        return [l:arg, i+1]
+      else
+        let l:arg .= a:script[i]
+        let i += 1
+      endif
+    endwhile
+  endif
+
+  throw 'Quote error'
+endfunction"}}}
+
 " Skip helper.
-function! s:skip_quote(script, i)"{{{
+function! s:skip_single_quote(script, i)"{{{
   let l:end = matchend(a:script, "^'[^']*'", a:i)
   if l:end == -1
     throw 'Quote error'
@@ -747,7 +792,7 @@ endfunction"}}}
 function! s:skip_else(args, script, i)"{{{
   if a:script[a:i] == "'"
     " Single quote.
-    let [l:string, l:i] = s:skip_quote(a:script, a:i)
+    let [l:string, l:i] = s:skip_single_quote(a:script, a:i)
     let l:script = a:args . l:string
   elseif a:script[a:i] == '"'
     " Double quote.

@@ -75,7 +75,7 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
     endif
 
     " Get cursor word.
-    return col('.')-len(l:args[-1])
+    return col('.')-len(l:args[-1])-1
   endif
 
   " Get command name.
