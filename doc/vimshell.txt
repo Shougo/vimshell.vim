@@ -22,7 +22,7 @@ License: MIT license  {{{
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 }}}
 
-CONTENTS					*vimshell-contents*
+CONTENTS						*vimshell-contents*
 
 Introduction		|vimshell-introduction|
 Install			|vimshell-install|
@@ -33,16 +33,18 @@ Interface		|vimshell-interface|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
+Alter Command		|vimshell-alter-command|
+Hook			|vimshell-hook|
 Create plugin		|vimshell-create-plugin|
 ToDo			|vimshell-todo|
 Bugs			|vimshell-bugs|
 Changelog		|vimshell-changelog|
 
 ==============================================================================
-INTRODUCTION					*vimshell-introduction*
+INTRODUCTION						*vimshell-introduction*
 
 ==============================================================================
-USAGE						*vimshell-usage*
+USAGE							*vimshell-usage*
 
 You can start vimshell in ":VimShell".  Because vimshell works similar with
 a common shell, you may operate it intuitively.  But vimshell perform the
@@ -50,25 +52,31 @@ path appointment in '/'. Vimshell is misunderstood with escape sequence when
 you use '\' by Windows for a path and do not work.
 
 ==============================================================================
-INSTALL						*vimshell-install*
+INSTALL							*vimshell-install*
 
 ==============================================================================
-INTERFACE					*vimshell-interface*
+INTERFACE						*vimshell-interface*
 
 ------------------------------------------------------------------------------
-COMMANDS 					*vimshell-commands*
+COMMANDS 						*vimshell-commands*
 
 :VimShell                                       *:VimShell*
 		Run vimshell.
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 					*vimshell-key-mappings*
+VARIABLES 						*vimshell-variables*
 
-<Plug>(vimshell_)				*<Plug>(vimshell_)*
-		
+g:VimShell_IgnoreCase					*g:VimShell_IgnoreCase*
+			
+
+------------------------------------------------------------------------------
+KEY MAPPINGS 						*vimshell-key-mappings*
+
+<Plug>(vimshell_)					*<Plug>(vimshell_)*
+			
 
 ==============================================================================
-EXAMPLES					*vimshell-examples*
+EXAMPLES						*vimshell-examples*
 >
 	" Initialize execute file list.
 	let g:VimShell_ExecuteFileList = {}
@@ -109,28 +117,45 @@ EXAMPLES					*vimshell-examples*
 	endfunction
 <
 ==============================================================================
-INTERNAL COMMANDS				*vimshell-internal-commands*
+INTERNAL COMMANDS					*vimshell-internal-commands*
 
 ==============================================================================
-SPECIAL COMMANDS				*vimshell-special-commands*
+SPECIAL COMMANDS					*vimshell-special-commands*
 
 ==============================================================================
-TODO						*vimshell-todo*
-
+ALTER COMMAND						*vimshell-alter-command*
+>
+	autocmd FileType vimshell
+	\ call vimshell#altercmd#define('g', 'git')
+<
 ==============================================================================
-BUGS						*vimshell-bugs*
-
+HOOK							*vimshell-hook*
+>
+	autocmd FileType vimshell
+	\ call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	
+	function! g:my_chpwd(context)
+		call vimshell#execute('ls', a:context)
+	endfunction
+<
 ==============================================================================
-CREATE PLUGIN					*vimshell-create-plugin*
+CREATE PLUGIN						*vimshell-create-plugin*
 
 In this clause, I comment on a method to make plugin of vimshell.  The
 ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
-CHANGELOG					*vimshell-changelog*
+TODO							*vimshell-todo*
+
+==============================================================================
+BUGS							*vimshell-bugs*
+
+==============================================================================
+CHANGELOG						*vimshell-changelog*
 
 2010-04-13
     * Improved quote parser.
+    * Revised Japanese help.
 
 2010-04-12
     * Fixed command_complete bug.

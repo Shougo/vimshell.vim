@@ -22,7 +22,7 @@ License: MIT license  {{{
     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 }}}
 
-CONTENTS					*vimshell-contents*
+CONTENTS						*vimshell-contents*
 
 Introduction		|vimshell-introduction|
 Install			|vimshell-install|
@@ -33,13 +33,15 @@ Interface		|vimshell-interface|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
+Alter Command		|vimshell-alter-command|
+Hook			|vimshell-hook|
 Create plugin		|vimshell-create-plugin|
 ToDo			|vimshell-todo|
 Bugs			|vimshell-bugs|
 Changelog		|vimshell-changelog|
 
 ==============================================================================
-INTRODUCTION					*vimshell-introduction*
+INTRODUCTION						*vimshell-introduction*
 
 vimshellは外部のシェルを使わず、100% Vim Scriptによって実装された究極のシェル
 です。 ただし、eshellとは違ってまだまだ未完成です。 一番の特徴としては、Vim
@@ -56,7 +58,7 @@ Windows上では一部の機能が制限されるので注意。 加えて、他
 異なります。
 
 ==============================================================================
-USAGE						*vimshell-usage*
+USAGE							*vimshell-usage*
 
 vimshellを起動するには、|:VimShell|コマンドを実行します。 これが面倒なら、便
 利なキーマッピングも定義されているので使用すると良いでしょう。 一部の相違点
@@ -65,29 +67,91 @@ vimshellを起動するには、|:VimShell|コマンドを実行します。 こ
 識します。 たとえWindows環境であってもパスは/を用いなければなりません。
 
 ==============================================================================
-INSTALL						*vimshell-install*
+INSTALL							*vimshell-install*
 
 http://github.com/Shougo/vimshell/tree/master より、配布ファイルをVimの
 'runtimepath'にコピーします。 ただし、presen/vimshell.txtとRakefileは必要あ
 りません。
 
+非同期実行するには、vimprocが必要です。
+
+私がvimshell用に修正したvimprocがあるので、それをリポジトリから取ってきます。
+http://github.com/Shougo/vimproc
+そしてproc.soをmakeします。
+
+Make方法
+
+* Mingw:
+
+        $ make -f make_mingw.mak
+
+* Mac:
+
+        $ make -f make_mac.mak
+
+* Linux BSD:
+
+        $ make -f make_gcc.mak
+
+* Visual Studio:
+
+        $ make -f make_msvc.mak
+
+コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクトリにコピーします。
+
+あとは.vimrc上で
+>
+    let g:VimShell_EnableInteractive = 1
+<
+とすると、非同期実行が有効になります。
+vimshellは非同期実行のとき、Vimのシェル設定を利用しません。
+
 ==============================================================================
-INTERFACE					*vimshell-interface*
+INTERFACE						*vimshell-interface*
 
 ------------------------------------------------------------------------------
-COMMANDS 					*vimshell-commands*
+COMMANDS 						*vimshell-commands*
 
-:VimShell                                       *:VimShell*
-		vimshellを起動します。
+:VimShell {path}					*:VimShell*
+			{path}をカレントディレクトリとして、vimshellを起動し
+			ます。他のvimshellが起動している場合、そのvimshell
+			にスイッチし、カレントディレクトリを{path}に変更しま
+			す。{path}を省略した場合、vimshellのカレントディレ
+			クトリは変更されません。
+
+:VimShellCreate {path}					*:VimShellCreate*
+			|:VimShell:|と同じですが、他のvimshellが起動している
+			場合でも、新しいvimshellバッファを作成します。
+
+:VimShellPop {path}					*:VimShellPop*
+			|:VimShell:|と同じですが、こちらは小さいウインドウを
+			ポップアップします。ちょっとだけvimshellの機能を使
+			いたいときに便利です。
+
+:VimShellExecute {path}					*:VimShellExecute*
+			vimshellを起動せずに、{path}で指定された実行ファイルを
+			バックグラウンドで起動します。vimshellをGNU screenの
+			ように使えます。
+
+:VimShellInteractive {path}				*:VimShellInteractive*
+			vimshellを起動せずに、{path}で指定されたインタプリタ
+			を起動します。EmacsのM-x {interpreter-name}のように
+			使えます。
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 					*vimshell-key-mappings*
+VARIABLES 						*vimshell-variables*
 
-<Plug>(vimshell_)				*<Plug>(vimshell_)*
-		
+g:VimShell_IgnoreCase					*g:VimShell_IgnoreCase*
+			
+
+------------------------------------------------------------------------------
+KEY MAPPINGS 						*vimshell-key-mappings*
+
+<Plug>(vimshell_)					*<Plug>(vimshell_)*
+			
 
 ==============================================================================
-EXAMPLES					*vimshell-examples*
+EXAMPLES						*vimshell-examples*
 >
 	let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
 	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
@@ -133,7 +197,7 @@ EXAMPLES					*vimshell-examples*
 	endfunction
 <
 ==============================================================================
-INTERNAL COMMANDS				*vimshell-internal-commands*
+INTERNAL COMMANDS					*vimshell-internal-commands*
 
 bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
@@ -174,15 +238,15 @@ dirs [{max}]						*vimshell-internal-dirs*
 echo [{argument}...]					*vimshell-internal-echo*
 		引数を出力します。
 
-exe [{option}...] {command} 						*vimshell-internal-exe*
+exe [{option}...] {command} 				*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効になっていない場合、挙動は
 		|vimshell-internal-sexe| と同様になります。
 		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
 		詳しくは|vimshell-execute-options|を参照してください。
 		
-									*vimshell-execute-options*
-		--encoding = {encoding-name}				*vimshell-execute-options-encoding*
+							*vimshell-execute-options*
+		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
 		起動するプログラムのエンコーディングを{encoding-name}に変更
 		します。 'encoding'と{encoding-name}が異なる場合、vimshellは
 		入出力のエンコーディング変換を自動的に行います。 このオプショ
@@ -190,13 +254,6 @@ exe [{option}...] {command} 						*vimshell-internal-exe*
 
 exit 							*vimshell-internal-exit*
 		vimshellを終了します。
-
-galias {global-alias-name} = {command}			*vimshell-internal-galias*
-		vimshellにグローバルなaliasを定義します。vimshellは
-		{global-alias-name}がコマン ドライン中に現われると、自動的に
-		{command}に置き換えます。 |vimshell-internal-alias|とは違い、
-		引数でも展開されます。zshのグローバルエイリアスと良く似た機
-		能です。
 
 gcd [{directory-path}]					*vimshell-internal-gcd*
 		vimshellのカレントディレクトリを変更し、かつグローバルなカレ
@@ -233,7 +290,7 @@ history [{history-number}]				*vimshell-internal-history*
 		{max}を省略すると、10になります。
 		この一覧上で<Enter>を押すことで、その履歴を実行できます。
 
-iexe [{options}...] {command}						*vimshell-internal-iexe*
+iexe [{options}...] {command}				*vimshell-internal-iexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。非同期実行機能が有効化されていないとエラーになります。
 		exeとは違い、対話コマンドを実行することに特化しています。入
@@ -304,12 +361,19 @@ vimsh [{filename}]					*vimshell-internal-vimsh*
 		{filename}を省略すると、新しいvimshellバッファを開きます。
 
 ==============================================================================
-SPECIAL COMMANDS				*vimshell-special-commands*
+SPECIAL COMMANDS					*vimshell-special-commands*
 
 alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshellにaliasを定義します。vimshellは{alias-name}がコマン
 		ド名として使用されると、 自動的に{command}に置き換えます。普
 		通のシェルとは違い、 = の前後に空白があっても動作します。
+
+galias {global-alias-name} = {command}			*vimshell-internal-galias*
+		vimshellにグローバルなaliasを定義します。vimshellは
+		{global-alias-name}がコマン ドライン中に現われると、自動的に
+		{command}に置き換えます。 |vimshell-internal-alias|とは違い、
+		引数でも展開されます。zshのグローバルエイリアスと良く似た機
+		能です。
 
 ev {expression}						*vimshell-special-expression*
 		{expression}をVim Scriptとして解釈し、評価結果を表示します。
@@ -323,19 +387,69 @@ vexe {expression}					*vimshell-special-vexe*
 		{expression}をVim Scriptの文として実行します。
 
 ==============================================================================
-TODO						*vimshell-todo*
+ALTER COMMAND						*vimshell-alter-command*
+
+kana氏の作成したaltercmd.vim[http://github.com/kana/vim-altercmd]というものがあります。
+これはCommand line-modeでのコマンド名においてのみ展開される特殊なエイリアスです。
+普通のエイリアスよりも、誤爆しにくいという利点があります。
+
+それをvimshell上にも実装しました。vimshellにもエイリアス機能がありますが、
+altercmd機能を用いると、展開結果が一目で分かります。
+本家とは違い、altercmdの再帰的展開にも対応しています。
+
+使用方法は、vimshellバッファ上で|vimshell#altercmd#define|を呼びだします。
+autocmd FileTypeを使用すると、楽に定義できるでしょう。
+>
+	autocmd FileType vimshell
+	\ call vimshell#altercmd#define('g', 'git')
+<
+==============================================================================
+HOOK							*vimshell-hook*
+
+vimshellには関数がまだありませんが、決められたフック地点でVim Scriptの関数が
+呼べるため、 vimshellの内部構造を熟知していれば、より柔軟な処理ができます。
+
+次の例では、chpwdにフックを設定し、カレントディレクトリ移動時にlsを実行する
+ようにしています。
+>
+	autocmd FileType vimshell
+	\ call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	
+	function! g:my_chpwd(context)
+		call vimshell#execute('ls', a:context)
+	endfunction
+<
+vimshellでは次のようなフック地点が用意されています。
+フック地点の名前は、bashやzshに存在するフック関数名と似せてあります。
+
+chpwd							*vimshell-hook-chpwd*
+		vimshellのカレントディレクトリが変更されるときに呼びだされます。
+
+preexec							*vimshell-hook-preexec*
+		コマンド実行前に呼びだされます。この関数内でプロンプトの内容
+		を変更すると、実行するコマンドが変化します。
+
+emptycmd						*vimshell-hook-emptycmd*
+		コマンド名が空のときに呼びだされます。この関数内でプロンプト
+		の内容を変更すると、実行するコマンドが変化します。
+
+precmd							*vimshell-hook-precmd*
+		コマンド実行後、プロンプト表示前に呼びだされます。
 
 ==============================================================================
-BUGS						*vimshell-bugs*
-
-==============================================================================
-CREATE PLUGIN					*vimshell-create-plugin*
+CREATE PLUGIN						*vimshell-create-plugin*
 
 In this clause, I comment on a method to make plugin of vimshell.
 The ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
-CHANGELOG					*vimshell-changelog*
+TODO							*vimshell-todo*
+
+==============================================================================
+BUGS							*vimshell-bugs*
+
+==============================================================================
+CHANGELOG						*vimshell-changelog*
 
 doc/vimshell.txtを参照せよ。
 
