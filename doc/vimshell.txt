@@ -162,6 +162,7 @@ CHANGELOG						*vimshell-changelog*
     * Deleted ev internal command.
     * Fixed vimshell#print_line().
     * Improved alias and gailias error message.
+    * Improved alias parse.
 
 2010-04-12
     * Fixed command_complete bug.

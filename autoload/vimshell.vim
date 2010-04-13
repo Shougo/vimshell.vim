@@ -472,8 +472,6 @@ function! vimshell#print_prompt(context)"{{{
   endif
 
   " Insert prompt line.
-  echomsg line('$')
-  echomsg getline('.')
   if line('$') == 1 && getline('.') == ''
     call setline('$', l:new_prompt)
   else
@@ -636,8 +634,13 @@ endfunction"}}}
 function! vimshell#iswin()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
+function! vimshell#get_program_pattern()"{{{
+  return 
+        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+\ze\%($\|\s*\)'
+endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
-  return '[^\\]\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
+  return 
+        \'[^\\]\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
 endfunction"}}}
 function! vimshell#split_nicely()"{{{
   " Split nicely.

@@ -28,7 +28,6 @@ function! vimshell#parser#eval_script(script, context)"{{{
   let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
-    " Get program.
     let l:args = vimshell#parser#split_args(l:statement)
 
     " Expand global alias.
@@ -38,13 +37,17 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
     endfor
     
-    let l:program = l:args[0]
+    " Get program.
+    let l:program = matchstr(l:statement, vimshell#get_program_pattern())
+    if l:program  == ''
+      throw 'Invalid command name.'
+    endif
+    let l:script = l:statement[len(l:program) :]
 
     if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
       " Expand alias.
       let l:alias = s:recursive_expand_alias(l:program)
-      let l:args = vimshell#parser#split_args(l:alias . ' ' . join(l:args[1:])) 
-      let l:program = l:args[0]
+      let l:program = l:alias
     endif
     if l:program != '' && l:program[0] == '~'
       " Parse tilde.
@@ -54,10 +57,8 @@ function! vimshell#parser#eval_script(script, context)"{{{
     if has_key(g:vimshell#special_func_table, l:program)
       " Special commands.
       let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-      let l:script = join(l:args[1:])
+      let l:args = split(l:script)
     else
-      let l:script = l:statement
-      
       " Expand block.
       if l:script =~ '{'
         let l:script = s:parse_block(l:script)
@@ -302,7 +303,6 @@ function! vimshell#parser#split_args(script)"{{{
   while l:i < l:max
     if l:script[l:i] == "'"
       " Single quote.
-      echomsg string([l:script, l:i])
       let [l:arg_quote, l:i] = s:parse_single_quote(l:script, l:i)
       let l:arg .= l:arg_quote
       if l:arg == ''
