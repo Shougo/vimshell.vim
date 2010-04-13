@@ -28,6 +28,9 @@ function! vimshell#internal#vexe#execute(program, args, fd, other_info)
   " Execute vim command.
 
   let l:command = join(a:args)
+  let l:context = a:other_info
+  let l:context.fd = a:fd
+  call vimshell#set_context(l:context)
   redir => l:output
   for l:line in split(join(a:args), '\n')
     execute l:command

@@ -211,6 +211,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'is_insert' : 1, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
+  call vimshell#set_context(l:context)
   call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
@@ -285,15 +286,6 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   call vimshell#create_shell(a:split_flag, a:directory)
 endfunction"}}}
 
-function! vimshell#execute(cmdline, context)"{{{
-  try
-    let l:skip_prompt = vimshell#parser#eval_script(a:cmdline, a:context)
-  catch /.*/
-    let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line(a:context.fd, l:message)
-    return
-  endtry
-endfunction"}}}
 function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
   if empty(a:fd)
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
@@ -430,11 +422,11 @@ function! vimshell#error_line(fd, string)"{{{
   call vimshell#interactive#highlight_escape_sequence()
   $
 endfunction"}}}
-function! vimshell#print_prompt(context)"{{{
+function! vimshell#print_prompt(...)"{{{
+  let l:context = a:0 >= 1? a:1 : vimshell#get_context()
+  
   " Call precmd hook.
-  for l:func_name in values(b:vimshell.hook_functions_table['precmd'])
-    call call(l:func_name, [a:context])
-  endfor
+  call vimshell#hook#call('precmd', l:context)
   
   " Search prompt
   if empty(b:vimshell.commandline_stack)
@@ -656,6 +648,23 @@ endfunction"}}}
 "}}}
 
 " Helper functions.
+function! vimshell#execute(cmdline, ...)"{{{
+  let l:context = a:0 >= 1? a:1 : vimshell#get_context()
+  try
+    echomsg a:cmdline
+    let l:skip_prompt = vimshell#parser#eval_script(a:cmdline, l:context)
+  catch /.*/
+    let l:message = v:exception . ' ' . v:throwpoint
+    call vimshell#error_line(a:context.fd, l:message)
+    return
+  endtry
+endfunction"}}}
+function! vimshell#set_context(context)"{{{
+  let s:context = a:context
+endfunction"}}}
+function! vimshell#get_context()"{{{
+  return s:context
+endfunction"}}}
 " Special functions."{{{
 function! s:special_command(program, args, fd, other_info)"{{{
   let l:program = a:args[0]

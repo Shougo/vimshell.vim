@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -79,8 +79,6 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     " Call chpwd hook.
     let l:context = a:other_info
     let l:context.fd = a:fd
-    for l:func_name in values(b:vimshell.hook_functions_table['chpwd'])
-      call call(l:func_name, [l:context])
-    endfor
+    call vimshell#hook#call('chpwd', l:context)
   endif
 endfunction

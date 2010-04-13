@@ -107,14 +107,10 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
   if l:line =~ '^\s*$'
     " Call emptycmd hook.
-    for l:func_name in values(b:vimshell.hook_functions_table['emptycmd'])
-      call call(l:func_name, [l:context])
-    endfor
+    call vimshell#hook#call('emptycmd', l:context)
   else
     " Call preexec hook.
-    for l:func_name in values(b:vimshell.hook_functions_table['preexec'])
-      call call(l:func_name, [l:context])
-    endfor
+    call vimshell#hook#call('preexec', l:context)
   endif
 
   " Get command line again.

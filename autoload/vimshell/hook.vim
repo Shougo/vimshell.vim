@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,16 @@ function! vimshell#hook#add(hook_point, func_name)"{{{
   endif
   
   let b:vimshell.hook_functions_table[a:hook_point][a:func_name] = a:func_name
+endfunction"}}}
+function! vimshell#hook#call(hook_point, context)"{{{
+  call vimshell#set_context(a:context)
+
+  " Call hook function.
+  for l:func_name in values(b:vimshell.hook_functions_table[a:hook_point])
+    call call(l:func_name, [])
+
+    echomsg l:func_name
+  endfor
 endfunction"}}}
 function! vimshell#hook#del(hook_point, func_name)"{{{
   if !has_key(b:vimshell.hook_functions_table, a:hook_point)

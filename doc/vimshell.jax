@@ -183,17 +183,17 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#hook#add('precmd', 'g:my_precmd')
 	\| call vimshell#hook#add('preexec', 'g:my_preexec')
 
-	function! g:my_chpwd(context)
-	  call vimshell#execute('echo "chpwd"', a:context)
+	function! g:my_chpwd()
+	  call vimshell#execute('echo "chpwd"')
 	endfunction
-	function! g:my_emptycmd(context)
-	  call vimshell#execute('echo "emptycmd"', a:context)
+	function! g:my_emptycmd()
+	  call vimshell#execute('echo "emptycmd"')
 	endfunction
-	function! g:my_precmd(context)
-	  call vimshell#execute('echo "precmd"', a:context)
+	function! g:my_precmd()
+	  call vimshell#execute('echo "precmd"')
 	endfunction
-	function! g:my_preexec(context)
-	  call vimshell#execute('echo "preexec"', a:context)
+	function! g:my_preexec()
+	  call vimshell#execute('echo "preexec"')
 	endfunction
 <
 ==============================================================================
@@ -421,8 +421,8 @@ vimshellには関数がまだありませんが、決められたフック地点
 	autocmd FileType vimshell
 	\ call vimshell#hook#add('chpwd', 'g:my_chpwd')
 	
-	function! g:my_chpwd(context)
-		call vimshell#execute('ls', a:context)
+	function! g:my_chpwd()
+		call vimshell#execute('ls')
 	endfunction
 <
 vimshellでは次のようなフック地点が用意されています。

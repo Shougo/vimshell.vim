@@ -112,8 +112,8 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('ll', 'ls -l')
 	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
 	
-	function! g:my_chpwd(context)
-		call vimshell#execute('ls', a:context)
+	function! g:my_chpwd()
+		call vimshell#execute('ls')
 	endfunction
 <
 ==============================================================================
@@ -163,6 +163,8 @@ CHANGELOG						*vimshell-changelog*
     * Fixed vimshell#print_line().
     * Improved alias and gailias error message.
     * Improved alias parse.
+    * Changed hook specification.
+    * Improved context.
 
 2010-04-12
     * Fixed command_complete bug.

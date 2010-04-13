@@ -97,7 +97,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
 
       " Split args.
-      let l:args = vimshell#parser#split_args(l:script)[1:]
+      let l:args = vimshell#parser#split_args(l:script)
     endif
 
     if l:fd.stdout != ''

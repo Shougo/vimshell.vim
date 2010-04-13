@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: echo.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,9 +25,9 @@
 "=============================================================================
 
 function! vimshell#internal#echo#execute(program, args, fd, other_info)"{{{
-    " Echo arguments.
-    call vimshell#print_line(a:fd, join(a:args))
+  " Echo arguments.
+  call vimshell#print_line(a:fd, join(a:args))
 
-    return 0
+  return 0
 endfunction"}}}
 
