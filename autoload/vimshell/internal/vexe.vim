@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: vexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Sep 2009
-" Usage: Just source this file.
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,30 +22,19 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
-function! vimshell#special#vexe#execute(program, args, fd, other_info)
-    " Execute vim command.
+function! vimshell#internal#vexe#execute(program, args, fd, other_info)
+  " Execute vim command.
 
-    let l:command = join(a:args)
-    redir => l:output
+  let l:command = join(a:args)
+  redir => l:output
+  for l:line in split(join(a:args), '\n')
     execute l:command
-    redir END
+  endfor
+  redir END
 
-    for line in split(l:output, '\n')
-        call vimshell#print_line(a:fd, line)
-    endfor
+  for line in split(l:output, '\n')
+    call vimshell#print_line(a:fd, line)
+  endfor
 endfunction

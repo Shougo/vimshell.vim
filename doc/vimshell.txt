@@ -157,6 +157,9 @@ CHANGELOG						*vimshell-changelog*
     * Improved quote parser.
     * Revised Japanese help.
     * Improved output check.
+    * Changed vexe as special command.
+    * Added eval internal command.
+    * Deleted ev internal command.
 
 2010-04-12
     * Fixed command_complete bug.

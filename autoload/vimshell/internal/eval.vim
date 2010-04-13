@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: ev.vim
+" FILE: eval.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 02 Apr 2009
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,18 +24,27 @@
 " }}}
 "=============================================================================
 
-function! vimshell#special#ev#execute(program, args, fd, other_info)
-    " Evaluate arguments.
+function! vimshell#internal#eval#execute(program, args, fd, other_info)
+  " Evaluate arguments.
 
-    let l:expression = join(a:args)
-    while l:expression =~ '$$\h\w*'
-        let l:expression = substitute(l:expression, '$$\h\w*',
-                    \printf("b:vimshell.system_variables['%s']", matchstr(l:expression, '$$\zs\h\w*')), '')
-    endwhile
-    while l:expression =~ '$\l\w*'
-        let l:expression = substitute(l:expression, '$\l\w*',
-                    \printf("b:vimshell.variables['%s']", matchstr(l:expression, '$\zs\l\w*')), '')
-    endwhile
+  let l:line = join(a:args)
+  let l:context = {
+        \ 'has_head_spaces' : l:line =~ '^\s\+',
+        \ 'is_interactive' : a:other_info.is_interactive, 
+        \ 'is_insert' : a:other_info.is_insert, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \}
 
-    call vimshell#print_line(a:fd, string(eval(l:expression)))
+  try
+    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
+  catch /.*/
+    let l:message = v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, l:message)
+    return
+  endtry
+
+  if l:skip_prompt
+    " Skip prompt.
+    return 1
+  endif
 endfunction

@@ -198,6 +198,8 @@ EXAMPLES						*vimshell-examples*
 <
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
+internal commandは普通のシェルにおける内部コマンドのように動作します。
+引数はvimshellに解釈された後に分割して渡されます。
 
 bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
@@ -237,6 +239,11 @@ dirs [{max}]						*vimshell-internal-dirs*
 
 echo [{argument}...]					*vimshell-internal-echo*
 		引数を出力します。
+
+eval {expression}					*vimshell-internal-expression*
+		{expression}をvimshell Scriptとして解釈し、評価結果を表示します。
+		前のバージョンのevとは動作が違います。evの代わりが欲しいなら、
+		alias ev = 'vexe echo'を設定しましょう。
 
 exe [{option}...] {command} 				*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
@@ -342,6 +349,9 @@ sudo {command}						*vimshell-internal-sudo*
 		動作しません。さらに、非同期実行機能が必要です。 {command}が
 		vimの場合、|sudo.vim|を用いて編集しようとします。
 
+vexe {expression}					*vimshell-internal-vexe*
+		{expression}をVim Scriptの文として実行します。
+
 view {filename}						*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開きます。ファイルの行
 		数がウインドウサイズよりも少ない場合、 別バッファを開かず、
@@ -362,6 +372,9 @@ vimsh [{filename}]					*vimshell-internal-vimsh*
 
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
+special commandはinternal commandとは違い、vimshellが最小限の解釈しかせずに、
+コマンドに制御が渡ります。それだけ柔軟な解釈ができますが、引数をパースするのは
+それぞれのコマンドの責任となります。
 
 alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshellにaliasを定義します。vimshellは{alias-name}がコマン
@@ -375,16 +388,9 @@ galias {global-alias-name} = {command}			*vimshell-internal-galias*
 		引数でも展開されます。zshのグローバルエイリアスと良く似た機
 		能です。
 
-ev {expression}						*vimshell-special-expression*
-		{expression}をVim Scriptとして解釈し、評価結果を表示します。
-		Vim7.2以上の環境なら、簡易電卓として使用することもできます。
-
 let ${var-name} = {expression}				*vimshell-special-let*
 		{var-name}の変数へ{expression}を代入します。
 		{var-name}の先頭には$を付加しなければなりません。
-
-vexe {expression}					*vimshell-special-vexe*
-		{expression}をVim Scriptの文として実行します。
 
 ==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
