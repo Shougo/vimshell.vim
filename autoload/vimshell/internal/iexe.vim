@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,6 +93,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'command_history' : [], 
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \ 'is_background': 0, 
+        \ 'cached_output' : '', 
         \}
 
   " Input from stdin.
@@ -219,7 +220,7 @@ function! s:on_hold_i()
     return
   endif
   
-  call vimshell#interactive#execute_pty_out(1)
+  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if !b:interactive.process.is_valid
     stopinsert
@@ -233,7 +234,7 @@ function! s:on_hold_i()
 endfunction
 
 function! s:on_hold()
-  call vimshell#interactive#execute_pty_out(0)
+  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if b:interactive.process.is_valid
     normal! hl

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: altercmd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,7 +40,7 @@ function! s:recursive_expand_altercmd(string)
   let l:abbrev = b:vimshell.altercmd_table[a:string]
   let l:expanded = {}
   while 1
-    let l:key = vimshell#parser#split_args(l:abbrev, 1)[-1]
+    let l:key = vimshell#parser#split_args(l:abbrev)[-1]
     if has_key(l:expanded, l:abbrev) || !has_key(b:vimshell.altercmd_table, l:abbrev)
       break
     endif

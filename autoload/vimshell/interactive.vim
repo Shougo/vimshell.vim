@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,7 +38,7 @@ let s:character_regex = ''
 
 augroup VimShellInteractive
   autocmd!
-  autocmd CursorHold * call s:check_output()
+  autocmd CursorHold * call s:check_all_output()
 augroup END
 
 command! -range VimShellSendString call s:send_string(<line1>, <line2>)
@@ -307,15 +307,25 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
   
   let l:outputed = 0
-  let l:read = b:interactive.process.read(-1, 40)
-  while l:read != ''
+  if b:interactive.cached_output != ''
+    " Use cache.
+    let l:read = b:interactive.cached_output
     let l:outputed = 1
+    let b:interactive.cached_output = ''
 
     call s:print_buffer(b:interactive.fd, l:read)
     redraw
-
+  else
     let l:read = b:interactive.process.read(-1, 40)
-  endwhile
+    while l:read != ''
+      let l:outputed = 1
+
+      call s:print_buffer(b:interactive.fd, l:read)
+      redraw
+
+      let l:read = b:interactive.process.read(-1, 40)
+    endwhile
+  endif
 
   if l:outputed
     if has_key(b:interactive, 'skip_echoback') && line('.') < line('$') && b:interactive.skip_echoback ==# getline(line('.'))
@@ -339,7 +349,14 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     return
   endif
 
-  try
+  if has_key(b:interactive, 'cached_output') && b:interactive.cached_output != ''
+    " Use cache.
+    let l:read = b:interactive.cached_output
+    let b:interactive.cached_output = ''
+
+    call s:print_buffer(b:interactive.fd, l:read)
+    redraw
+  else
     if !b:interactive.process.stdout.eof
       let l:read = b:interactive.process.stdout.read(-1, 40)
       while l:read != ''
@@ -359,10 +376,7 @@ function! vimshell#interactive#execute_pipe_out()"{{{
         let l:read = b:interactive.process.stderr.read(-1, 40)
       endwhile
     endif
-  catch
-    call vimshell#interactive#exit()
-    return
-  endtry
+  endif
 
   if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
     call vimshell#interactive#exit()
@@ -680,36 +694,68 @@ function! s:on_exit()"{{{
 endfunction"}}}
 
 " Autocmd functions.
-function! s:check_output()"{{{
+function! s:check_all_output()"{{{
   let l:bufnr_save = bufnr('%')
 
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
     if l:bufnr != bufnr('%') && buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
-      " Check output.
       let l:filetype = getbufvar(l:bufnr, '&filetype')
-      let l:is_background = getbufvar(l:bufnr, 'interactive').is_background
-      if l:is_background || l:filetype =~ '^int-'
-        let l:pos = getpos('.')
-
-        execute 'buffer' l:bufnr
-
-        if l:is_background
-          " Background execute.
-          call vimshell#interactive#execute_pipe_out()
-        else
-          " Interactive execute.
-          call vimshell#interactive#execute_pty_out(0)
-        endif
-
-        if bufexists(l:bufnr_save)
-          execute 'buffer' l:bufnr_save
-        endif
+      let l:interactive = getbufvar(l:bufnr, 'interactive')
+      if l:interactive.is_background || l:filetype =~ '^int-'
+        " Check output.
+        call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
       endif
     endif
 
     let l:bufnr += 1
   endwhile
+endfunction"}}}
+function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
+  let l:read = ''
+  
+  if a:interactive.is_background
+    " Background execute.
+
+    " Check pipe output.
+    if !a:interactive.process.stdout.eof
+      let l:output = a:interactive.process.stdout.read(-1, 40)
+      while l:output != ''
+        let l:read .= l:output
+        let l:output = a:interactive.process.stdout.read(-1, 40)
+      endwhile
+      let l:read .= l:output
+    endif
+  else
+    " Interactive execute.
+
+    " Check pty output.
+    let l:output = a:interactive.process.read(-1, 40)
+    while l:output != ''
+      let l:read .= l:output
+      let l:output = a:interactive.process.read(-1, 40)
+    endwhile
+    let l:read .= l:output
+  endif
+
+  if l:read != ''
+    let a:interactive.cached_output = l:read
+    
+    if a:bufnr != a:bufnr_save
+      let l:pos = getpos('.')
+      execute 'buffer' a:bufnr
+    endif
+
+    if a:interactive.is_background
+      call vimshell#interactive#execute_pipe_out()
+    else
+      call vimshell#interactive#execute_pty_out(mode() ==# 'i')
+    endif
+    
+    if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+      execute 'buffer' a:bufnr_save
+    endif
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

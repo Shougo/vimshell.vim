@@ -156,6 +156,7 @@ CHANGELOG						*vimshell-changelog*
 2010-04-13
     * Improved quote parser.
     * Revised Japanese help.
+    * Improved output check.
 
 2010-04-12
     * Fixed command_complete bug.
