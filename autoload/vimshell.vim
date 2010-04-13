@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Apr 2010
+" Last Modified: 13 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -391,7 +391,7 @@ function! vimshell#print_line(fd, string)"{{{
     endif
 
     return
-  elseif line('$') == 1 && getline('$') == 0
+  elseif line('$') == 1 && getline('$') == ''
     call setline('$', a:string)
   else
     call append('$', a:string)
@@ -421,7 +421,7 @@ function! vimshell#error_line(fd, string)"{{{
 
   let l:string = '!!! ' . a:string . ' !!!'
 
-  if line('$') == 1 && getline('$') == 0
+  if line('$') == 1 && getline('$') == ''
     call setline('$', l:string)
   else
     call append('$', l:string)
@@ -472,6 +472,8 @@ function! vimshell#print_prompt(context)"{{{
   endif
 
   " Insert prompt line.
+  echomsg line('$')
+  echomsg getline('.')
   if line('$') == 1 && getline('.') == ''
     call setline('$', l:new_prompt)
   else

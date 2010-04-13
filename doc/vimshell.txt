@@ -160,6 +160,8 @@ CHANGELOG						*vimshell-changelog*
     * Changed vexe as special command.
     * Added eval internal command.
     * Deleted ev internal command.
+    * Fixed vimshell#print_line().
+    * Improved alias and gailias error message.
 
 2010-04-12
     * Fixed command_complete bug.

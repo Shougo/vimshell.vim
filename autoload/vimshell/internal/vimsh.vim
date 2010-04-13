@@ -37,20 +37,18 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
     let l:filename = join(a:args, ' ')
 
     if filereadable(l:filename)
-      let l:scripts = readfile(l:filename)
-
       let l:context = { 
             \'has_head_spaces' : 0, 'is_interactive' : 0, 
             \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
             \}
       let l:i = 0
       let l:skip_prompt = 0
-      for l:script in l:scripts
+      for l:script in readfile(l:filename)
         try
           let l:skip_prompt = vimshell#parser#eval_script(l:script, l:context)
         catch /.*/
           let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args, ' '), l:i, l:message))
+          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), l:i, l:message))
           return 0
         endtry
 
