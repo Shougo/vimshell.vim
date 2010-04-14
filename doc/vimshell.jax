@@ -433,7 +433,7 @@ chpwd							*vimshell-hook-chpwd*
 
 preexec							*vimshell-hook-preexec*
 		コマンド実行前に呼びだされます。この関数内でプロンプトの内容
-		を変更すると、実行するコマンドが変化します。
+		を変更しても、実行するコマンドは変化しません。
 
 emptycmd						*vimshell-hook-emptycmd*
 		コマンド名が空のときに呼びだされます。この関数内でプロンプト

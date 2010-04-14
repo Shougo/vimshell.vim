@@ -24,6 +24,15 @@
 " }}}
 "=============================================================================
 
+function! vimshell#parser#check_script(script)"{{{
+  " Parse check only.
+  " Split statements.
+  for l:statement in vimshell#parser#split_statements(a:script)
+    let l:args = vimshell#parser#split_args(l:statement)
+  endfor
+
+  return 0
+endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
   let l:skip_prompt = 0
   " Split statements.

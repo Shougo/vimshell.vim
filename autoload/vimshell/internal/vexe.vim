@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Apr 2010
+" Last Modified: 14 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,17 +27,16 @@
 function! vimshell#internal#vexe#execute(program, args, fd, other_info)
   " Execute vim command.
 
-  let l:command = join(a:args)
   let l:context = a:other_info
   let l:context.fd = a:fd
   call vimshell#set_context(l:context)
   redir => l:output
-  for l:line in split(join(a:args), '\n')
+  for l:command in split(substitute(join(a:args), '\r', '', 'g'), '\n')
     execute l:command
   endfor
   redir END
 
-  for line in split(l:output, '\n')
-    call vimshell#print_line(a:fd, line)
+  for l:line in split(l:output, '\n')
+    call vimshell#print_line(a:fd, l:line)
   endfor
 endfunction

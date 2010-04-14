@@ -472,6 +472,12 @@ function! vimshell#print_prompt(...)"{{{
   endif
   let &modified = 0
 endfunction"}}}
+function! vimshell#print_secondary_prompt()"{{{
+  " Insert secondary prompt line.
+  call append('$', vimshell#get_secondary_prompt())
+  $
+  let &modified = 0
+endfunction"}}}
 function! vimshell#append_history(command)"{{{
   " Reduce blanks.
   let l:command = substitute(a:command, '\s\+', ' ', 'g')
@@ -517,27 +523,23 @@ function! vimshell#getfilename(program)"{{{
     return l:namelist[0]
   endif
 endfunction"}}}
-function! vimshell#start_insert()"{{{
-  " Enter insert mode.
-  $
-  startinsert!
-  set iminsert=0 imsearch=0
+function! vimshell#start_insert(...)"{{{
+  let l:is_insert = (a:0 == 0)? 1 : a:1
+
+  if l:is_insert
+    " Enter insert mode.
+    $
+    startinsert!
+    set iminsert=0 imsearch=0
+  else
+    normal! $
+  endif
 endfunction"}}}
 function! vimshell#escape_match(str)"{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
 function! vimshell#get_prompt()"{{{
   return s:prompt
-endfunction"}}}
-function! vimshell#set_prompt(string)"{{{
-  if !vimshell#check_prompt()
-    " Search prompt.
-    let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
-  else
-    let l:lnum = '.'
-  endif
-
-  call setline(l:lnum, vimshell#get_prompt() . a:string)
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
   return s:secondary_prompt
@@ -575,7 +577,30 @@ function! vimshell#get_prompt_command()"{{{
   else
     let l:lnum = '.'
   endif
-  return getline(l:lnum)[len(vimshell#get_prompt()):]
+  let l:line = getline(l:lnum)[len(vimshell#get_prompt()):]
+  
+  let l:lnum += 1
+  let l:secondary_prompt = vimshell#get_secondary_prompt() 
+  while l:lnum <= line('$') && !vimshell#check_prompt(l:lnum)
+    if vimshell#check_secondary_prompt(l:lnum)
+      " Append secondary command.
+      let l:line .= "\<CR>" . getline(l:lnum)[len(l:secondary_prompt):]
+    endif
+    
+    let l:lnum += 1
+  endwhile
+  
+  return l:line
+endfunction"}}}
+function! vimshell#set_prompt_command(string)"{{{
+  if !vimshell#check_prompt()
+    " Search prompt.
+    let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+  else
+    let l:lnum = '.'
+  endif
+
+  call setline(l:lnum, vimshell#get_prompt() . a:string)
 endfunction"}}}
 function! vimshell#get_cur_line()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
@@ -602,6 +627,10 @@ endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_prompt())
+endfunction"}}}
+function! vimshell#check_secondary_prompt(...)"{{{
+  let l:line = a:0 == 0 ? getline('.') : getline(a:1)
+  return vimshell#head_match(l:line, vimshell#get_secondary_prompt())
 endfunction"}}}
 function! vimshell#head_match(checkstr, headstr)"{{{
   return a:headstr == '' || a:checkstr ==# a:headstr
@@ -651,11 +680,10 @@ endfunction"}}}
 function! vimshell#execute(cmdline, ...)"{{{
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   try
-    echomsg a:cmdline
     let l:skip_prompt = vimshell#parser#eval_script(a:cmdline, l:context)
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line(a:context.fd, l:message)
+    call vimshell#error_line(l:context.fd, l:message)
     return
   endtry
 endfunction"}}}

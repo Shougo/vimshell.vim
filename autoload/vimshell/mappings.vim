@@ -53,7 +53,7 @@ function! vimshell#mappings#push_and_execute(command)"{{{
 endfunction"}}}
 
 function! vimshell#mappings#execute_line(is_insert)"{{{
-  if !vimshell#check_prompt()
+  if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
 
     if !vimshell#check_prompt('$')
@@ -105,18 +105,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
 
-  if l:line =~ '^\s*$'
-    " Call emptycmd hook.
-    call vimshell#hook#call('emptycmd', l:context)
-  else
-    " Call preexec hook.
-    call vimshell#hook#call('preexec', l:context)
-  endif
-
-  " Get command line again.
-  " Because: hook functions may change command line.
-  let l:line = vimshell#get_prompt_command()
-
   if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
     " Reload.
     let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
@@ -131,32 +119,50 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   if l:line =~ '^\s*-\s*$'
     " Popd.
     call vimshell#execute_internal_command('cd', ['-'], {}, {})
+  elseif l:line =~ '^\s*$'
+      " Call emptycmd hook.
+      call vimshell#hook#call('emptycmd', l:context)
+
+      " Get command line again.
+      " Because: hook functions may change command line.
+      let l:line = vimshell#get_prompt_command()
   endif
 
   if l:line =~ '^\s*$\|^\s*-\s*$'
     call vimshell#print_prompt(l:context)
 
-    if a:is_insert
-      call vimshell#start_insert()
-    else
-      normal! $
-    endif
+    call vimshell#start_insert(a:is_insert)
     return
   endif
-
+  
   try
-    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
-  catch /.*/
+    call vimshell#parser#check_script(l:line)
+  catch /^Quote error/
+    call vimshell#print_secondary_prompt()
+
+    call vimshell#start_insert(a:is_insert)
+    return
+  catch
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
 
     call vimshell#print_prompt(l:context)
 
-    if a:is_insert
-      call vimshell#start_insert()
-    else
-      normal! $
-    endif
+    call vimshell#start_insert(a:is_insert)
+  endtry
+  
+  " Call preexec hook.
+  call vimshell#hook#call('preexec', l:context)
+
+  try
+    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
+  catch
+    let l:message = v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, l:message)
+
+    call vimshell#print_prompt(l:context)
+
+    call vimshell#start_insert(a:is_insert)
     return
   endtry
 
@@ -166,11 +172,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   endif
 
   call vimshell#print_prompt(l:context)
-  if a:is_insert
-    call vimshell#start_insert()
-  else
-    normal! $
-  endif
+  call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! vimshell#mappings#previous_prompt()"{{{
   call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'bWe')

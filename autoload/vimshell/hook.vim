@@ -37,8 +37,6 @@ function! vimshell#hook#call(hook_point, context)"{{{
   " Call hook function.
   for l:func_name in values(b:vimshell.hook_functions_table[a:hook_point])
     call call(l:func_name, [])
-
-    echomsg l:func_name
   endfor
 endfunction"}}}
 function! vimshell#hook#del(hook_point, func_name)"{{{

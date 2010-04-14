@@ -153,6 +153,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-14
+    * Improved vimshell#start_insert().
+    * Implemented multiline quote.
+
 2010-04-13
     * Improved quote parser.
     * Revised Japanese help.
