@@ -156,6 +156,9 @@ CHANGELOG						*vimshell-changelog*
 2010-04-14
     * Improved vimshell#start_insert().
     * Implemented multiline quote.
+    * Improved echo.
+    * Improved syntax of string.
+    * Fixed print and vexe split <CR> bugs.
 
 2010-04-13
     * Improved quote parser.

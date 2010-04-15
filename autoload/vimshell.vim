@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Apr 2010
+" Last Modified: 14 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -350,8 +350,8 @@ function! vimshell#print(fd, string)"{{{
   endif
 
   " Strip <CR>.
-  let l:string = substitute(substitute(l:string, '\r', '', 'g'), '\n$', '', '')
-  let l:lines = split(l:string, '\n', 1)
+  let l:lines = split(l:string, '\r', 1)
+  echomsg string(l:lines)
   if line('$') == 1 && getline('$') == ''
     call setline('$', l:lines[0])
     let l:lines = l:lines[1:]
