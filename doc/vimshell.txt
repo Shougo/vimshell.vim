@@ -157,6 +157,7 @@ CHANGELOG						*vimshell-changelog*
     * Improved iexe update.
     * Add history when parse passed.
     * Improved vimshell exception and error mechanism.
+    * Improved auto update behaivior.
 
 2010-04-14
     * Improved vimshell#start_insert().

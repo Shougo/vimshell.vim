@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Apr 2010
+" Last Modified: 16 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -743,17 +743,20 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     
     if a:bufnr != a:bufnr_save
       let l:pos = getpos('.')
-      execute 'buffer' a:bufnr
+      execute a:bufnr_save . 'wincmd w'
     endif
 
+    let l:intbuffer_pos = getpos('.')
     if a:interactive.is_background
       call vimshell#interactive#execute_pipe_out()
     else
       call vimshell#interactive#execute_pty_out(mode() ==# 'i')
     endif
+    call setpos('.', l:intbuffer_pos)
     
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-      execute 'buffer' a:bufnr_save
+      call setpos('.', l:pos)
+      wincmd p
     endif
   endif
 endfunction"}}}

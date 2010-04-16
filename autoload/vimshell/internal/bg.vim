@@ -157,10 +157,10 @@ function! s:on_execute()
 endfunction
 
 function! s:on_hold()
-  call vimshell#interactive#execute_pipe_out()
+  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if b:interactive.process.is_valid
-    normal! hl
+    call feedkeys("\<C-r>\<ESC>", 'n')
   endif
 endfunction
 
