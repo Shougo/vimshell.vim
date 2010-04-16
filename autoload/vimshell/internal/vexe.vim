@@ -31,7 +31,7 @@ function! vimshell#internal#vexe#execute(program, args, fd, other_info)
   let l:context.fd = a:fd
   call vimshell#set_context(l:context)
   redir => l:output
-  for l:command in split(substitute(join(a:args), '\r', '', 'g'), '\n')
+  for l:command in split(join(a:args), '\r')
     execute l:command
   endfor
   redir END

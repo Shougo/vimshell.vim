@@ -112,6 +112,7 @@ syn match   VimShellUserPrompt   '^\[%\] .*$'
 syn region   VimShellString   start=+'+ end=+'+ oneline
 syn region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
 syn region   VimShellString   start=+`+ end=+`+ oneline
+syn match   VimShellString   '[''"`]$' contained
 syn region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
 syn match   VimShellErrorHidden            '!!!' contained
 syn match   VimShellComment   '#.*$' contained
