@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Apr 2010
+" Last Modified: 16 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -225,7 +225,7 @@ function! s:on_hold_i()
   if !b:interactive.process.is_valid
     stopinsert
   else
-    call feedkeys("\<C-l>\<BS>", 'n')
+    call feedkeys("\<C-r>\<ESC>", 'n')
 
     if pumvisible()
       call feedkeys("\<C-y>", 'n')
@@ -237,7 +237,7 @@ function! s:on_hold()
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if b:interactive.process.is_valid
-    normal! hl
+    call feedkeys("g\<ESC>", 'n')
   endif
 endfunction
 

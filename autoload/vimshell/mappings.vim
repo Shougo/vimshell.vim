@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Apr 2010
+" Last Modified: 16 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -105,17 +105,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
 
-  if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
-    " Reload.
-    let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
-  endif
-  " Not append history if starts spaces or dups.
-  if l:line !~ '^\s'
-    call vimshell#append_history(l:line)
-  endif
-
-  " Delete head spaces.
-  let l:line = substitute(l:line, '^\s\+', '', '')
   if l:line =~ '^\s*-\s*$'
     " Popd.
     call vimshell#execute_internal_command('cd', ['-'], {}, {})
@@ -137,7 +126,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   
   try
     call vimshell#parser#check_script(l:line)
-  catch /^Quote error/
+  catch /^Exception: Quote/
     call vimshell#print_secondary_prompt()
 
     call vimshell#start_insert(a:is_insert)
@@ -150,6 +139,15 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
     call vimshell#start_insert(a:is_insert)
   endtry
+
+  if exists('vimshell#hist_size') && getfsize(g:VimShell_HistoryPath) != vimshell#hist_size
+    " Reload.
+    let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
+  endif
+  " Not append history if starts spaces or dups.
+  if l:line !~ '^\s'
+    call vimshell#append_history(l:line)
+  endif
   
   " Call preexec hook.
   call vimshell#hook#call('preexec', l:context)

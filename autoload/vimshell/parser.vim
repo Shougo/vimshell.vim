@@ -49,7 +49,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
     " Get program.
     let l:program = matchstr(l:statement, vimshell#get_program_pattern())
     if l:program  == ''
-      throw 'Invalid command name.'
+      throw 'Error: Invalid command name.'
     endif
     let l:script = l:statement[len(l:program) :]
 
@@ -246,7 +246,7 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
 
     return l:ret"}}}
   else"{{{
-    throw printf('File: "%s" is not found.', l:program)
+    throw printf('Error: File "%s" is not found.', l:program)
   endif
   "}}}
 
@@ -283,7 +283,7 @@ function! vimshell#parser#split_statements(script)"{{{
       let l:i += 1
 
       if l:i >= len(a:script)
-        throw 'Escape error'
+        throw 'Exception: Join to next line (\).'
       endif
 
       let l:statement .= a:script[l:i]
@@ -336,7 +336,7 @@ function! vimshell#parser#split_args(script)"{{{
       let l:i += 1
 
       if l:i > l:max
-        throw 'Escape error'
+        throw 'Exception: Join to next line (\).'
       endif
 
       let l:arg .= l:script[i]
@@ -389,7 +389,7 @@ function! vimshell#parser#split_commands(script)"{{{
       let i += 1
 
       if i > l:max
-        throw 'Escape error'
+        throw 'Exception: Join to next line (\).'
       endif
 
       let l:command .= l:script[i]
@@ -512,7 +512,7 @@ function! s:parse_block(script)"{{{
       let l:script = l:script[: -len(l:head)-1]
       let l:block = matchstr(a:script, '{\zs.*[^\\]\ze}', l:i)
       if l:block == ''
-        throw 'Block error'
+        throw 'Exception: Block is not found.'
       elseif l:block =~ '^\d\+\.\.\d\+$'
         " Range block.
         let l:start = matchstr(l:block, '^\d\+')
@@ -575,7 +575,7 @@ function! s:parse_equal(script)"{{{
       else
         let l:filename = vimshell#getfilename(l:prog)
         if l:filename == ''
-          throw printf('File: "%s" is not found.', l:prog)
+          throw printf('Error: File "%s" is not found.', l:prog)
         else
           let l:script .= l:filename
         endif
@@ -706,7 +706,7 @@ function! s:parse_single_quote(script, i)"{{{
     endif
   endwhile
 
-  throw 'Quote error'
+  throw 'Exception: Quote ('') is not found.'
 endfunction"}}}
 function! s:parse_double_quote(script, i)"{{{
   if a:script[a:i] != '"'
@@ -725,7 +725,7 @@ function! s:parse_double_quote(script, i)"{{{
       let l:i += 1
 
       if l:i > l:max
-        throw 'Escape error'
+        throw 'Exception: Join to next line (\).'
       endif
 
       let l:arg .= a:script[i]
@@ -736,7 +736,7 @@ function! s:parse_double_quote(script, i)"{{{
     endif
   endwhile
 
-  throw 'Quote error'
+  throw 'Exception: Quote (") is not found.'
 endfunction"}}}
 function! s:parse_back_quote(script, i)"{{{
   if a:script[a:i] != '`'
@@ -773,28 +773,28 @@ function! s:parse_back_quote(script, i)"{{{
     endwhile
   endif
 
-  throw 'Quote error'
+  throw 'Exception: Quote (`) is not found.'
 endfunction"}}}
 
 " Skip helper.
 function! s:skip_single_quote(script, i)"{{{
   let l:end = matchend(a:script, "^'[^']*'", a:i)
   if l:end == -1
-    throw 'Quote error'
+    throw 'Exception: Quote ('') is not found.'
   endif
   return [matchstr(a:script, "^'[^']*'", a:i), l:end]
 endfunction"}}}
 function! s:skip_double_quote(script, i)"{{{
   let l:end = matchend(a:script, '^"\%([^"]\|\"\)*"', a:i)
   if l:end == -1
-    throw 'Quote error'
+    throw 'Exception: Quote (") is not found.'
   endif
   return [matchstr(a:script, '^"\%([^"]\|\"\)*"', a:i), l:end]
 endfunction"}}}
 function! s:skip_back_quote(script, i)"{{{
   let l:end = matchend(a:script, '^`[^`]*`', a:i)
   if l:end == -1
-    throw 'Quote error'
+    throw 'Exception: Quote (`) is not found.'
   endif
   return [matchstr(a:script, '^`[^`]*`', a:i), l:end]
 endfunction"}}}
