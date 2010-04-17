@@ -752,15 +752,15 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     else
       call vimshell#interactive#execute_pty_out(mode() ==# 'i')
     endif
-    call setpos('.', l:intbuffer_pos)
+    if mode() ==# 'i'
+      startinsert!
+    else
+      call setpos('.', l:intbuffer_pos)
+    endif
     
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       call setpos('.', l:pos)
       wincmd p
-    endif
-    
-    if mode() ==# 'i'
-      startinsert!
     endif
   endif
 endfunction"}}}
