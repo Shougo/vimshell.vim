@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshrc.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2010
+" Last Modified: 17 Apr 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -34,6 +34,7 @@ endif
 syn region   VimShellRcString   start=+'+ end=+'+ oneline
 syn region   VimShellRcString   start=+"+ end=+"+ contains=VimShellQuoted oneline
 syn region   VimShellRcString   start=+`+ end=+`+ oneline
+syn match   VimShellRcString   '[''"`]$' contained
 syn match   VimShellRcComment   '#.*$'
 syn match   VimShellRcConstants         '[+-]\=\<\d\+\>'
 syn match   VimShellRcConstants         '[+-]\=\<0x\x\+\>'
@@ -53,6 +54,14 @@ if vimshell#iswin()
 else
     syn match   VimShellRcDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
 endif
+let s:vim_syntax_path = split(globpath(&rtp, 'syntax/vim.vim'), '\n')
+if !empty(s:vim_syntax_path) && filereadable(s:vim_syntax_path[0])
+  unlet! b:current_syntax
+  execute 'syn include @VimShellRcVimScript' s:vim_syntax_path[0]
+  syn region VimShellRcVimScriptRegion start=+^\s*vexe\s\+"\zs$+ end=+"\zs$+ contains=@VimShellRcVimScript
+  syn region VimShellRcVimScriptRegion start=+^\s*vexe\s\+'\zs$+ end=+'\zs$+ contains=@VimShellRcVimScript
+endif
+unlet s:vim_syntax_path
 
 hi def link VimShellRcQuoted Special
 hi def link VimShellRcString Constant

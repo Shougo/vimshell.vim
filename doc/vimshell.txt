@@ -160,6 +160,7 @@ CHANGELOG						*vimshell-changelog*
     * Detect head matches each prompt pattern.
     * Fixed searchpos() bug.
     * Improved prompt syntax highlight.
+    * Implemented include Vim Script syntax(incomplete).
 
 2010-04-16
     * Improved iexe update.
