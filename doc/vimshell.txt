@@ -158,6 +158,8 @@ CHANGELOG						*vimshell-changelog*
     * Fixed g:VimShell_IgnoreCase default value.
     * Improved g:VimShell_IgnoreCase behaivior.
     * Detect head matches each prompt pattern.
+    * Fixed searchpos() bug.
+    * Improved prompt syntax highlight.
 
 2010-04-16
     * Improved iexe update.

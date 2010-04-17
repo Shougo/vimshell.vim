@@ -573,7 +573,7 @@ function! vimshell#get_prompt_command()"{{{
   " Get command without prompt.
   if !vimshell#check_prompt()
     " Search prompt.
-    let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+    let [l:lnum, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
   else
     let l:lnum = '.'
   endif
@@ -595,7 +595,7 @@ endfunction"}}}
 function! vimshell#set_prompt_command(string)"{{{
   if !vimshell#check_prompt()
     " Search prompt.
-    let [l:lnum, l:col] = searchpos(vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+    let [l:lnum, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
   else
     let l:lnum = '.'
   endif
