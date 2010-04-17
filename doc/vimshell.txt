@@ -157,6 +157,7 @@ CHANGELOG						*vimshell-changelog*
     * Improved update behaivior on insert mode.
     * Fixed g:VimShell_IgnoreCase default value.
     * Improved g:VimShell_IgnoreCase behaivior.
+    * Detect head matches each prompt pattern.
 
 2010-04-16
     * Improved iexe update.

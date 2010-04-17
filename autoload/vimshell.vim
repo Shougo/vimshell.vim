@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Apr 2010
+" Last Modified: 17 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -738,5 +738,14 @@ function! s:restore_current_dir()"{{{
 
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
+
+" Check prompt value."{{{
+if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
+  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:prompt, s:secondary_prompt)
+elseif vimshell#head_match(s:prompt, s:user_prompt) || vimshell#head_match(s:user_prompt, s:prompt)
+  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("%s").', s:prompt, s:user_prompt)
+elseif vimshell#head_match(s:user_prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:user_prompt)
+  echoerr printf('Head matched g:VimShell_UserPrompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:user_prompt, s:secondary_prompt)
+endif"}}}
 
 " vim: foldmethod=marker
