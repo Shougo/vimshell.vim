@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 12 Feb 2010
+" Last Modified: 17 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,7 +23,7 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 6.05, for Vim 7.0
+" Version: 6.50, for Vim 7.0
 "=============================================================================
 
 if v:version < 700
@@ -38,7 +38,7 @@ set cpo&vim
 
 " Global options definition."{{{
 if !exists('g:VimShell_IgnoreCase')
-    let g:VimShell_IgnoreCase = 1
+    let g:VimShell_IgnoreCase = &ignorecase
 endif
 if !exists('g:VimShell_SmartCase')
     let g:VimShell_SmartCase = 0

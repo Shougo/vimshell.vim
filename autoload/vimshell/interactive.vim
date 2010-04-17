@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 17 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -757,6 +757,10 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       call setpos('.', l:pos)
       wincmd p
+    endif
+    
+    if mode() ==# 'i'
+      startinsert!
     endif
   endif
 endfunction"}}}

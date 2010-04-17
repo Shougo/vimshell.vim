@@ -153,6 +153,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-17
+    * Improved update behaivior on insert mode.
+    * Fixed g:VimShell_IgnoreCase default value.
+    * Improved g:VimShell_IgnoreCase behaivior.
+
 2010-04-16
     * Improved iexe update.
     * Add history when parse passed.
