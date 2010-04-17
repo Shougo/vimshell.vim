@@ -31,37 +31,38 @@ elseif exists('b:current_syntax')
   finish
 endif
 
-syn region   VimShellRcString   start=+'+ end=+'+ oneline
-syn region   VimShellRcString   start=+"+ end=+"+ contains=VimShellQuoted oneline
-syn region   VimShellRcString   start=+`+ end=+`+ oneline
+syn match   VimShellRcCommand               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+[[:blank:]\n]' contained
+syn match   VimShellRcVariable          '$\h\w*' contained
+syn match   VimShellRcVariable          '$$\h\w*' contained
+syn region   VimShellRcVariable  start=+${+ end=+}+ contained
+syn region   VimShellRcString   start=+'+ end=+'+ oneline contained
+syn region   VimShellRcString   start=+"+ end=+"+ contains=VimShellQuoted oneline contained
+syn region   VimShellRcString   start=+`+ end=+`+ oneline contained
 syn match   VimShellRcString   '[''"`]$' contained
-syn match   VimShellRcComment   '#.*$'
-syn match   VimShellRcConstants         '[+-]\=\<\d\+\>'
-syn match   VimShellRcConstants         '[+-]\=\<0x\x\+\>'
-syn match   VimShellRcConstants         '[+-]\=\<0\o\+\>'
-syn match   VimShellRcConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
-syn match   VimShellRcConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syn match   VimShellRcArguments         '\s-\=-[[:alnum:]-]\+=\='
+syn match   VimShellRcComment   '#.*$' contained
+syn match   VimShellRcConstants         '[+-]\=\<\d\+\>' contained
+syn match   VimShellRcConstants         '[+-]\=\<0x\x\+\>' contained
+syn match   VimShellRcConstants         '[+-]\=\<0\o\+\>' contained
+syn match   VimShellRcConstants         '[+-]\=\d\+#[-+]\=\w\+\>' contained
+syn match   VimShellRcConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>' contained
+syn match   VimShellRcArguments         '\s-\=-[[:alnum:]-]\+=\=' contained
 syn match   VimShellRcQuoted            '\\.' contained
-syn match   VimShellRcSpecial           '[|<>;&;]'
-syn match   VimShellRcVariable          '$\h\w*'
-syn match   VimShellRcVariable          '$$\h\w*'
-syn region   VimShellRcVariable  start=+${+ end=+}+
-syn match   VimShellRcCommand               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+[[:blank:]\n]'
+syn match   VimShellRcSpecial           '[|<>;&;]' contained
 if vimshell#iswin()
     syn match   VimShellRcArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
     syn match   VimShellRcDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
 else
     syn match   VimShellRcDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
 endif
-let s:vim_syntax_path = split(globpath(&rtp, 'syntax/vim.vim'), '\n')
-if !empty(s:vim_syntax_path) && filereadable(s:vim_syntax_path[0])
-  unlet! b:current_syntax
-  execute 'syn include @VimShellRcVimScript' s:vim_syntax_path[0]
-  syn region VimShellRcVimScriptRegion start=+^\s*vexe\s\+"\zs$+ end=+"\zs$+ contains=@VimShellRcVimScript
-  syn region VimShellRcVimScriptRegion start=+^\s*vexe\s\+'\zs$+ end=+'\zs$+ contains=@VimShellRcVimScript
-endif
-unlet s:vim_syntax_path
+
+syn region   VimShellRcVimShellScriptRegion start='\zs\<\f\+' end='\zs$' contains=VimShellRcCommand,VimShellRcVariable,VimShellRcString,VimShellRcComment,VimShellRcConstants,VimShellRcArguments,VimShellRcQuoted,VimShellRcSpecial,VimShellRcDirectory
+syn region   VimShellRcCommentRegion  start='#' end='\zs$'
+syn cluster  VimShellRcBodyList contains=VimShellRcVimShellScriptRegion,VimShellRcComment
+
+unlet! b:current_syntax
+syn include @VimShellRcVimScript syntax/vim.vim
+syn region VimShellRcVimScriptRegion start=-\<vexe\s\+\z(["']\)\zs$- end=+\z1\zs$+ contains=@VimShellRcVimScript
+syn cluster VimShellRcBodyList add=VimShellRcVimScriptRegion
 
 hi def link VimShellRcQuoted Special
 hi def link VimShellRcString Constant
@@ -70,6 +71,7 @@ hi def link VimShellRcConstants Constant
 hi def link VimShellRcSpecial PreProc
 hi def link VimShellRcVariable Comment
 hi def link VimShellRcComment Identifier
+hi def link VimShellRcCommentRegion Identifier
 hi def link VimShellRcNormal Normal
 
 hi def link VimShellRcCommand Statement

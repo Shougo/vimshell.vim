@@ -153,6 +153,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-18
+    * Implemented include Vim Script syntax.
+
 2010-04-17
     * Improved update behaivior on insert mode.
     * Fixed g:VimShell_IgnoreCase default value.
@@ -160,7 +163,6 @@ CHANGELOG						*vimshell-changelog*
     * Detect head matches each prompt pattern.
     * Fixed searchpos() bug.
     * Improved prompt syntax highlight.
-    * Implemented include Vim Script syntax(incomplete).
 
 2010-04-16
     * Improved iexe update.

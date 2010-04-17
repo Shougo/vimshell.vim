@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 17 Apr 2010
+" Last Modified: 18 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
