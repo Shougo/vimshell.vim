@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshrc.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2010
+" Last Modified: 18 Apr 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -31,7 +31,7 @@ elseif exists('b:current_syntax')
   finish
 endif
 
-syn match   VimShellRcCommand               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+[[:blank:]\n]' contained
+syn match   VimShellRcCommand               '\%(^\|[;|]\)\s*\zs[[:alnum:]_.][[:alnum:]_.-]\+' contained
 syn match   VimShellRcVariable          '$\h\w*' contained
 syn match   VimShellRcVariable          '$$\h\w*' contained
 syn region   VimShellRcVariable  start=+${+ end=+}+ contained
