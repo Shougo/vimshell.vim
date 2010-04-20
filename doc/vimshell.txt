@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 6.50
+Version: 7.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -154,6 +154,10 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-04-20
+    * Ver.7 development started.
+
+ChangeLog 6.50: {{{
+2010-04-20
     * Marked as ver.6.50.
     * Implemented .vimshrc quote.
     * Revised Japanese help.
@@ -251,6 +255,7 @@ CHANGELOG						*vimshell-changelog*
     * Fixed interactive_command_complete error.
     * Fixed vimshell#interactive#get_cur_text().
 
+     }}}
 ChangeLog 6.00-: {{{
 2010-02-26
     * Print lines if one screen in view.
