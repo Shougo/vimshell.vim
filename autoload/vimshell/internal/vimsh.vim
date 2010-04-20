@@ -41,19 +41,36 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
             \'has_head_spaces' : 0, 'is_interactive' : 0, 
             \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
             \}
-      let l:i = 0
+      let i = 0
       let l:skip_prompt = 0
-      for l:script in readfile(l:filename)
+      let l:lines = readfile(l:filename)
+      let l:max = len(l:lines)
+      
+      while i < l:max
+        let l:script = l:lines[i]
+        
+        " Parse check.
+        while i+1 < l:max
+          try
+            call vimshell#parser#check_script(l:script)
+            break
+          catch /^Exception: Quote/
+            " Join to next line.
+            let l:script .= "\<CR>" . l:lines[i+1]
+            let i += 1
+          endtry
+        endwhile
+        
         try
           let l:skip_prompt = vimshell#parser#eval_script(l:script, l:context)
-        catch /.*/
+        catch
           let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), l:i, l:message))
+          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), i, l:message))
           return 0
         endtry
 
-        let l:i += 1
-      endfor
+        let i += 1
+      endwhile
 
       if l:skip_prompt
         " Skip prompt.

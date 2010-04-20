@@ -351,7 +351,6 @@ function! vimshell#print(fd, string)"{{{
 
   " Strip <CR>.
   let l:lines = split(l:string, '\r', 1)
-  echomsg string(l:lines)
   if line('$') == 1 && getline('$') == ''
     call setline('$', l:lines[0])
     let l:lines = l:lines[1:]
