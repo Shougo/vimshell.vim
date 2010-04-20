@@ -100,11 +100,6 @@ function! vimshell#parser#eval_script(script, context)"{{{
         let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
       endif
 
-      " Parse pipe.
-      if l:script =~ '|'
-        let l:script = s:parse_pipe(l:script)
-      endif
-
       " Split args.
       let l:args = vimshell#parser#split_args(l:script)
     endif
@@ -375,6 +370,46 @@ function! vimshell#parser#split_args(script)"{{{
   endfor
 
   return l:ret
+endfunction"}}}
+function! vimshell#parser#split_pipe(script)"{{{
+  let l:script = ''
+
+  let l:i = 0
+  let l:max = len(a:script)
+  let l:commands = []
+  while l:i < l:max
+    if a:script[l:i] == '|'
+      " Pipe.
+      call add(l:commands, l:script)
+
+      " Search next command.
+      let l:script = ''
+      let l:i += 1
+    elseif a:script[l:i] == "'"
+      " Single quote.
+      let [l:string, l:i] = s:skip_quote(a:script, l:i)
+      let l:script .= l:string
+    elseif a:script[l:i] == '"'
+      " Double quote.
+      let [l:string, l:i] = s:skip_double_quote(a:script, l:i)
+      let l:script .= l:string
+    elseif a:script[l:i] == '`'
+      " Back quote.
+      let [l:string, l:i] = s:skip_back_quote(a:script, l:i)
+      let l:script .= l:string
+    elseif a:script[l:i] == '\' && l:i + 1 < l:max
+      " Escape.
+      let l:script .= '\' . a:script[l:i+1]
+      let l:i += 2
+    else
+      let l:script .= a:script[l:i]
+      let l:i += 1
+    endif
+  endwhile
+
+  call add(l:commands, l:script)
+
+  return l:commands
 endfunction"}}}
 function! vimshell#parser#split_commands(script)"{{{
   let l:script = a:script
@@ -663,23 +698,6 @@ function! s:parse_redirection(script)"{{{
   endwhile
 
   return [l:fd, l:script]
-endfunction"}}}
-function! s:parse_pipe(script)"{{{
-  let l:script = ''
-
-  let l:i = 0
-  let l:max = len(a:script)
-  while l:i < l:max
-    if a:script[l:i] == '|'
-      " Pipe.
-      let l:script .= ' | '
-      let l:i += 1
-    else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
-    endif
-  endwhile
-
-  return l:script
 endfunction"}}}
 
 function! s:parse_single_quote(script, i)"{{{

@@ -154,7 +154,8 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-04-20
-    * Ver.7 development started.
+    * Ver.7 development is started.
+    * Supported vimproc Ver.4.
 
 ChangeLog 6.50: {{{
 2010-04-20

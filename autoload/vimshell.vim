@@ -27,6 +27,11 @@
 
 " Check vimproc.
 let s:is_vimproc = exists('*vimproc#system')
+if exists('*vimproc#system')
+  echoerr 'vimproc is not installed. Please install vimproc Ver.4.0 or above.'
+elseif exists('*vimproc#version')
+  echoerr 'Please install vimproc Ver.4.0 or above.'
+endif
 
 " Initialize."{{{
 let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '

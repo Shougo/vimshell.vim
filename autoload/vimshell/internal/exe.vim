@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2010
+" Last Modified: 20 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -90,16 +90,15 @@ function! s:init_process(fd, args, options)
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif
+  
+  let l:commands = []
+  let l:command = {
+        \ 'args' : a:args,
+        \ 'fd' : {}
+        \}
+  call add(l:commands, l:command)
 
-  try
-    let l:sub = vimproc#popen3(join(a:args))
-  catch 'list index out of range'
-    let l:error = printf('File: "%s" is not found.', a:args[0])
-
-    call vimshell#error_line(a:fd, l:error)
-
-    return 0
-  endtry
+  let l:sub = vimproc#plineopen3(l:commands)
 
   " Set variables.
   let b:interactive = {
