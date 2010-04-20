@@ -27,9 +27,10 @@
 
 " Check vimproc.
 let s:is_vimproc = exists('*vimproc#system')
-if exists('*vimproc#system')
+let s:is_version = exists('*vimproc#version')
+if !s:is_vimproc
   echoerr 'vimproc is not installed. Please install vimproc Ver.4.0 or above.'
-elseif exists('*vimproc#version')
+elseif !s:is_version
   echoerr 'Please install vimproc Ver.4.0 or above.'
 endif
 
