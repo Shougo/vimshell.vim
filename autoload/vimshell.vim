@@ -95,9 +95,9 @@ function! vimshell#default_settings()"{{{
 
   " Insert mode key-mappings."{{{
   " Execute command.
-  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[-1:] ==# "\<C-]>" ? "\<BS>" : ''
+  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[: col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer> <CR> <End><C-]><Plug>(vimshell_enter)
+  imap <buffer> <CR> <C-]><Plug>(vimshell_enter)
   " History completion.
   imap <buffer> <C-k>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
