@@ -100,7 +100,7 @@ function! vimshell#default_settings()"{{{
 
   " Insert mode key-mappings."{{{
   " Execute command.
-  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[-1:] ==# "\<C-]>" ? "\<BS>" : ''
+  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR> <C-]><Plug>(vimshell_enter)
   " History completion.
@@ -746,10 +746,10 @@ endfunction"}}}
 " Check prompt value."{{{
 if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
   echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:prompt, s:secondary_prompt)
-elseif vimshell#head_match(s:prompt, s:user_prompt) || vimshell#head_match(s:user_prompt, s:prompt)
-  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("%s").', s:prompt, s:user_prompt)
-elseif vimshell#head_match(s:user_prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:user_prompt)
-  echoerr printf('Head matched g:VimShell_UserPrompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:user_prompt, s:secondary_prompt)
+elseif vimshell#head_match(s:prompt, '[%] ') || vimshell#head_match('[%] ', s:prompt)
+  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("[%] ").', s:prompt)
+elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, '[%] ')
+  echoerr printf('Head matched g:VimShell_UserPrompt("[%] ") and your g:VimShell_SecondaryPrompt("%s").', s:secondary_prompt)
 endif"}}}
 
 " vim: foldmethod=marker
