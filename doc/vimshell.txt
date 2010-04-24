@@ -153,6 +153,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-24
+    * Fixed prompt check error.
+
 2010-04-20
     * Marked as ver.6.50.
     * Implemented .vimshrc quote.
