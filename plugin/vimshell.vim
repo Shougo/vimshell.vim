@@ -51,9 +51,6 @@ endif
 if !exists('g:VimShell_UseCkw')
     let g:VimShell_UseCkw = 0
 endif
-if !exists('g:VimShell_EnableInteractive')
-    let g:VimShell_EnableInteractive = 0
-endif
 if !exists('g:VimShell_SplitHeight')
     let g:VimShell_SplitHeight = 30
 endif

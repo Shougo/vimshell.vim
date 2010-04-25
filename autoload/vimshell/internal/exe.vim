@@ -33,54 +33,45 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
   endif
   
   " Execute command.
-  if g:VimShell_EnableInteractive
-    if s:init_process(a:fd, l:args, l:options)
-      return 0
-    endif
-
-    echo 'Running command.'
-    call append(line('$'), '')
-    
-    " Move line.
-    normal! j
-    redraw
-    while b:interactive.process.is_valid
-      call vimshell#interactive#execute_pipe_out()
-      
-      " Get input key.
-      let l:char = getchar(0)
-      if l:char != 0
-        let l:char = nr2char(l:char)
-        if l:char == "\<C-z>"
-          call vimshell#error_line(a:fd, 'Background Executed.')
-          
-          " Background execution.
-          call vimshell#internal#bg#init(l:args, a:other_info.is_interactive)
-          
-          wincmd w
-          unlet b:interactive
-          return 1
-        elseif l:char == "\<C-d>"
-          " Interrupt.
-          call vimshell#interactive#force_exit()
-          call vimshell#error_line(a:fd, 'Interrupted.')
-          return 0
-        endif
-      endif
-    endwhile
-    
-    redraw
-    echo ''
-    
-    let b:vimshell.system_variables['status'] = b:interactive.status
-  else
-    let l:fd = a:fd
-    " Null input.
-    if l:fd.stdin == ''
-      let l:fd.stdin = '/dev/null'
-    endif
-    return vimshell#internal#sexe#execute('sexe', a:args, l:fd, a:other_info)
+  if s:init_process(a:fd, l:args, l:options)
+    return 0
   endif
+
+  echo 'Running command.'
+  call append(line('$'), '')
+
+  " Move line.
+  normal! j
+  redraw
+  while b:interactive.process.is_valid
+    call vimshell#interactive#execute_pipe_out()
+
+    " Get input key.
+    let l:char = getchar(0)
+    if l:char != 0
+      let l:char = nr2char(l:char)
+      if l:char == "\<C-z>"
+        call vimshell#error_line(a:fd, 'Background Executed.')
+
+        " Background execution.
+        call vimshell#internal#bg#init(l:args, a:other_info.is_interactive)
+
+        wincmd w
+        unlet b:interactive
+        return 1
+      elseif l:char == "\<C-d>"
+        " Interrupt.
+        call vimshell#interactive#force_exit()
+        call vimshell#error_line(a:fd, 'Interrupted.')
+        return 0
+      endif
+    endif
+  endwhile
+
+  redraw
+  echo ''
+
+  let b:vimshell.system_variables['status'] = b:interactive.status
 
   return 0
 endfunction"}}}

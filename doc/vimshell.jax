@@ -100,13 +100,6 @@ Make方法
 
 コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクトリにコピーします。
 
-あとは.vimrc上で
->
-    let g:VimShell_EnableInteractive = 1
-<
-とすると、非同期実行が有効になります。
-vimshellは非同期実行のとき、Vimのシェル設定を利用しません。
-
 ==============================================================================
 INTERFACE						*vimshell-interface*
 
@@ -156,7 +149,6 @@ EXAMPLES						*vimshell-examples*
 >
 	let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
 	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-	let g:VimShell_EnableInteractive = 1
 	let g:VimShell_EnableSmartCase = 1
 	
 	if has('win32') || has('win64') 

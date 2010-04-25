@@ -33,17 +33,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     let l:options['--encoding'] = &termencoding
   endif
   
-  if !g:VimShell_EnableInteractive
-    if has('gui_running')
-      " Error.
-      call vimshell#error_line(a:fd, 'Must use vimproc plugin.')
-      return 0
-    else
-      " Use sexe.
-      return vimshell#internal#sexe#execute('sexe', l:args, a:fd, a:other_info)
-    endif
-  endif
-
   if empty(l:args)
     return 0
   endif

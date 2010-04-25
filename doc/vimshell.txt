@@ -88,7 +88,6 @@ EXAMPLES						*vimshell-examples*
 	
 	let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
 	let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-	let g:VimShell_EnableInteractive = 1
 	let g:VimShell_EnableSmartCase = 1
 	
 	if has('win32') || has('win64') 
@@ -158,6 +157,7 @@ CHANGELOG						*vimshell-changelog*
     * Improved prompt check.
     * Added vimshell#version().
     * Fixed iexe args.
+    * Deleted g:VimShell_EnableInteractive.
 
 2010-04-24
     * Fixed prompt check error.

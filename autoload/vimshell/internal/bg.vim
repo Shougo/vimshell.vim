@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   endif
 
   if empty(l:args)
-    return 
+    return 0
   elseif l:args[0] == 'shell'
     " Background shell.
     if has('win32') || has('win64')
@@ -57,46 +57,44 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
       " Can't Background execute.
       shell
     endif
-  elseif g:VimShell_EnableInteractive
-    " Background execute.
-    if exists('b:interactive') && b:interactive.process.is_valid
-      " Delete zombee process.
-      call vimshell#interactive#force_exit()
-    endif
 
-    " Initialize.
-    try
-      let l:sub = vimproc#popen3(join(l:args))
-    catch 'list index out of range'
-      let l:error = printf('File: "%s" is not found.', l:args[0])
-
-      call vimshell#error_line(a:fd, l:error)
-
-      return 0
-    endtry
-
-    " Set variables.
-    let l:interactive = {
-          \ 'process' : l:sub, 
-          \ 'fd' : a:fd, 
-          \ 'encoding' : l:options['--encoding'], 
-          \ 'is_pty' : !vimshell#iswin(), 
-          \ 'is_background' : 1, 
-          \ 'cached_output' : '', 
-          \}
-
-    " Input from stdin.
-    if l:interactive.fd.stdin != ''
-      call l:interactive.process.stdin.write(vimshell#read(a:fd))
-    endif
-    call l:interactive.process.stdin.close()
-    
-    return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], interactive)
-  else
-    " Execute in screen.
-    let l:other_info = a:other_info
-    return vimshell#internal#screen#execute(l:args[0], l:args[1:], a:fd, l:other_info)
+    return 0
   endif
+  
+  " Background execute.
+  if exists('b:interactive') && b:interactive.process.is_valid
+    " Delete zombee process.
+    call vimshell#interactive#force_exit()
+  endif
+
+  " Initialize.
+  try
+    let l:sub = vimproc#popen3(join(l:args))
+  catch 'list index out of range'
+    let l:error = printf('File: "%s" is not found.', l:args[0])
+
+    call vimshell#error_line(a:fd, l:error)
+
+    return 0
+  endtry
+
+  " Set variables.
+  let l:interactive = {
+        \ 'process' : l:sub, 
+        \ 'fd' : a:fd, 
+        \ 'encoding' : l:options['--encoding'], 
+        \ 'is_pty' : !vimshell#iswin(), 
+        \ 'is_background' : 1, 
+        \ 'cached_output' : '', 
+        \}
+
+  " Input from stdin.
+  if l:interactive.fd.stdin != ''
+    call l:interactive.process.stdin.write(vimshell#read(a:fd))
+  endif
+  call l:interactive.process.stdin.close()
+
+  return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], interactive)
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
