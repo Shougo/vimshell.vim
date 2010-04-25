@@ -153,6 +153,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-25
+    * vimshell#execute returns exit status.
+    * Improved prompt check.
+    * Added vimshell#version().
+
 2010-04-24
     * Fixed prompt check error.
     * Fixed mapping <CR>.

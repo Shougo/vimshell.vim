@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -700,7 +700,7 @@ function! s:parse_redirection(script)"{{{
   return [l:fd, l:script]
 endfunction"}}}
 
-function! s:parse_single_quote(script, i)"{{{
+function! parse_single_quote(script, i)"{{{
   if a:script[a:i] != "'"
     return ['', a:i]
   endif

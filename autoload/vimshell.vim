@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 20 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,9 +30,35 @@ let s:is_vimproc = exists('*vimproc#system')
 let s:is_version = exists('*vimproc#version')
 if !s:is_vimproc
   echoerr 'vimproc is not installed. Please install vimproc Ver.4.0 or above.'
+  finish
 elseif !s:is_version
   echoerr 'Please install vimproc Ver.4.0 or above.'
+  finish
 endif
+
+function! vimshell#version()"{{{
+  return '7.0'
+endfunction"}}}
+function! vimshell#head_match(checkstr, headstr)"{{{
+  return a:headstr == '' || a:checkstr ==# a:headstr
+        \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
+endfunction"}}}
+function! vimshell#tail_match(checkstr, tailstr)"{{{
+  return a:tailstr == '' || a:checkstr ==# a:tailstr
+        \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
+endfunction"}}}
+
+" Check prompt value."{{{
+if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
+  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:prompt, s:secondary_prompt)
+  finish
+elseif vimshell#head_match(s:prompt, '[%] ') || vimshell#head_match('[%] ', s:prompt)
+  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("[%] ").', s:prompt)
+  finish
+elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, '[%] ')
+  echoerr printf('Head matched g:VimShell_UserPrompt("[%] ") and your g:VimShell_SecondaryPrompt("%s").', s:secondary_prompt)
+  finish
+endif"}}}
 
 " Initialize."{{{
 let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
@@ -636,14 +662,6 @@ function! vimshell#check_secondary_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_secondary_prompt())
 endfunction"}}}
-function! vimshell#head_match(checkstr, headstr)"{{{
-  return a:headstr == '' || a:checkstr ==# a:headstr
-        \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
-endfunction"}}}
-function! vimshell#tail_match(checkstr, tailstr)"{{{
-  return a:tailstr == '' || a:checkstr ==# a:tailstr
-        \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
-endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
   for ext in split(a:exts, ',')
     let g:VimShell_ExecuteFileList[ext] = a:program
@@ -688,8 +706,10 @@ function! vimshell#execute(cmdline, ...)"{{{
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line(l:context.fd, l:message)
-    return
+    return 1
   endtry
+  
+  return b:vimshell.system_variables.status
 endfunction"}}}
 function! vimshell#set_context(context)"{{{
   let s:context = a:context
@@ -742,14 +762,5 @@ function! s:restore_current_dir()"{{{
 
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
-
-" Check prompt value."{{{
-if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
-  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:prompt, s:secondary_prompt)
-elseif vimshell#head_match(s:prompt, '[%] ') || vimshell#head_match('[%] ', s:prompt)
-  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("[%] ").', s:prompt)
-elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, '[%] ')
-  echoerr printf('Head matched g:VimShell_UserPrompt("[%] ") and your g:VimShell_SecondaryPrompt("%s").', s:secondary_prompt)
-endif"}}}
 
 " vim: foldmethod=marker
