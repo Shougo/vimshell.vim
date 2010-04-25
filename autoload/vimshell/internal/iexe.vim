@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 25 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -67,7 +67,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
   " Initialize.
   try
-    let l:sub = vimproc#ptyopen(join(l:args))
+    let l:sub = vimproc#ptyopen(l:args)
   catch 'list index out of range'
     let l:error = printf('File: "%s" is not found.', l:args[0])
 

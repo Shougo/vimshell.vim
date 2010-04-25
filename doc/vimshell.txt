@@ -157,6 +157,7 @@ CHANGELOG						*vimshell-changelog*
     * vimshell#execute returns exit status.
     * Improved prompt check.
     * Added vimshell#version().
+    * Fixed iexe args.
 
 2010-04-24
     * Fixed prompt check error.

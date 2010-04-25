@@ -25,6 +25,10 @@
 " }}}
 "=============================================================================
 
+function! vimshell#version()"{{{
+  return '7.0'
+endfunction"}}}
+
 " Check vimproc.
 let s:is_vimproc = exists('*vimproc#system')
 let s:is_version = exists('*vimproc#version')
@@ -36,9 +40,16 @@ elseif !s:is_version
   finish
 endif
 
-function! vimshell#version()"{{{
-  return '7.0'
-endfunction"}}}
+" Initialize."{{{
+let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
+let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
+let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
+let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt : ''
+if !exists('g:VimShell_ExecuteFileList')
+  let g:VimShell_ExecuteFileList = {}
+endif
+"}}}
+
 function! vimshell#head_match(checkstr, headstr)"{{{
   return a:headstr == '' || a:checkstr ==# a:headstr
         \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
@@ -59,16 +70,6 @@ elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:
   echoerr printf('Head matched g:VimShell_UserPrompt("[%] ") and your g:VimShell_SecondaryPrompt("%s").', s:secondary_prompt)
   finish
 endif"}}}
-
-" Initialize."{{{
-let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
-let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
-let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
-let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt : ''
-if !exists('g:VimShell_ExecuteFileList')
-  let g:VimShell_ExecuteFileList = {}
-endif
-"}}}
 
 augroup VimShellAutoCmd"{{{
   autocmd!

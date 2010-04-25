@@ -700,7 +700,7 @@ function! s:parse_redirection(script)"{{{
   return [l:fd, l:script]
 endfunction"}}}
 
-function! parse_single_quote(script, i)"{{{
+function! s:parse_single_quote(script, i)"{{{
   if a:script[a:i] != "'"
     return ['', a:i]
   endif
@@ -841,7 +841,7 @@ function! s:skip_else(args, script, i)"{{{
   return [l:script, l:i]
 endfunction"}}}
 
-function! s:recursive_expand_alias(string)
+function! s:recursive_expand_alias(string)"{{{
   " Recursive expand alias.
   let l:alias = b:vimshell.alias_table[a:string]
   let l:expanded = {}
@@ -856,6 +856,6 @@ function! s:recursive_expand_alias(string)
   endwhile
 
   return l:alias
-endfunction
+endfunction"}}}
 
 " vim: foldmethod=marker
