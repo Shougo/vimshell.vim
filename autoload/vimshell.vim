@@ -108,7 +108,7 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   "}}}
 
-  if !(exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
+  if (exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
     return
   endif
   
@@ -619,7 +619,7 @@ function! vimshell#get_prompt_command()"{{{
   while l:lnum <= line('$') && !vimshell#check_prompt(l:lnum)
     if vimshell#check_secondary_prompt(l:lnum)
       " Append secondary command.
-      let l:line .= "\<CR>" . getline(l:lnum)[len(l:secondary_prompt):]
+      let l:line .= "\<NL>" . getline(l:lnum)[len(l:secondary_prompt):]
     endif
     
     let l:lnum += 1
