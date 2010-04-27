@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimsh.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Apr 2010
+" Last Modified: 26 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ function! vimshell#internal#vimsh#execute(program, args, fd, other_info)
             break
           catch /^Exception: Quote/
             " Join to next line.
-            let l:script .= "\<CR>" . l:lines[i+1]
+            let l:script .= "\<NL>" . l:lines[i+1]
             let i += 1
           endtry
         endwhile

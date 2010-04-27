@@ -155,6 +155,7 @@ CHANGELOG						*vimshell-changelog*
 2010-04-27
     * Fixed vimshell#print().
     * Improved g:VimShell_NoDefaultKeyMappings.
+    * Nestable vexe.
 
 2010-04-26
     * Improved auto complete behaivior in iexe buffer.

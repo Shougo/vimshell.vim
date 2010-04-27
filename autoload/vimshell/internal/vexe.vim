@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 Apr 2010
+" Last Modified: 26 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,11 +30,18 @@ function! vimshell#internal#vexe#execute(program, args, fd, other_info)
   let l:context = a:other_info
   let l:context.fd = a:fd
   call vimshell#set_context(l:context)
-  redir => l:output
-  for l:command in split(join(a:args), '\r')
-    execute l:command
+  
+  let l:temp = tempname()
+  let l:save_vfile = &verbosefile
+  let &verbosefile = l:temp
+  for l:command in split(join(a:args), '\n')
+    silent execute l:command
   endfor
-  redir END
+  if &verbosefile == l:temp
+    let &verbosefile = l:save_vfile
+  endif
+  let l:output = join(readfile(l:temp), '\n')
+  call delete(l:temp)
 
   for l:line in split(l:output, '\n')
     call vimshell#print_line(a:fd, l:line)
