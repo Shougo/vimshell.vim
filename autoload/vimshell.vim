@@ -108,6 +108,10 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   "}}}
 
+  if !(exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
+    return
+  endif
+  
   " Normal mode key-mappings."{{{
   " Execute command.
   nmap <buffer> <CR> <Plug>(vimshell_enter)
@@ -382,7 +386,7 @@ function! vimshell#print(fd, string)"{{{
   endif
 
   " Strip <CR>.
-  let l:lines = split(l:string, '\r', 1)
+  let l:lines = split(l:string, '\n')
   if line('$') == 1 && getline('$') == ''
     call setline('$', l:lines[0])
     let l:lines = l:lines[1:]
