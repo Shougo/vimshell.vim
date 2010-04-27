@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Dec 2009
+" Last Modified: 27 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,15 +27,8 @@
 function! vimshell#complete#internal#bcd#get_complete_words(args)"{{{
     let l:ret = vimshell#complete#helper#buffers(a:args[-1])
     for l:keyword in l:ret
-        let l:abbr = fnamemodify(l:keyword.word, ':p:h')
-        if len(l:abbr) > g:VimShell_MaxKeywordWidth
-            let l:over_len = len(l:abbr) - g:VimShell_MaxKeywordWidth
-            let l:prefix_len = (l:over_len > 10) ?  10 : l:over_len
-            let l:abbr = printf('%s~%s', l:abbr[: l:prefix_len - 1], l:abbr[l:over_len+l:prefix_len :])
-        endif
-        let l:keyword.menu .= ' ' . l:abbr
-        
-        let l:keyword.abbr = fnamemodify(l:keyword.word, ':t')
+        let l:keyword.menu .= ' ' . fnamemodify(l:keyword.abbr, ':p:h')
+        let l:keyword.abbr = fnamemodify(l:keyword.abbr, ':t')
     endfor
     
     return l:ret

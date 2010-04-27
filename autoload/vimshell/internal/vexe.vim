@@ -40,10 +40,10 @@ function! vimshell#internal#vexe#execute(program, args, fd, other_info)
   if &verbosefile == l:temp
     let &verbosefile = l:save_vfile
   endif
-  let l:output = join(readfile(l:temp), '\n')
+  let l:output = readfile(l:temp)
   call delete(l:temp)
 
-  for l:line in split(l:output, '\n')
+  for l:line in l:output
     call vimshell#print_line(a:fd, l:line)
   endfor
 endfunction

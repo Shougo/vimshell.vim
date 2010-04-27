@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: bcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2009
-" Usage: Just source this file.
+" Last Modified: 27 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,50 +22,27 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#bcd#execute(program, args, fd, other_info)
-    " Change working directory with buffer directory.
+  " Change working directory with buffer directory.
 
-    if empty(a:args)
-        " Move to alternate buffer directory.
-        let l:bufname = bufnr('#')
-    elseif len(a:args) > 2
-        call vimshell#error_line(a:fd, 'Too many arguments.')
-        return
-    else
-        let l:bufname = bufnr(a:args[0])
-    endif
-    
-    let l:bufnumber = bufnr(l:bufname)
-    
-    if l:bufnumber >= 0
-        let l:bufdir = fnamemodify(bufname(l:bufnumber), ':p:h')
-        if isdirectory(l:bufdir)
-            if empty(w:vimshell_directory_stack) || getcwd() != w:vimshell_directory_stack[0]
-                " Push current directory.
-                call insert(w:vimshell_directory_stack, getcwd())
-            endif
-            
-            " Move to directory.
-            lcd `=l:bufdir`
-        else
-            call vimshell#error_line(a:fd, printf('Directory "%s" is not found.', l:bufdir))
-        endif
-    else
-        call vimshell#error_line(a:fd, printf('Buffer "%s" is not found.', l:arguments))
-    endif
+  if empty(a:args)
+    " Move to alternate buffer directory.
+    let l:bufname = bufnr('#')
+  elseif len(a:args) > 2
+    call vimshell#error_line(a:fd, 'Too many arguments.')
+    return
+  else
+    let l:bufname = bufnr(a:args[0])
+  endif
+
+  let l:bufnumber = bufnr(l:bufname)
+
+  if l:bufnumber >= 0
+    let l:bufdir = fnamemodify(bufname(l:bufnumber), ':p:h')
+    return vimshell#internal#cd#execute('cd', [ l:bufdir ], a:fd, a:other_info)
+  else
+    call vimshell#error_line(a:fd, printf('Buffer "%s" is not found.', l:arguments))
+  endif
 endfunction

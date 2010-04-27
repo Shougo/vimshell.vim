@@ -156,6 +156,8 @@ CHANGELOG						*vimshell-changelog*
     * Fixed vimshell#print().
     * Improved g:VimShell_NoDefaultKeyMappings.
     * Nestable vexe.
+    * Deleted g:VimShell_MaxKeywordWidth.
+    * Fixed bcd bugs.
 
 2010-04-26
     * Improved auto complete behaivior in iexe buffer.
