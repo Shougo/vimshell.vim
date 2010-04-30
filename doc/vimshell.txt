@@ -156,6 +156,7 @@ CHANGELOG						*vimshell-changelog*
     * Improved interactive keymappings.
     * Improved interactive behaivior.
     * Fixed bg bug.
+    * Ignore escape sequences.
 
 2010-04-27
     * Fixed vimshell#print().

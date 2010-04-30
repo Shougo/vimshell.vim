@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Apr 2010
+" Last Modified: 30 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,9 +77,6 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
     
     let l:lnum += 1
   endwhile
-
-  " Highlight escape sequence.
-  call vimshell#interactive#highlight_escape_sequence()
 endfunction"}}}
 
 " Escape sequence functions.
@@ -98,10 +95,88 @@ endfunction
 " escape sequence list. {{{
 " pattern: function
 let s:escape_sequence = {
-      \ '\e\[0G' : s:funcref('ignore'),
+      \ '\e\[?\dh' : s:funcref('ignore'),
+      \ '\e\[?\dl' : s:funcref('ignore'),
+      \ '\e(A' : s:funcref('ignore'),
+      \ '\e)A' : s:funcref('ignore'),
+      \ '\e(B' : s:funcref('ignore'),
+      \ '\e)B' : s:funcref('ignore'),
+      \ '\e(0' : s:funcref('ignore'),
+      \ '\e)0' : s:funcref('ignore'),
+      \ '\e(1' : s:funcref('ignore'),
+      \ '\e)1' : s:funcref('ignore'),
+      \ '\e(2' : s:funcref('ignore'),
+      \ '\e)2' : s:funcref('ignore'),
+      \ '\eN' : s:funcref('ignore'),
+      \ '\eO' : s:funcref('ignore'),
+      \ 
+      \ '\e\[m' : s:funcref('ignore'),
+      \ '\e\[\d\+m' : s:funcref('ignore'),
+      \
+      \ '\e\[\d\+;\d\+r' : s:funcref('ignore'),
+      \
+      \ '\e\[\d\+A' : s:funcref('ignore'),
+      \ '\e\[\d\+B' : s:funcref('ignore'),
+      \ '\e\[\d\+C' : s:funcref('ignore'),
+      \ '\e\[\d\+D' : s:funcref('ignore'),
       \ '\e\[H' : s:funcref('ignore'),
-      \ '\e\[J' : s:funcref('ignore'),
+      \ '\e\[;H' : s:funcref('ignore'),
+      \ '\e\[\d\+;\d\+H' : s:funcref('ignore'),
+      \ '\e\[f' : s:funcref('ignore'),
+      \ '\e\[;f' : s:funcref('ignore'),
+      \ '\eM' : s:funcref('ignore'),
+      \ '\eE' : s:funcref('ignore'),
+      \ '\e7' : s:funcref('ignore'),
+      \ '\e8' : s:funcref('ignore'),
+      \
+      \ '\e[g' : s:funcref('ignore'),
+      \ '\e[\dg' : s:funcref('ignore'),
+      \
+      \ '\e#\d' : s:funcref('ignore'),
+      \
       \ '\e\[K' : s:funcref('ignore'),
+      \ '\e\[0K' : s:funcref('ignore'),
+      \ '\e\[1K' : s:funcref('ignore'),
+      \ '\e\[2K' : s:funcref('ignore'),
+      \
+      \ '\e\[J' : s:funcref('ignore'),
+      \ '\e\[0J' : s:funcref('ignore'),
+      \ '\e\[1J' : s:funcref('ignore'),
+      \ '\e\[2J' : s:funcref('ignore'),
+      \
+      \ '\e\dn' : s:funcref('ignore'),
+      \ '\e\d\+;\d\+R' : s:funcref('ignore'),
+      \
+      \ '\e\[c' : s:funcref('ignore'),
+      \ '\e\[0c' : s:funcref('ignore'),
+      \ '\e\[?1;\d\+0c' : s:funcref('ignore'),
+      \
+      \ '\ec' : s:funcref('ignore'),
+      \ '\e\[2;\dy' : s:funcref('ignore'),
+      \
+      \ '\e\[\dq' : s:funcref('ignore'),
+      \
+      \ '\e<' : s:funcref('ignore'),
+      \ '\e=' : s:funcref('ignore'),
+      \ '\e>' : s:funcref('ignore'),
+      \ '\eF' : s:funcref('ignore'),
+      \ '\eG' : s:funcref('ignore'),
+      \
+      \ '\eA' : s:funcref('ignore'),
+      \ '\eB' : s:funcref('ignore'),
+      \ '\eC' : s:funcref('ignore'),
+      \ '\eD' : s:funcref('ignore'),
+      \ '\eH' : s:funcref('ignore'),
+      \ '\e\d\+;\d\+' : s:funcref('ignore'),
+      \ '\eI' : s:funcref('ignore'),
+      \
+      \ '\eK' : s:funcref('ignore'),
+      \ '\eJ' : s:funcref('ignore'),
+      \
+      \ '\eZ' : s:funcref('ignore'),
+      \ '\e/Z' : s:funcref('ignore'),
+      \
+      \ '\e\[0G' : s:funcref('ignore'),
       \ '\e\[>5l' : s:funcref('ignore'),
       \}
 let s:control_sequence = {

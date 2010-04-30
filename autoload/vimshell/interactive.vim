@@ -423,6 +423,8 @@ function! vimshell#interactive#force_exit()"{{{
   endtry
 
   if &filetype != 'vimshell'
+    setlocal modifiable
+    
     call append(line('$'), '*Killed*')
     $
     normal! $
@@ -432,8 +434,8 @@ function! vimshell#interactive#force_exit()"{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#hang_up(afile)"{{{
-  if !buflisted(a:afile) && type(getbufvar(a:afile, 'vimproc')) != type('')
-    let l:vimproc = getbufvar(a:afile, 'b:interactive')
+  if type(getbufvar(a:afile, 'interactive')) != type('')
+    let l:vimproc = getbufvar(a:afile, 'interactive')
     if l:vimproc.process.is_valid
       " Kill process.
       try
@@ -442,22 +444,18 @@ function! vimshell#interactive#hang_up(afile)"{{{
       catch /No such process/
       endtry
     endif
+    
+    if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') != 'vimshell'
+      setlocal modifiable
+      
+      call append(line('$'), '*Killed*')
+      $
+      normal! $
+
+      stopinsert
+      setlocal nomodifiable
+    endif
   endif
-endfunction"}}}
-
-function! vimshell#interactive#interrupt()"{{{
-  if !b:interactive.process.is_valid
-    return
-  endif
-
-  " Kill process.
-  try
-    " 1 == SIGINT
-    call b:interactive.process.kill(1)
-  catch /No such process/
-  endtry
-
-  call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}
 
 function! vimshell#interactive#highlight_escape_sequence()"{{{
