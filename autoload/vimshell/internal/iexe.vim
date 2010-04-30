@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2010
+" Last Modified: 30 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -152,16 +152,18 @@ function! vimshell#internal#iexe#default_settings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
 
   nmap <buffer><C-p>     <Plug>(vimshell_interactive_previous_prompt)
   nmap <buffer><C-n>     <Plug>(vimshell_interactive_next_prompt)
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
   nmap <buffer><C-y>     <Plug>(vimshell_interactive_paste_prompt)
   nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
+  nmap <buffer>q         <Plug>(vimshell_interactive_exit)
 
   augroup vimshell_iexe
-    autocmd BufUnload <buffer>   call s:on_exit()
+    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
     autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorHold <buffer>  call s:on_hold()
@@ -194,16 +196,14 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   startinsert!
 endfunction"}}}
 
-function! s:on_insert_enter()
+function! s:on_insert_enter()"{{{
   let s:save_updatetime = &updatetime
   let &updatetime = 700
-endfunction
-
-function! s:on_insert_leave()
+endfunction"}}}
+function! s:on_insert_leave()"{{{
   let &updatetime = s:save_updatetime
-endfunction
-
-function! s:on_hold_i()
+endfunction"}}}
+function! s:on_hold_i()"{{{
   let l:cur_text = vimshell#interactive#get_cur_text()
   if l:cur_text != '' && l:cur_text !~# '*\%(Killed\|Exit\)*'
     return
@@ -211,39 +211,39 @@ function! s:on_hold_i()
   
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
-  if !b:interactive.process.is_valid
-    stopinsert
-  else
+  if b:interactive.process.is_valid
     call feedkeys("\<C-r>\<ESC>", 'n')
 
     if pumvisible()
       call feedkeys("\<C-y>", 'n')
     endif
   endif
-endfunction
-
-function! s:on_hold()
+endfunction"}}}
+function! s:on_hold()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if b:interactive.process.is_valid
     call feedkeys("g\<ESC>", 'n')
   endif
-endfunction
-
-function! s:on_moved()
+endfunction"}}}
+function! s:on_moved()"{{{
   let l:line = getline('.')
   if l:line =~ '^\.\.\.\.\?[^.]\+$\|^$'
     " Set prompt.
     call setline('.', '-> ' . l:line[len(matchstr(l:line, '^\.\.\.\.\?')) :])
     startinsert!
   endif
-endfunction
+endfunction"}}}
+function! s:on_interrupt(afile)"{{{
+  call vimshell#interactive#hang_up(a:afile)
+endfunction "}}}
+function! s:on_exit()"{{{
+  if !b:interactive.process.is_valid
+    bdelete
+  endif  
+endfunction "}}}
 
-function! s:on_exit()
-  call vimshell#interactive#hang_up()
-endfunction
-
-" Interactive option.
+" Interactive options."{{{
 if vimshell#iswin()
   " Windows only.
   let s:interactive_option = {
@@ -257,5 +257,5 @@ else
   let s:interactive_option = {
         \'termtter' : '--monochrome', 
         \}
-endif
+endif"}}}
 

@@ -152,6 +152,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-30
+    * Improved interactive keymappings.
+    * Improved interactive behaivior.
+    * Fixed bg bug.
+
 2010-04-27
     * Fixed vimshell#print().
     * Improved g:VimShell_NoDefaultKeyMappings.

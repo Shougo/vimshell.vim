@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2010
+" Last Modified: 30 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,7 +69,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 
   " Initialize.
   try
-    let l:sub = vimproc#popen3(join(l:args))
+    let l:sub = vimproc#popen3(l:args)
   catch 'list index out of range'
     let l:error = printf('File: "%s" is not found.', l:args[0])
 
@@ -94,7 +94,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   endif
   call l:interactive.process.stdin.close()
 
-  return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], interactive)
+  return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], l:interactive)
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
@@ -120,6 +120,7 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
+  setlocal nomodifiable
   let &filetype = a:filetype
   let b:interactive = a:interactive
 
@@ -132,40 +133,52 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
 
-  autocmd vimshell_bg BufUnload <buffer>       call s:on_exit()
-  autocmd vimshell_bg CursorHold <buffer>       call s:on_hold()
-  nnoremap <buffer><silent><C-c>       :<C-u>call vimshell#interactive#interrupt()<CR>
-  inoremap <buffer><silent><C-c>       <ESC>:<C-u>call <SID>on_exit()<CR>
-  nnoremap <buffer><silent><CR>       :<C-u>call <SID>on_execute()<CR>
+  augroup vimshell_bg
+    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
+    autocmd CursorHold <buffer>       call s:on_hold()
+  augroup END
+  
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
+  
+  nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
+  nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
+  nmap <buffer>q         <Plug>(vimshell_interactive_exit)
+  
   call s:on_execute()
 
   wincmd w
-  if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
-    call vimshell#start_insert()
+  if a:other_info.is_interactive
+    call vimshell#start_insert(a:other_info.is_insert)
   endif
 
   return 1
 endfunction"}}}
 
-function! s:on_execute()
+function! s:on_execute()"{{{
+  setlocal modifiable
   echo 'Running command.'
   call vimshell#interactive#execute_pipe_out()
   redraw
   echo ''
-endfunction
-
-function! s:on_hold()
+  setlocal nomodifiable
+endfunction"}}}
+function! s:on_hold()"{{{
+  setlocal modifiable
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
+  setlocal nomodifiable
 
   if b:interactive.process.is_valid
     call feedkeys("\<C-r>\<ESC>", 'n')
   endif
-endfunction
+endfunction"}}}
+function! s:on_interrupt(afile)"{{{
+  call vimshell#interactive#hang_up(a:afile)
+endfunction"}}}
+function! s:on_exit()"{{{
+  if !b:interactive.process.is_valid
+    bdelete
+  endif  
+endfunction "}}}
 
-function! s:on_exit()
-  augroup vimshell_bg
-    autocmd! BufUnload <buffer>
-  augroup END
-
-  call vimshell#interactive#hang_up()
-endfunction

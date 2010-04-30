@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Apr 2010
+" Last Modified: 30 Apr 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -404,6 +404,10 @@ function! vimshell#interactive#exit()"{{{
   if &filetype != 'vimshell'
     call append(line('$'), '*Exit*')
     $
+    normal! $
+    
+    stopinsert
+    setlocal nomodifiable
   endif
 endfunction"}}}
 function! vimshell#interactive#force_exit()"{{{
@@ -421,25 +425,24 @@ function! vimshell#interactive#force_exit()"{{{
   if &filetype != 'vimshell'
     call append(line('$'), '*Killed*')
     $
+    normal! $
+    
+    stopinsert
+    setlocal nomodifiable
   endif
 endfunction"}}}
-function! vimshell#interactive#hang_up()"{{{
-  let l:bufnr = 1
-  while l:bufnr <= bufnr('$')
-    if !buflisted(l:bufnr) && type(getbufvar(l:bufnr, 'vimproc')) != type('')
-      let l:vimproc = getbufvar(l:bufnr, 'b:interactive')
-      if b:interactive.process.is_valid
-        " Kill process.
-        try
-          " 15 == SIGTERM
-          call l:vimproc.process.kill(15)
-        catch /No such process/
-        endtry
-      endif
+function! vimshell#interactive#hang_up(afile)"{{{
+  if !buflisted(a:afile) && type(getbufvar(a:afile, 'vimproc')) != type('')
+    let l:vimproc = getbufvar(a:afile, 'b:interactive')
+    if l:vimproc.process.is_valid
+      " Kill process.
+      try
+        " 15 == SIGTERM
+        call l:vimproc.process.kill(15)
+      catch /No such process/
+      endtry
     endif
-
-    let l:bufnr += 1
-  endwhile
+  endif
 endfunction"}}}
 
 function! vimshell#interactive#interrupt()"{{{
@@ -685,14 +688,6 @@ function! s:send_string(line1, line2)"{{{
   endif
 endfunction"}}}
 
-function! s:on_exit()"{{{
-  augroup interactive
-    autocmd! * <buffer>
-  augroup END
-
-  call vimshell#interactive#exit()
-endfunction"}}}
-
 " Autocmd functions.
 function! s:check_all_output()"{{{
   let l:bufnr_save = bufnr('%')
@@ -746,15 +741,21 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
       execute a:bufnr_save . 'wincmd w'
     endif
 
-    let l:intbuffer_pos = getpos('.')
+    if mode() !=# 'i'
+      let l:intbuffer_pos = getpos('.')
+    endif
+    
     if a:interactive.is_background
       call vimshell#interactive#execute_pipe_out()
     else
       call vimshell#interactive#execute_pty_out(mode() ==# 'i')
     endif
-    if mode() ==# 'i'
+
+    if !a:interactive.process.eof && mode() ==# 'i'
       startinsert!
-    else
+    endif
+    
+    if mode() !=# 'i'
       call setpos('.', l:intbuffer_pos)
     endif
     
