@@ -74,7 +74,6 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     let l:context = a:other_info
     let l:context.fd = a:fd
     call vimshell#print_prompt(l:context)
-    call vimshell#interactive#highlight_escape_sequence()
 
     if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
       call vimshell#start_insert()
@@ -86,8 +85,6 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     " Skip prompt.
     return
   endif
-
-  call vimshell#interactive#highlight_escape_sequence()
 
   if a:other_info.is_interactive
     let l:context = a:other_info

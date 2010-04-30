@@ -396,7 +396,7 @@ function! vimshell#print(fd, string)"{{{
     call append('$', l:line)
   endfor
 
-  call vimshell#interactive#highlight_escape_sequence()
+  call vimshell#terminal#interpret_escape_sequence()
 
   " Set cursor.
   $
@@ -424,7 +424,7 @@ function! vimshell#print_line(fd, string)"{{{
     call append('$', a:string)
   endif
 
-  call vimshell#interactive#highlight_escape_sequence()
+  call vimshell#terminal#interpret_escape_sequence()
   $
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
@@ -454,7 +454,7 @@ function! vimshell#error_line(fd, string)"{{{
     call append('$', l:string)
   endif
 
-  call vimshell#interactive#highlight_escape_sequence()
+  call vimshell#terminal#interpret_escape_sequence()
   $
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{

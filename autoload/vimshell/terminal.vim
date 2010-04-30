@@ -32,6 +32,7 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
     if l:line =~ '[[:cntrl:]]'
       let l:newline = ''
       let l:pos = 0
+      let l:col = 1
       let l:max = len(l:line)
       while l:pos < l:max
         let l:matched = 0
@@ -39,27 +40,27 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
         if l:line[l:pos] == "\<ESC>"
           " Check escape sequence.
           for [l:pattern, l:Func] in items(s:escape_sequence)
-            let l:matchend = matchend(l:line, '^'.l:pattern, l:pos)
-            if l:matchend >= 0
-              let l:pos = l:matchend
+            let l:matchstr = matchstr(l:line, '^'.l:pattern, l:pos)
+            if l:matchstr != ''
+              let l:pos += len(l:matchstr)
               let l:matched = 1
-              
+
               " Interpret.
-              call call(l:Func, [])
-              
+              call call(l:Func, [l:matchstr, l:lnum, l:col])
+
               break
             endif
           endfor
         else
           " Check other pattern.
           for [l:pattern, l:Func] in items(s:control_sequence)
-            let l:matchend = matchend(l:line, '^'.l:pattern, l:pos)
-            if l:matchend >= 0
-              let l:pos = l:matchend
+            let l:matchstr = matchstr(l:line, '^'.l:pattern, l:pos)
+            if l:matchstr != ''
+              let l:pos += len(l:matchstr)
               let l:matched = 1
 
               " Interpret.
-              call call(l:Func, [])
+              call call(l:Func, [l:matchstr, l:lnum, l:col])
 
               break
             endif
@@ -69,6 +70,7 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
         if !l:matched
           let l:newline .= l:line[l:pos]
           let l:pos += 1
+          let l:col += 1
         endif
       endwhile
 
@@ -80,7 +82,85 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
 endfunction"}}}
 
 " Escape sequence functions.
-function! s:ignore()"{{{
+function! s:ignore(matchstr, lnum, col)"{{{
+endfunction"}}}
+function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
+  let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
+  let l:grey_table = [
+        \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
+        \0x58, 0x62, 0x6C, 0x76, 0x80, 0x8A, 0x94, 0x9E, 
+        \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
+        \]
+
+  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . a:lnum . '_' . a:col
+  execute 'syntax region' l:syntax_name 'start=+\%' . a:lnum . 'l\%' . a:col . 'c+ end=+\%$+' 'contains=ALL'
+
+  let l:highlight = ''
+  for l:color_code in split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+    if l:color_code == 0"{{{
+      let l:highlight .= ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE'
+    elseif l:color_code == 1
+      let l:highlight .= ' cterm=BOLD gui=BOLD'
+    elseif l:color_code == 4
+      let l:highlight .= ' cterm=UNDERLINE gui=UNDERLINE'
+    elseif l:color_code == 7
+      let l:highlight .= ' cterm=REVERSE gui=REVERSE'
+    elseif l:color_code == 8
+      let l:highlight .= ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000'
+    elseif 30 <= l:color_code && l:color_code <= 37 
+      " Foreground color.
+      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:VimShell_EscapeColors[l:color_code - 30])
+    elseif l:color_code == 38
+      " Foreground 256 colors.
+      let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
+      if l:color >= 232
+        " Grey scale.
+        let l:gcolor = l:grey_table[(l:color - 232)]
+        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
+      elseif l:color >= 16
+        " RGB.
+        let l:gcolor = l:color - 16
+        let l:red = l:color_table[l:gcolor / 36]
+        let l:green = l:color_table[(l:gcolor % 36) / 6]
+        let l:blue = l:color_table[l:gcolor % 6]
+
+        let l:highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
+      else
+        let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:VimShell_EscapeColors[l:color])
+      endif
+      break
+    elseif l:color_code == 39
+      " TODO
+    elseif 40 <= l:color_code && l:color_code <= 47 
+      " Background color.
+      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:VimShell_EscapeColors[l:color_code - 40])
+    elseif l:color_code == 48
+      " Background 256 colors.
+      let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
+      if l:color >= 232
+        " Grey scale.
+        let l:gcolor = l:grey_table[(l:color - 232)]
+        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
+      elseif l:color >= 16
+        " RGB.
+        let l:gcolor = l:color - 16
+        let l:red = l:color_table[l:gcolor / 36]
+        let l:green = l:color_table[(l:gcolor % 36) / 6]
+        let l:blue = l:color_table[l:gcolor % 6]
+
+        let l:highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
+      else
+        let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:VimShell_EscapeColors[l:color])
+      endif
+      break
+    elseif l:color_code == 49
+      " TODO
+    endif"}}}
+  endfor
+  if l:highlight != ''
+    execute 'highlight link' l:syntax_name 'Normal'
+    execute 'highlight' l:syntax_name l:highlight
+  endif
 endfunction"}}}
 
 function! s:SID_PREFIX()
@@ -111,7 +191,7 @@ let s:escape_sequence = {
       \ '\eO' : s:funcref('ignore'),
       \ 
       \ '\e\[m' : s:funcref('ignore'),
-      \ '\e\[\d\+m' : s:funcref('ignore'),
+      \ '\e\[\%(\d\+;\)*\d\+m' : s:funcref('highlight_escape_sequence'),
       \
       \ '\e\[\d\+;\d\+r' : s:funcref('ignore'),
       \
