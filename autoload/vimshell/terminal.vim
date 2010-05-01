@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2010
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,6 +162,23 @@ function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
     execute 'highlight' l:syntax_name l:highlight
   endif
 endfunction"}}}
+function! s:move_cursor(matchstr, lnum, col)"{{{
+  let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  let l:pos = getpos('.')
+  let l:pos[1] = l:args[0]
+  let l:pos[2] = l:args[1]
+  call setpos('.', l:pos)
+endfunction"}}}
+function! s:clear_entire_screen(matchstr, lnum, col)"{{{
+  let l:reg = @x
+  1,$ delete x
+  let @x = l:reg
+endfunction"}}}
+function! s:clear_screen_from_cursor_down(matchstr, lnum, col)"{{{
+  let l:reg = @x
+  .+1,$ delete x
+  let @x = l:reg
+endfunction"}}}
 
 function! s:SID_PREFIX()
   return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
@@ -177,16 +194,10 @@ endfunction
 let s:escape_sequence = {
       \ '\e\[?\dh' : s:funcref('ignore'),
       \ '\e\[?\dl' : s:funcref('ignore'),
-      \ '\e(A' : s:funcref('ignore'),
-      \ '\e)A' : s:funcref('ignore'),
-      \ '\e(B' : s:funcref('ignore'),
-      \ '\e)B' : s:funcref('ignore'),
-      \ '\e(0' : s:funcref('ignore'),
-      \ '\e)0' : s:funcref('ignore'),
-      \ '\e(1' : s:funcref('ignore'),
-      \ '\e)1' : s:funcref('ignore'),
-      \ '\e(2' : s:funcref('ignore'),
-      \ '\e)2' : s:funcref('ignore'),
+      \ '\e(\a' : s:funcref('ignore'),
+      \ '\e)\a' : s:funcref('ignore'),
+      \ '\e(\d' : s:funcref('ignore'),
+      \ '\e)\d' : s:funcref('ignore'),
       \ '\eN' : s:funcref('ignore'),
       \ '\eO' : s:funcref('ignore'),
       \ 
@@ -201,7 +212,7 @@ let s:escape_sequence = {
       \ '\e\[\d\+D' : s:funcref('ignore'),
       \ '\e\[H' : s:funcref('ignore'),
       \ '\e\[;H' : s:funcref('ignore'),
-      \ '\e\[\d\+;\d\+H' : s:funcref('ignore'),
+      \ '\e\[\d\+;\d\+H' : s:funcref('move_cursor'),
       \ '\e\[f' : s:funcref('ignore'),
       \ '\e\[;f' : s:funcref('ignore'),
       \ '\eM' : s:funcref('ignore'),
@@ -219,10 +230,10 @@ let s:escape_sequence = {
       \ '\e\[1K' : s:funcref('ignore'),
       \ '\e\[2K' : s:funcref('ignore'),
       \
-      \ '\e\[J' : s:funcref('ignore'),
+      \ '\e\[J' : s:funcref('clear_screen_from_cursor_down'),
       \ '\e\[0J' : s:funcref('ignore'),
       \ '\e\[1J' : s:funcref('ignore'),
-      \ '\e\[2J' : s:funcref('ignore'),
+      \ '\e\[2J' : s:funcref('clear_entire_screen'),
       \
       \ '\e\dn' : s:funcref('ignore'),
       \ '\e\d\+;\d\+R' : s:funcref('ignore'),
@@ -257,7 +268,8 @@ let s:escape_sequence = {
       \ '\e/Z' : s:funcref('ignore'),
       \
       \ '\e\[0G' : s:funcref('ignore'),
-      \ '\e\[>5l' : s:funcref('ignore'),
+      \ '\e\[>\dl' : s:funcref('ignore'),
+      \ '\e\[>\dh' : s:funcref('ignore'),
       \}
 let s:control_sequence = {
       \ "\<C-h>" : s:funcref('ignore'),
