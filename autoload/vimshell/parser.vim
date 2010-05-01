@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 Apr 2010
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,8 @@ function! vimshell#parser#eval_script(script, context)"{{{
     if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
       " Expand alias.
       let l:alias = s:recursive_expand_alias(l:program)
-      let l:program = l:alias
+      let l:program = matchstr(l:alias, vimshell#get_program_pattern())
+      let l:script = l:alias[len(l:program) :] . l:script
     endif
     if l:program != '' && l:program[0] == '~'
       " Parse tilde.

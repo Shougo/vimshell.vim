@@ -152,6 +152,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-01
+    * Fixed alias parse bug.
+
 2010-04-30
     * Improved interactive keymappings.
     * Improved interactive behaivior.
