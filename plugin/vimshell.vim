@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 20 Apr 2010
+" Last Modified: 01 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -77,20 +77,6 @@ if !exists('g:VimShell_EscapeColors')
                 \'#3c3c3c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0', 
                 \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff'
                 \]
-endif
-"}}}
-
-" Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
-nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
-
-if !(exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
-    silent! nmap <unique> <Leader>sp     <Plug>(vimshell_split_switch)
-    silent! nmap <unique> <Leader>sn     <Plug>(vimshell_split_create)
-    silent! nmap <unique> <Leader>sh     <Plug>(vimshell_switch)
-    silent! nmap <unique> <Leader>sc     <Plug>(vimshell_create)
 endif
 "}}}
 

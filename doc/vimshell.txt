@@ -154,6 +154,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-05-01
     * Fixed alias parse bug.
+    * Deleted obsolute mappings.
 
 2010-04-30
     * Improved interactive keymappings.
