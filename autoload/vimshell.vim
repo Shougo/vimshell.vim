@@ -381,15 +381,8 @@ function! vimshell#print(fd, string)"{{{
     return
   endif
 
-  " Convert encoding for system().
-  if vimshell#iswin()
-    let l:string = iconv(a:string, 'cp932', &encoding) 
-  else
-    let l:string = iconv(a:string, 'utf-8', &encoding) 
-  endif
-
   " Strip <CR>.
-  let l:lines = split(l:string, '\n')
+  let l:lines = split(a:string, '\n')
   if line('$') == 1 && getline('$') == ''
     call setline('$', l:lines[0])
     let l:lines = l:lines[1:]

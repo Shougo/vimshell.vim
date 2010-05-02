@@ -701,7 +701,7 @@ function! s:parse_wildcard(script)"{{{
       let l:head = matchstr(a:script[: l:i-1], '[^[:blank:]]*$')
       let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', l:i)
       " Trunk l:script.
-      let l:script = l:script[: -len(l:wildcard)+1]
+      let l:script = l:script[: -len(l:wildcard)]
 
       let l:script .= join(vimshell#parser#expand_wildcard(l:wildcard))
       let l:i = matchend(a:script, '^[^[:blank:]]*', l:i)
