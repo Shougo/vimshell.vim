@@ -213,12 +213,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
   let b:vimshell.altercmd_table = {}
-  " Load rc file.
-  if filereadable(g:VimShell_VimshrcPath)
-    call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
-          \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
-    let b:vimshell.loaded_vimshrc = 1
-  endif
   let b:vimshell.commandline_stack = []
   let b:vimshell.variables = {}
   let b:vimshell.system_variables = { 'status' : 0 }
@@ -239,7 +233,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   
   " Default settings.
   call vimshell#default_settings()
-  setfiletype vimshell
 
   let l:context = {
         \ 'has_head_spaces' : 0,
@@ -248,6 +241,16 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
   call vimshell#set_context(l:context)
+  
+  " Load rc file.
+  if filereadable(g:VimShell_VimshrcPath)
+    call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
+          \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
+    let b:vimshell.loaded_vimshrc = 1
+  endif
+  
+  setfiletype vimshell
+  
   call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
@@ -684,11 +687,14 @@ function! vimshell#iswin()"{{{
 endfunction"}}}
 function! vimshell#get_program_pattern()"{{{
   return 
-        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+\ze\%($\|\s*\)'
+        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+\ze\%($\|\s*\%(=\s*\)\?\)'
 endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
   return 
         \'[^\\]\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
+endfunction"}}}
+function! vimshell#get_alias_pattern()"{{{
+  return '^\s*[[:alnum:].+#_@!%-]\+'
 endfunction"}}}
 function! vimshell#split_nicely()"{{{
   " Split nicely.
@@ -703,7 +709,7 @@ function! vimshell#compare_number(i1, i2)"{{{
 endfunction"}}}
 "}}}
 
-" Helper functions.
+" User helper functions.
 function! vimshell#execute(cmdline, ...)"{{{
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   try
@@ -722,7 +728,30 @@ endfunction"}}}
 function! vimshell#get_context()"{{{
   return s:context
 endfunction"}}}
-" Special functions."{{{
+function! vimshell#set_alias(name, value)"{{{
+  if a:value == ''
+    " Delete alias.
+    call remove(b:vimshell.alias_table, a:name)
+  else
+    let b:vimshell.alias_table[a:name] = a:value
+  endif
+endfunction"}}}
+function! vimshell#get_alias(name)"{{{
+  return get(b:vimshell.alias_table, a:name, '')
+endfunction"}}}
+function! vimshell#set_galias(name, value)"{{{
+  if a:value == ''
+    " Delete alias.
+    call remove(b:vimshell.galias_table, a:name)
+  else
+    let b:vimshell.galias_table[a:name] = a:value
+  endif
+endfunction"}}}
+function! vimshell#get_galias(name)"{{{
+  return get(b:vimshell.galias_table, a:name, '')
+endfunction"}}}
+
+" Special functions.
 function! s:special_command(program, args, fd, other_info)"{{{
   let l:program = a:args[0]
   let l:arguments = a:args[1:]
@@ -757,7 +786,6 @@ function! s:special_internal(program, args, fd, other_info)"{{{
 
   return 0
 endfunction"}}}
-"}}}
 
 
 function! s:restore_current_dir()"{{{

@@ -152,6 +152,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-02
+    * Improved galias and alias parse.
+    * Implemented vimshell#set_alias() and vimshell#set_galias(). 
+
 2010-05-01
     * Fixed alias parse bug.
     * Deleted obsolute mappings.
@@ -229,7 +233,7 @@ ChangeLog 6.50: {{{
     * Added eval internal command.
     * Deleted ev internal command.
     * Fixed vimshell#print_line().
-    * Improved alias and gailias error message.
+    * Improved alias and galias error message.
     * Improved alias parse.
     * Changed hook specification.
     * Improved context.
@@ -248,7 +252,7 @@ ChangeLog 6.50: {{{
 
 2010-04-06
     * Fixed help file.
-    * Changed gailias as special command.
+    * Changed galias as special command.
     * Fixed popd error.
     * Disable output when inputing in iexe.
     * Implemented hook.

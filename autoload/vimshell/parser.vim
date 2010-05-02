@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 01 May 2010
+" Last Modified: 02 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,15 +37,8 @@ function! vimshell#parser#eval_script(script, context)"{{{
   let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
-    let l:args = vimshell#parser#split_args(l:statement)
+    let l:statement = s:parse_galias(l:statement)
 
-    " Expand global alias.
-    for l:arg in l:args
-      if has_key(b:vimshell.galias_table, l:arg)
-        let l:arg = b:vimshell.galias_table[l:arg]
-      endif
-    endfor
-    
     " Get program.
     let l:program = matchstr(l:statement, vimshell#get_program_pattern())
     if l:program  == ''
@@ -56,8 +49,9 @@ function! vimshell#parser#eval_script(script, context)"{{{
     if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
       " Expand alias.
       let l:alias = s:recursive_expand_alias(l:program)
-      let l:program = matchstr(l:alias, vimshell#get_program_pattern())
-      let l:script = l:alias[len(l:program) :] . l:script
+      let l:script = join(vimshell#parser#split_args(l:alias)) . l:script
+      let l:program = matchstr(l:script, vimshell#get_program_pattern())
+      let l:script = l:script[len(l:program) :]
     endif
     if l:program != '' && l:program[0] == '~'
       " Parse tilde.
@@ -535,6 +529,54 @@ function! vimshell#parser#getopt(args, optsyntax)"{{{
 endfunction"}}}
 
 " Parse helper.
+function! s:parse_galias(script)"{{{
+  let l:script = a:script
+  let l:max = len(l:script)
+  let l:args = []
+  let l:arg = ''
+  let l:i = 0
+  while l:i < l:max
+    if l:script[i] == '\'
+      " Escape.
+      let l:i += 1
+
+      if l:i > l:max
+        throw 'Exception: Join to next line (\).'
+      endif
+
+      let l:arg .= l:script[i]
+      let l:i += 1
+    elseif l:script[l:i] != ' '
+      let l:arg .= l:script[l:i]
+      let l:i += 1
+    else
+      " Space.
+      if l:arg != ''
+        call add(l:args, l:arg)
+      endif
+
+      let l:arg = ''
+
+      let l:i += 1
+    endif
+  endwhile
+
+  if l:arg != ''
+    call add(l:args, l:arg)
+  endif
+  
+  " Expand global alias.
+  let i = 0
+  for l:arg in l:args
+    if has_key(b:vimshell.galias_table, l:arg)
+      let l:args[i] = b:vimshell.galias_table[l:arg]
+    endif
+
+    let i += 1
+  endfor
+
+  return join(l:args)
+endfunction"}}}
 function! s:parse_block(script)"{{{
   let l:script = ''
 
