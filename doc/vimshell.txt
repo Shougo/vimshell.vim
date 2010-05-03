@@ -152,6 +152,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-04
+    * Improved system().
+
 2010-05-02
     * Improved galias and alias parse.
     * Implemented vimshell#set_alias() and vimshell#set_galias(). 
