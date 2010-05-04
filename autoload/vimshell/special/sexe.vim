@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2010
+" Last Modified: 05 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
+function! vimshell#special#sexe#execute(program, args, fd, other_info)"{{{
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})
@@ -63,6 +63,11 @@ function! vimshell#internal#sexe#execute(program, args, fd, other_info)"{{{
 
   echo 'Running command.'
   
+  if l:options['--encoding'] != '' && &encoding != l:options['--encoding']
+    " Convert encoding.
+    let l:cmdline = iconv(l:cmdline, &encoding, l:options['--encoding'])
+    let l:stdin = iconv(l:stdin, &encoding, l:options['--encoding'])
+  endif
   let l:result = system(printf('%s %s', l:cmdline, l:stdin))
   if l:options['--encoding'] != '' && &encoding != l:options['--encoding']
     " Convert encoding.

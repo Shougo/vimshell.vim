@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2010
+" Last Modified: 05 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,6 +65,11 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   if exists('b:interactive') && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
+  endif
+  
+  " Encoding conversion.
+  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
+    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
   endif
 
   " Initialize.

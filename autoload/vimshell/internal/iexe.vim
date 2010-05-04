@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2010
+" Last Modified: 05 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     return 0
   endif
 
-  let l:args = l:args
   if has_key(s:interactive_option, fnamemodify(l:args[0], ':r'))
     for l:arg in vimshell#parser#split_args(s:interactive_option[fnamemodify(l:args[0], ':r')])
       call add(l:args, l:arg)
@@ -52,6 +51,11 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     endif
 
     let l:args[0] = 'cmdproxy.exe'
+  endif
+  
+  " Encoding conversion.
+  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
+    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
   endif
 
   " Initialize.

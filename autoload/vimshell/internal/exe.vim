@@ -31,6 +31,11 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
   endif
+
+  " Encoding conversion.
+  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
+    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  endif
   
   " Execute command.
   if s:init_process(a:fd, l:args, l:options)

@@ -152,51 +152,55 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-05
+* Improved encoding.
+* sexe is special command.
+
 2010-05-04
-    * Improved system().
+* Improved system().
 
 2010-05-02
-    * Improved galias and alias parse.
-    * Implemented vimshell#set_alias() and vimshell#set_galias(). 
-    * Fixed wildcard.
-    * Fixed convert encoding.
+* Improved galias and alias parse.
+* Implemented vimshell#set_alias() and vimshell#set_galias(). 
+* Fixed wildcard.
+* Fixed convert encoding.
 
 2010-05-01
-    * Fixed alias parse bug.
-    * Deleted obsolute mappings.
-    * Implemented some escape sequence functions.
+* Fixed alias parse bug.
+* Deleted obsolute mappings.
+* Implemented some escape sequence functions.
 
 2010-04-30
-    * Improved interactive keymappings.
-    * Improved interactive behaivior.
-    * Fixed bg bug.
-    * Ignore escape sequences.
-    * Improved highlight.
+* Improved interactive keymappings.
+* Improved interactive behaivior.
+* Fixed bg bug.
+* Ignore escape sequences.
+* Improved highlight.
 
 2010-04-27
-    * Fixed vimshell#print().
-    * Improved g:VimShell_NoDefaultKeyMappings.
-    * Nestable vexe.
-    * Deleted g:VimShell_MaxKeywordWidth.
-    * Fixed bcd bugs.
+* Fixed vimshell#print().
+* Improved g:VimShell_NoDefaultKeyMappings.
+* Nestable vexe.
+* Deleted g:VimShell_MaxKeywordWidth.
+* Fixed bcd bugs.
 
 2010-04-26
-    * Improved auto complete behaivior in iexe buffer.
+* Improved auto complete behaivior in iexe buffer.
 
 2010-04-25
-    * vimshell#execute returns exit status.
-    * Improved prompt check.
-    * Added vimshell#version().
-    * Fixed iexe args.
-    * Deleted g:VimShell_EnableInteractive.
+* vimshell#execute returns exit status.
+* Improved prompt check.
+* Added vimshell#version().
+* Fixed iexe args.
+* Deleted g:VimShell_EnableInteractive.
 
 2010-04-24
-    * Fixed prompt check error.
-    * Fixed mapping <CR>.
+* Fixed prompt check error.
+* Fixed mapping <CR>.
 
 2010-04-20
-    * Ver.7 development is started.
-    * Supported vimproc Ver.4.
+* Ver.7 development is started.
+* Supported vimproc Ver.4.
 
 ChangeLog 6.50: {{{
 2010-04-20

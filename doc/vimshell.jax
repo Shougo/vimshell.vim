@@ -326,12 +326,6 @@ screen {command}					*vimshell-internal-screen*
 		{command}をscreen上で実行します。端末の機能を用いるプログラ
 		ムを起動したいときに便利です。当然Windows上では動作しません。
 
-sexe {command}						*vimshell-internal-sexe*
-		{command}を'shell'上で実行します。 vimshellでの起動に不具合
-		があるときに使用します。 'shell'が適切に設定されていないと動
-		作がおかしくなります。Windows環境では一瞬DOS窓が表示されてし
-		まいます。
-
 shell 							*vimshell-internal-shell*
 		|:shell|を用いて'shell'を起動します。Windows上のGVimでかつ
 		|g:VimShell_UseCkw| が設定されている場合、DOSプロンプトでは
@@ -384,6 +378,12 @@ galias {global-alias-name} = {command}			*vimshell-internal-galias*
 let ${var-name} = {expression}				*vimshell-special-let*
 		{var-name}の変数へ{expression}を代入します。
 		{var-name}の先頭には$を付加しなければなりません。
+
+sexe {command}						*vimshell-special-sexe*
+		{command}を'shell'上で実行します。 vimshellでの起動に不具合
+		があるときに使用します。 'shell'が適切に設定されていないと動
+		作がおかしくなります。Windows環境では一瞬DOS窓が表示されてし
+		まいます。
 
 ==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
