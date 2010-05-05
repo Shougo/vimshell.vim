@@ -31,7 +31,7 @@ function! vimshell#internal#gexe#execute(program, args, fd, other_info)
   endif
   
   " Execute GUI program.
-  if has('win32') || has('win64')
+  if vimshell#iswin()
     execute printf('!start %s', l:command)
   else
     " For *nix.

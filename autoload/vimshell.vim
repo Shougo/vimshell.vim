@@ -710,6 +710,32 @@ endfunction"}}}
 function! vimshell#compare_number(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction"}}}
+function! vimshell#alternate_buffer()"{{{
+  if bufnr('%') != bufnr('#') && buflisted(bufnr('#'))
+    buffer #
+  else
+    let l:cnt = 0
+    let l:pos = 1
+    let l:current = 0
+    while l:pos <= bufnr('$')
+      if buflisted(l:pos)
+        if l:pos == bufnr('%')
+          let l:current = l:cnt
+        endif
+
+        let l:cnt += 1
+      endif
+
+      let l:pos += 1
+    endwhile
+
+    if l:current > l:cnt / 2
+      bprevious
+    else
+      bnext
+    endif
+  endif
+endfunction"}}}
 "}}}
 
 " User helper functions.

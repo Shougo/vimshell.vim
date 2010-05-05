@@ -156,6 +156,7 @@ CHANGELOG						*vimshell-changelog*
 * Improved encoding.
 * sexe is special command.
 * Added <Plug>(vimshell_exit) mapping.
+* Improved exit and open.
 
 2010-05-04
 * Improved system().

@@ -100,6 +100,11 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
     return
   endif
 
+  if &termencoding != '' && &encoding != &termencoding
+    " Convert encoding.
+    let l:filename = iconv(l:filename, &encoding, &termencoding)
+  endif
+
   " Execute cursor file.
   if l:filename =~ '^\%(https\?\|ftp\)://'
     " Open uri.
@@ -107,8 +112,6 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
     " Detect desktop environment.
     if vimshell#iswin()
       execute printf('silent ! start "" "%s"', l:filename)
-    elseif has('mac')
-      call system('open ' . l:filename . '&')
     elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
       " KDE.
       call system('kfmclient exec ' . l:filename . '&')
@@ -118,6 +121,8 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
     elseif executable(vimshell#getfilename('exo-open'))
       " Xfce.
       call system('exo-open ' . l:filename . '&')
+    elseif executable('open')
+      call system('open ' . l:filename . '&')
     else
       throw 'Not supported.'
     endif

@@ -32,7 +32,7 @@ function! vimshell#internal#exit#execute(program, args, fd, other_info)
     if winnr('$') != 1
       close
     else
-      buffer #
+      call vimshell#alternate_buffer()
     endif
     execute 'bdelete!'. vimsh_buf
     return 1
