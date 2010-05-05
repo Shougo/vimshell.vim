@@ -93,7 +93,7 @@ function! vimshell#default_settings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_hide) :<C-u>hide<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_exit) :<C-u>call vimshell#mappings#exit()<CR>
 
   inoremap <buffer><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
   inoremap <buffer><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
@@ -115,8 +115,8 @@ function! vimshell#default_settings()"{{{
   " Normal mode key-mappings."{{{
   " Execute command.
   nmap <buffer> <CR> <Plug>(vimshell_enter)
-  " Hide vimshell.
-  nmap <buffer> q <Plug>(vimshell_hide)
+  " Exit vimshell.
+  nmap <buffer> q <Plug>(vimshell_exit)
   " Move to previous prompt.
   nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
   " Move to next prompt.

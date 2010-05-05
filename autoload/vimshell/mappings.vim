@@ -325,5 +325,15 @@ function! vimshell#mappings#expand_wildcard()"{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
 endfunction"}}}
+function! vimshell#mappings#exit()"{{{
+  let l:vimsh_buf = bufnr('%')
+  " Switch buffer.
+  if winnr('$') != 1
+    close
+  else
+    buffer #
+  endif
+  execute 'bdelete!'. l:vimsh_buf
+endfunction"}}}
 
 " vim: foldmethod=marker
