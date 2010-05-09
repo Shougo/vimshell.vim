@@ -418,7 +418,7 @@ function! vimshell#interactive#force_exit()"{{{
   " Kill processes.
   try
     " 15 == SIGTERM
-    call b:interactive.process.vp_kill(15)
+    call b:interactive.process.kill(15)
   catch
   endtry
 

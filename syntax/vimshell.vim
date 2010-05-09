@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 Apr 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,12 +70,7 @@ execute "syn region   VimShellLine start=".string('^'.vimshell#escape_match(vims
 execute "syn region   VimShellExe start=".string('^'.vimshell#escape_match(vimshell#get_secondary_prompt())) "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
 execute "syn region   VimShellLine start=".string('^'.vimshell#escape_match(vimshell#get_secondary_prompt())) "end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-if has('gui_running')
-    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-else
-    hi def link VimShellPrompt Identifier
-endif
-
+hi def link VimShellPrompt Identifier
 hi def link VimShellUserPrompt Special
 
 hi def link VimShellQuoted Special

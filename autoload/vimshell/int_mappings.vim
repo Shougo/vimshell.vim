@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 26 Apr 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -114,14 +114,14 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
       execute printf('silent ! start "" "%s"', l:filename)
     elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
       " KDE.
-      call system('kfmclient exec ' . l:filename . '&')
+      call system('kioclient exec ' . l:filename)
     elseif exists('$GNOME_DESKTOP_SESSION_ID')
       " GNOME.
       call system('gnome-open ' . l:filename . '&')
     elseif executable(vimshell#getfilename('exo-open'))
       " Xfce.
       call system('exo-open ' . l:filename . '&')
-    elseif executable('open')
+    elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
       call system('open ' . l:filename . '&')
     else
       throw 'Not supported.'
@@ -151,6 +151,40 @@ function! vimshell#int_mappings#close_popup()"{{{
   let l:ret .= "\<C-l>\<BS>"
 
   return l:ret
+endfunction"}}}
+function! vimshell#int_mappings#restart_command()"{{{
+  if exists('b:interactive') && b:interactive.process.is_valid
+    " Delete zombee process.
+    call vimshell#interactive#force_exit()
+  endif
+  
+  set modifiable
+  " Clean up the screen.
+  % delete _
+  syntax clear
+  highlight clear
+  
+  " Initialize.
+  let l:sub = vimproc#ptyopen(b:interactive.args)
+  
+  call vimshell#internal#iexe#default_settings()
+
+  " Set variables.
+  call extend(b:interactive, {
+        \ 'process' : l:sub, 
+        \ 'is_secret': 0, 
+        \ 'prompt_history' : {}, 
+        \ 'command_history' : [], 
+        \ 'cached_output' : '', 
+        \}, 'force')
+
+  call vimshell#interactive#execute_pty_out(1)
+  if getline(line('$')) =~ '^\s*$'
+    let b:interactive.prompt_history[line('$')] = ''
+    call setline(line('$'), '...')
+  endif
+
+  startinsert!
 endfunction"}}}
 
 " vim: foldmethod=marker

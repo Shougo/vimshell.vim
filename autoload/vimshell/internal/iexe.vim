@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,6 +58,11 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
   endif
 
+  if exists('b:interactive') && b:interactive.process.is_valid
+    " Delete zombee process.
+    call vimshell#interactive#force_exit()
+  endif
+
   " Initialize.
   try
     let l:sub = vimproc#ptyopen(l:args)
@@ -68,11 +73,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     return 0
   endtry
-
-  if exists('b:interactive') && b:interactive.process.is_valid
-    " Delete zombee process.
-    call vimshell#interactive#force_exit()
-  endif
 
   call s:init_bg(l:sub, l:args, a:fd, a:other_info)
 
@@ -87,12 +87,8 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \ 'is_background': 0, 
         \ 'cached_output' : '', 
+        \ 'args' : l:args,
         \}
-
-  " Input from stdin.
-  if b:interactive.fd.stdin != ''
-    call b:interactive.process.write(vimshell#read(a:fd))
-  endif
 
   call vimshell#interactive#execute_pty_out(1)
   if getline(line('$')) =~ '^\s*$'
@@ -141,16 +137,16 @@ function! vimshell#internal#iexe#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_interactive_dummy_enter) pumvisible()? "\<C-y>\<CR>\<BS>" : "\<CR>\<BS>"
 
-  imap <buffer><C-h>     <Plug>(vimshell_interactive_delete_backword_char)
-  imap <buffer><BS>     <Plug>(vimshell_interactive_delete_backword_char)
-  imap <buffer><expr><TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
-  imap <buffer><C-a>     <Plug>(vimshell_interactive_move_head)
-  imap <buffer><C-u>     <Plug>(vimshell_interactive_delete_line)
-  imap <buffer><C-e>     <Plug>(vimshell_interactive_close_popup)
-  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[-1:] ==# "\<C-]>" ? "\<BS>" : ''
+  imap <buffer> <C-h>     <Plug>(vimshell_interactive_delete_backword_char)
+  imap <buffer> <BS>     <Plug>(vimshell_interactive_delete_backword_char)
+  imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
+  imap <buffer> <C-a>     <Plug>(vimshell_interactive_move_head)
+  imap <buffer> <C-u>     <Plug>(vimshell_interactive_delete_line)
+  imap <buffer> <C-e>     <Plug>(vimshell_interactive_close_popup)
+  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer><CR>      <C-]><Plug>(vimshell_interactive_execute_line)
-  imap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
+  imap <buffer> <CR>      <C-]><Plug>(vimshell_interactive_execute_line)
+  imap <buffer> <C-c>     <Plug>(vimshell_interactive_interrupt)
 
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
@@ -158,22 +154,15 @@ function! vimshell#internal#iexe#default_settings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
 
-  nmap <buffer><C-p>     <Plug>(vimshell_interactive_previous_prompt)
-  nmap <buffer><C-n>     <Plug>(vimshell_interactive_next_prompt)
-  nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
-  nmap <buffer><C-y>     <Plug>(vimshell_interactive_paste_prompt)
-  nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
-  nmap <buffer>q         <Plug>(vimshell_interactive_exit)
-
-  augroup vimshell_iexe
-    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
-    autocmd CursorMovedI <buffer>  call s:on_moved()
-    autocmd CursorHoldI <buffer>  call s:on_hold_i()
-    autocmd CursorHold <buffer>  call s:on_hold()
-    autocmd InsertEnter <buffer>  call s:on_insert_enter()
-    autocmd InsertLeave <buffer>  call s:on_insert_leave()
-  augroup END
+  nmap <buffer> <C-p>     <Plug>(vimshell_interactive_previous_prompt)
+  nmap <buffer> <C-n>     <Plug>(vimshell_interactive_next_prompt)
+  nmap <buffer> <CR>      <Plug>(vimshell_interactive_execute_line)
+  nmap <buffer> <C-y>     <Plug>(vimshell_interactive_paste_prompt)
+  nmap <buffer> <C-r>     <Plug>(vimshell_interactive_restart_command)
+  nmap <buffer> <C-c>     <Plug>(vimshell_interactive_interrupt)
+  nmap <buffer> q         <Plug>(vimshell_interactive_exit)
 endfunction"}}}
 
 function! s:init_bg(sub, args, fd, other_info)"{{{
@@ -194,6 +183,16 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   execute 'setfiletype' 'int-'.fnamemodify(a:args[0], ':r')
 
   call vimshell#internal#iexe#default_settings()
+
+  " Set autocommands.
+  augroup vimshell_iexe
+    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
+    autocmd CursorMovedI <buffer>  call s:on_moved()
+    autocmd CursorHoldI <buffer>  call s:on_hold_i()
+    autocmd CursorHold <buffer>  call s:on_hold()
+    autocmd InsertEnter <buffer>  call s:on_insert_enter()
+    autocmd InsertLeave <buffer>  call s:on_insert_leave()
+  augroup END
 
   $
 

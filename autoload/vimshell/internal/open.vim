@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: open.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,14 +44,14 @@ function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
     return 0
   elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
     " KDE.
-    let l:args = ['kfmclient', 'exec'] + a:args
+    let l:args = ['kioclient', 'exec'] + a:args
   elseif exists('$GNOME_DESKTOP_SESSION_ID')
     " GNOME.
     let l:args = ['gnome-open'] + a:args
   elseif executable('exo-open')
     " Xfce.
     let l:args = ['exo-open'] + a:args
-  elseif executable('open')
+  elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
     let l:args = ['open'] + a:args
   else
     throw 'open: Not supported.'

@@ -152,6 +152,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-09
+* vimshell disables bell.
+* Fixed <CR> bug in iexe.
+* Added <Plug>(vimshell_interactive_restart_command) mapping.
+* Changed prompt syntax.
+
 2010-05-05
 * Improved encoding.
 * sexe is special command.

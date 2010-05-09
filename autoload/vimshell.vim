@@ -48,6 +48,10 @@ let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt :
 if !exists('g:VimShell_ExecuteFileList')
   let g:VimShell_ExecuteFileList = {}
 endif
+
+" Disable bell.
+set visualbell
+set vb t_vb=
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
