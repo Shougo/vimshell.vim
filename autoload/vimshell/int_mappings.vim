@@ -161,8 +161,7 @@ function! vimshell#int_mappings#restart_command()"{{{
   set modifiable
   " Clean up the screen.
   % delete _
-  syntax clear
-  highlight clear
+  call vimshell#terminal#clear_highlight()
   
   " Initialize.
   let l:sub = vimproc#ptyopen(b:interactive.args)

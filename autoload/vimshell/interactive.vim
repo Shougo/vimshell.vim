@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Apr 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ augroup VimShellInteractive
   autocmd CursorHold * call s:check_all_output()
 augroup END
 
-command! -range VimShellSendString call s:send_string(<line1>, <line2>)
+command! -range -nargs=? VimShellSendString call s:send_string(<line1>, <line2>, <q-args>)
 
 function! vimshell#interactive#get_cur_text()"{{{
   if getline('.') == '...'
@@ -256,10 +256,11 @@ function! vimshell#interactive#send_string(string)"{{{
   endif
 
   try
+    let b:interactive.skip_echoback = l:in[: -2]
+    
     if l:in =~ "\<C-d>$"
       " EOF.
       call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
-      let b:interactive.skip_echoback = l:in[:-2]
       call vimshell#interactive#execute_pty_out(1)
 
       call vimshell#interactive#exit()
@@ -271,7 +272,6 @@ function! vimshell#interactive#send_string(string)"{{{
       endif
 
       call b:interactive.process.write(l:in)
-      let b:interactive.skip_echoback = l:in
     endif
   catch
     call vimshell#interactive#exit()
@@ -328,7 +328,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   if l:outputed
-    if has_key(b:interactive, 'skip_echoback') && line('.') < line('$') && b:interactive.skip_echoback ==# getline(line('.'))
+    if has_key(b:interactive, 'skip_echoback') && b:interactive.skip_echoback ==# getline(line('.'))
       delete
       redraw
     endif
@@ -574,12 +574,17 @@ function! s:error_buffer(fd, string)"{{{
 endfunction"}}}
 
 " Command functions.
-function! s:send_string(line1, line2)"{{{
+function! s:send_string(line1, line2, string)"{{{
   " Check alternate buffer.
   let l:filetype = getwinvar(winnr('#'), '&filetype')
   if l:filetype =~ '^int-'
-    let l:line = getline(a:line1)
-    let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
+    if a:string != ''
+      let l:string = a:string . "\<LF>"
+    else
+      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
+    endif
+    let l:line = split(l:string, "\<LF>")[0]
+    
     execute winnr('#') 'wincmd w'
 
     " Save prompt.

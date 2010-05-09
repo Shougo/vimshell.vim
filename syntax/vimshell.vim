@@ -70,7 +70,12 @@ execute "syn region   VimShellLine start=".string('^'.vimshell#escape_match(vims
 execute "syn region   VimShellExe start=".string('^'.vimshell#escape_match(vimshell#get_secondary_prompt())) "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
 execute "syn region   VimShellLine start=".string('^'.vimshell#escape_match(vimshell#get_secondary_prompt())) "end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
-hi def link VimShellPrompt Identifier
+if has('gui_running')
+    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+else
+    hi def link VimShellPrompt Identifier
+endif
+
 hi def link VimShellUserPrompt Special
 
 hi def link VimShellQuoted Special

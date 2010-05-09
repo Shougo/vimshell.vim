@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: clear.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 11 Dec 2009
-" Usage: Just source this file.
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,32 +22,11 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.2:
-"     - Syntax clear.
-"
-"   1.1:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#clear#execute(program, args, fd, other_info)
-    " Clean up the screen.
-    % delete _
-    syntax clear
-    highlight clear
-    
-    runtime! syntax/vimshell.vim
+  " Clean up the screen.
+  % delete _
+
+  call vimshell#terminal#clear_highlight()
 endfunction

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 May 2010
+" Last Modified: 09 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,16 @@
 " }}}
 "=============================================================================
 
+let s:terminal_info = {}
+
 function! vimshell#terminal#interpret_escape_sequence()"{{{
+  if !has_key(s:terminal_info, bufnr('%'))
+    " Initialize.
+    let s:terminal_info[bufnr('%')] = {
+          \ 'syntax_names' : [],
+          \ }
+  endif
+  
   let l:lnum = line('.')
   while l:lnum <= line('$')
     let l:line = getline(l:lnum)
@@ -80,6 +89,16 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
     let l:lnum += 1
   endwhile
 endfunction"}}}
+function! vimshell#terminal#clear_highlight()"{{{
+  if !has_key(s:terminal_info, bufnr('%'))
+    return
+  endif
+  
+  for l:syntax_name in s:terminal_info[bufnr('%')].syntax_names
+    execute 'highlight clear' l:syntax_name
+    execute 'syntax clear' l:syntax_name
+  endfor
+endfunction"}}}
 
 " Escape sequence functions.
 function! s:ignore(matchstr, lnum, col)"{{{
@@ -94,6 +113,7 @@ function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
 
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . a:lnum . '_' . a:col
   execute 'syntax region' l:syntax_name 'start=+\%' . a:lnum . 'l\%' . a:col . 'c+ end=+\%$+' 'contains=ALL'
+  call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
 
   let l:highlight = ''
   for l:color_code in split(matchstr(a:matchstr, '[0-9;]\+'), ';')
