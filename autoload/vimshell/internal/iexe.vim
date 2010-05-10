@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2010
+" Last Modified: 10 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,6 +23,8 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
+
+let s:last_interactive_bufnr = 1
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   " Interactive execute command.
@@ -187,6 +189,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   " Set autocommands.
   augroup vimshell_iexe
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
+    autocmd WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorHold <buffer>  call s:on_hold()
@@ -261,4 +264,36 @@ else
         \'termtter' : '--monochrome', 
         \}
 endif"}}}
+
+" Command functions.
+function! s:send_string(line1, line2, string)"{{{
+  let l:winnr = bufwinnr(s:last_interactive_bufnr)
+  if l:winnr < 0
+    return
+  endif
+  echomsg l:winnr
+  
+  " Check alternate buffer.
+  if getwinvar(l:winnr, '&filetype') =~ '^int-'
+    if a:string != ''
+      let l:string = a:string . "\<LF>"
+    else
+      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
+    endif
+    let l:line = split(l:string, "\<LF>")[0]
+    
+    execute winnr('#') 'wincmd w'
+
+    " Save prompt.
+    let l:prompt = vimshell#interactive#get_prompt(line('$'))
+    let l:prompt_nr = line('$')
+    
+    " Send string.
+    call vimshell#interactive#send_string(l:string)
+    
+    call setline(l:prompt_nr, l:prompt . l:line)
+  endif
+endfunction"}}}
+
+command! -range -nargs=? VimShellSendString call s:send_string(<line1>, <line2>, <q-args>)
 
