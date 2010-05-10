@@ -153,6 +153,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-04-24
+    * Fixed prompt check error.
+    * Fixed mapping <CR>.
+
 2010-04-20
     * Ver.7 development is started.
     * Supported vimproc Ver.4.
