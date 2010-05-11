@@ -156,7 +156,6 @@ CHANGELOG						*vimshell-changelog*
 * vimshell disables bell.
 * Fixed <CR> bug in iexe.
 * Added <Plug>(vimshell_interactive_restart_command) mapping.
-* Changed prompt syntax.
 * Improved :VimShellSendString.
 * Improved highlight clear.
 
