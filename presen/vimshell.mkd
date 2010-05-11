@@ -467,7 +467,7 @@ zshを超えるのももう少しかもしれません。
 
 ## ユーザープロンプト
 
-`g:vimshell_user_prompt`変数にVim scriptの式を文字列として代入することで、
+`g:vimshell_user_prompt`変数にVim Scriptの式を文字列として代入することで、
 ユーザーが追加で表示されるプロンプトを定義できます。
 `g:vimshell_prompt`と違い、固定文字列でなくても良いです。
 

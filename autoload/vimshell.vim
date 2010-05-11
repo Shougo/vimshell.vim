@@ -112,7 +112,7 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   "}}}
 
-  if (exists('g:vimshell_NoDefaultKeyMappings') && g:vimshell_no_default_keymappings)
+  if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
     return
   endif
   
