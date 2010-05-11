@@ -36,16 +36,16 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Obsolute options check."{{{
-if !exists('g:VimShell_Prompt')
+if exists('g:VimShell_Prompt')
     echoerr 'g:VimShell_Prompt option does not work this version of vimshell.'
 endif
-if !exists('g:VimShell_SecondaryPrompt')
+if exists('g:VimShell_SecondaryPrompt')
     echoerr 'g:VimShell_SecondaryPrompt option does not work this version of vimshell.'
 endif
-if !exists('g:VimShell_UserPrompt')
+if exists('g:VimShell_UserPrompt')
     echoerr 'g:VimShell_UserPrompt option does not work this version of vimshell.'
 endif
-if !exists('g:VimShell_EnableInteractive')
+if exists('g:VimShell_EnableInteractive')
     echoerr 'g:VimShell_EnableInteractive option does not work this version of vimshell.'
 endif
 "}}}
