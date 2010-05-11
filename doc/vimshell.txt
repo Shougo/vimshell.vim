@@ -152,6 +152,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-10
+* Fixed error in output check.
+* Improved :VimShellSendString.
+
 2010-05-09
 * vimshell disables bell.
 * Fixed <CR> bug in iexe.

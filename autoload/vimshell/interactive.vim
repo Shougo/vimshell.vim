@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2010
+" Last Modified: 10 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,8 +40,6 @@ augroup VimShellInteractive
   autocmd!
   autocmd CursorHold * call s:check_all_output()
 augroup END
-
-command! -range -nargs=? VimShellSendString call s:send_string(<line1>, <line2>, <q-args>)
 
 function! vimshell#interactive#get_cur_text()"{{{
   if getline('.') == '...'
@@ -573,31 +571,6 @@ function! s:error_buffer(fd, string)"{{{
   $
 endfunction"}}}
 
-" Command functions.
-function! s:send_string(line1, line2, string)"{{{
-  " Check alternate buffer.
-  let l:filetype = getwinvar(winnr('#'), '&filetype')
-  if l:filetype =~ '^int-'
-    if a:string != ''
-      let l:string = a:string . "\<LF>"
-    else
-      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
-    endif
-    let l:line = split(l:string, "\<LF>")[0]
-    
-    execute winnr('#') 'wincmd w'
-
-    " Save prompt.
-    let l:prompt = vimshell#interactive#get_prompt(line('$'))
-    let l:prompt_nr = line('$')
-    
-    " Send string.
-    call vimshell#interactive#send_string(l:string)
-    
-    call setline(l:prompt_nr, l:prompt . l:line)
-  endif
-endfunction"}}}
-
 " Autocmd functions.
 function! s:check_all_output()"{{{
   let l:bufnr_save = bufnr('%')
@@ -648,7 +621,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     
     if a:bufnr != a:bufnr_save
       let l:pos = getpos('.')
-      execute a:bufnr_save . 'wincmd w'
+      execute a:bufnr . 'wincmd w'
     endif
 
     if mode() !=# 'i'
@@ -671,7 +644,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       call setpos('.', l:pos)
-      wincmd p
+      execute a:bufnr_save . 'wincmd w'
     endif
   endif
 endfunction"}}}
