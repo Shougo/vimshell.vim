@@ -129,7 +129,7 @@ function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
       let l:highlight .= ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000'
     elseif 30 <= l:color_code && l:color_code <= 37 
       " Foreground color.
-      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:VimShell_EscapeColors[l:color_code - 30])
+      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:vimshell_escape_colors[l:color_code - 30])
     elseif l:color_code == 38
       " Foreground 256 colors.
       let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
@@ -146,14 +146,14 @@ function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
 
         let l:highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
       else
-        let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:VimShell_EscapeColors[l:color])
+        let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:vimshell_escape_colors[l:color])
       endif
       break
     elseif l:color_code == 39
       " TODO
     elseif 40 <= l:color_code && l:color_code <= 47 
       " Background color.
-      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:VimShell_EscapeColors[l:color_code - 40])
+      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:vimshell_escape_colors[l:color_code - 40])
     elseif l:color_code == 48
       " Background 256 colors.
       let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
@@ -170,7 +170,7 @@ function! s:highlight_escape_sequence(matchstr, lnum, col)"{{{
 
         let l:highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
       else
-        let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:VimShell_EscapeColors[l:color])
+        let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:vimshell_escape_colors[l:color])
       endif
       break
     elseif l:color_code == 49

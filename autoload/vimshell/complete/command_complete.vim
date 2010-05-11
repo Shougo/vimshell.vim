@@ -60,10 +60,10 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
   let l:ignorecase_save = &ignorecase
 
   " Complete.
-  if g:VimShell_SmartCase && a:base =~ '\u'
+  if g:vimshell_smart_case && a:base =~ '\u'
     let &ignorecase = 0
   else
-    let &ignorecase = g:VimShell_IgnoreCase
+    let &ignorecase = g:vimshell_ignore_case
   endif
 
   let l:complete_words = s:get_complete_commands(a:base)

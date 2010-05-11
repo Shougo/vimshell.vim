@@ -41,12 +41,12 @@ elseif !s:is_version
 endif
 
 " Initialize."{{{
-let s:prompt = exists('g:VimShell_Prompt') ? g:VimShell_Prompt : 'vimshell% '
-let s:secondary_prompt = exists('g:VimShell_SecondaryPrompt') ? g:VimShell_SecondaryPrompt : '%% '
-let s:user_prompt = exists('g:VimShell_UserPrompt') ? g:VimShell_UserPrompt : ''
-let s:right_prompt = exists('g:VimShell_RightPrompt') ? g:VimShell_RightPrompt : ''
-if !exists('g:VimShell_ExecuteFileList')
-  let g:VimShell_ExecuteFileList = {}
+let s:prompt = exists('g:vimshell_prompt') ? g:vimshell_prompt : 'vimshell% '
+let s:secondary_prompt = exists('g:vimshell_secondary_prompt') ? g:vimshell_secondary_prompt : '%% '
+let s:user_prompt = exists('g:vimshell_user_prompt') ? g:vimshell_user_prompt : ''
+let s:right_prompt = exists('g:vimshell_right_prompt') ? g:vimshell_right_prompt : ''
+if !exists('g:vimshell_execute_file_list')
+  let g:vimshell_execute_file_list = {}
 endif
 
 " Disable bell.
@@ -65,13 +65,13 @@ endfunction"}}}
 
 " Check prompt value."{{{
 if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
-  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_SecondaryPrompt("%s").', s:prompt, s:secondary_prompt)
+  echoerr printf('Head matched g:vimshell_prompt("%s") and your g:vimshell_secondary_prompt("%s").', s:prompt, s:secondary_prompt)
   finish
 elseif vimshell#head_match(s:prompt, '[%] ') || vimshell#head_match('[%] ', s:prompt)
-  echoerr printf('Head matched g:VimShell_Prompt("%s") and your g:VimShell_UserPrompt("[%] ").', s:prompt)
+  echoerr printf('Head matched g:vimshell_prompt("%s") and your g:vimshell_user_prompt("[%] ").', s:prompt)
   finish
 elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, '[%] ')
-  echoerr printf('Head matched g:VimShell_UserPrompt("[%] ") and your g:VimShell_SecondaryPrompt("%s").', s:secondary_prompt)
+  echoerr printf('Head matched g:vimshell_user_prompt("[%] ") and your g:vimshell_secondary_prompt("%s").', s:secondary_prompt)
   finish
 endif"}}}
 
@@ -112,7 +112,7 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   "}}}
 
-  if (exists('g:VimShell_NoDefaultKeyMappings') && g:VimShell_NoDefaultKeyMappings)
+  if (exists('g:vimshell_NoDefaultKeyMappings') && g:vimshell_no_default_keymappings)
     return
   endif
   
@@ -169,7 +169,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endwhile
 
   if a:split_flag
-    execute winheight(0)*g:VimShell_SplitHeight/100 'split `=l:bufname`'
+    execute winheight(0)*g:vimshell_split_height/100 'split `=l:bufname`'
   else
     edit `=l:bufname`
   endif
@@ -199,12 +199,12 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Load history.
-  if !filereadable(g:VimShell_HistoryPath)
+  if !filereadable(g:vimshell_history_path)
     " Create file.
-    call writefile([], g:VimShell_HistoryPath)
+    call writefile([], g:vimshell_history_path)
   endif
-  let g:vimshell#hist_buffer = readfile(g:VimShell_HistoryPath)
-  let g:vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
+  let g:vimshell#hist_buffer = readfile(g:vimshell_history_path)
+  let g:vimshell#hist_size = getfsize(g:vimshell_history_path)
 
   " Initialize variables.
   let b:vimshell = {}
@@ -247,8 +247,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call vimshell#set_context(l:context)
   
   " Load rc file.
-  if filereadable(g:VimShell_VimshrcPath)
-    call vimshell#execute_internal_command('vimsh', [g:VimShell_VimshrcPath], {}, 
+  if filereadable(g:vimshell_vimshrc_path)
+    call vimshell#execute_internal_command('vimsh', [g:vimshell_vimshrc_path], {}, 
           \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
     let b:vimshell.loaded_vimshrc = 1
   endif
@@ -308,7 +308,7 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   while l:cnt <= bufnr('$')
     if getbufvar(l:cnt, '&filetype') == 'vimshell'
       if a:split_flag
-        execute winheight(0)*g:VimShell_SplitHeight / 100 'sbuffer' l:cnt
+        execute winheight(0)*g:vimshell_split_height / 100 'sbuffer' l:cnt
       else
         execute 'buffer' l:cnt
       endif
@@ -520,19 +520,19 @@ function! vimshell#append_history(command)"{{{
   call insert(filter(g:vimshell#hist_buffer, printf("v:val != '%s'", substitute(l:command, "'", "''", 'g'))), l:command)
 
   " Trunk.
-  let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:VimShell_HistoryMaxSize-1]
+  let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_history_max_size-1]
 
-  call writefile(g:vimshell#hist_buffer, g:VimShell_HistoryPath)
+  call writefile(g:vimshell#hist_buffer, g:vimshell_history_path)
 
-  let vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
+  let vimshell#hist_size = getfsize(g:vimshell_history_path)
 endfunction"}}}
 function! vimshell#remove_history(command)"{{{
   " Filtering.
   call filter(g:vimshell#hist_buffer, printf("v:val !~ '^%s\s*'", a:command))
 
-  call writefile(g:vimshell#hist_buffer, g:VimShell_HistoryPath)
+  call writefile(g:vimshell#hist_buffer, g:vimshell_history_path)
 
-  let vimshell#hist_size = getfsize(g:VimShell_HistoryPath)
+  let vimshell#hist_size = getfsize(g:vimshell_history_path)
 endfunction"}}}
 function! vimshell#getfilename(program)"{{{
   " Command search.
@@ -669,7 +669,7 @@ function! vimshell#check_secondary_prompt(...)"{{{
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
   for ext in split(a:exts, ',')
-    let g:VimShell_ExecuteFileList[ext] = a:program
+    let g:vimshell_execute_file_list[ext] = a:program
   endfor
 endfunction"}}}
 function! vimshell#system(str, ...)"{{{

@@ -193,10 +193,10 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
 
     " Suffix execution.
     let l:ext = fnamemodify(l:program, ':e')
-    if !empty(l:ext) && has_key(g:VimShell_ExecuteFileList, l:ext)
+    if !empty(l:ext) && has_key(g:vimshell_execute_file_list, l:ext)
       " Execute file.
-      let l:execute = split(g:VimShell_ExecuteFileList[l:ext])[0]
-      let l:arguments = extend(split(g:VimShell_ExecuteFileList[l:ext])[1:], insert(l:arguments, l:program))
+      let l:execute = split(g:vimshell_execute_file_list[l:ext])[0]
+      let l:arguments = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(l:arguments, l:program))
       return vimshell#parser#execute_command(l:execute, l:arguments, a:fd, a:other_info)
     endif
 

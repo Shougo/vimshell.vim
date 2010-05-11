@@ -62,9 +62,9 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
 
   if a:other_info.has_head_spaces
     " Don't append history.
-    call setline(line('.'), printf('%s %s', g:VimShell_Prompt, l:hist))
+    call setline(line('.'), printf('%s %s', vimshell#get_prompt(), l:hist))
   else
-    call setline(line('.'), g:VimShell_Prompt . l:hist)
+    call setline(line('.'), vimshell#get_prompt() . l:hist)
   endif
 
   try

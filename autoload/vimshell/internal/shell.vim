@@ -43,7 +43,7 @@
 
 function! vimshell#internal#shell#execute(program, args, fd, other_info)
     " Starts shell.
-    if (has('win32') || has('win64')) && g:VimShell_UseCkw && has('gui_running')
+    if (has('win32') || has('win64')) && g:vimshell_use_ckw && has('gui_running')
         " Use ckw.
         silent execute printf('!start ckw -e %s', &shell)
     else

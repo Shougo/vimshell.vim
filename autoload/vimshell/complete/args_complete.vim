@@ -90,10 +90,10 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
   let l:ignorecase_save = &ignorecase
 
   " Complete.
-  if g:VimShell_SmartCase && a:base =~ '\u'
+  if g:vimshell_smart_case && a:base =~ '\u'
     let &ignorecase = 0
   else
-    let &ignorecase = g:VimShell_IgnoreCase
+    let &ignorecase = g:vimshell_ignore_case
   endif
 
   " Get complete words.
@@ -103,7 +103,7 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
   let &ignorecase = l:ignorecase_save
 
   " Trunk many items.
-  let l:complete_words = l:complete_words[: g:VimShell_MaxList-1]
+  let l:complete_words = l:complete_words[: g:vimshell_max_list-1]
 
   if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
     let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'

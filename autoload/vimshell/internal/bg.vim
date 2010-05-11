@@ -45,7 +45,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   elseif l:args[0] == 'shell'
     " Background shell.
     if has('win32') || has('win64')
-      if g:VimShell_UseCkw
+      if g:vimshell_use_ckw
         " Use ckw.
         silent execute printf('!start ckw -e %s', &shell)
       else

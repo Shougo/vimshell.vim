@@ -389,11 +389,11 @@ neocomplcacheと併用するとファイル名補完が自動でできるので�
 
 ## ファイルの関連づけ
 
-`g:VimShell_ExecuteFileList`にプログラムが登録されていたら、実行時にプログラムの引数として呼び出すようにしました。
+`g:vimshell_execute_file_list`にプログラムが登録されていたら、実行時にプログラムの引数として呼び出すようにしました。
 Windowsでいうファイルの関連づけになります。
 zshにも「サフィックスエイリアス」という似たような機能があります。
 
-例えば `let g:VimShell_ExecuteFileList['rb'] = 'ruby' `としておくと、
+例えば `let g:vimshell_execute_file_list['rb'] = 'ruby' `としておくと、
 
     vimshell% ./hoge.rb
 
@@ -467,13 +467,13 @@ zshを超えるのももう少しかもしれません。
 
 ## ユーザープロンプト
 
-`g:VimShell_UserPrompt`変数にVim scriptの式を文字列として代入することで、
+`g:vimshell_user_prompt`変数にVim scriptの式を文字列として代入することで、
 ユーザーが追加で表示されるプロンプトを定義できます。
-`g:VimShell_Prompt`と違い、固定文字列でなくても良いです。
+`g:vimshell_prompt`と違い、固定文字列でなくても良いです。
 
 例えば、このように毎回カレントディレクトリを表示するようにすれば便利です。
 
-    let g:VimShell_UserPrompt = 'getcwd()'
+    let g:vimshell_user_prompt = 'getcwd()'
 
 ただし、セキュリティの関係上、vimshellの関数を呼び出す前に値を設定しなければ無効になります。
 
@@ -511,7 +511,7 @@ vimshellのキーバインドは`vimshell#default_settings()`にて定義され�
 
 Ver.6.00より、zshのようなVCSとの連携機能が実装されました。
 まだgitにしか対応していませんが、プラグインを追加することで、さまざまなVCSに対応できます。
-`let g:VimShell_UserPrompt = 'printf("%s  %50s", fnamemodify(getcwd(), ":~"), vimshell#vcs#info("(%s)-[%b]"))'`
+`let g:vimshell_user_prompt = 'printf("%s  %50s", fnamemodify(getcwd(), ":~"), vimshell#vcs#info("(%s)-[%b]"))'`
 たとえば、このようにプロンプトを設定できます。
 フォーマットはzshのvcs\_infoに準拠しています。
 
@@ -530,7 +530,7 @@ goshなど、Windows環境であってもencodingがUTF-8なコマンドが増�
 
 Ver.6.05より、zsh風の右プロンプトが使えるようになりました。
 ウインドウの大きさを計算し、自動的に最適な位置にプロンプトを表示します。
-`let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'`
+`let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'`
 
 ## fakecygptyへの対応
 
@@ -547,31 +547,31 @@ zshさえも起動することが可能です。
 
 ## 私の設定
 
-    let g:VimShell_UserPrompt = 'fnamemodify(getcwd(), ":~")'
-    let g:VimShell_RightPrompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-    let g:VimShell_EnableSmartCase = 1
+    let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
+    let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+    let g:vimshell_enable_smart_case = 1
 
     " Initialize execute file list.
-    let g:VimShell_ExecuteFileList = {}
+    let g:vimshell_execute_file_list = {}
     call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
-    let g:VimShell_ExecuteFileList['rb'] = 'ruby'
-    let g:VimShell_ExecuteFileList['pl'] = 'perl'
-    let g:VimShell_ExecuteFileList['py'] = 'python'
+    let g:vimshell_execute_file_list['rb'] = 'ruby'
+    let g:vimshell_execute_file_list['pl'] = 'perl'
+    let g:vimshell_execute_file_list['py'] = 'python'
     call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 
     if has('win32') || has('win64') 
         " Display user name on Windows.
-        let g:VimShell_Prompt = $USERNAME."% "
+        let g:vimshell_prompt = $USERNAME."% "
 
         " Use ckw.
-        let g:VimShell_UseCkw = 1
+        let g:vimshell_use_ckw = 1
     else
         " Display user name on Linux.
-        let g:VimShell_Prompt = $USER."% "
+        let g:vimshell_prompt = $USER."% "
 
         call vimshell#set_execute_file('bmp,jpg,png,gif', 'gexe eog')
         call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
-        let g:VimShell_ExecuteFileList['zip'] = 'zipinfo'
+        let g:vimshell_execute_file_list['zip'] = 'zipinfo'
         call vimshell#set_execute_file('tgz,gz', 'gzcat')
         call vimshell#set_execute_file('tbz,bz2', 'bzcat')
     endif
@@ -584,7 +584,7 @@ zshさえも起動することが可能です。
 プロンプトをユーザー名にしているだけで、後は凝った設定はしてないです。
 ちなみにneocomplcacheでは、vimshellのヒストリファイルを辞書として使用してます。
 これはなかなか便利です。
-`g:VimShell_ExecuteFileList`による関連づけも設定しています。
+`g:vimshell_execute_file_list`による関連づけも設定しています。
 ユーザープロンプトを設定するのは一番最初にします。
 vimshellを読み込む前に設定しないと、セキュリティの関係で再設定できなくなるからです。
 
