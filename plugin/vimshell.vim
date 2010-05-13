@@ -65,12 +65,11 @@ endif
 if !exists('g:vimshell_split_height')
     let g:vimshell_split_height = 30
 endif
-if !exists('g:vimshell_history_path')
-    let g:vimshell_history_path = '~/.vimshell_hist'
+if !exists('g:vimshell_temporary_directory')
+    let g:vimshell_temporary_directory = expand('~/.vimshell')
 endif
-let g:vimshell_history_path = expand(g:vimshell_history_path)
-if !isdirectory(fnamemodify(g:vimshell_history_path, ':p:h'))
-    call mkdir(fnamemodify(g:vimshell_history_path, ':p:h'), 'p')
+if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
+    call mkdir(fnamemodify(g:vimshell_temporary_directory, ':p'), 'p')
 endif
 if !exists('g:vimshell_history_max_size')
     let g:vimshell_history_max_size = 1000

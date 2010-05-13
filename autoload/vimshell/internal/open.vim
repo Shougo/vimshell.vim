@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: open.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2010
+" Last Modified: 13 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,36 +27,8 @@
 function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
   " Open file.
 
-  " Detect desktop environment.
-  if vimshell#iswin()
-    let l:filename = join(a:args)
-    if &termencoding != '' && &encoding != &termencoding
-      " Convert encoding.
-      let l:filename = iconv(l:filename, &encoding, &termencoding)
-    endif
+  call vimshell#open(join(a:args))
 
-    if executable('cmdproxy.exe') && exists('*vimproc#system')
-      " Use vimproc.
-      call vimproc#system(printf('cmdproxy /C "start \"\" \"%s\""', l:filename))
-    else
-      execute printf('silent ! start "" "%s"', l:filename)
-    endif
-    return 0
-  elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
-    " KDE.
-    let l:args = ['kioclient', 'exec'] + a:args
-  elseif exists('$GNOME_DESKTOP_SESSION_ID')
-    " GNOME.
-    let l:args = ['gnome-open'] + a:args
-  elseif executable('exo-open')
-    " Xfce.
-    let l:args = ['exo-open'] + a:args
-  elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
-    let l:args = ['open'] + a:args
-  else
-    throw 'open: Not supported.'
-  endif
-
-  return vimshell#execute_internal_command('gexe', l:args, a:fd, a:other_info)
+  return 0
 endfunction"}}}
 

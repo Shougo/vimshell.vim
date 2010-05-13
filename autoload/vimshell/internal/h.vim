@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Apr 2010
+" Last Modified: 13 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,11 +61,9 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
   endif
 
   if a:other_info.has_head_spaces
-    " Don't append history.
-    call setline(line('.'), printf('%s %s', vimshell#get_prompt(), l:hist))
-  else
-    call setline(line('.'), vimshell#get_prompt() . l:hist)
+    let l:hist = ' ' . l:hist
   endif
+  call vimshell#set_prompt_command(l:hist)
 
   try
     let l:skip_prompt = vimshell#parser#eval_script(l:hist, a:other_info)

@@ -98,6 +98,10 @@ Make方法
 
         $ make -f make_msvc.mak
 
+* Cygwin:
+
+        $ make -f make_cygwin.mak
+
 コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクトリにコピーします。
 
 ==============================================================================
@@ -135,13 +139,52 @@ COMMANDS 						*vimshell-commands*
 ------------------------------------------------------------------------------
 VARIABLES 						*vimshell-variables*
 
+g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
+			vimshellのデフォルトマッピングをすべて無効化します。
+			新しくマッピングしない限り、vimshellの機能が使えなく
+			なるので、初心者にはお勧めできません。内部動作を知
+			り尽くしている上級者向けのオプションです。
+
 g:vimshell_ignore_case					*g:vimshell_ignore_case*
+			
+
+g:vimshell_smart_case					*g:vimshell_smart_case*
+			
+
+g:vimshell_max_list					*g:vimshell_max_list*
+			
+
+g:vimshell_use_ckw					*g:vimshell_use_ckw*
+			
+
+g:vimshell_split_height					*g:vimshell_split_height*
+			
+
+g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
+			
+
+g:vimshell_history_max_size				*g:vimshell_history_max_size*
+			
+
+g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
+			
+
+g:vimshell_escape_colors				*g:vimshell_escape_colors*
 			
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
-<Plug>(vimshell_)					*<Plug>(vimshell_)*
+<Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
+			
+
+<Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
+			
+
+<Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
+			
+
+<Plug>(vimshell_create)					*<Plug>(vimshell_create)*
 			
 
 ==============================================================================

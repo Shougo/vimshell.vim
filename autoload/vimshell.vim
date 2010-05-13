@@ -199,12 +199,13 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Load history.
-  if !filereadable(g:vimshell_history_path)
+  let l:history_path = g:vimshell_temporary_directory . '/history'
+  if !filereadable(l:history_path)
     " Create file.
-    call writefile([], g:vimshell_history_path)
+    call writefile([], l:history_path)
   endif
-  let g:vimshell#hist_buffer = readfile(g:vimshell_history_path)
-  let g:vimshell#hist_size = getfsize(g:vimshell_history_path)
+  let g:vimshell#hist_buffer = readfile(l:history_path)
+  let g:vimshell#hist_size = getfsize(l:history_path)
 
   " Initialize variables.
   let b:vimshell = {}
@@ -522,17 +523,19 @@ function! vimshell#append_history(command)"{{{
   " Trunk.
   let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_history_max_size-1]
 
-  call writefile(g:vimshell#hist_buffer, g:vimshell_history_path)
+  let l:history_path = g:vimshell_temporary_directory . '/history'
+  call writefile(g:vimshell#hist_buffer, l:history_path)
 
-  let vimshell#hist_size = getfsize(g:vimshell_history_path)
+  let vimshell#hist_size = getfsize(l:history_path)
 endfunction"}}}
 function! vimshell#remove_history(command)"{{{
   " Filtering.
   call filter(g:vimshell#hist_buffer, printf("v:val !~ '^%s\s*'", a:command))
 
-  call writefile(g:vimshell#hist_buffer, g:vimshell_history_path)
+  let l:history_path = g:vimshell_temporary_directory . '/history'
+  call writefile(g:vimshell#hist_buffer, l:history_path)
 
-  let vimshell#hist_size = getfsize(g:vimshell_history_path)
+  let vimshell#hist_size = getfsize(l:history_path)
 endfunction"}}}
 function! vimshell#getfilename(program)"{{{
   " Command search.
@@ -685,6 +688,41 @@ function! vimshell#system(str, ...)"{{{
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
   return l:output
+endfunction"}}}
+function! vimshell#open(filename)"{{{
+  let l:filename = a:filename
+  if &termencoding != '' && &encoding != &termencoding
+    " Convert encoding.
+    let l:filename = iconv(l:filename, &encoding, &termencoding)
+  endif
+  
+  " Detect desktop environment.
+  if vimshell#iswin()
+    if !isdirectory(a:filename) && executable('fiber.exe')
+      call vimshell#system('fiber "' . l:filename . '"')
+    else
+      execute printf('silent ! start "" "%s"', l:filename)
+    endif
+  elseif exists('$WINDIR')
+    " Cygwin.
+    call vimshell#system('cygstart ''' . l:filename . '''')
+  elseif executable('xdg-open')
+    " Linux.
+    call vimshell#system('xdg-open ''' . l:filename . '''')
+  elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
+    " KDE.
+    call vimshell#system('kioclient exec ''' . l:filename . '''')
+  elseif exists('$GNOME_DESKTOP_SESSION_ID')
+    " GNOME.
+    call system('gnome-open ''' . l:filename . ''' &')
+  elseif executable('exo-open')
+    " Xfce.
+    call system('exo-open ''' . l:filename . ''' &')
+  elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
+    call system('open ''' . l:filename . ''' &')
+  else
+    throw 'Not supported.'
+  endif
 endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
   return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])

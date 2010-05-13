@@ -140,9 +140,10 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     call vimshell#start_insert(a:is_insert)
   endtry
 
-  if exists('vimshell#hist_size') && getfsize(g:vimshell_history_path) != vimshell#hist_size
+  let l:history_path = g:vimshell_temporary_directory . '/history'
+  if exists('vimshell#hist_size') && getfsize(l:history_path) != vimshell#hist_size
     " Reload.
-    let g:vimshell#hist_buffer = readfile(g:vimshell_history_path)
+    let g:vimshell#hist_buffer = readfile(l:history_path)
   endif
   " Not append history if starts spaces or dups.
   if l:line !~ '^\s'

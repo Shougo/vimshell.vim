@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 09 May 2010
+" Last Modified: 13 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -108,24 +108,7 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
   " Execute cursor file.
   if l:filename =~ '^\%(https\?\|ftp\)://'
     " Open uri.
-
-    " Detect desktop environment.
-    if vimshell#iswin()
-      execute printf('silent ! start "" "%s"', l:filename)
-    elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
-      " KDE.
-      call system('kioclient exec ' . l:filename)
-    elseif exists('$GNOME_DESKTOP_SESSION_ID')
-      " GNOME.
-      call system('gnome-open ' . l:filename . '&')
-    elseif executable(vimshell#getfilename('exo-open'))
-      " Xfce.
-      call system('exo-open ' . l:filename . '&')
-    elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
-      call system('open ' . l:filename . '&')
-    else
-      throw 'Not supported.'
-    endif
+    call vimshell#open(l:filename)
   endif
 endfunction"}}}
 function! vimshell#int_mappings#paste_prompt()"{{{

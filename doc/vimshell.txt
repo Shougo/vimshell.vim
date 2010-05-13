@@ -69,10 +69,43 @@ VARIABLES 						*vimshell-variables*
 g:vimshell_ignore_case					*g:vimshell_ignore_case*
 			
 
+g:vimshell_smart_case					*g:vimshell_smart_case*
+			
+
+g:vimshell_max_list					*g:vimshell_max_list*
+			
+
+g:vimshell_use_ckw					*g:vimshell_use_ckw*
+			
+
+g:vimshell_split_height					*g:vimshell_split_height*
+			
+
+g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
+			
+
+g:vimshell_history_max_size				*g:vimshell_history_max_size*
+			
+
+g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
+			
+
+g:vimshell_escape_colors				*g:vimshell_escape_colors*
+			
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
-<Plug>(vimshell_)					*<Plug>(vimshell_)*
+<Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
+			
+
+<Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
+			
+
+<Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
+			
+
+<Plug>(vimshell_create)					*<Plug>(vimshell_create)*
 			
 
 ==============================================================================
@@ -151,6 +184,13 @@ BUGS							*vimshell-bugs*
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2010-05-13
+* Improved environment detect.
+* Deleted g:vimshell_history_path option.
+* Added g:vimshell_temporary_directory option.
+* Revised help file.
+* Fixed h bug.
 
 2010-05-11
 * Changed variables name.
