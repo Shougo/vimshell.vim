@@ -140,7 +140,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     call vimshell#start_insert(a:is_insert)
   endtry
 
-  let l:history_path = g:vimshell_temporary_directory . '/history'
+  let l:history_path = g:vimshell_temporary_directory . '/command_history'
   if exists('vimshell#hist_size') && getfsize(l:history_path) != vimshell#hist_size
     " Reload.
     let g:vimshell#hist_buffer = readfile(l:history_path)

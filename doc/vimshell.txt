@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 * Added g:vimshell_temporary_directory option.
 * Revised help file.
 * Fixed h bug.
+* Changed history path.
 
 2010-05-11
 * Changed variables name.

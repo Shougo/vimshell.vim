@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 04 May 2010
+" Last Modified: 13 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -199,7 +199,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Load history.
-  let l:history_path = g:vimshell_temporary_directory . '/history'
+  let l:history_path = g:vimshell_temporary_directory . '/command-history'
   if !filereadable(l:history_path)
     " Create file.
     call writefile([], l:history_path)
@@ -523,7 +523,7 @@ function! vimshell#append_history(command)"{{{
   " Trunk.
   let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_history_max_size-1]
 
-  let l:history_path = g:vimshell_temporary_directory . '/history'
+  let l:history_path = g:vimshell_temporary_directory . '/command-history'
   call writefile(g:vimshell#hist_buffer, l:history_path)
 
   let vimshell#hist_size = getfsize(l:history_path)
@@ -532,7 +532,7 @@ function! vimshell#remove_history(command)"{{{
   " Filtering.
   call filter(g:vimshell#hist_buffer, printf("v:val !~ '^%s\s*'", a:command))
 
-  let l:history_path = g:vimshell_temporary_directory . '/history'
+  let l:history_path = g:vimshell_temporary_directory . '/command-history'
   call writefile(g:vimshell#hist_buffer, l:history_path)
 
   let vimshell#hist_size = getfsize(l:history_path)
