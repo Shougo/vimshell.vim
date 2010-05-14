@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 May 2010
+" Last Modified: 14 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,6 @@ if !exists('g:vimshell_execute_file_list')
 endif
 
 " Disable bell.
-set visualbell
 set vb t_vb=
 "}}}
 
@@ -78,6 +77,7 @@ endif"}}}
 augroup VimShellAutoCmd"{{{
   autocmd!
   autocmd BufWinEnter \[*]vimshell call s:restore_current_dir()
+  autocmd GUIEnter * set vb t_vb=
 augroup end"}}}
 
 " User utility functions."{{{

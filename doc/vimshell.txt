@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-14
+* Improved disable bell.
+
 2010-05-13
 * Improved environment detect.
 * Deleted g:vimshell_history_path option.
