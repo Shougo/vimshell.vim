@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 14 May 2010
+" Last Modified: 15 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -703,7 +703,7 @@ function! vimshell#open(filename)"{{{
     else
       execute printf('silent ! start "" "%s"', l:filename)
     endif
-  elseif exists('$WINDIR')
+  elseif has('win32unix')
     " Cygwin.
     call vimshell#system('cygstart ''' . l:filename . '''')
   elseif executable('xdg-open')

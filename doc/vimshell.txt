@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-05-15
 * Improved output check.
+* Improved Cygwin detect.
 
 2010-05-14
 * Improved disable bell.
