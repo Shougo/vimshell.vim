@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 15 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -170,7 +170,6 @@ function! s:on_execute()"{{{
   setlocal nomodifiable
 endfunction"}}}
 function! s:on_hold()"{{{
-  setlocal modifiable
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   setlocal nomodifiable
 

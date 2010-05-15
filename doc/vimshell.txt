@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-15
+* Improved output check.
+
 2010-05-14
 * Improved disable bell.
 

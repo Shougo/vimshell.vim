@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 May 2010
+" Last Modified: 15 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -192,7 +192,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
     autocmd WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
-    autocmd CursorHold <buffer>  call s:on_hold()
     autocmd InsertEnter <buffer>  call s:on_insert_enter()
     autocmd InsertLeave <buffer>  call s:on_insert_leave()
   augroup END
@@ -210,11 +209,6 @@ function! s:on_insert_leave()"{{{
   let &updatetime = s:save_updatetime
 endfunction"}}}
 function! s:on_hold_i()"{{{
-  let l:cur_text = vimshell#interactive#get_cur_text()
-  if l:cur_text != '' && l:cur_text !~# '*\%(Killed\|Exit\)*'
-    return
-  endif
-  
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 
   if b:interactive.process.is_valid
@@ -223,13 +217,6 @@ function! s:on_hold_i()"{{{
     if pumvisible()
       call feedkeys("\<C-y>", 'n')
     endif
-  endif
-endfunction"}}}
-function! s:on_hold()"{{{
-  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
-
-  if b:interactive.process.is_valid
-    call feedkeys("g\<ESC>", 'n')
   endif
 endfunction"}}}
 function! s:on_moved()"{{{

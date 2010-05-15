@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 May 2010
+" Last Modified: 15 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -577,7 +577,7 @@ function! s:check_all_output()"{{{
 
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
-    if l:bufnr != bufnr('%') && buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
+    if buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       let l:filetype = getbufvar(l:bufnr, '&filetype')
       let l:interactive = getbufvar(l:bufnr, 'interactive')
       if l:interactive.is_background || l:filetype =~ '^int-'
@@ -588,6 +588,10 @@ function! s:check_all_output()"{{{
 
     let l:bufnr += 1
   endwhile
+  
+  if exists('b:interactive') && b:interactive.process.is_valid
+    call feedkeys("g\<ESC>", 'n')
+  endif
 endfunction"}}}
 function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   let l:read = ''
@@ -629,8 +633,16 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     endif
     
     if a:interactive.is_background
+      setlocal modifiable
       call vimshell#interactive#execute_pipe_out()
+      setlocal nomodifiable
     else
+      " Check input.
+      let l:cur_text = vimshell#interactive#get_cur_text()
+      if l:cur_text != '' && l:cur_text !~# '*\%(Killed\|Exit\)*'
+        return
+      endif
+
       call vimshell#interactive#execute_pty_out(mode() ==# 'i')
     endif
 
