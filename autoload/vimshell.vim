@@ -2,7 +2,7 @@
 " FILE: vimshell.vim
 " AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
 "         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 15 May 2010
+" Last Modified: 18 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,11 +74,10 @@ elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:
   finish
 endif"}}}
 
-augroup VimShellAutoCmd"{{{
+augroup vimshell
   autocmd!
-  autocmd BufWinEnter \[*]vimshell call s:restore_current_dir()
   autocmd GUIEnter * set vb t_vb=
-augroup end"}}}
+augroup end
 
 " User utility functions."{{{
 function! vimshell#default_settings()"{{{
@@ -89,6 +88,11 @@ function! vimshell#default_settings()"{{{
   setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
+  
+  " Set autocommands.
+  augroup vimshell
+    autocmd BufWinEnter <buffer> call s:restore_current_dir()
+  augroup end
 
   " Plugin keymappings"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_enter)  :<C-u>call vimshell#mappings#execute_line(0)<CR><ESC>
@@ -860,10 +864,6 @@ endfunction"}}}
 
 
 function! s:restore_current_dir()"{{{
-  if !exists('b:vimshell')
-    return
-  endif
-
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
 

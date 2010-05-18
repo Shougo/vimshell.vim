@@ -565,7 +565,7 @@ function! s:check_all_output()"{{{
 
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
-    if buflisted(l:bufnr) && bufwinnr(l:bufnr) >= 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
+    if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       let l:filetype = getbufvar(l:bufnr, '&filetype')
       let l:interactive = getbufvar(l:bufnr, 'interactive')
       if l:interactive.is_background || l:filetype =~ '^int-'

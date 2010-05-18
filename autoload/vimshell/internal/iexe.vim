@@ -255,10 +255,9 @@ endif"}}}
 " Command functions.
 function! s:send_string(line1, line2, string)"{{{
   let l:winnr = bufwinnr(s:last_interactive_bufnr)
-  if l:winnr < 0
+  if l:winnr <= 0
     return
   endif
-  echomsg l:winnr
   
   " Check alternate buffer.
   if getwinvar(l:winnr, '&filetype') =~ '^int-'
