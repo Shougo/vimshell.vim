@@ -189,7 +189,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   " Set autocommands.
   augroup vimshell_iexe
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
-    autocmd WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
+    autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd InsertEnter <buffer>  call s:on_insert_enter()
