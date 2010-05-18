@@ -185,6 +185,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-18
+- Added :VimShellBang command.
+- Fixed output check error.
+- Improved output check.
+
 2010-05-15
 * Improved output check.
 * Improved Cygwin detect.

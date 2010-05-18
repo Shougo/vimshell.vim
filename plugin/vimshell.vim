@@ -94,6 +94,7 @@ command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#internal#bg#vimshell_bg(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(<q-args>)
+command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellBang echo vimshell#system(<q-args>)
 
 " Plugin keymappings"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>

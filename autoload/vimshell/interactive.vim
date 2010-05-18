@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2010
+" Last Modified: 18 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -174,11 +174,6 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
     return
   endif
 
-  if b:interactive.process.eof
-    call vimshell#interactive#exit()
-    return
-  endif
-
   let l:in = vimshell#interactive#get_cur_line(line('.'))
 
   if l:in != ''
@@ -237,11 +232,6 @@ function! vimshell#interactive#send_string(string)"{{{
     return
   endif
 
-  if b:interactive.process.eof
-    call vimshell#interactive#exit()
-    return
-  endif
-
   let l:in = vimshell#interactive#get_cur_line(line('.')) . a:string
 
   if l:in != ''
@@ -287,9 +277,7 @@ function! vimshell#interactive#send_string(string)"{{{
     call setline('$', '...')
   endif
 
-  if b:interactive.process.is_valid && b:interactive.process.eof
-    call vimshell#interactive#exit()
-  else
+  if !b:interactive.process.eof
     startinsert!
   endif
 endfunction"}}}
@@ -299,11 +287,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     return
   endif
 
-  if b:interactive.process.eof
-    call vimshell#interactive#exit()
-    return
-  endif
-  
   let l:outputed = 0
   if b:interactive.cached_output != ''
     " Use cache.
@@ -339,6 +322,10 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     else
       normal! $
     endif
+  endif
+  
+  if b:interactive.process.eof
+    call vimshell#interactive#exit()
   endif
 endfunction"}}}
 
@@ -401,10 +388,11 @@ function! vimshell#interactive#exit()"{{{
   let b:interactive.status = eval(l:status)
   if &filetype != 'vimshell'
     call append(line('$'), '*Exit*')
+    stopinsert
+    
     $
     normal! $
-    
-    stopinsert
+
     setlocal nomodifiable
   endif
 endfunction"}}}
@@ -598,6 +586,11 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   
   if a:interactive.is_background
     " Background execute.
+    
+    if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
+      call vimshell#interactive#exit()
+      return
+    endif
 
     " Check pipe output.
     if !a:interactive.process.stdout.eof
@@ -610,6 +603,11 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     endif
   else
     " Interactive execute.
+    
+    if b:interactive.process.is_valid && b:interactive.process.eof
+      call vimshell#interactive#exit()
+      return
+    endif
 
     " Check pty output.
     let l:output = a:interactive.process.read(-1, 40)
@@ -625,7 +623,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     
     if a:bufnr != a:bufnr_save
       let l:pos = getpos('.')
-      execute a:bufnr . 'wincmd w'
+      execute bufwinnr(a:bufnr) . 'wincmd w'
     endif
 
     if mode() !=# 'i'
@@ -656,7 +654,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       call setpos('.', l:pos)
-      execute a:bufnr_save . 'wincmd w'
+      execute bufwinnr(a:bufnr_save) . 'wincmd w'
     endif
   endif
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2010
+" Last Modified: 18 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -140,7 +140,6 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
 
   augroup vimshell_bg
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
-    autocmd CursorHold <buffer>       call s:on_hold()
   augroup END
   
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
@@ -168,14 +167,6 @@ function! s:on_execute()"{{{
   redraw
   echo ''
   setlocal nomodifiable
-endfunction"}}}
-function! s:on_hold()"{{{
-  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
-  setlocal nomodifiable
-
-  if b:interactive.process.is_valid
-    call feedkeys("\<C-r>\<ESC>", 'n')
-  endif
 endfunction"}}}
 function! s:on_interrupt(afile)"{{{
   call vimshell#interactive#hang_up(a:afile)
