@@ -185,6 +185,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-19
+- Fixed error in output check.
+- Fixed output.
+
 2010-05-18
 - Added :VimShellBang command.
 - Fixed output check error.

@@ -219,12 +219,14 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
     call setline('$', '...')
   endif
 
-  if b:interactive.process.is_valid && b:interactive.process.eof
-    call vimshell#interactive#exit()
-  elseif a:is_insert
-    startinsert!
-  else
-    normal! $
+  if b:interactive.process.is_valid
+    if b:interactive.process.eof
+      call vimshell#interactive#exit()
+    elseif a:is_insert
+      startinsert!
+    else
+      normal! $
+    endif
   endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
@@ -317,7 +319,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let b:interactive.prompt_history[line('$')] = getline('$')
     $
     
-    if a:is_insert
+    if !b:interactive.process.eof && a:is_insert
       startinsert!
     else
       normal! $
@@ -388,10 +390,11 @@ function! vimshell#interactive#exit()"{{{
   let b:interactive.status = eval(l:status)
   if &filetype != 'vimshell'
     call append(line('$'), '*Exit*')
-    stopinsert
     
     $
     normal! $
+
+    stopinsert
 
     setlocal nomodifiable
   endif
@@ -587,7 +590,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   if a:interactive.is_background
     " Background execute.
     
-    if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
+    if a:interactive.process.stdout.eof && a:interactive.process.stderr.eof
       call vimshell#interactive#exit()
       return
     endif
@@ -604,7 +607,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   else
     " Interactive execute.
     
-    if b:interactive.process.is_valid && b:interactive.process.eof
+    if a:interactive.process.is_valid && a:interactive.process.eof
       call vimshell#interactive#exit()
       return
     endif
