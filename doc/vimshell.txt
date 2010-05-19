@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 2010-05-19
 - Fixed error in output check.
 - Fixed output.
+- Improved error line.
 
 2010-05-18
 - Added :VimShellBang command.

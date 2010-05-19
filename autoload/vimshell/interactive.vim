@@ -545,15 +545,19 @@ function! s:error_buffer(fd, string)"{{{
     for l:line in split(getline('$') . l:string, '\n', 1)
       call append('$', '')
       for l:l in split(l:line, '\r', 1)
-        call setline('$', '!!! ' . l:l . ' !!!')
+        call setline('$', '!!!' . l:l . '!!!')
         redraw
       endfor
     endfor
   else
-    let l:lines = map(split(getline('$') . l:string, '\n', 1), '"!!! " . v:val . " !!!"')
+    let l:lines = split(l:string, '\n', 1)
 
-    call setline('$', l:lines[0])
-    call append('$', l:lines[1:])
+    if getline('$') =~ '!!!$'
+      call setline('$', getline('$')[: -4] . l:lines[0] . '!!!')
+    else
+      call setline('$', getline('$') . '!!!' . l:lines[0] . '!!!')
+    endif
+    call append('$', map(l:lines[1:], '"!!!" . v:val . "!!!"'))
   endif
 
   call vimshell#terminal#interpret_escape_sequence()

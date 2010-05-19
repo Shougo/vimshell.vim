@@ -451,7 +451,7 @@ function! vimshell#error_line(fd, string)"{{{
     return
   endif
 
-  let l:string = '!!! ' . a:string . ' !!!'
+  let l:string = '!!!' . a:string . '!!!'
 
   if line('$') == 1 && getline('$') == ''
     call setline('$', l:string)
