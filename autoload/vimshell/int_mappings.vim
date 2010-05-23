@@ -121,20 +121,6 @@ function! vimshell#int_mappings#paste_prompt()"{{{
   call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . l:cur_text)
   $
 endfunction"}}}
-function! vimshell#int_mappings#close_popup()"{{{
-  if !pumvisible()
-    return ''
-  endif
-
-  if !exists('*neocomplcache#close_popup')
-    let l:ret = neocomplcache#close_popup()
-  else
-    let l:ret = "\<C-y>"
-  endif
-  let l:ret .= "\<C-l>\<BS>"
-
-  return l:ret
-endfunction"}}}
 function! vimshell#int_mappings#restart_command()"{{{
   if exists('b:interactive') && b:interactive.process.is_valid
     " Delete zombee process.

@@ -89,6 +89,47 @@ function! vimshell#terminal#interpret_escape_sequence()"{{{
     let l:lnum += 1
   endwhile
 endfunction"}}}
+function! vimshell#terminal#filter_escape_sequence(string)"{{{
+  if a:string !~ '[[:cntrl:]]'
+    return a:string
+  endif
+  
+  let l:newstr = ''
+  let l:pos = 0
+  let l:max = len(a:string)
+  while l:pos < l:max
+    let l:matched = 0
+    
+    if a:string[l:pos] == "\<ESC>"
+      " Check escape sequence.
+      for l:pattern in keys(s:escape_sequence)
+        let l:matchstr = matchstr(a:string, '^'.l:pattern, l:pos)
+        if l:matchstr != ''
+          let l:matched = 1
+          let l:pos += len(l:matchstr)
+          break
+        endif
+      endfor
+    else
+      " Check other pattern.
+      for l:pattern in keys(s:control_sequence)
+        let l:matchstr = matchstr(a:string, '^'.l:pattern, l:pos)
+        if l:matchstr != ''
+          let l:matched = 1
+          let l:pos += len(l:matchstr)
+          break
+        endif
+      endfor
+    endif
+    
+    if !l:matched
+      let l:newstr .= a:string[l:pos]
+      let l:pos += 1
+    endif
+  endwhile
+
+  return l:newstr
+endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
   if !has_key(s:terminal_info, bufnr('%'))
     return

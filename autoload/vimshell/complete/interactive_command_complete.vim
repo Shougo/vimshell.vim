@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2010
+" Last Modified: 23 Mar 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,6 +101,9 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
     let l:output = iconv(l:output, b:interactive.encoding, &encoding)
   endif
 
+  " Filtering escape sequences.
+  let l:output = vimshell#terminal#filter_escape_sequence(l:output)
+
   let l:candidates = split(join(split(l:output, '\r\n\|\n')[: -2], '  '), '\s')
   let l:cnt = 0
   let l:ignore_input = l:in[: -len(a:cur_keyword_str)-1]
@@ -110,12 +113,14 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
 
   let l:ret = []
   for l:candidate in l:candidates
-    " Delete last "/".
-    let l:dict = {
-          \'word' : l:candidate =~ '/$' ? l:candidate[: -2] : l:candidate, 
-          \'abbr' : l:candidate
-          \}
-    call add(l:ret, l:dict)
+    if vimshell#head_match(l:candidate, a:cur_keyword_str)
+      " Delete last "/".
+      let l:dict = {
+            \'word' : l:candidate =~ '/$' ? l:candidate[: -2] : l:candidate, 
+            \'abbr' : l:candidate
+            \}
+      call add(l:ret, l:dict)
+    endif
   endfor
 
   return l:ret

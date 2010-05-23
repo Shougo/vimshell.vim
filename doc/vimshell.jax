@@ -136,6 +136,24 @@ COMMANDS 						*vimshell-commands*
 			を起動します。EmacsのM-x {interpreter-name}のように
 			使えます。
 
+:VimShellBang {path}					*:VimShellBang*
+			vimshellを起動せずに、{path}で指定された実行ファイルを
+			起動します。|:VimShellExecute|とは違い、実行が終了する
+			まで待ち、結果を:echoで表示します。|:!|の代わりにな
+			ります。
+
+:VimShellRead {path}					*:VimShellRead*
+			vimshellを起動せずに、{path}で指定された実行ファイルを
+			起動します。|:VimShellExecute|とは違い、実行が終了する
+			まで待ち、結果をカーソル行に追記します。|:read|の代
+			わりになります。
+
+			Notes:
+			|:VimShellExecute|,|:VimShellRead|,|:VimShellBang|は
+			vimshellのエイリアスを解釈します。ただし、エイリアス
+			はバッファ毎に設定されているため、コマンドを実行する
+			バッファでエイリアスが定義される必要があります。
+
 ------------------------------------------------------------------------------
 VARIABLES 						*vimshell-variables*
 

@@ -37,26 +37,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
   let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
-    let l:statement = s:parse_galias(l:statement)
-
-    " Get program.
-    let l:program = matchstr(l:statement, vimshell#get_program_pattern())
-    if l:program  == ''
-      throw 'Error: Invalid command name.'
-    endif
-    let l:script = l:statement[len(l:program) :]
-
-    if has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
-      " Expand alias.
-      let l:alias = s:recursive_expand_alias(l:program)
-      let l:script = join(vimshell#parser#split_args(l:alias)) . l:script
-      let l:program = matchstr(l:script, vimshell#get_program_pattern())
-      let l:script = l:script[len(l:program) :]
-    endif
-    if l:program != '' && l:program[0] == '~'
-      " Parse tilde.
-      let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
-    endif
+    let [l:program, l:script] = vimshell#parser#parse_alias(l:statement)
 
     if has_key(g:vimshell#special_func_table, l:program)
       " Special commands.
@@ -123,6 +104,30 @@ function! vimshell#parser#eval_script(script, context)"{{{
   endfor
 
   return l:skip_prompt
+endfunction"}}}
+function! vimshell#parser#parse_alias(statement)"{{{
+  let l:statement = s:parse_galias(a:statement)
+
+  " Get program.
+  let l:program = matchstr(l:statement, vimshell#get_program_pattern())
+  if l:program  == ''
+    throw 'Error: Invalid command name.'
+  endif
+  let l:script = l:statement[len(l:program) :]
+
+  if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
+    " Expand alias.
+    let l:alias = s:recursive_expand_alias(l:program)
+    let l:script = join(vimshell#parser#split_args(l:alias)) . l:script
+    let l:program = matchstr(l:script, vimshell#get_program_pattern())
+    let l:script = l:script[len(l:program) :]
+  endif
+  if l:program != '' && l:program[0] == '~'
+    " Parse tilde.
+    let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
+  endif
+  
+  return [l:program, l:script]
 endfunction"}}}
 
 function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
@@ -360,7 +365,7 @@ function! vimshell#parser#split_args(script)"{{{
       let l:modify = matchstr(l:arg, '\%(:[p8~.htre]\)\+$')
       let l:arg = fnamemodify(l:arg[: -len(l:modify)-1], l:modify)
     endif
-    
+
     call add(l:ret, l:arg)
   endfor
 
@@ -429,7 +434,7 @@ function! vimshell#parser#split_commands(script)"{{{
         call add(l:commands, l:command)
       endif
       let l:command = ''
-      
+
       let l:i += 1
     else
 
@@ -499,19 +504,19 @@ function! vimshell#parser#getopt(args, optsyntax)"{{{
   if !has_key(l:optsyntax, 'arg=')
     let l:optsyntax['arg='] = []
   endif
-  
+
   let l:args = []
   let l:options = {}
   for l:arg in a:args
     let l:found = 0
-    
+
     for l:opt in l:optsyntax['arg=']
       if vimshell#head_match(l:arg, l:opt.'=')
         let l:found = 1
 
         " Get argument value.
         let l:options[l:opt] = l:arg[len(l:opt.'='):]
-        
+
         break
       endif
     endfor
@@ -519,17 +524,21 @@ function! vimshell#parser#getopt(args, optsyntax)"{{{
       " Next argument.
       continue
     endif
-    
+
     if !l:found
       call add(l:args, l:arg)
     endif
   endfor
-  
+
   return [l:args, l:options]
 endfunction"}}}
 
 " Parse helper.
 function! s:parse_galias(script)"{{{
+  if !exists('b:vimshell')
+    return a:script
+  endif
+  
   let l:script = a:script
   let l:max = len(l:script)
   let l:args = []
@@ -564,7 +573,7 @@ function! s:parse_galias(script)"{{{
   if l:arg != ''
     call add(l:args, l:arg)
   endif
-  
+
   " Expand global alias.
   let i = 0
   for l:arg in l:args
@@ -803,13 +812,13 @@ function! s:parse_back_quote(script, i)"{{{
   if a:script[a:i] != '`'
     return ['', a:i]
   endif
-  
+
   let l:arg = ''
   let l:max = len(a:script)
   if i + 1 < l:max && a:script[a:i + 1] == '='
     " Vim eval quote.
     let i = a:i + 2
-    
+
     while i < l:max
       if a:script[i] == '`'
         " Quote end.
@@ -822,7 +831,7 @@ function! s:parse_back_quote(script, i)"{{{
   else
     " Eval quote.
     let i = a:i + 1
-    
+
     while i < l:max
       if a:script[i] == '`'
         " Quote end.
@@ -893,7 +902,7 @@ function! s:recursive_expand_alias(string)"{{{
     if has_key(l:expanded, l:alias) || !has_key(b:vimshell.alias_table, l:alias)
       break
     endif
-    
+
     let l:expanded[l:alias] = 1
     let l:alias = b:vimshell.alias_table[l:alias]
   endwhile

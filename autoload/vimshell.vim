@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
-" AUTHOR: Janakiraman .S <prince@india.ti.com>(Original)
-"         Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 18 May 2010
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 23 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -712,7 +711,7 @@ function! vimshell#open(filename)"{{{
     call vimshell#system('cygstart ''' . l:filename . '''')
   elseif executable('xdg-open')
     " Linux.
-    call vimshell#system('xdg-open ''' . l:filename . '''')
+    call vimshell#system('xdg-open ''' . l:filename . ''' &')
   elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
     " KDE.
     call vimshell#system('kioclient exec ''' . l:filename . '''')
@@ -804,6 +803,13 @@ function! vimshell#get_context()"{{{
   return s:context
 endfunction"}}}
 function! vimshell#set_alias(name, value)"{{{
+  if !exists('b:vimshell')
+    let b:vimshell = {}
+  endif
+  if !has_key(b:vimshell, 'alias_table')
+    let b:vimshell.alias_table = {}
+  endif
+  
   if a:value == ''
     " Delete alias.
     call remove(b:vimshell.alias_table, a:name)
@@ -815,6 +821,13 @@ function! vimshell#get_alias(name)"{{{
   return get(b:vimshell.alias_table, a:name, '')
 endfunction"}}}
 function! vimshell#set_galias(name, value)"{{{
+  if !exists('b:vimshell')
+    let b:vimshell = {}
+  endif
+  if !has_key(b:vimshell, 'galias_table')
+    let b:vimshell.galias_table = {}
+  endif
+  
   if a:value == ''
     " Delete alias.
     call remove(b:vimshell.galias_table, a:name)

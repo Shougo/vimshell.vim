@@ -94,7 +94,8 @@ command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#internal#bg#vimshell_bg(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellBang echo vimshell#system(<q-args>)
+command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellBang call s:bang(<q-args>)
+command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellRead call s:read(<q-args>)
 
 " Plugin keymappings"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
@@ -102,6 +103,16 @@ nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shel
 nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
 nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
 "}}}
+
+" Command functions:
+function! s:bang(cmdline)"{{{
+  let [l:program, l:script] = vimshell#parser#parse_alias(a:cmdline)
+  echo vimshell#system(l:program . ' ' . l:script)
+endfunction"}}}
+function! s:read(cmdline)"{{{
+  let [l:program, l:script] = vimshell#parser#parse_alias(a:cmdline)
+  call append('.', split(vimshell#system(l:program . ' ' . l:script), '\n'))
+endfunction"}}}
 
 augroup VimShell
   " Detect vimshell rc file.
