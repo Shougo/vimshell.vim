@@ -113,6 +113,9 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
+  
+  inoremap <buffer><expr> <Plug>(vimshell_delete_backword_char)  vimshell#mappings#delete_backword_char(0)
+  inoremap <buffer><expr> <Plug>(vimshell_another_delete_backword_char)  vimshell#mappings#delete_backword_char(1)
   "}}}
 
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
@@ -158,6 +161,9 @@ function! vimshell#default_settings()"{{{
   imap <buffer> <C-r>h <Plug>(vimshell_run_help)
   " Clear.
   imap <buffer> <C-l> <Plug>(vimshell_clear)
+  " Delete char.
+  imap <buffer> <C-h>     <Plug>(vimshell_delete_backword_char)
+  imap <buffer> <BS>     <Plug>(vimshell_delete_backword_char)
   "}}}
 endfunction"}}}
 "}}}
@@ -877,6 +883,10 @@ endfunction"}}}
 
 
 function! s:restore_current_dir()"{{{
+  if !exists('b:vimshell')
+    return
+  endif
+
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
 

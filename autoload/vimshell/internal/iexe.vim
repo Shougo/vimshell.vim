@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2010
+" Last Modified: 24 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -129,40 +129,40 @@ function! vimshell#internal#iexe#default_settings()"{{{
   endif
 
   " Plugin key-mappings.
-  inoremap <buffer><silent><expr> <Plug>(vimshell_interactive_delete_backword_char)  vimshell#int_mappings#delete_backword_char()
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)       <ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_interactive_dummy_enter) pumvisible()? "\<C-y>\<CR>\<BS>" : "\<CR>\<BS>"
+  inoremap <buffer><silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
+  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backword_char)  vimshell#int_mappings#delete_backword_char(1)
 
-  imap <buffer> <C-h>     <Plug>(vimshell_interactive_delete_backword_char)
-  imap <buffer> <BS>     <Plug>(vimshell_interactive_delete_backword_char)
+  imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
+  imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
   imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
-  imap <buffer> <C-a>     <Plug>(vimshell_interactive_move_head)
-  imap <buffer> <C-u>     <Plug>(vimshell_interactive_delete_line)
+  imap <buffer> <C-a>     <Plug>(vimshell_int_move_head)
+  imap <buffer> <C-u>     <Plug>(vimshell_int_delete_line)
   inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer> <CR>      <C-]><Plug>(vimshell_interactive_execute_line)
-  imap <buffer> <C-c>     <Plug>(vimshell_interactive_interrupt)
+  imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
+  imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
 
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
 
-  nmap <buffer> <C-p>     <Plug>(vimshell_interactive_previous_prompt)
-  nmap <buffer> <C-n>     <Plug>(vimshell_interactive_next_prompt)
-  nmap <buffer> <CR>      <Plug>(vimshell_interactive_execute_line)
-  nmap <buffer> <C-y>     <Plug>(vimshell_interactive_paste_prompt)
-  nmap <buffer> <C-r>     <Plug>(vimshell_interactive_restart_command)
-  nmap <buffer> <C-c>     <Plug>(vimshell_interactive_interrupt)
-  nmap <buffer> q         <Plug>(vimshell_interactive_exit)
+  nmap <buffer> <C-p>     <Plug>(vimshell_int_previous_prompt)
+  nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)
+  nmap <buffer> <CR>      <Plug>(vimshell_int_execute_line)
+  nmap <buffer> <C-y>     <Plug>(vimshell_int_paste_prompt)
+  nmap <buffer> <C-r>     <Plug>(vimshell_int_restart_command)
+  nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
+  nmap <buffer> q         <Plug>(vimshell_int_exit)
 endfunction"}}}
 
 function! s:init_bg(sub, args, fd, other_info)"{{{
@@ -180,9 +180,11 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 
   edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
-  execute 'setfiletype' 'int-'.fnamemodify(a:args[0], ':r')
 
   call vimshell#internal#iexe#default_settings()
+  
+  set filetype=interactive
+  execute 'set filetype=int-'.fnamemodify(a:args[0], ':r')
 
   " Set autocommands.
   augroup vimshell_iexe

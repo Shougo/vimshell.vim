@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 13 May 2010
+" Last Modified: 25 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,10 +25,10 @@
 "=============================================================================
 
 " vimshell interactive key-mappings functions.
-function! vimshell#int_mappings#delete_backword_char()"{{{
-  let l:prefix = pumvisible() ? "\<C-y>" : ""
+function! vimshell#int_mappings#delete_backword_char(is_auto_select)"{{{
+  let l:prefix = pumvisible() ? (a:is_auto_select? "\<C-e>" : "\<C-y>") : ""
   " Prevent backspace over prompt
-  if !has_key(b:interactive.prompt_history, line('.')) || getline(line('.')) != b:interactive.prompt_history[line('.')]
+  if !has_key(b:interactive.prompt_history, line('.')) || getline('.')[: col('.')-2] !=# b:interactive.prompt_history[line('.')]
     return l:prefix . "\<BS>"
   else
     return l:prefix

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 05 May 2010
+" Last Modified: 25 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -335,6 +335,15 @@ function! vimshell#mappings#exit()"{{{
     call vimshell#alternate_buffer()
   endif
   execute 'bdelete!'. l:vimsh_buf
+endfunction"}}}
+function! vimshell#mappings#delete_backword_char(is_auto_select)"{{{
+  let l:prefix = pumvisible() ? (a:is_auto_select? "\<C-e>" : "\<C-y>") : ""
+  " Prevent backspace over prompt
+  if getline('.')[: col('.') - 2] !=# vimshell#get_prompt()
+    return l:prefix . "\<BS>"
+  else
+    return l:prefix
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

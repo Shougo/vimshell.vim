@@ -188,6 +188,9 @@ CHANGELOG						*vimshell-changelog*
 2010-05-24
 - Improved open.
 - Improved vimshell#system().
+- Set interactive filetype when iexe buffer is initialized.
+- Added <Plug>(vimshell_interactive_another_delete_backword_char) <Plug>(vimshell_delete_backword_char) and <Plug>(vimshell_another_delete_backword_char) mappings.
+- Fixed error.
 
 2010-05-23
 - Fixed cd error.
