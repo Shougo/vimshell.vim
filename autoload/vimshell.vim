@@ -685,8 +685,7 @@ function! vimshell#system(str, ...)"{{{
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  let l:output = s:is_vimproc ? (a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input))
-        \: (a:0 == 0 ? system(l:command) : system(l:command, l:input))
+  let l:output = a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input)
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
@@ -717,12 +716,12 @@ function! vimshell#open(filename)"{{{
     call vimshell#system('kioclient exec ''' . l:filename . '''')
   elseif exists('$GNOME_DESKTOP_SESSION_ID')
     " GNOME.
-    call system('gnome-open ''' . l:filename . ''' &')
+    call vimshell#system('gnome-open ''' . l:filename . ''' &')
   elseif executable('exo-open')
     " Xfce.
-    call system('exo-open ''' . l:filename . ''' &')
+    call vimshell#system('exo-open ''' . l:filename . ''' &')
   elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
-    call system('open ''' . l:filename . ''' &')
+    call vimshell#system('open ''' . l:filename . ''' &')
   else
     throw 'Not supported.'
   endif
