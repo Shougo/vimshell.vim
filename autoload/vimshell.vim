@@ -710,7 +710,7 @@ function! vimshell#open(filename)"{{{
     call vimshell#system('cygstart ''' . l:filename . '''')
   elseif executable('xdg-open')
     " Linux.
-    call system('xdg-open ''' . l:filename . ''' &')
+    call vimshell#system('xdg-open ''' . l:filename . ''' &')
   elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
     " KDE.
     call vimshell#system('kioclient exec ''' . l:filename . '''')
@@ -721,6 +721,7 @@ function! vimshell#open(filename)"{{{
     " Xfce.
     call vimshell#system('exo-open ''' . l:filename . ''' &')
   elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
+    " Mac OS.
     call vimshell#system('open ''' . l:filename . ''' &')
   else
     throw 'Not supported.'

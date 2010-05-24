@@ -186,7 +186,8 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-05-24
-- Fixed open.
+- Improved open.
+- Improved vimshell#system().
 
 2010-05-23
 - Fixed cd error.
