@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2010
+" Last Modified: 24 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -711,7 +711,7 @@ function! vimshell#open(filename)"{{{
     call vimshell#system('cygstart ''' . l:filename . '''')
   elseif executable('xdg-open')
     " Linux.
-    call vimshell#system('xdg-open ''' . l:filename . ''' &')
+    call system('xdg-open ''' . l:filename . ''' &')
   elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
     " KDE.
     call vimshell#system('kioclient exec ''' . l:filename . '''')

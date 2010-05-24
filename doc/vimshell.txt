@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-24
+- Fixed open.
+
 2010-05-23
 - Fixed cd error.
 - Fixed <C-e> behaivior in iexe.
