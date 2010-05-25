@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-26
+- Fixed eval back quote.
+
 2010-05-25
 - Improved iexe update.
 

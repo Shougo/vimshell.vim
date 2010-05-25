@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 02 May 2010
+" Last Modified: 26 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -815,7 +815,7 @@ function! s:parse_back_quote(script, i)"{{{
 
   let l:arg = ''
   let l:max = len(a:script)
-  if i + 1 < l:max && a:script[a:i + 1] == '='
+  if a:i + 1 < l:max && a:script[a:i + 1] == '='
     " Vim eval quote.
     let i = a:i + 2
 
@@ -835,7 +835,7 @@ function! s:parse_back_quote(script, i)"{{{
     while i < l:max
       if a:script[i] == '`'
         " Quote end.
-        return [l:arg, i+1]
+        return [vimshell#system(l:arg), i+1]
       else
         let l:arg .= a:script[i]
         let i += 1
