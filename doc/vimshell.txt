@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-25
+- Improved iexe update.
+
 2010-05-24
 - Improved open.
 - Improved vimshell#system().

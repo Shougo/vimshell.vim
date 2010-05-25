@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 May 2010
+" Last Modified: 25 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -192,8 +192,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
-    autocmd InsertEnter <buffer>  call s:on_insert_enter()
-    autocmd InsertLeave <buffer>  call s:on_insert_leave()
   augroup END
 
   $
@@ -201,22 +199,11 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   startinsert!
 endfunction"}}}
 
-function! s:on_insert_enter()"{{{
-  let s:save_updatetime = &updatetime
-  let &updatetime = 700
-endfunction"}}}
-function! s:on_insert_leave()"{{{
-  let &updatetime = s:save_updatetime
-endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   
   if b:interactive.process.is_valid
     call feedkeys("\<C-r>\<ESC>", 'n')
-
-    if pumvisible()
-      call feedkeys("\<C-y>", 'n')
-    endif
   endif
 endfunction"}}}
 function! s:on_moved()"{{{
