@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-28
+- Disable ime when execute <Plug>(vimshell_int_execute_line).
+
 2010-05-26
 - Fixed eval back quote.
 

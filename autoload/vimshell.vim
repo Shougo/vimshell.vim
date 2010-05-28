@@ -577,7 +577,10 @@ function! vimshell#start_insert(...)"{{{
     " Enter insert mode.
     $
     startinsert!
-    set iminsert=0 imsearch=0
+
+    if exists('&iminsert')
+      let &l:iminsert = 0
+    endif
   else
     normal! $
   endif

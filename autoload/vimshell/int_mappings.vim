@@ -53,6 +53,13 @@ function! vimshell#int_mappings#execute_history(is_insert)"{{{
   $
 
   call vimshell#interactive#execute_pty_inout(a:is_insert)
+
+  " Disable input method.
+  if exists('b:skk_on') && b:skk_on
+    call feedkeys(SkkDisable(), 'n')
+  elseif exists('&iminsert')
+    let &l:iminsert = 0
+  endif
 endfunction"}}}
 function! vimshell#int_mappings#previous_prompt()"{{{
   let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'), 'v:val < line(".")'), 'vimshell#compare_number')
