@@ -55,7 +55,9 @@ function! vimshell#int_mappings#execute_history(is_insert)"{{{
   call vimshell#interactive#execute_pty_inout(a:is_insert)
 
   " Disable input method.
-  if exists('b:skk_on') && b:skk_on
+  if exists('*eskk#is_enabled') && eskk#is_enabled()
+    call feedkeys(eskk#disable(), 'n')
+  elseif exists('b:skk_on') && b:skk_on
     call feedkeys(SkkDisable(), 'n')
   elseif exists('&iminsert')
     let &l:iminsert = 0
