@@ -36,18 +36,16 @@ function! vimshell#int_mappings#delete_backword_char(is_auto_select)"{{{
 endfunction"}}}
 function! vimshell#int_mappings#execute_history(is_insert)"{{{
   " Search prompt.
-  if !has_key(b:interactive.prompt_history, line('.'))
-    return
-  endif
+  let l:command = vimshell#interactive#get_cur_line(line('.'))
 
-  let l:command = strpart(getline('.'), len(b:interactive.prompt_history[line('.')]))
-
-  if !has_key(b:interactive.prompt_history, line('$'))
-    " Insert prompt line.
-    call append(line('$'), l:command)
-  else
-    " Set prompt line.
-    call setline(line('$'), b:interactive.prompt_history[line('$')] . l:command)
+  if line('.') != line('$')
+    if !has_key(b:interactive.prompt_history, line('$'))
+      " Insert prompt line.
+      call append(line('$'), l:command)
+    else
+      " Set prompt line.
+      call setline(line('$'), b:interactive.prompt_history[line('$')] . l:command)
+    endif
   endif
 
   $
@@ -97,15 +95,11 @@ function! vimshell#int_mappings#delete_line()"{{{
   endif
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert)"{{{
-  if has_key(b:interactive.prompt_history, line('.'))
-    " Execute history.
-    call vimshell#int_mappings#execute_history(a:is_insert)
-    return
-  endif
-
   " Search cursor file.
   let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-  if l:filename == ''
+  if has_key(b:interactive.prompt_history, line('.')) || l:filename == ''
+    " Execute history.
+    call vimshell#int_mappings#execute_history(a:is_insert)
     return
   endif
 
@@ -118,6 +112,9 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
   if l:filename =~ '^\%(https\?\|ftp\)://'
     " Open uri.
     call vimshell#open(l:filename)
+  else
+    " Execute history.
+    call vimshell#int_mappings#execute_history(a:is_insert)
   endif
 endfunction"}}}
 function! vimshell#int_mappings#paste_prompt()"{{{

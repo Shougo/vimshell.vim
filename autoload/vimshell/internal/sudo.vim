@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sudo.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Apr 2010
+" Last Modified: 30 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,10 +26,7 @@
 
 function! vimshell#internal#sudo#execute(program, args, fd, other_info)
   " Execute GUI program.
-  if has('win32') || has('win64')
-    call vimshell#error_line(a:fd, 'This platform is not supported.')
-    return 0
-  elseif empty(a:args)
+  if empty(a:args)
     call vimshell#error_line(a:fd, 'Arguments required.')
     return 0
   elseif a:args[0] == 'vim'

@@ -187,6 +187,9 @@ CHANGELOG						*vimshell-changelog*
 
 2010-05-30
 - Improved echoback.
+- Improved multiline input.
+- Improved Japanese help.
+- sudo supported Windows.
 
 2010-05-29
 - Improved run help.

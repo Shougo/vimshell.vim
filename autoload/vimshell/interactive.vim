@@ -43,13 +43,21 @@ augroup END
 
 function! vimshell#interactive#get_cur_text()"{{{
   " Get cursor text without prompt.
+  return s:chomp_prompt(s:get_cur_text(), line('.'))
+endfunction"}}}
+function! vimshell#interactive#get_cur_line(line)"{{{
+  " Get cursor text without prompt.
+  return s:chomp_prompt(getline(a:line), a:line)
+endfunction"}}}
+function! vimshell#interactive#get_prompt(line)"{{{
+  " Get prompt line.
+  return !has_key(b:interactive.prompt_history, a:line) ? '' : b:interactive.prompt_history[a:line]
+endfunction"}}}
+function! s:get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
 
   let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
-  if l:cur_text =~ '^-> '
-    let l:cur_text = l:cur_text[3:]
-  endif
-  
+
   if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
     let l:len = len(getline('.'))
 
@@ -64,99 +72,52 @@ function! vimshell#interactive#get_cur_text()"{{{
       let l:fchar = char2nr(l:cur_text[-1:])
     endwhile
   endif
-
-  if has_key(b:interactive.prompt_history, line('.'))
-    let l:cur_text = l:cur_text[len(b:interactive.prompt_history[line('.')]) : ]
-  else
-    " Maybe line numbering got disrupted, search for a matching prompt.
-    let l:prompt_search = 0
-    for pnr in reverse(sort(keys(b:interactive.prompt_history)))
-      let l:prompt_length = len(b:interactive.prompt_history[pnr])
-      " In theory 0 length or ' ' prompt shouldn't exist, but still...
-      if l:prompt_length > 0 && b:interactive.prompt_history[pnr] != ' '
-        " Does the current line have this prompt?
-        if l:cur_text[: l:prompt_length - 1] == b:interactive.prompt_history[pnr]
-          let l:cur_text = l:cur_text[l:prompt_length : ]
-          let l:prompt_search = pnr
-        endif
-      endif
-    endfor
-
-    " Still nothing? Maybe a multi-line command was pasted in.
-    let l:max_prompt = max(keys(b:interactive.prompt_history)) " Only count once.
-    if l:prompt_search == 0 && l:max_prompt < line('$')
-      for i in range(l:max_prompt, line('$'))
-        if i == l:max_prompt && has_key(b:interactive.prompt_history, i)
-          let l:cur_text = getline(i)
-          let l:cur_text = l:cur_text[len(b:interactive.prompt_history[i]) : ]
-        else
-          let l:cur_text = l:cur_text . getline(i)
-        endif
-      endfor
-      let l:prompt_search = l:max_prompt
-    endif
-
-    " Still nothing? We give up.
-    if l:prompt_search == 0
-      echohl WarningMsg | echo "Invalid input." | echohl None
-    endif
-  endif
-
+  
   return l:cur_text
 endfunction"}}}
-function! vimshell#interactive#get_cur_line(line)"{{{
-  " Get cursor text without prompt.
-  let l:cur_text = getline(a:line)
-
-  if has_key(b:interactive.prompt_history, line('.'))
+function! s:chomp_prompt(cur_text, line)"{{{
+  let l:cur_text = a:cur_text
+  
+  if has_key(b:interactive.prompt_history, a:line)
     let l:cur_text = l:cur_text[len(b:interactive.prompt_history[a:line]) : ]
-  else
-    " Maybe line numbering got disrupted, search for a matching prompt.
-    let l:prompt_search = 0
-    for pnr in reverse(sort(keys(b:interactive.prompt_history)))
-      let l:prompt_length = len(b:interactive.prompt_history[pnr])
-      " In theory 0 length or ' ' prompt shouldn't exist, but still...
-      if l:prompt_length > 0 && b:interactive.prompt_history[pnr] != ' '
-        " Does the current line have this prompt?
-        if l:cur_text[: l:prompt_length - 1] == b:interactive.prompt_history[pnr]
-          let l:cur_text = l:cur_text[l:prompt_length : ]
-          let l:prompt_search = pnr
-        endif
-      endif
-    endfor
-
-    " Still nothing? Maybe a multi-line command was pasted in.
+  elseif !empty(b:interactive.prompt_history)
+    " Maybe a multi-line command was pasted in.
     let l:max_prompt = max(keys(b:interactive.prompt_history)) " Only count once.
-    if l:prompt_search == 0 && l:max_prompt < line('$')
-      for i in range(l:max_prompt, line('$'))
-        if i == l:max_prompt && has_key(b:interactive.prompt_history, i)
-          let l:cur_text = getline(i)
-          let l:cur_text = l:cur_text[len(b:interactive.prompt_history[i]) : ]
-        else
-          let l:cur_text = l:cur_text . getline(i)
-        endif
+    if l:max_prompt < line('$')
+      let l:cur_text = getline(l:max_prompt)[len(b:interactive.prompt_history[l:max_prompt]) : ]
+      for i in range(l:max_prompt+1, line('$'))
+        let l:cur_text .=  "\<LF>".getline(i)
       endfor
-      let l:prompt_search = l:max_prompt
-    endif
-
-    " Still nothing? We give up.
-    if l:prompt_search == 0
+    else
+      " Still nothing? We give up.
       echohl WarningMsg | echo "Invalid input." | echohl None
     endif
+  else
+    " Still nothing? We give up.
+    echohl WarningMsg | echo "Invalid input." | echohl None
   endif
 
   return l:cur_text
 endfunction"}}}
-function! vimshell#interactive#get_prompt(line)"{{{
-  " Get prompt line.
-
-  if !has_key(b:interactive.prompt_history, a:line)
-    return ''
-  elseif getline('.') =~ '^-> '
-    return '-> '
+function! s:delete_input(in)"{{{
+  if has_key(b:interactive.prompt_history, line('.'))
+    call setline('.', b:interactive.prompt_history[line('.')])
+  elseif !empty(b:interactive.prompt_history)
+    " Maybe a multi-line command was pasted in.
+    let l:max_prompt = max(keys(b:interactive.prompt_history)) " Only count once.
+    if l:max_prompt < line('$')
+      call setline(l:max_prompt, b:interactive.prompt_history[l:max_prompt])
+      for i in range(l:max_prompt+1, line('$'))
+        delete
+      endfor
+    else
+      " Still nothing? We give up.
+      call setline('.', '')
+    endif
+  else
+    " Still nothing? We give up.
+    call setline('.', '')
   endif
-
-  return b:interactive.prompt_history[a:line]
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
@@ -177,8 +138,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   try
     " Delete input text.
-    call setline('.', has_key(b:interactive.prompt_history, line('.')) ?
-          \ b:interactive.prompt_history[line('.')] : '')
+    call s:delete_input(l:in)
     
     if l:in =~ "\<C-d>$"
       " EOF.
@@ -226,8 +186,7 @@ function! vimshell#interactive#send_string(string)"{{{
 
   try
     " Delete input text.
-    call setline('.', has_key(b:interactive.prompt_history, line('.')) ?
-          \ b:interactive.prompt_history[line('.')] : '')
+    call s:delete_input(l:in)
     
     if l:in =~ "\<C-d>$"
       " EOF.

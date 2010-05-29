@@ -67,6 +67,9 @@ vimshellを起動するには、|:VimShell|コマンドを実行します。 こ
 めることができるでしょう。 ただし、vimshellは\をエスケープシーケンスとして認
 識します。 たとえWindows環境であってもパスは/を用いなければなりません。
 
+vimshellは初期化ファイルとして、.vimshrcを読み込みます。
+aliasの設定はそこで行っておくと便利です。
+
 ==============================================================================
 INSTALL							*vimshell-install*
 
@@ -154,8 +157,49 @@ COMMANDS 						*vimshell-commands*
 			はバッファ毎に設定されているため、コマンドを実行する
 			バッファでエイリアスが定義される必要があります。
 
+:VimShellSendString {string}				*:VimShellSendString*
+			裏ウインドウのインタプリタに選択文字列を送信します。
+			まるで|quickrun|を使っているかのようにインタプリタを
+			操作できます。
+
 ------------------------------------------------------------------------------
 VARIABLES 						*vimshell-variables*
+
+g:vimshell_prompt					*g:vimshell_prompt*
+			vimshellのプロンプト文字列を設定します。これは一度し
+			か評価されません。
+			
+			セキュリティの関係上、vimshellの関数を呼び出す前に値
+			を設定しなければ無効になります。
+			初期値は'vimshell% 'です。
+
+g:vimshell_user_prompt					*g:vimshell_user_prompt*
+			この変数にVim Scriptの式を文字列として代入することで、
+			ユーザーが追加で表示されるプロンプトを定義できます。
+			|g:vimshell_prompt|と違い、固定文字列でなくても良いです。
+			ユーザープロンプトを\nで区切ることで、 複数行のユー
+			ザープロンプトが表示できます。
+			
+			例えば、このように毎回カレントディレクトリを表示する
+			ようにすれば便利です。
+>
+			let g:vimshell_user_prompt = 'getcwd()'
+<
+			セキュリティの関係上、vimshellの関数を呼び出す前に値
+			を設定しなければ無効になります。
+			初期値は空です。
+
+g:vimshell_right_prompt					*g:vimshell_user_prompt*
+			zsh風の右プロンプトです。Vim Scriptの式を文字列とし
+			て代入します。|g:vimshell_user_prompt|に似ていますが、
+			ウインドウの大きさを計算し、自動的に最適な位置にプロ
+			ンプトを表示します。
+>
+			let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+<
+			セキュリティの関係上、vimshellの関数を呼び出す前に値
+			を設定しなければ無効になります。
+			初期値は空です。
 
 g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
 			vimshellのデフォルトマッピングをすべて無効化します。
@@ -194,16 +238,20 @@ g:vimshell_escape_colors				*g:vimshell_escape_colors*
 KEY MAPPINGS 						*vimshell-key-mappings*
 
 <Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
-			
+			vimshellを画面分割して起動します。すでにvimshellバッファ
+			が存在する場合はそちらに切り換えます。
 
 <Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
-			
+			vimshellを画面分割して起動します。すでにvimshellバッファ
+			が存在していても、新しくvimshellバッファを作成します。
 
 <Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
-			
+			vimshellを起動します。すでにvimshellバッファ が存在
+			する場合はそちらに切り換えます。
 
 <Plug>(vimshell_create)					*<Plug>(vimshell_create)*
-			
+			vimshellを起動します。すでにvimshellバッファ
+			が存在していても、新しくvimshellバッファを作成します。
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -250,6 +298,12 @@ EXAMPLES						*vimshell-examples*
 	  call vimshell#execute('echo "preexec"')
 	endfunction
 <
+プロンプトをユーザー名にしているだけで、後は凝った設定はしてないです。 ちな
+みに|neocomplcache|では、vimshellのヒストリファイルを辞書として使用してます。
+これはなかなか便利です。|g:vimshell_execute_file_list|による関連づけも設定
+しています。 ユーザープロンプトを設定するのは一番最初にします。 vimshellを読
+み込む前に設定しないと、セキュリティの関係で再設定できなくなるからです。
+
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
 internal commandは普通のシェルにおける内部コマンドのように動作します。
@@ -264,7 +318,8 @@ bg [{option}...] {command}						*vimshell-internal-bg*
 		にバッファを開き、そこに{command}の出力を書き出します。 bgの
 		場合、ユーザーからの入力は一切受け付けません。 バックグラウ
 		ンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に
-		終了させます。
+		終了させます。コマンド名の最後に&を付けると、bg command...と
+		同じ意味となります。
 		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
 		詳しくは|vimshell-execute-options|を参照してください。
 		ここでは、bgのみに存在するオプションを解説します。
@@ -389,16 +444,20 @@ screen {command}					*vimshell-internal-screen*
 
 shell 							*vimshell-internal-shell*
 		|:shell|を用いて'shell'を起動します。Windows上のGVimでかつ
-		|g:vimshell_use_ckw| が設定されている場合、DOSプロンプトでは
-		なく、ckw上でシェルを起動します。
+		|g:vimshell_use_ckw|が設定されている場合、DOSプロンプトでは
+		なく、ckw上でシェルを起動します。シグナルやトラップなど、
+		vimshellでは対応できない用途にも対応することができます。
 
 sudo {command}						*vimshell-internal-sudo*
-		管理者権限が必要な外部コマンドを実行します。 Windows環境では
-		動作しません。さらに、非同期実行機能が必要です。 {command}が
-		vimの場合、|sudo.vim|を用いて編集しようとします。
+		管理者権限が必要な外部コマンドを実行します。{command}がvimの
+		場合、|sudo.vim|を用いて編集しようとします。
+		
+		Windows環境ではsudo.exeが必要です。
+		http://bitbucket.org/wantora/sudo/wiki/Home
 
 vexe {expression}					*vimshell-internal-vexe*
-		{expression}をVim Scriptの文として実行します。
+		{expression}をVim Scriptの文として実行し、出力をvimshellバッ
+		ファに書き出します。
 
 view {filename}						*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開きます。ファイルの行
@@ -412,11 +471,14 @@ vim [{filename}]					*vimshell-internal-vim*
 		{filename}を省略すると、無名バッファを開きます。
 
 vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
-		{filename1}と{filename2}を|:vimdiff|で比較します。
+		{filename1}と{filename2}を|:vimdiff|で比較します。vimshellか
+		らいちいちdiffを呼び出すのは不便なので、存分に活用しましょう。
 
 vimsh [{filename}]					*vimshell-internal-vimsh*
 		{filename}で表されるvimshellスクリプトファイルを実行します。
-		{filename}を省略すると、新しいvimshellバッファを開きます。
+		ただし制御構造が実装されていないため、あまり使用価値はありま
+		せん。{filename}を省略すると、新しいvimshellバッファを開きま
+		す。
 
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
@@ -435,10 +497,26 @@ galias {global-alias-name} = {command}			*vimshell-internal-galias*
 		{command}に置き換えます。|vimshell-internal-alias|とは違い、
 		引数でも展開されます。zshのグローバルエイリアスと良く似た機
 		能です。
-
+		
+		ただし、現状次のようなパイプ付きの展開がサポートされていません。
+>
+		vimshell% galias G = '|grep'
+		vimshell% ls G hoge
+<
 let ${var-name} = {expression}				*vimshell-special-let*
 		{var-name}の変数へ{expression}を代入します。
 		{var-name}の先頭には$を付加しなければなりません。
+		シェル変数はそれぞれのvimshellバッファ固有の変数です。
+		
+		環境変数に代入するには、変数名の先頭を大文字にします。
+>
+		vimshell% let $Hoge = $hoge
+<
+		普通のシェルと違って、 = の間に空白があってもなくても動作し
+		ます。代入する式はVim scriptとなっているので、計算も自由自
+		在です。ただしvimshellでは変数名の頭に必ず$を付けなければな
+		りません。コマンドの終了ステータスは$$statusに書き込まれま
+		す。$$で始まる変数はvimshellの内部変数です。
 
 sexe {command}						*vimshell-special-sexe*
 		{command}を'shell'上で実行します。 vimshellでの起動に不具合
@@ -515,11 +593,49 @@ auto_cd							*vimshell-tips-auto_cd*
 		zshの機能を移植しました。例えば、..で上のディレクトリへ移動
 		できます。 zshとは違い、特に設定せずに使えます。
 
+ブロック						*vimshell-tips-block*
+		ブロック構文もサポートしています。
+>
+		vimshell% echo /hoge/piyo/{hoge,hogera}
+		-> /hoge/piyo/hoge /hoge/piyo/hogera
+<
+		zshの機能を移植しました。例えば、..で上のディレクトリへ移動
+		できます。 zshとは違い、特に設定せずに使えます。
+		zshのような数値展開も実装しているので、zshを超えるのももう少
+		しかもしれません。
+>
+		vimshell% echo {00..09}
+		-> 00 01 02 03 04 05 06 07 08 09
+<
+ワイルドカード						*vimshell-tips-wildcard*
+>
+		vimshell% ls *.htm
+<
+		ワイルドカードも普通に使えます。指定されたファイルが存在し
+		ない場合、zshのようにエラーになります。
+		
+		ワイルドカードの除外もサポートしました。
+>
+		vimshell% ls *~*.htm
+<
+		'~'で区切ってパターンを記述することで、「パターンを除外したパターン」という意味になります。
+
+バッククオート						*vimshell-tips-backquote*
+>
+		vimshell% echo `ls`
+<
+		コマンドの引数にコマンドの実行結果が使えます。
+		Vim scriptの埋め込みもできます。
+>
+		vimshell% echo `=3`
+<
+
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*
 
-In this clause, I comment on a method to make plugin of vimshell.
-The ability of vimshell will spread by creating plugin by yourself.
+vimshellの内部コマンドとして、autoload/internal/以下にある*.vimファイルを読
+み込むため、 自分でそこにプラグインファイルを追加することで、簡単にコマンド
+が追加できます。
 
 ==============================================================================
 TODO							*vimshell-todo*
