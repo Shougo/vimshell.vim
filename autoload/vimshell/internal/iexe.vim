@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 30 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -93,10 +93,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \}
 
   call vimshell#interactive#execute_pty_out(1)
-  if getline(line('$')) =~ '^\s*$'
-    let b:interactive.prompt_history[line('$')] = ''
-    call setline(line('$'), '...')
-  endif
 
   startinsert!
 
@@ -189,7 +185,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   augroup vimshell_iexe
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
-    autocmd CursorMovedI <buffer>  call s:on_moved()
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
   augroup END
 
@@ -202,15 +197,7 @@ function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   
   if b:interactive.process.is_valid
-    call feedkeys("\<C-g>u", 'n')
-  endif
-endfunction"}}}
-function! s:on_moved()"{{{
-  let l:line = getline('.')
-  if l:line =~ '^\.\.\.\.\?[^.]\+$\|^$'
-    " Set prompt.
-    call setline('.', '-> ' . l:line[len(matchstr(l:line, '^\.\.\.\.\?')) :])
-    startinsert!
+    call feedkeys("\<C-r>\<ESC>", 'n')
   endif
 endfunction"}}}
 function! s:on_interrupt(afile)"{{{

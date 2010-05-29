@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 May 2010
+" Last Modified: 30 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,11 +42,6 @@ augroup VimShellInteractive
 augroup END
 
 function! vimshell#interactive#get_cur_text()"{{{
-  if getline('.') == '...'
-    " Skip input.
-    return ''
-  endif
-
   " Get cursor text without prompt.
   let l:pos = mode() ==# 'i' ? 2 : 1
 
@@ -110,11 +105,6 @@ function! vimshell#interactive#get_cur_text()"{{{
   return l:cur_text
 endfunction"}}}
 function! vimshell#interactive#get_cur_line(line)"{{{
-  if getline('.') == '...'
-    " Skip input.
-    return ''
-  endif
-
   " Get cursor text without prompt.
   let l:cur_text = getline(a:line)
 
@@ -160,7 +150,7 @@ endfunction"}}}
 function! vimshell#interactive#get_prompt(line)"{{{
   " Get prompt line.
 
-  if getline('.') == '...' || !has_key(b:interactive.prompt_history, a:line)
+  if !has_key(b:interactive.prompt_history, a:line)
     return ''
   elseif getline('.') =~ '^-> '
     return '-> '
@@ -186,6 +176,10 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endif
 
   try
+    " Delete input text.
+    call setline('.', has_key(b:interactive.prompt_history, line('.')) ?
+          \ b:interactive.prompt_history[line('.')] : '')
+    
     if l:in =~ "\<C-d>$"
       " EOF.
       call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
@@ -194,30 +188,15 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
       call vimshell#interactive#exit()
       return
-    elseif getline('.') != '...'
-      if l:in =~ '^-> '
-        " Delete ...
-        let l:in = l:in[3:]
-      endif
-
+    else
       call b:interactive.process.write(l:in . "\<LF>")
-      let b:interactive.skip_echoback = l:in
     endif
   catch
     call vimshell#interactive#exit()
     return
   endtry
 
-  if getline('$') != '...'
-    call append('$', '...')
-    $
-  endif
-
   call vimshell#interactive#execute_pty_out(a:is_insert)
-
-  if getline('$') =~ '^\s*$'
-    call setline('$', '...')
-  endif
 
   if b:interactive.process.is_valid
     if b:interactive.process.eof
@@ -246,7 +225,9 @@ function! vimshell#interactive#send_string(string)"{{{
   endif
 
   try
-    let b:interactive.skip_echoback = l:in[: -2]
+    " Delete input text.
+    call setline('.', has_key(b:interactive.prompt_history, line('.')) ?
+          \ b:interactive.prompt_history[line('.')] : '')
     
     if l:in =~ "\<C-d>$"
       " EOF.
@@ -255,12 +236,7 @@ function! vimshell#interactive#send_string(string)"{{{
 
       call vimshell#interactive#exit()
       return
-    elseif getline('.') != '...'
-      if l:in =~ '^-> '
-        " Delete ...
-        let l:in = l:in[3:]
-      endif
-
+    else
       call b:interactive.process.write(l:in)
     endif
   catch
@@ -268,16 +244,7 @@ function! vimshell#interactive#send_string(string)"{{{
     return
   endtry
 
-  if getline('$') != '...'
-    call append('$', '...')
-    $
-  endif
-
   call vimshell#interactive#execute_pty_out(1)
-
-  if getline('$') =~ '^\s*$'
-    call setline('$', '...')
-  endif
 
   if !b:interactive.process.eof
     startinsert!
@@ -311,11 +278,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   if l:outputed
-    if has_key(b:interactive, 'skip_echoback') && b:interactive.skip_echoback ==# getline(line('.'))
-      delete
-      redraw
-    endif
-    
     let b:interactive.prompt_history[line('$')] = getline('$')
     $
     
@@ -471,10 +433,6 @@ function! s:print_buffer(fd, string)"{{{
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
-  if getline('$') == '...'
-    call setline('$', '')
-  endif
-
   " Strip <CR>.
   let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
   if l:string =~ '\r'
@@ -535,10 +493,7 @@ function! s:error_buffer(fd, string)"{{{
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   " Print buffer.
-  if getline('$') == '...'
-    call setline('$', '')
-  endif
-
+  
   " Strip <CR>.
   let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
   if l:string =~ '\r'
