@@ -185,6 +185,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-05-29
+- Improved run help.
+- Check exists('*SkkDisable').
+
 2010-05-28
 - Disable ime when execute <Plug>(vimshell_int_execute_line).
 - Supported eskk.vim.

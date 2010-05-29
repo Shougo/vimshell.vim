@@ -183,7 +183,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 
   call vimshell#internal#iexe#default_settings()
   
-  set filetype=interactive
   execute 'set filetype=int-'.fnamemodify(a:args[0], ':r')
 
   " Set autocommands.

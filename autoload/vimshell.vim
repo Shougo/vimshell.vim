@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,7 +158,7 @@ function! vimshell#default_settings()"{{{
   " Insert last word.
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Run help.
-  imap <buffer> <C-r>h <Plug>(vimshell_run_help)
+  imap <buffer> <C-s> <Plug>(vimshell_run_help)
   " Clear.
   imap <buffer> <C-l> <Plug>(vimshell_clear)
   " Delete char.

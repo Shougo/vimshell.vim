@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 25 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -243,14 +243,13 @@ function! vimshell#mappings#run_help()"{{{
   elseif has_key(b:vimshell.galias_table, l:program)
     let l:program = b:vimshell.galias_table[l:program]
   endif
-
-  if exists(':Man')
-    execute 'Man' l:program
-  elseif exists(':Ref')
+  
+  if exists(':Ref')
     execute 'Ref man' l:program
+  elseif exists(':Man')
+    execute 'Man' l:program
   else
-    call vimshell#execute_internal_command('bg', ['man', '-P', 'cat', l:program], 
-          \{}, {'is_interactive' : 0})
+    call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
   endif
 endfunction"}}}
 function! vimshell#mappings#paste_prompt()"{{{
