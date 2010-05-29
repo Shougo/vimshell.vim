@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 May 2010
+" Last Modified: 29 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -202,7 +202,7 @@ function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   
   if b:interactive.process.is_valid
-    call feedkeys("\<C-r>\<ESC>", 'n')
+    call feedkeys("\<C-g>u", 'n')
   endif
 endfunction"}}}
 function! s:on_moved()"{{{
