@@ -190,6 +190,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved multiline input.
 - Improved Japanese help.
 - sudo supported Windows.
+- Implemented interactive history complete.
+- Added g:vimshell_no_save_history_programs variable.
 
 2010-05-29
 - Improved run help.

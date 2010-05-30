@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: interactive_complete.vim
+" FILE: interactive_history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 28 May 2010
 " License: MIT license  {{{
@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#complete#interactive_complete#complete()"{{{
+function! vimshell#complete#interactive_history_complete#complete()"{{{
   if exists('&iminsert')
     let &l:iminsert = 0
   endif
@@ -32,18 +32,18 @@ function! vimshell#complete#interactive_complete#complete()"{{{
   " Interactive completion.
 
   if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#interactive_complete#omnifunc')
+    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#interactive_history_complete#omnifunc')
   else
     " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#interactive_complete#omnifunc'
+    let &l:omnifunc = 'vimshell#complete#interactive_history_complete#omnifunc'
 
     return "\<C-x>\<C-o>\<C-p>"
   endif
 endfunction"}}}
 
-function! vimshell#complete#interactive_complete#omnifunc(findstart, base)"{{{
+function! vimshell#complete#interactive_history_complete#omnifunc(findstart, base)"{{{
   if a:findstart
-    return match(vimshell#get_interactive_cur_text(), '\%([[:alnum:]_+~-]\|\\[ ]\)*$')
+    return len(vimshell#interactive#get_prompt(line('.')))
   endif
 
   " Save option.
@@ -56,7 +56,33 @@ function! vimshell#complete#interactive_complete#omnifunc(findstart, base)"{{{
     let &ignorecase = g:vimshell_ignore_case
   endif
 
-  let l:complete_words = s:get_complete_candidates(a:base)
+  " Collect words.
+  let l:complete_words = []
+  if a:base != ''
+    let l:bases = split(a:base)
+    if &ignorecase
+      let l:bases = map(l:bases, 'tolower(v:val)')
+    endif
+    
+    for hist in b:interactive.command_history
+      let l:matched = 1
+      for l:str in l:bases
+        if stridx(hist, l:str) == -1
+          let l:matched = 0
+          break
+        endif
+      endfor
+
+      if l:matched
+        call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+      endif
+    endfor
+    let l:complete_words = l:complete_words[: g:vimshell_max_list]
+  else
+    for hist in b:interactive.command_history
+      call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+    endfor
+  endif
 
   " Restore option.
   let &ignorecase = l:ignorecase_save
@@ -123,15 +149,4 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
   return vimshell#complete#helper#keyword_filter(l:candidates, a:cur_keyword_str)
 endfunction"}}}
 
-function! s:get_complete_key()"{{{
-  if !vimshell#iswin()
-    " For pty program.
-    return "\<TAB>"
-  elseif &filetype == 'iexe_zsh' || &filetype == 'iexe_nyaos' 
-    return "\<C-d>"
-  else
-    " For readline program.
-    return "\<ESC>?"
-  endif
-endfunction"}}}
 " vim: foldmethod=marker

@@ -85,7 +85,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'encoding' : l:options['--encoding'],
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
-        \ 'command_history' : [], 
+        \ 'command_history' : vimshell#interactive#load_history(), 
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \ 'is_background': 0, 
         \ 'cached_output' : '', 
@@ -108,6 +108,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   setlocal noswapfile
   setlocal wrap
   setlocal tabstop=8
+  setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
@@ -133,6 +134,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backword_char)  vimshell#int_mappings#delete_backword_char(1)
+  inoremap <buffer><expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
 
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
   imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
@@ -143,6 +145,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
+  imap <buffer> <C-k>  <Plug>(vimshell_int_history_complete)
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>

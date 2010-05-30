@@ -87,6 +87,9 @@ if !exists('g:vimshell_escape_colors')
                 \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff'
                 \]
 endif
+if !exists('g:vimshell_no_save_history_programs')
+    let g:vimshell_no_save_history_programs = {}
+endif
 "}}}
 
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
