@@ -590,8 +590,8 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
       setlocal nomodifiable
     else
       " Check input.
-      let l:cur_text = vimshell#interactive#get_cur_text()
-      if l:cur_text != '' && l:cur_text !~# '*\%(Killed\|Exit\)*'
+      if has_key(b:interactive.prompt_history, line('.'))
+            \&& vimshell#interactive#get_cur_line(line('.')) != ''
         return
       endif
 

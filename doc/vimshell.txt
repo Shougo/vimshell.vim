@@ -193,6 +193,7 @@ CHANGELOG						*vimshell-changelog*
 - Implemented interactive history complete.
 - Added g:vimshell_no_save_history_programs variable.
 - Added g:vimshell_interactive_update_time variable.
+- Improved update iexe buffer.
 
 2010-05-29
 - Improved run help.
