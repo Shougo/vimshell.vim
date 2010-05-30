@@ -237,7 +237,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   if l:outputed
-    let b:interactive.prompt_history[line('$')] = getline('$')
     $
     
     if !b:interactive.process.eof && a:is_insert
@@ -407,6 +406,11 @@ function! s:print_buffer(fd, string)"{{{
 
     call setline('$', l:lines[0])
     call append('$', l:lines[1:])
+    
+    if !b:interactive.is_background && getline('$') != '' 
+          \&& !has_key(b:interactive.prompt_history, line('$'))
+      let b:interactive.prompt_history[line('$')] = getline('$')
+    endif
   endif
 
   if getline('$') =~ s:password_regex
@@ -520,9 +524,8 @@ function! s:check_all_output()"{{{
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
     if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
-      let l:filetype = getbufvar(l:bufnr, '&filetype')
       let l:interactive = getbufvar(l:bufnr, 'interactive')
-      if l:interactive.is_background || l:filetype =~ '^int-'
+      if l:interactive.is_background
         " Check output.
         call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
       endif

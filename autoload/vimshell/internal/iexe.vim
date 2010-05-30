@@ -209,7 +209,11 @@ function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   
   if b:interactive.process.is_valid
-    call feedkeys("\<C-r>\<ESC>", 'n')
+    if pumvisible()
+      call feedkeys("\<C-e>\<C-r>\<ESC>", 'n')
+    else
+      call feedkeys("\<C-r>\<ESC>", 'n')
+    endif
   endif
 endfunction"}}}
 function! s:on_interrupt(afile)"{{{
