@@ -90,6 +90,9 @@ endif
 if !exists('g:vimshell_no_save_history_programs')
     let g:vimshell_no_save_history_programs = {}
 endif
+if !exists('g:vimshell_interactive_update_time')
+    let g:vimshell_interactive_update_time = 500
+endif
 "}}}
 
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)

@@ -237,6 +237,9 @@ g:vimshell_escape_colors				*g:vimshell_escape_colors*
 g:vimshell_no_save_history_programs			*g:vimshell_no_save_history_programs*
 			
 
+g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
+			
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 

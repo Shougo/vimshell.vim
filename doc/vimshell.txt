@@ -192,6 +192,7 @@ CHANGELOG						*vimshell-changelog*
 - sudo supported Windows.
 - Implemented interactive history complete.
 - Added g:vimshell_no_save_history_programs variable.
+- Added g:vimshell_interactive_update_time variable.
 
 2010-05-29
 - Improved run help.

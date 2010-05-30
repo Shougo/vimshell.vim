@@ -186,6 +186,8 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 
   " Set autocommands.
   augroup vimshell_iexe
+    autocmd InsertEnter <buffer>       call s:insert_enter()
+    autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
@@ -196,6 +198,13 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   startinsert!
 endfunction"}}}
 
+function! s:insert_enter()"{{{
+  let s:save_updatetime = &updatetime
+  let &updatetime = g:vimshell_interactive_update_time
+endfunction"}}}
+function! s:insert_leave()"{{{
+  let &updatetime = s:save_updatetime
+endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   
