@@ -390,11 +390,6 @@ function! s:print_buffer(fd, string)"{{{
     call append('$', l:lines[1:])
   endif
 
-  if !b:interactive.is_background && getline('$') != '' 
-        \&& !has_key(b:interactive.prompt_history, line('$'))
-    let b:interactive.prompt_history[line('$')] = getline('$')
-  endif
-
   if getline('$') =~ s:password_regex
     redraw
 
@@ -411,6 +406,11 @@ function! s:print_buffer(fd, string)"{{{
   endif
 
   call vimshell#terminal#interpret_escape_sequence()
+
+  if !b:interactive.is_background && getline('$') != '' 
+        \&& !has_key(b:interactive.prompt_history, line('$'))
+    let b:interactive.prompt_history[line('$')] = getline('$')
+  endif
 endfunction"}}}
 
 function! s:error_buffer(fd, string)"{{{
