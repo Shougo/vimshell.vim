@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2010
+" Last Modified: 31 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,9 +49,10 @@ function! vimshell#interactive#get_cur_line(line)"{{{
   " Get cursor text without prompt.
   return s:chomp_prompt(getline(a:line), a:line)
 endfunction"}}}
-function! vimshell#interactive#get_prompt(line)"{{{
+function! vimshell#interactive#get_prompt(...)"{{{
+  let l:line = a:0? a:1 : line('.')
   " Get prompt line.
-  return !has_key(b:interactive.prompt_history, a:line) ? '' : b:interactive.prompt_history[a:line]
+  return !has_key(b:interactive.prompt_history, l:line) ? '' : b:interactive.prompt_history[l:line]
 endfunction"}}}
 function! s:get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
@@ -216,25 +217,15 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   let l:outputed = 0
-  if b:interactive.cached_output != ''
-    " Use cache.
-    let l:read = b:interactive.cached_output
+  let l:read = b:interactive.process.read(-1, 40)
+  while l:read != ''
     let l:outputed = 1
-    let b:interactive.cached_output = ''
 
     call s:print_buffer(b:interactive.fd, l:read)
     redraw
-  else
+
     let l:read = b:interactive.process.read(-1, 40)
-    while l:read != ''
-      let l:outputed = 1
-
-      call s:print_buffer(b:interactive.fd, l:read)
-      redraw
-
-      let l:read = b:interactive.process.read(-1, 40)
-    endwhile
-  endif
+  endwhile
 
   if l:outputed
     $
@@ -256,33 +247,24 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     return
   endif
 
-  if has_key(b:interactive, 'cached_output') && b:interactive.cached_output != ''
-    " Use cache.
-    let l:read = b:interactive.cached_output
-    let b:interactive.cached_output = ''
+  if !b:interactive.process.stdout.eof
+    let l:read = b:interactive.process.stdout.read(-1, 40)
+    while l:read != ''
+      call s:print_buffer(b:interactive.fd, l:read)
+      redraw
 
-    call s:print_buffer(b:interactive.fd, l:read)
-    redraw
-  else
-    if !b:interactive.process.stdout.eof
       let l:read = b:interactive.process.stdout.read(-1, 40)
-      while l:read != ''
-        call s:print_buffer(b:interactive.fd, l:read)
-        redraw
+    endwhile
+  endif
 
-        let l:read = b:interactive.process.stdout.read(-1, 40)
-      endwhile
-    endif
+  if !b:interactive.process.stderr.eof
+    let l:read = b:interactive.process.stderr.read(-1, 40)
+    while l:read != ''
+      call s:error_buffer(b:interactive.fd, l:read)
+      redraw
 
-    if !b:interactive.process.stderr.eof
       let l:read = b:interactive.process.stderr.read(-1, 40)
-      while l:read != ''
-        call s:error_buffer(b:interactive.fd, l:read)
-        redraw
-
-        let l:read = b:interactive.process.stderr.read(-1, 40)
-      endwhile
-    endif
+    endwhile
   endif
 
   if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
@@ -406,11 +388,11 @@ function! s:print_buffer(fd, string)"{{{
 
     call setline('$', l:lines[0])
     call append('$', l:lines[1:])
-    
-    if !b:interactive.is_background && getline('$') != '' 
-          \&& !has_key(b:interactive.prompt_history, line('$'))
-      let b:interactive.prompt_history[line('$')] = getline('$')
-    endif
+  endif
+
+  if !b:interactive.is_background && getline('$') != '' 
+        \&& !has_key(b:interactive.prompt_history, line('$'))
+    let b:interactive.prompt_history[line('$')] = getline('$')
   endif
 
   if getline('$') =~ s:password_regex
@@ -525,7 +507,8 @@ function! s:check_all_output()"{{{
   while l:bufnr <= bufnr('$')
     if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       let l:interactive = getbufvar(l:bufnr, 'interactive')
-      if l:interactive.is_background
+      let l:filetype = getbufvar(l:bufnr, '&filetype')
+      if l:interactive.is_background || l:filetype =~ '^int-'
         " Check output.
         call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
       endif
@@ -539,80 +522,45 @@ function! s:check_all_output()"{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
-  let l:read = ''
-  
-  if a:interactive.is_background
-    " Background execute.
-    
-    if a:interactive.process.stdout.eof && a:interactive.process.stderr.eof
-      call vimshell#interactive#exit()
-      return
-    endif
-
-    " Check pipe output.
-    if !a:interactive.process.stdout.eof
-      let l:output = a:interactive.process.stdout.read(-1, 40)
-      while l:output != ''
-        let l:read .= l:output
-        let l:output = a:interactive.process.stdout.read(-1, 40)
-      endwhile
-      let l:read .= l:output
-    endif
-  else
-    " Interactive execute.
-    
-    if a:interactive.process.is_valid && a:interactive.process.eof
-      call vimshell#interactive#exit()
-      return
-    endif
-
-    " Check pty output.
-    let l:output = a:interactive.process.read(-1, 40)
-    while l:output != ''
-      let l:read .= l:output
-      let l:output = a:interactive.process.read(-1, 40)
-    endwhile
-    let l:read .= l:output
+  if a:bufnr != a:bufnr_save
+    let l:pos = getpos('.')
+    execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
 
-  if l:read != ''
-    let a:interactive.cached_output = l:read
-    
-    if a:bufnr != a:bufnr_save
-      let l:pos = getpos('.')
-      execute bufwinnr(a:bufnr) . 'wincmd w'
-    endif
+  if mode() !=# 'i'
+    let l:intbuffer_pos = getpos('.')
+  endif
 
-    if mode() !=# 'i'
-      let l:intbuffer_pos = getpos('.')
-    endif
-    
-    if a:interactive.is_background
-      setlocal modifiable
-      call vimshell#interactive#execute_pipe_out()
-      setlocal nomodifiable
-    else
-      " Check input.
-      if has_key(b:interactive.prompt_history, line('.'))
-            \&& vimshell#interactive#get_cur_line(line('.')) != ''
-        return
+  if a:interactive.is_background
+    setlocal modifiable
+    call vimshell#interactive#execute_pipe_out()
+    setlocal nomodifiable
+  else
+    " Check input.
+    if has_key(b:interactive.prompt_history, line('.'))
+          \&& vimshell#interactive#get_cur_line(line('.')) != ''
+      if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+        call setpos('.', l:pos)
+        execute bufwinnr(a:bufnr_save) . 'wincmd w'
       endif
-
-      call vimshell#interactive#execute_pty_out(mode() ==# 'i')
+      
+      return
     endif
 
-    if !a:interactive.process.eof && mode() ==# 'i'
-      startinsert!
-    endif
-    
-    if mode() !=# 'i'
-      call setpos('.', l:intbuffer_pos)
-    endif
-    
-    if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-      call setpos('.', l:pos)
-      execute bufwinnr(a:bufnr_save) . 'wincmd w'
-    endif
+    call vimshell#interactive#execute_pty_out(mode() ==# 'i')
+  endif
+
+  if !a:interactive.process.eof && mode() ==# 'i'
+    startinsert!
+  endif
+
+  if mode() !=# 'i'
+    call setpos('.', l:intbuffer_pos)
+  endif
+
+  if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+    call setpos('.', l:pos)
+    execute bufwinnr(a:bufnr_save) . 'wincmd w'
   endif
 endfunction"}}}
 

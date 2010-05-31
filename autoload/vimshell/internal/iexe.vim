@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2010
+" Last Modified: 31 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,7 +88,6 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'command_history' : vimshell#interactive#load_history(), 
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \ 'is_background': 0, 
-        \ 'cached_output' : '', 
         \ 'args' : l:args,
         \}
 

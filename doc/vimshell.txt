@@ -186,6 +186,9 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-05-30
+- Improved update iexe buffer.
+
+2010-05-30
 - Improved echoback.
 - Improved multiline input.
 - Improved Japanese help.
