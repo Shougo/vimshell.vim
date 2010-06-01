@@ -407,7 +407,7 @@ function! s:print_buffer(fd, string)"{{{
 
   call vimshell#terminal#interpret_escape_sequence()
 
-  if !b:interactive.is_background && getline('$') != '' 
+  if has_key(b:interactive, 'prompt_history') && getline('$') != '' 
         \&& !has_key(b:interactive.prompt_history, line('$'))
     let b:interactive.prompt_history[line('$')] = getline('$')
   endif
