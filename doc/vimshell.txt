@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-06-01
 - Fixed error when exe.
+- Fixed popd error.
 
 2010-05-30
 - Improved update iexe buffer.

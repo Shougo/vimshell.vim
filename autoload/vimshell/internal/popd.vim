@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 08 Apr 2010
+" Last Modified: 01 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,7 +39,7 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
     let l:pop = str2nr(l:arguments)
   elseif empty(l:arguments)
     " Default pop value.
-    let l:pop = 1
+    let l:pop = 0
   else
     " Error.
     call vimshell#error_line(a:fd, 'Arguments error .')
