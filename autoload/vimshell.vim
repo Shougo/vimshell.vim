@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -90,7 +90,7 @@ function! vimshell#default_settings()"{{{
   
   " Set autocommands.
   augroup vimshell
-    autocmd BufWinEnter <buffer> call s:restore_current_dir()
+    autocmd BufWinEnter,WinEnter <buffer> call s:restore_current_dir()
   augroup end
 
   " Plugin keymappings"{{{
@@ -232,6 +232,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.system_variables = { 'status' : 0 }
   let b:vimshell.directory_stack = []
   let b:vimshell.directory_stack[0] = getcwd()
+  let b:vimshell.prompt_current_dir = {}
   let b:vimshell.hook_functions_table = {
         \ 'precmd' : {}, 'preexec' : {}, 'emptycmd' : {}, 
         \ 'chpwd' : {}, 
@@ -468,6 +469,9 @@ function! vimshell#error_line(fd, string)"{{{
   $
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
+  " Save current directory.
+  let b:vimshell.prompt_current_dir[vimshell#get_prompt_linenr()] = getcwd()
+
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   
   " Call precmd hook.
@@ -677,6 +681,10 @@ endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_prompt())
+endfunction"}}}
+function! vimshell#get_prompt_linenr()"{{{
+  let [l:line, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bcW')
+  return l:line
 endfunction"}}}
 function! vimshell#check_secondary_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)

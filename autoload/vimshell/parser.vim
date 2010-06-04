@@ -1,6 +1,6 @@
 "=============================================================================
 " FILE: parser.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 26 May 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining

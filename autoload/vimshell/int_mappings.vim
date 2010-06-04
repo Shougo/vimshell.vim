@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 May 2010
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,11 +97,6 @@ endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert)"{{{
   " Search cursor file.
   let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-  if has_key(b:interactive.prompt_history, line('.')) || l:filename == ''
-    " Execute history.
-    call vimshell#int_mappings#execute_history(a:is_insert)
-    return
-  endif
 
   if &termencoding != '' && &encoding != &termencoding
     " Convert encoding.

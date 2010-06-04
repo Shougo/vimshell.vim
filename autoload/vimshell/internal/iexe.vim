@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -190,6 +190,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
+    autocmd CursorMovedI <buffer>  call s:on_moved_i()
   augroup END
 
   $
@@ -206,14 +207,12 @@ function! s:insert_leave()"{{{
 endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
-  
   if b:interactive.process.is_valid
-    if pumvisible()
-      call feedkeys("\<C-e>\<C-r>\<ESC>", 'n')
-    else
-      call feedkeys("\<C-r>\<ESC>", 'n')
-    endif
+    call feedkeys("\<C-r>\<ESC>", 'n')
   endif
+endfunction"}}}
+function! s:on_moved_i()"{{{
+  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 endfunction"}}}
 function! s:on_interrupt(afile)"{{{
   call vimshell#interactive#hang_up(a:afile)

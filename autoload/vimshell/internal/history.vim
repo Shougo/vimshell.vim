@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: history.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 04 Jul 2009
-" Usage: Just source this file.
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,46 +22,25 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.2:
-"     - Refactoringed.
-"
-"   1.1:
-"     - Supported vimshell Ver.3.2.
-"
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#history#execute(program, args, fd, other_info)
-    call vimshell#remove_history('history')
-
-    let l:cnt = 0
-    let l:arguments = join(a:args, ' ')
-    if l:arguments =~ '^\d\+$'
-        let l:max = str2nr(l:arguments)
-    elseif empty(l:arguments)
-        " Default max value.
-        let l:max = 20
-    else
-        let l:max = len(g:vimshell#hist_buffer)
-    endif
-    if l:max >= len(g:vimshell#hist_buffer)
-        " Overflow.
-        let l:max = len(g:vimshell#hist_buffer)
-    endif
-    while l:cnt < l:max
-        call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
-        let l:cnt += 1
-    endwhile
+  let l:cnt = 0
+  let l:arguments = join(a:args, ' ')
+  if l:arguments =~ '^\d\+$'
+    let l:max = str2nr(l:arguments)
+  elseif empty(l:arguments)
+    " Default max value.
+    let l:max = 20
+  else
+    let l:max = len(g:vimshell#hist_buffer)
+  endif
+  if l:max >= len(g:vimshell#hist_buffer)
+    " Overflow.
+    let l:max = len(g:vimshell#hist_buffer)
+  endif
+  while l:cnt < l:max
+    call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
+    let l:cnt += 1
+  endwhile
 endfunction

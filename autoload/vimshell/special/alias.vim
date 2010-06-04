@@ -1,6 +1,6 @@
 "=============================================================================
 " FILE: alias.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 02 May 2010
 " Usage: Just source this file.
 " License: MIT license  {{{

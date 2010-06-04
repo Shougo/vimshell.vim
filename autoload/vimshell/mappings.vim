@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
-" Last Modified: 29 May 2010
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -67,21 +67,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     else
       " Search cursor file.
       let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-      if l:filename == ''
-        return
-      endif
-
-      " Execute cursor file.
-      if l:filename =~ '^\%(https\?\|ftp\)://'
-        " Open uri.
-        call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-      elseif isdirectory(expand(l:filename))
-        " Change directory.
-        call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
-      else
-        " Edit file.
-        call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
-      endif
+      call s:open_file(l:filename)
     endif
   elseif line('.') != line('$')
     " History execution.
@@ -140,16 +126,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     call vimshell#start_insert(a:is_insert)
   endtry
 
-  let l:history_path = g:vimshell_temporary_directory . '/command_history'
-  if exists('vimshell#hist_size') && getfsize(l:history_path) != vimshell#hist_size
-    " Reload.
-    let g:vimshell#hist_buffer = readfile(l:history_path)
-  endif
-  " Not append history if starts spaces or dups.
-  if l:line !~ '^\s'
-    call vimshell#append_history(l:line)
-  endif
-  
   " Call preexec hook.
   call vimshell#hook#call('preexec', l:context)
 
@@ -164,6 +140,16 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     call vimshell#start_insert(a:is_insert)
     return
   endtry
+
+  let l:history_path = g:vimshell_temporary_directory . '/command_history'
+  if exists('vimshell#hist_size') && getfsize(l:history_path) != vimshell#hist_size
+    " Reload.
+    let g:vimshell#hist_buffer = readfile(l:history_path)
+  endif
+  " Not append history if starts spaces or dups.
+  if l:line !~ '^\s'
+    call vimshell#append_history(l:line)
+  endif
 
   if l:skip_prompt
     " Skip prompt.
@@ -344,5 +330,31 @@ function! vimshell#mappings#delete_backword_char(is_auto_select)"{{{
     return l:prefix
   endif
 endfunction"}}}
+function! s:open_file(filename)
+  " Execute cursor file.
+  if a:filename == ''
+    return
+  endif
+
+  if a:filename !~ '^\a\+:\|^/'
+    let l:prompt_nr = vimshell#get_prompt_linenr()
+    let l:filename = (has_key(b:vimshell.prompt_current_dir, l:prompt_nr)?
+          \ b:vimshell.prompt_current_dir[l:prompt_nr] : getcwd()) . '/' . a:filename
+    let l:filename = substitute(l:filename, '//', '/', 'g')
+  else
+    let l:filename = a:filename
+  endif
+  
+  if l:filename =~ '^\%(https\?\|ftp\)://'
+    " Open URI.
+    call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
+  elseif isdirectory(expand(l:filename))
+    " Change directory.
+    call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+  else
+    " Edit file.
+    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+  endif
+endfunction
 
 " vim: foldmethod=marker

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,9 +26,6 @@
 
 function! vimshell#internal#h#execute(program, args, fd, other_info)
   " Execute from history.
-
-  " Delete from history.
-  call vimshell#remove_history('h')
 
   if empty(a:args) || a:args[0] =~ '^\d\+'
     if empty(a:args)

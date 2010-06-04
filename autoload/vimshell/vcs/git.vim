@@ -1,6 +1,6 @@
 "=============================================================================
 " FILE: git.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 24 Feb 2010
 " Usage: Just source this file.
 " License: MIT license  {{{

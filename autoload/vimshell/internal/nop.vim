@@ -1,6 +1,6 @@
 "=============================================================================
 " FILE: nop.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>(Modified)
+" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 31 Mar 2009
 " Usage: Just source this file.
 " License: MIT license  {{{

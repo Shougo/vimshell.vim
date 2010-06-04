@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 May 2010
+" Last Modified: 04 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,13 +89,7 @@ function! s:chomp_prompt(cur_text, line)"{{{
       for i in range(l:max_prompt+1, line('$'))
         let l:cur_text .=  "\<LF>".getline(i)
       endfor
-    else
-      " Still nothing? We give up.
-      echohl WarningMsg | echo "Invalid input." | echohl None
     endif
-  else
-    " Still nothing? We give up.
-    echohl WarningMsg | echo "Invalid input." | echohl None
   endif
 
   return l:cur_text

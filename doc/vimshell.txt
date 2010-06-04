@@ -185,6 +185,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-04
+- Improved URL open in iexe.
+- Improved iexe buffer update.
+- Improved open file in vimshell buffer.
+
 2010-06-01
 - Fixed error when exe.
 - Fixed popd error.
