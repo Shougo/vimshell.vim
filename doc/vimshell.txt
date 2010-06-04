@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved URL open in iexe.
 - Improved iexe buffer update.
 - Improved open file in vimshell buffer.
+- Improved append history timing.
 
 2010-06-01
 - Fixed error when exe.

@@ -117,13 +117,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
     call vimshell#start_insert(a:is_insert)
     return
-  catch
-    let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, l:message)
-
-    call vimshell#print_prompt(l:context)
-
-    call vimshell#start_insert(a:is_insert)
   endtry
 
   " Call preexec hook.
