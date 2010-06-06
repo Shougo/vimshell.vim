@@ -69,25 +69,19 @@ function! vimshell#terminal#print(string)"{{{
           break
         endif
       endfor
-    else
+
+      if !l:matched
+        let l:newstr .= l:char
+        let l:pos += 1
+      endif
+    elseif has_key(s:control_sequence, l:char)
       " Check other pattern.
-      for [l:pattern, l:Func] in items(s:control_sequence)
-        if l:char == l:pattern
-          " Print rest string.
-          call s:output_string(l:newstr)
-          let l:newstr = ''
+      " Print rest string.
+      call s:output_string(l:newstr)
+      let l:newstr = ''
 
-          call call(l:Func, [])
-          
-          let l:matched = 1
-          let l:pos += 1
-          break
-        endif
-      endfor
-    endif
+      call call(s:control_sequence[l:char], [])
 
-    if !l:matched
-      let l:newstr .= l:char
       let l:pos += 1
     endif
   endwhile
@@ -119,15 +113,8 @@ function! vimshell#terminal#filter(string)"{{{
           break
         endif
       endfor
-    else
-      " Check other pattern.
-      for l:pattern in keys(s:control_sequence)
-        if l:char == l:pattern
-          let l:matched = 1
-          let l:pos += 1
-          break
-        endif
-      endfor
+    elseif has_key(s:control_sequence, l:char)
+      continue
     endif
     
     if !l:matched

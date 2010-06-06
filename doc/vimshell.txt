@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-07
+- Optimized control sequences check.
+
 2010-06-06
 - Fixed escape bug.
 - Fixed update cursor move bug.
