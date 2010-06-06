@@ -62,7 +62,7 @@ function! vimshell#terminal#print(string)"{{{
           call s:output_string(l:newstr)
           let l:newstr = ''
 
-          call call(l:Func, [l:matchstr])
+          call call(l:Func, [l:matchstr], s:escape)
           
           let l:matched = 1
           let l:pos += len(l:matchstr)
@@ -80,7 +80,7 @@ function! vimshell#terminal#print(string)"{{{
       call s:output_string(l:newstr)
       let l:newstr = ''
 
-      call call(s:control_sequence[l:char], [])
+      call call(s:control_sequence[l:char], [], s:control)
 
       let l:pos += 1
     endif
@@ -156,9 +156,10 @@ function! s:output_string(string)"{{{
 endfunction"}}}
 
 " Escape sequence functions.
-function! s:ignore_escape(matchstr)"{{{
+let s:escape = {}
+function! s:escape.ignore(matchstr)"{{{
 endfunction"}}}
-function! s:highlight_escape_sequence(matchstr)"{{{
+function! s:escape.highlight(matchstr)"{{{
   let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
   let l:grey_table = [
         \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
@@ -245,19 +246,19 @@ function! s:highlight_escape_sequence(matchstr)"{{{
     execute 'highlight' l:syntax_name l:highlight
   endif
 endfunction"}}}
-function! s:move_cursor(matchstr)"{{{
+function! s:escape.move_cursor(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   let l:pos = getpos('.')
   let l:pos[1] = l:args[0]
   let l:pos[2] = l:args[1]
   call setpos('.', l:pos)
 endfunction"}}}
-function! s:clear_entire_screen_escape(matchstr)"{{{
+function! s:escape.clear_entire_screen(matchstr)"{{{
   let l:reg = @x
   1,$ delete x
   let @x = l:reg
 endfunction"}}}
-function! s:clear_screen_from_cursor_down(matchstr)"{{{
+function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
   if col('.') == col('$')
     return
   endif
@@ -266,133 +267,125 @@ function! s:clear_screen_from_cursor_down(matchstr)"{{{
   .+1,$ delete x
   let @x = l:reg
 endfunction"}}}
-function! s:move_head()"{{{
+function! s:escape.move_head()"{{{
   normal! 0
 endfunction"}}}
 
 " Control sequence functions.
-function! s:ignore_control()"{{{
+let s:control = {}
+function! s:control.ignore()"{{{
 endfunction"}}}
-function! s:newline()"{{{
+function! s:control.newline()"{{{
   call append('.', '')
   normal! j0
 endfunction"}}}
-function! s:carriage_return()"{{{
+function! s:control.carriage_return()"{{{
   normal! 0
 endfunction"}}}
-function! s:clear_entire_screen_control()"{{{
+function! s:control.clear_entire_screen()"{{{
   let l:reg = @x
   1,$ delete x
   let @x = l:reg
 endfunction"}}}
 
-function! s:SID_PREFIX()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
-endfunction
-
-" Get funcref.
-function! s:funcref(funcname)
-  return function(s:SID_PREFIX().a:funcname)
-endfunction
-
 " escape sequence list. {{{
 " pattern: function
 let s:escape_sequence = {
-      \ '\e\[?\dh' : s:funcref('ignore_escape'),
-      \ '\e\[?\dl' : s:funcref('ignore_escape'),
-      \ '\e(\a' : s:funcref('ignore_escape'),
-      \ '\e)\a' : s:funcref('ignore_escape'),
-      \ '\e(\d' : s:funcref('ignore_escape'),
-      \ '\e)\d' : s:funcref('ignore_escape'),
-      \ '\eN' : s:funcref('ignore_escape'),
-      \ '\eO' : s:funcref('ignore_escape'),
+      \ '\e\[?\dh' : s:escape.ignore,
+      \ '\e\[?\dl' : s:escape.ignore,
+      \ '\e(\a' : s:escape.ignore,
+      \ '\e)\a' : s:escape.ignore,
+      \ '\e(\d' : s:escape.ignore,
+      \ '\e)\d' : s:escape.ignore,
+      \ '\eN' : s:escape.ignore,
+      \ '\eO' : s:escape.ignore,
       \ 
-      \ '\e\[m' : s:funcref('ignore_escape'),
-      \ '\e\[\%(\d\+;\)*\d\+m' : s:funcref('highlight_escape_sequence'),
+      \ '\e\[m' : s:escape.ignore,
+      \ '\e\[\%(\d\+;\)*\d\+m' : s:escape.highlight,
       \
-      \ '\e\[\d\+;\d\+r' : s:funcref('ignore_escape'),
+      \ '\e\[\d\+;\d\+r' : s:escape.ignore,
       \
-      \ '\e\[\d\+A' : s:funcref('ignore_escape'),
-      \ '\e\[\d\+B' : s:funcref('ignore_escape'),
-      \ '\e\[\d\+C' : s:funcref('ignore_escape'),
-      \ '\e\[\d\+D' : s:funcref('ignore_escape'),
-      \ '\e\[H' : s:funcref('ignore_escape'),
-      \ '\e\[;H' : s:funcref('ignore_escape'),
-      \ '\e\[\d\+;\d\+H' : s:funcref('move_cursor'),
-      \ '\e\[f' : s:funcref('ignore_escape'),
-      \ '\e\[;f' : s:funcref('ignore_escape'),
-      \ '\eM' : s:funcref('ignore_escape'),
-      \ '\eE' : s:funcref('ignore_escape'),
-      \ '\e7' : s:funcref('ignore_escape'),
-      \ '\e8' : s:funcref('ignore_escape'),
+      \ '\e\[\d\+A' : s:escape.ignore,
+      \ '\e\[\d\+B' : s:escape.ignore,
+      \ '\e\[\d\+C' : s:escape.ignore,
+      \ '\e\[\d\+D' : s:escape.ignore,
+      \ '\e\[H' : s:escape.ignore,
+      \ '\e\[;H' : s:escape.ignore,
+      \ '\e\[\d\+;\d\+H' : s:escape.move_cursor,
+      \ '\e\[f' : s:escape.ignore,
+      \ '\e\[;f' : s:escape.ignore,
+      \ '\eM' : s:escape.ignore,
+      \ '\eE' : s:escape.ignore,
+      \ '\e7' : s:escape.ignore,
+      \ '\e8' : s:escape.ignore,
       \
-      \ '\e[g' : s:funcref('ignore_escape'),
-      \ '\e[\dg' : s:funcref('ignore_escape'),
+      \ '\e[g' : s:escape.ignore,
+      \ '\e[\dg' : s:escape.ignore,
       \
-      \ '\e#\d' : s:funcref('ignore_escape'),
+      \ '\e#\d' : s:escape.ignore,
       \
-      \ '\e\[K' : s:funcref('ignore_escape'),
-      \ '\e\[0K' : s:funcref('ignore_escape'),
-      \ '\e\[1K' : s:funcref('ignore_escape'),
-      \ '\e\[2K' : s:funcref('ignore_escape'),
+      \ '\e\[K' : s:escape.ignore,
+      \ '\e\[0K' : s:escape.ignore,
+      \ '\e\[1K' : s:escape.ignore,
+      \ '\e\[2K' : s:escape.ignore,
       \
-      \ '\e\[J' : s:funcref('clear_screen_from_cursor_down'),
-      \ '\e\[0J' : s:funcref('ignore_escape'),
-      \ '\e\[1J' : s:funcref('ignore_escape'),
-      \ '\e\[2J' : s:funcref('clear_entire_screen_escape'),
+      \ '\e\[J' : s:escape.clear_screen_from_cursor_down,
+      \ '\e\[0J' : s:escape.ignore,
+      \ '\e\[1J' : s:escape.ignore,
+      \ '\e\[2J' : s:escape.clear_entire_screen,
       \
-      \ '\e\dn' : s:funcref('ignore_escape'),
-      \ '\e\d\+;\d\+R' : s:funcref('ignore_escape'),
+      \ '\e\dn' : s:escape.ignore,
+      \ '\e\d\+;\d\+R' : s:escape.ignore,
       \
-      \ '\e\[c' : s:funcref('ignore_escape'),
-      \ '\e\[0c' : s:funcref('ignore_escape'),
-      \ '\e\[?1;\d\+0c' : s:funcref('ignore_escape'),
+      \ '\e\[c' : s:escape.ignore,
+      \ '\e\[0c' : s:escape.ignore,
+      \ '\e\[?1;\d\+0c' : s:escape.ignore,
       \
-      \ '\ec' : s:funcref('ignore_escape'),
-      \ '\e\[2;\dy' : s:funcref('ignore_escape'),
+      \ '\ec' : s:escape.ignore,
+      \ '\e\[2;\dy' : s:escape.ignore,
       \
-      \ '\e\[\dq' : s:funcref('ignore_escape'),
+      \ '\e\[\dq' : s:escape.ignore,
       \
-      \ '\e<' : s:funcref('ignore_escape'),
-      \ '\e=' : s:funcref('ignore_escape'),
-      \ '\e>' : s:funcref('ignore_escape'),
-      \ '\eF' : s:funcref('ignore_escape'),
-      \ '\eG' : s:funcref('ignore_escape'),
+      \ '\e<' : s:escape.ignore,
+      \ '\e=' : s:escape.ignore,
+      \ '\e>' : s:escape.ignore,
+      \ '\eF' : s:escape.ignore,
+      \ '\eG' : s:escape.ignore,
       \
-      \ '\eA' : s:funcref('move_head'),
-      \ '\eB' : s:funcref('ignore_escape'),
-      \ '\eC' : s:funcref('ignore_escape'),
-      \ '\eD' : s:funcref('ignore_escape'),
-      \ '\eH' : s:funcref('ignore_escape'),
-      \ '\e\d\+;\d\+' : s:funcref('ignore_escape'),
-      \ '\eI' : s:funcref('ignore_escape'),
+      \ '\eA' : s:escape.move_head,
+      \ '\eB' : s:escape.ignore,
+      \ '\eC' : s:escape.ignore,
+      \ '\eD' : s:escape.ignore,
+      \ '\eH' : s:escape.ignore,
+      \ '\e\d\+;\d\+' : s:escape.ignore,
+      \ '\eI' : s:escape.ignore,
       \
-      \ '\eK' : s:funcref('ignore_escape'),
-      \ '\eJ' : s:funcref('ignore_escape'),
+      \ '\eK' : s:escape.ignore,
+      \ '\eJ' : s:escape.ignore,
       \
-      \ '\eZ' : s:funcref('ignore_escape'),
-      \ '\e/Z' : s:funcref('ignore_escape'),
+      \ '\eZ' : s:escape.ignore,
+      \ '\e/Z' : s:escape.ignore,
       \
-      \ '\e\[0G' : s:funcref('ignore_escape'),
-      \ '\e\[>\dl' : s:funcref('ignore_escape'),
-      \ '\e\[>\dh' : s:funcref('ignore_escape'),
+      \ '\e\[0G' : s:escape.ignore,
+      \ '\e\[>\dl' : s:escape.ignore,
+      \ '\e\[>\dh' : s:escape.ignore,
       \}
 let s:control_sequence = {
-      \ "\<C-h>" : s:funcref('ignore_escape'),
-      \ "\<BS>" : s:funcref('ignore_escape'),
-      \ "\<Del>" : s:funcref('ignore_escape'),
-      \ "\<C-l>" : s:funcref('ignore_escape'),
+      \ "\<C-h>" : s:escape.ignore,
+      \ "\<BS>" : s:escape.ignore,
+      \ "\<Del>" : s:escape.ignore,
+      \ "\<C-l>" : s:escape.ignore,
       \}
 "}}}
 " control sequence list. {{{
 " pattern: function
 let s:control_sequence = {
-      \ "\<LF>" : s:funcref('newline'),
-      \ "\<CR>" : s:funcref('carriage_return'),
-      \ "\<C-h>" : s:funcref('ignore_control'),
-      \ "\<BS>" : s:funcref('ignore_control'),
-      \ "\<Del>" : s:funcref('ignore_control'),
-      \ "\<C-l>" : s:funcref('clear_entire_screen_control'),
+      \ "\<LF>" : s:control.newline,
+      \ "\<CR>" : s:control.carriage_return,
+      \ "\<C-h>" : s:control.ignore,
+      \ "\<BS>" : s:control.ignore,
+      \ "\<Del>" : s:control.ignore,
+      \ "\<C-l>" : s:control.clear_entire_screen,
       \}
 "}}}
 
