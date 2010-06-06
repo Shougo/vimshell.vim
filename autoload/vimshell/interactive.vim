@@ -367,22 +367,7 @@ function! s:print_buffer(fd, string)"{{{
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
-  " Strip <CR>.
-  let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
-  if l:string =~ '\r'
-    for l:line in split(getline('$') . l:string, '\n', 1)
-      call append('$', '')
-      for l:l in split(l:line, '\r', 1)
-        call setline('$', l:l)
-        redraw
-      endfor
-    endfor
-  else
-    let l:lines = split(getline('$') . l:string, '\n', 1)
-
-    call setline('$', l:lines[0])
-    call append('$', l:lines[1:])
-  endif
+  call vimshell#terminal#print(l:string)
 
   if getline('$') =~ s:password_regex
     redraw
@@ -398,8 +383,6 @@ function! s:print_buffer(fd, string)"{{{
 
     call b:interactive.process.write(l:in . "\<NL>")
   endif
-
-  call vimshell#terminal#interpret_escape_sequence()
 
   if has_key(b:interactive, 'prompt_history') && getline('$') != '' 
         \&& !has_key(b:interactive.prompt_history, line('$'))
@@ -453,8 +436,6 @@ function! s:error_buffer(fd, string)"{{{
     endif
     call append('$', map(l:lines[1:], '"!!!" . v:val . "!!!"'))
   endif
-
-  call vimshell#terminal#interpret_escape_sequence()
 
   " Set cursor.
   $

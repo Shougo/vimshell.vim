@@ -396,21 +396,7 @@ function! vimshell#print(fd, string)"{{{
     return
   endif
 
-  " Strip <CR>.
-  let l:lines = split(a:string, '\n')
-  if line('$') == 1 && getline('$') == ''
-    call setline('$', l:lines[0])
-    let l:lines = l:lines[1:]
-  endif
-
-  for l:line in l:lines
-    call append('$', l:line)
-  endfor
-
-  call vimshell#terminal#interpret_escape_sequence()
-
-  " Set cursor.
-  $
+  call vimshell#terminal#print(a:string)
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
   if !empty(a:fd) && a:fd.stdout != ''
@@ -435,7 +421,6 @@ function! vimshell#print_line(fd, string)"{{{
     call append('$', a:string)
   endif
 
-  call vimshell#terminal#interpret_escape_sequence()
   $
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
@@ -465,7 +450,6 @@ function! vimshell#error_line(fd, string)"{{{
     call append('$', l:string)
   endif
 
-  call vimshell#terminal#interpret_escape_sequence()
   $
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{

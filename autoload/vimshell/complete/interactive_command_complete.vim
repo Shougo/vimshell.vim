@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 May 2010
+" Last Modified: 06 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,7 +103,7 @@ function! s:get_complete_candidates(cur_keyword_str)"{{{
   endif
 
   " Filtering escape sequences.
-  let l:output = vimshell#terminal#filter_escape_sequence(l:output)
+  let l:output = vimshell#terminal#filter(l:output)
 
   let l:candidates = split(join(split(l:output, '\r\n\|\n')[: -2], '  '), '\s')
   let l:cnt = 0
