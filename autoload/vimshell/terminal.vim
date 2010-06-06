@@ -27,13 +27,25 @@
 let s:terminal_info = {}
 
 function! vimshell#terminal#print(string)"{{{
+  let l:string = substitute(a:string, '\r\n', '\n', 'g')
+  
+  if l:string !~ "\<ESC>" && col('.') == col('$')
+    " Optimized print.
+    let l:lines = split(l:string, '\n', 1)
+    call setline('.', getline('.') . l:lines[0])
+    call append('.', l:lines[1:])
+    execute 'normal!' (len(l:lines)-1).'j$'
+    
+    return
+  endif
+  
   let l:newstr = ''
   let l:pos = 0
-  let l:max = len(a:string)
+  let l:max = len(l:string)
   while l:pos < l:max
     let l:matched = 0
 
-    let l:char = a:string[l:pos]
+    let l:char = l:string[l:pos]
     if l:char !~ '[[:cntrl:]]'
       let l:newstr .= l:char
       let l:pos += 1
@@ -44,7 +56,7 @@ function! vimshell#terminal#print(string)"{{{
     if l:char == "\<ESC>"
       " Check escape sequence.
       for [l:pattern, l:Func] in items(s:escape_sequence)
-        let l:matchstr = matchstr(a:string, '^'.l:pattern, l:pos)
+        let l:matchstr = matchstr(l:string, '^'.l:pattern, l:pos)
         if l:matchstr != ''
           " Print rest string.
           call s:output_string(l:newstr)
