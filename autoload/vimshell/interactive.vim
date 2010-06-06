@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 06 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ let s:password_regex =
       \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
 let s:character_regex = ''
 
-augroup VimShellInteractive
+augroup vimshell_interactive
   autocmd!
   autocmd CursorHold * call s:check_all_output()
 augroup END
@@ -504,7 +504,7 @@ function! s:check_all_output()"{{{
       let l:filetype = getbufvar(l:bufnr, '&filetype')
       if l:interactive.is_background || l:filetype =~ '^int-'
         " Check output.
-        call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
+        "call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
       endif
     endif
 
@@ -529,23 +529,15 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
-  else
+  elseif !has_key(b:interactive.prompt_history, line('.'))
+          \|| vimshell#interactive#get_cur_line(line('.')) == ''
     " Check input.
-    if has_key(b:interactive.prompt_history, line('.'))
-          \&& vimshell#interactive#get_cur_line(line('.')) != ''
-      if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-        call setpos('.', l:pos)
-        execute bufwinnr(a:bufnr_save) . 'wincmd w'
-      endif
-      
-      return
-    endif
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')
-  endif
 
-  if !a:interactive.process.eof && mode() ==# 'i'
-    startinsert!
+    if !a:interactive.process.eof && mode() ==# 'i'
+      startinsert!
+    endif
   endif
 
   if mode() !=# 'i'
