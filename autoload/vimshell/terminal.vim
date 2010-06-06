@@ -167,7 +167,7 @@ function! s:highlight_escape_sequence(matchstr)"{{{
         \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
         \]
 
-  let [l:lnum, l:col] = [line('.')+1, col('.')]
+  let [l:lnum, l:col] = [line('.')+1, (getline('.') == '')? 1: col('.')+1]
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . l:lnum . '_' . l:col
   execute 'syntax region' l:syntax_name 'start=+\%' . l:lnum . 'l\%' . l:col . 'c+ end=+\%$+' 'contains=ALL'
 

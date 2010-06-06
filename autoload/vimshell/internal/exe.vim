@@ -58,7 +58,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         call vimshell#error_line(a:fd, 'Background Executed.')
 
         " Background execution.
-        call vimshell#internal#bg#init(l:args, a:fd, a:other_info, ,'background', a:other_info.is_interactive)
+        call vimshell#internal#bg#init(l:args, a:fd, a:other_info, 'background', a:other_info.is_interactive)
 
         wincmd w
         unlet b:interactive

@@ -269,6 +269,9 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
+
+  " Set undo point.
+  call feedkeys("\<C-g>u", 'n')
 endfunction"}}}
 function! vimshell#switch_shell(split_flag, directory)"{{{
   let l:context = {

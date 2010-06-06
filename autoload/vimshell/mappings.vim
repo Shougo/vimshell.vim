@@ -53,6 +53,9 @@ function! vimshell#mappings#push_and_execute(command)"{{{
 endfunction"}}}
 
 function! vimshell#mappings#execute_line(is_insert)"{{{
+  " Set undo point.
+  call feedkeys("\<C-g>u", 'n')
+  
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
 
