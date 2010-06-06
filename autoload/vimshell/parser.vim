@@ -155,11 +155,11 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
 
     " Search pipe.
     let l:args = []
-    let l:i = 0
+    let i = 0
     let l:fd = copy(a:fd)
     for arg in l:arguments
       if arg == '|'
-        if l:i+1 == len(l:arguments) 
+        if i+1 == len(l:arguments) 
           call vimshell#error_line(a:fd, 'Wrong pipe used.')
           return 0
         endif
@@ -171,16 +171,16 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
         break
       endif
       call add(l:args, arg)
-      let l:i += 1
+      let i += 1
     endfor
     let l:ret = call(g:vimshell#internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
 
-    if l:i < len(l:arguments)
+    if i < len(l:arguments)
       " Process pipe.
-      let l:prog = l:arguments[l:i + 1]
+      let l:prog = l:arguments[i + 1]
       let l:fd = copy(a:fd)
       let l:fd.stdin = temp
-      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
+      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[i+2 :], l:fd, a:other_info)
       call delete(l:temp)
     endif
 
@@ -207,17 +207,17 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
 
     " Search pipe.
     let l:args = []
-    let l:i = 0
+    let i = 0
     let l:fd = copy(a:fd)
     for arg in l:arguments
       if arg == '|'
-        if l:i+1 == len(l:arguments) 
+        if i+1 == len(l:arguments) 
           call vimshell#error_line(a:fd, 'Wrong pipe used.')
           return 0
         endif
 
         " Check internal command.
-        let l:prog = l:arguments[l:i + 1]
+        let l:prog = l:arguments[i + 1]
         if !has_key(g:vimshell#special_func_table, l:prog) && !has_key(g:vimshell#internal_func_table, l:prog)
           " Create temporary file.
           let l:temp = tempname()
@@ -227,15 +227,15 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
         endif
       endif
       call add(l:args, arg)
-      let l:i += 1
+      let i += 1
     endfor
     let l:ret = vimshell#execute_internal_command('exe', insert(l:args, l:program), l:fd, a:other_info)
 
-    if l:i < len(l:arguments)
+    if i < len(l:arguments)
       " Process pipe.
       let l:fd = copy(a:fd)
       let l:fd.stdin = temp
-      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[l:i+2 :], l:fd, a:other_info)
+      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[i+2 :], l:fd, a:other_info)
       call delete(l:temp)
     endif
 
@@ -252,43 +252,43 @@ function! vimshell#parser#split_statements(script)"{{{
   let l:max = len(a:script)
   let l:statements = []
   let l:statement = ''
-  let l:i = 0
-  while l:i < l:max
-    if a:script[l:i] == ';'
+  let i = 0
+  while i < l:max
+    if a:script[i] == ';'
       if l:statement != ''
         call add(l:statements, l:statement)
       endif
       let l:statement = ''
-      let l:i += 1
-    elseif a:script[l:i] == "'"
+      let i += 1
+    elseif a:script[i] == "'"
       " Single quote.
-      let [l:string, l:i] = s:skip_single_quote(a:script, l:i)
+      let [l:string, i] = s:skip_single_quote(a:script, i)
       let l:statement .= l:string
-    elseif a:script[l:i] == '"'
+    elseif a:script[i] == '"'
       " Double quote.
-      let [l:string, l:i] = s:skip_double_quote(a:script, l:i)
+      let [l:string, i] = s:skip_double_quote(a:script, i)
       let l:statement .= l:string
-    elseif a:script[l:i] == '`'
+    elseif a:script[i] == '`'
       " Back quote.
-      let [l:string, l:i] = s:skip_back_quote(a:script, l:i)
+      let [l:string, i] = s:skip_back_quote(a:script, i)
       let l:statement .= l:string
-    elseif a:script[l:i] == '\'
+    elseif a:script[i] == '\'
       " Escape.
       let l:statement .= '\'
-      let l:i += 1
+      let i += 1
 
-      if l:i >= len(a:script)
+      if i >= len(a:script)
         throw 'Exception: Join to next line (\).'
       endif
 
-      let l:statement .= a:script[l:i]
-      let l:i += 1
-    elseif a:script[l:i] == '#'
+      let l:statement .= '\' . a:script[i]
+      let i += 1
+    elseif a:script[i] == '#'
       " Comment.
       break
     else
-      let l:statement .= a:script[l:i]
-      let l:i += 1
+      let l:statement .= a:script[i]
+      let i += 1
     endif
   endwhile
 
@@ -303,45 +303,45 @@ function! vimshell#parser#split_args(script)"{{{
   let l:max = len(l:script)
   let l:args = []
   let l:arg = ''
-  let l:i = 0
-  while l:i < l:max
-    if l:script[l:i] == "'"
+  let i = 0
+  while i < l:max
+    if l:script[i] == "'"
       " Single quote.
-      let [l:arg_quote, l:i] = s:parse_single_quote(l:script, l:i)
+      let [l:arg_quote, i] = s:parse_single_quote(l:script, i)
       let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
-    elseif l:script[l:i] == '"'
+    elseif l:script[i] == '"'
       " Double quote.
-      let [l:arg_quote, l:i] = s:parse_double_quote(l:script, l:i)
+      let [l:arg_quote, i] = s:parse_double_quote(l:script, i)
       let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
-    elseif l:script[l:i] == '`'
+    elseif l:script[i] == '`'
       " Back quote.
-      let [l:arg_quote, l:i] = s:parse_back_quote(l:script, l:i)
+      let [l:arg_quote, i] = s:parse_back_quote(l:script, i)
       let l:arg .= l:arg_quote
       if l:arg == ''
         call add(l:args, '')
       endif
     elseif l:script[i] == '\'
       " Escape.
-      let l:i += 1
+      let i += 1
 
-      if l:i > l:max
+      if i > l:max
         throw 'Exception: Join to next line (\).'
       endif
 
       let l:arg .= l:script[i]
-      let l:i += 1
+      let i += 1
     elseif l:script[i] == '#'
       " Comment.
       break
-    elseif l:script[l:i] != ' '
-      let l:arg .= l:script[l:i]
-      let l:i += 1
+    elseif l:script[i] != ' '
+      let l:arg .= l:script[i]
+      let i += 1
     else
       " Space.
       if l:arg != ''
@@ -350,7 +350,7 @@ function! vimshell#parser#split_args(script)"{{{
 
       let l:arg = ''
 
-      let l:i += 1
+      let i += 1
     endif
   endwhile
 
@@ -374,36 +374,36 @@ endfunction"}}}
 function! vimshell#parser#split_pipe(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
   let l:commands = []
-  while l:i < l:max
-    if a:script[l:i] == '|'
+  while i < l:max
+    if a:script[i] == '|'
       " Pipe.
       call add(l:commands, l:script)
 
       " Search next command.
       let l:script = ''
-      let l:i += 1
-    elseif a:script[l:i] == "'"
+      let i += 1
+    elseif a:script[i] == "'"
       " Single quote.
-      let [l:string, l:i] = s:skip_quote(a:script, l:i)
+      let [l:string, i] = s:skip_quote(a:script, i)
       let l:script .= l:string
-    elseif a:script[l:i] == '"'
+    elseif a:script[i] == '"'
       " Double quote.
-      let [l:string, l:i] = s:skip_double_quote(a:script, l:i)
+      let [l:string, i] = s:skip_double_quote(a:script, i)
       let l:script .= l:string
-    elseif a:script[l:i] == '`'
+    elseif a:script[i] == '`'
       " Back quote.
-      let [l:string, l:i] = s:skip_back_quote(a:script, l:i)
+      let [l:string, i] = s:skip_back_quote(a:script, i)
       let l:script .= l:string
-    elseif a:script[l:i] == '\' && l:i + 1 < l:max
+    elseif a:script[i] == '\' && i + 1 < l:max
       " Escape.
-      let l:script .= '\' . a:script[l:i+1]
-      let l:i += 2
+      let l:script .= '\' . a:script[i+1]
+      let i += 2
     else
-      let l:script .= a:script[l:i]
-      let l:i += 1
+      let l:script .= a:script[i]
+      let i += 1
     endif
   endwhile
 
@@ -435,7 +435,7 @@ function! vimshell#parser#split_commands(script)"{{{
       endif
       let l:command = ''
 
-      let l:i += 1
+      let i += 1
     else
 
       let l:command .= l:script[i]
@@ -543,21 +543,21 @@ function! s:parse_galias(script)"{{{
   let l:max = len(l:script)
   let l:args = []
   let l:arg = ''
-  let l:i = 0
-  while l:i < l:max
+  let i = 0
+  while i < l:max
     if l:script[i] == '\'
       " Escape.
-      let l:i += 1
+      let i += 1
 
-      if l:i > l:max
+      if i > l:max
         throw 'Exception: Join to next line (\).'
       endif
 
       let l:arg .= l:script[i]
-      let l:i += 1
-    elseif l:script[l:i] != ' '
-      let l:arg .= l:script[l:i]
-      let l:i += 1
+      let i += 1
+    elseif l:script[i] != ' '
+      let l:arg .= l:script[i]
+      let i += 1
     else
       " Space.
       if l:arg != ''
@@ -566,7 +566,7 @@ function! s:parse_galias(script)"{{{
 
       let l:arg = ''
 
-      let l:i += 1
+      let i += 1
     endif
   endwhile
 
@@ -589,15 +589,15 @@ endfunction"}}}
 function! s:parse_block(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max
-    if a:script[l:i] == '{'
+  while i < l:max
+    if a:script[i] == '{'
       " Block.
-      let l:head = matchstr(a:script[: l:i-1], '[^[:blank:]]*$')
+      let l:head = matchstr(a:script[: i-1], '[^[:blank:]]*$')
       " Trunk l:script.
       let l:script = l:script[: -len(l:head)-1]
-      let l:block = matchstr(a:script, '{\zs.*[^\\]\ze}', l:i)
+      let l:block = matchstr(a:script, '{\zs.*[^\\]\ze}', i)
       if l:block == ''
         throw 'Exception: Block is not found.'
       elseif l:block =~ '^\d\+\.\.\d\+$'
@@ -617,9 +617,9 @@ function! s:parse_block(script)"{{{
           let l:script .= l:head . escape(l:b, ' ') . ' '
         endfor
       endif
-      let l:i = matchend(a:script, '{.*[^\\]}', l:i)
+      let i = matchend(a:script, '{.*[^\\]}', i)
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -628,21 +628,21 @@ endfunction"}}}
 function! s:parse_tilde(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max
+  while i < l:max
     if a:script[i] == ' ' && a:script[i+1] == '~'
       " Tilde.
       " Expand home directory.
       let l:script .= ' ' . escape(substitute($HOME, '\\', '/', 'g'), '\ ')
-      let l:i += 2
-    elseif l:i == 0 && a:script[i] == '~'
+      let i += 2
+    elseif i == 0 && a:script[i] == '~'
       " Tilde.
       " Expand home directory.
       let l:script .= escape(substitute($HOME, '\\', '/', 'g'), '\ ')
-      let l:i += 1
+      let i += 1
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -651,14 +651,14 @@ endfunction"}}}
 function! s:parse_equal(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max - 1
+  while i < l:max - 1
     if a:script[i] == ' ' && a:script[i+1] == '='
       " Expand filename.
-      let l:prog = matchstr(a:script, '^=\zs[^[:blank:]]*', l:i+1)
+      let l:prog = matchstr(a:script, '^=\zs[^[:blank:]]*', i+1)
       if l:prog == ''
-        let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+        let [l:script, i] = s:skip_else(l:script, a:script, i)
       else
         let l:filename = vimshell#getfilename(l:prog)
         if l:filename == ''
@@ -667,10 +667,10 @@ function! s:parse_equal(script)"{{{
           let l:script .= l:filename
         endif
 
-        let l:i += matchend(a:script, '^=[^[:blank:]]*', l:i+1)
+        let i += matchend(a:script, '^=[^[:blank:]]*', i+1)
       endif
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -679,21 +679,21 @@ endfunction"}}}
 function! s:parse_variables(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max
-    if a:script[l:i] == '$'
+  while i < l:max
+    if a:script[i] == '$'
       " Eval variables.
-      if match(a:script, '^$\l', l:i) >= 0
-        let l:script .= string(eval(printf("b:vimshell.variables['%s']", matchstr(a:script, '^$\zs\l\w*', l:i))))
-      elseif match(a:script, '^$$', l:i) >= 0
-        let l:script .= string(eval(printf("b:vimshell.system_variables['%s']", matchstr(a:script, '^$$\zs\h\w*', l:i))))
+      if match(a:script, '^$\l', i) >= 0
+        let l:script .= string(eval(printf("b:vimshell.variables['%s']", matchstr(a:script, '^$\zs\l\w*', i))))
+      elseif match(a:script, '^$$', i) >= 0
+        let l:script .= string(eval(printf("b:vimshell.system_variables['%s']", matchstr(a:script, '^$$\zs\h\w*', i))))
       else
-        let l:script .= string(eval(matchstr(a:script, '^$\h\w*', l:i)))
+        let l:script .= string(eval(matchstr(a:script, '^$\h\w*', i)))
       endif
-      let l:i = matchend(a:script, '^$$\?\h\w*', l:i)
+      let i = matchend(a:script, '^$$\?\h\w*', i)
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -702,20 +702,20 @@ endfunction"}}}
 function! s:parse_wildcard(script)"{{{
   let l:script = ''
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max
-    if a:script[l:i] == '[' || a:script[l:i] == '*' || a:script[l:i] == '?' || a:script[l:i :] =~ '^\\[()|]'
+  while i < l:max
+    if a:script[i] == '[' || a:script[i] == '*' || a:script[i] == '?' || a:script[i :] =~ '^\\[()|]'
       " Wildcard.
-      let l:head = matchstr(a:script[: l:i-1], '[^[:blank:]]*$')
-      let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', l:i)
+      let l:head = matchstr(a:script[: i-1], '[^[:blank:]]*$')
+      let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', i)
       " Trunk l:script.
       let l:script = l:script[: -len(l:wildcard)]
 
       let l:script .= join(vimshell#parser#expand_wildcard(l:wildcard))
-      let l:i = matchend(a:script, '^[^[:blank:]]*', l:i)
+      let i = matchend(a:script, '^[^[:blank:]]*', i)
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -725,27 +725,27 @@ function! s:parse_redirection(script)"{{{
   let l:script = ''
   let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
 
-  let l:i = 0
+  let i = 0
   let l:max = len(a:script)
-  while l:i < l:max
-    if a:script[l:i] == '<'
+  while i < l:max
+    if a:script[i] == '<'
       " Input redirection.
-      let l:fd.stdin = matchstr(a:script, '<\s*\zs\f*', l:i)
-      let l:i = matchend(a:script, '<\s*\zs\f*', l:i)
-    elseif a:script[l:i] == '>'
+      let l:fd.stdin = matchstr(a:script, '<\s*\zs\f*', i)
+      let i = matchend(a:script, '<\s*\zs\f*', i)
+    elseif a:script[i] == '>'
       " Output redirection.
-      if a:script[l:i :] =~ '^>&'
-        let l:fd.stderr = matchstr(a:script, '>&\s*\zs\f*', l:i)
-        let l:i = matchend(a:script, '>&\s*\zs\f*', l:i)
-      elseif a:script[l:i :] =~ '^>>'
-        let l:fd.stdout = '>' . matchstr(a:script, '>>\s*\zs\f*', l:i)
-        let l:i = matchend(a:script, '>>\s*\zs\f*', l:i)
+      if a:script[i :] =~ '^>&'
+        let l:fd.stderr = matchstr(a:script, '>&\s*\zs\f*', i)
+        let i = matchend(a:script, '>&\s*\zs\f*', i)
+      elseif a:script[i :] =~ '^>>'
+        let l:fd.stdout = '>' . matchstr(a:script, '>>\s*\zs\f*', i)
+        let i = matchend(a:script, '>>\s*\zs\f*', i)
       else
-        let l:fd.stdout = matchstr(a:script, '>\s*\zs\f*', l:i)
-        let l:i = matchend(a:script, '>\s*\zs\f*', l:i)
+        let l:fd.stdout = matchstr(a:script, '>\s*\zs\f*', i)
+        let i = matchend(a:script, '>\s*\zs\f*', i)
       endif
     else
-      let [l:script, l:i] = s:skip_else(l:script, a:script, l:i)
+      let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif
   endwhile
 
@@ -792,14 +792,14 @@ function! s:parse_double_quote(script, i)"{{{
       return [l:arg, i+1]
     elseif a:script[i] == '\'
       " Escape.
-      let l:i += 1
+      let i += 1
 
-      if l:i > l:max
+      if i > l:max
         throw 'Exception: Join to next line (\).'
       endif
 
       let l:arg .= a:script[i]
-      let l:i += 1
+      let i += 1
     else
       let l:arg .= a:script[i]
       let i += 1
@@ -871,26 +871,26 @@ endfunction"}}}
 function! s:skip_else(args, script, i)"{{{
   if a:script[a:i] == "'"
     " Single quote.
-    let [l:string, l:i] = s:skip_single_quote(a:script, a:i)
+    let [l:string, i] = s:skip_single_quote(a:script, a:i)
     let l:script = a:args . l:string
   elseif a:script[a:i] == '"'
     " Double quote.
-    let [l:string, l:i] = s:skip_double_quote(a:script, a:i)
+    let [l:string, i] = s:skip_double_quote(a:script, a:i)
     let l:script = a:args . l:string
   elseif a:script[a:i] == '`'
     " Back quote.
-    let [l:string, l:i] = s:skip_back_quote(a:script, a:i)
+    let [l:string, i] = s:skip_back_quote(a:script, a:i)
     let l:script = a:args . l:string
   elseif a:script[a:i] == '\'
     " Escape.
     let l:script = a:args . '\' . a:script[a:i+1]
-    let l:i = a:i + 2
+    let i = a:i + 2
   else
     let l:script = a:args . a:script[a:i]
-    let l:i = a:i + 1
+    let i = a:i + 1
   endif
 
-  return [l:script, l:i]
+  return [l:script, i]
 endfunction"}}}
 
 function! s:recursive_expand_alias(string)"{{{

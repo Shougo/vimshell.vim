@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-06
+- Fixed escape bug.
+
 2010-06-04
 - Improved URL open in iexe.
 - Improved iexe buffer update.
