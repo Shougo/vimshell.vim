@@ -189,7 +189,7 @@ g:vimshell_user_prompt					*g:vimshell_user_prompt*
 			を設定しなければ無効になります。
 			初期値は空です。
 
-g:vimshell_right_prompt					*g:vimshell_user_prompt*
+g:vimshell_right_prompt					*g:vimshell_right_prompt*
 			zsh風の右プロンプトです。Vim Scriptの式を文字列とし
 			て代入します。|g:vimshell_user_prompt|に似ていますが、
 			ウインドウの大きさを計算し、自動的に最適な位置にプロ
@@ -318,7 +318,7 @@ internal commandは普通のシェルにおける内部コマンドのように�
 bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
 
-bg [{option}...] {command}						*vimshell-internal-bg*
+bg [{option}...] {command}				*vimshell-internal-bg*
 		{command}をバックグラウンドで起動します。非同期実行機能が有効
 		でないと動作しません。 vimshellのバックグラウンド実行は新た
 		にバッファを開き、そこに{command}の出力を書き出します。 bgの
