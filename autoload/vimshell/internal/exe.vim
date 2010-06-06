@@ -47,7 +47,6 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
 
   " Move line.
   normal! j
-  redraw
   while b:interactive.process.is_valid
     call vimshell#interactive#execute_pipe_out()
 

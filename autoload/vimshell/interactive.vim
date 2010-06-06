@@ -216,7 +216,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let l:outputed = 1
 
     call s:print_buffer(b:interactive.fd, l:read)
-    redraw
 
     let l:read = b:interactive.process.read(-1, 40)
   endwhile
@@ -245,7 +244,6 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     let l:read = b:interactive.process.stdout.read(-1, 40)
     while l:read != ''
       call s:print_buffer(b:interactive.fd, l:read)
-      redraw
 
       let l:read = b:interactive.process.stdout.read(-1, 40)
     endwhile
@@ -255,7 +253,6 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     let l:read = b:interactive.process.stderr.read(-1, 40)
     while l:read != ''
       call s:error_buffer(b:interactive.fd, l:read)
-      redraw
 
       let l:read = b:interactive.process.stderr.read(-1, 40)
     endwhile
@@ -439,6 +436,8 @@ function! s:error_buffer(fd, string)"{{{
 
   " Set cursor.
   $
+
+  redraw
 endfunction"}}}
 
 function! vimshell#interactive#load_history()"{{{

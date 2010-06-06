@@ -47,7 +47,7 @@ function! vimshell#terminal#print(string)"{{{
         let l:matchstr = matchstr(a:string, '^'.l:pattern, l:pos)
         if l:matchstr != ''
           " Print rest string.
-          call s:print(l:newstr)
+          call s:output_string(l:newstr)
           let l:newstr = ''
 
           call call(l:Func, [l:matchstr])
@@ -62,7 +62,7 @@ function! vimshell#terminal#print(string)"{{{
       for [l:pattern, l:Func] in items(s:control_sequence)
         if l:char == l:pattern
           " Print rest string.
-          call s:print(l:newstr)
+          call s:output_string(l:newstr)
           let l:newstr = ''
 
           call call(l:Func, [])
@@ -81,7 +81,7 @@ function! vimshell#terminal#print(string)"{{{
   endwhile
 
   " Print rest string.
-  call s:print(l:newstr)
+  call s:output_string(l:newstr)
 
   redraw
 endfunction"}}}
@@ -139,12 +139,20 @@ function! vimshell#terminal#clear_highlight()"{{{
     execute 'syntax clear' l:syntax_name
   endfor
 endfunction"}}}
-function! s:print(string)"{{{
+function! s:output_string(string)"{{{
   if a:string == ''
     return
   endif
   
-  call setline('.', getline('.') . a:string)
+  let l:line = getline('.') 
+  let l:left_line = l:line[: col('.') - 1]
+  let l:right_line = l:line[col('.') :]
+  if col('.') == 1
+    call setline('.', a:string . l:right_line)
+  else
+    call setline('.', l:left_line . a:string . l:right_line)
+  endif
+  
   execute 'normal!' len(a:string).'l'
 endfunction"}}}
 
@@ -159,8 +167,9 @@ function! s:highlight_escape_sequence(matchstr)"{{{
         \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
         \]
 
-  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . line('.') . '_' . col('.')
-  execute 'syntax region' l:syntax_name 'start=+\%' . line('.') . 'l\%' . col('.') . 'c+ end=+\%$+' 'contains=ALL'
+  let [l:lnum, l:col] = [line('.')+1, col('.')]
+  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . l:lnum . '_' . l:col
+  execute 'syntax region' l:syntax_name 'start=+\%' . l:lnum . 'l\%' . l:col . 'c+ end=+\%$+' 'contains=ALL'
 
   if !has_key(s:terminal_info, bufnr('%'))
     let s:terminal_info[bufnr('%')] = {
@@ -254,6 +263,9 @@ function! s:clear_screen_from_cursor_down(matchstr)"{{{
   .+1,$ delete x
   let @x = l:reg
 endfunction"}}}
+function! s:move_head()"{{{
+  normal! 0
+endfunction"}}}
 
 " Control sequence functions.
 function! s:ignore_control()"{{{
@@ -263,7 +275,7 @@ function! s:newline()"{{{
   normal! j0
 endfunction"}}}
 function! s:carriage_return()"{{{
-  normal! j0
+  normal! 0
 endfunction"}}}
 
 function! s:SID_PREFIX()
@@ -339,7 +351,7 @@ let s:escape_sequence = {
       \ '\eF' : s:funcref('ignore_escape'),
       \ '\eG' : s:funcref('ignore_escape'),
       \
-      \ '\eA' : s:funcref('ignore_escape'),
+      \ '\eA' : s:funcref('move_head'),
       \ '\eB' : s:funcref('ignore_escape'),
       \ '\eC' : s:funcref('ignore_escape'),
       \ '\eD' : s:funcref('ignore_escape'),
