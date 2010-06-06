@@ -29,7 +29,7 @@ let s:terminal_info = {}
 function! vimshell#terminal#print(string)"{{{
   let l:string = substitute(a:string, '\r\n', '\n', 'g')
   
-  if l:string !~ "\<ESC>" && col('.') == col('$')
+  if l:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(l:string, '\n', 1)
     call setline('.', getline('.') . l:lines[0])
@@ -265,12 +265,16 @@ function! s:move_cursor(matchstr)"{{{
   let l:pos[2] = l:args[1]
   call setpos('.', l:pos)
 endfunction"}}}
-function! s:clear_entire_screen(matchstr)"{{{
+function! s:clear_entire_screen_escape(matchstr)"{{{
   let l:reg = @x
   1,$ delete x
   let @x = l:reg
 endfunction"}}}
 function! s:clear_screen_from_cursor_down(matchstr)"{{{
+  if col('.') == col('$')
+    return
+  endif
+  
   let l:reg = @x
   .+1,$ delete x
   let @x = l:reg
@@ -288,6 +292,11 @@ function! s:newline()"{{{
 endfunction"}}}
 function! s:carriage_return()"{{{
   normal! 0
+endfunction"}}}
+function! s:clear_entire_screen_control()"{{{
+  let l:reg = @x
+  1,$ delete x
+  let @x = l:reg
 endfunction"}}}
 
 function! s:SID_PREFIX()
@@ -343,7 +352,7 @@ let s:escape_sequence = {
       \ '\e\[J' : s:funcref('clear_screen_from_cursor_down'),
       \ '\e\[0J' : s:funcref('ignore_escape'),
       \ '\e\[1J' : s:funcref('ignore_escape'),
-      \ '\e\[2J' : s:funcref('clear_entire_screen'),
+      \ '\e\[2J' : s:funcref('clear_entire_screen_escape'),
       \
       \ '\e\dn' : s:funcref('ignore_escape'),
       \ '\e\d\+;\d\+R' : s:funcref('ignore_escape'),
@@ -396,7 +405,7 @@ let s:control_sequence = {
       \ "\<C-h>" : s:funcref('ignore_control'),
       \ "\<BS>" : s:funcref('ignore_control'),
       \ "\<Del>" : s:funcref('ignore_control'),
-      \ "\<C-l>" : s:funcref('ignore_control'),
+      \ "\<C-l>" : s:funcref('clear_entire_screen_control'),
       \}
 "}}}
 

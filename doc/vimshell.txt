@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed update cursor move bug.
 - Improved output routine.
 - Improved highlight.
+- Added some escape sequence functions.
 
 2010-06-04
 - Improved URL open in iexe.
