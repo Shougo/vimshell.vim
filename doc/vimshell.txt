@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 2010-06-07
 - Optimized control sequences check.
 - Refactoringed terminal functions.
+- Fixed <C-g>u bug.
 
 2010-06-06
 - Fixed escape bug.
