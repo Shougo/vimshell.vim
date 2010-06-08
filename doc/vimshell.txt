@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-08
+- Call explorer in vim and view.
+
 2010-06-07
 - Optimized control sequences check.
 - Refactoringed terminal functions.

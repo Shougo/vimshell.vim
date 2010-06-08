@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,18 +55,19 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
       vnew
     endif
   else
-    if l:is_split
-      split
-    else
-      vsplit
-    endif
+    " Split nicely.
+    call vimshell#split_nicely()
 
     try
       edit `=l:filename`
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry
+
   endif
+  
+  " Call explorer.
+  doautocmd BufEnter
 
   lcd `=l:cwd`
 

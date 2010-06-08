@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 08 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,19 +39,16 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
     let l:filename = a:args[0]
   endif
 
-  if isdirectory(l:filename)
-    " Ignore.
-    return 0
-  endif
+  if !isdirectory(l:filename)
+    let l:lines = readfile(l:filename)
+    if len(l:lines) < winheight(0)
+      " Print lines if one screen.
+      for l:line in l:lines
+        call vimshell#print_line(a:fd, l:line)
+      endfor
 
-  let l:lines = readfile(l:filename)
-  if len(l:lines) < winheight(0)
-    " Print lines if one screen.
-    for l:line in l:lines
-      call vimshell#print_line(a:fd, l:line)
-    endfor
-    
-    return 0
+      return 0
+    endif
   endif
   
   let l:context = a:other_info
@@ -69,6 +66,9 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
   catch
     echohl Error | echomsg v:errmsg | echohl None
   endtry
+  
+  " Call explorer.
+  doautocmd BufEnter
 
   lcd `=l:cwd`
   setlocal nomodifiable
