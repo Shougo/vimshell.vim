@@ -55,14 +55,14 @@ function! vimshell#terminal#print(string)"{{{
 
     if l:char == "\<ESC>"
       " Check escape sequence.
-      for [l:pattern, l:Func] in items(s:escape_sequence)
+      for l:pattern in keys(s:escape_sequence)
         let l:matchstr = matchstr(l:string, '^'.l:pattern, l:pos)
         if l:matchstr != ''
           " Print rest string.
           call s:output_string(l:newstr)
           let l:newstr = ''
 
-          call call(l:Func, [l:matchstr], s:escape)
+          call call(s:escape_sequence[l:pattern], [l:matchstr], s:escape)
           
           let l:matched = 1
           let l:pos += len(l:matchstr)

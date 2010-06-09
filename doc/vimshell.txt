@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-09
+- Fixed auto update and escape sequence error bug.
+
 2010-06-08
 - Call explorer in vim and view.
 
