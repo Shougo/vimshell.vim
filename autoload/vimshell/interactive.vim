@@ -497,7 +497,6 @@ function! s:check_all_output()"{{{
 endfunction"}}}
 function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   if a:bufnr != a:bufnr_save
-    let l:pos = getpos('.')
     execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
 
@@ -525,7 +524,6 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   endif
 
   if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-    call setpos('.', l:pos)
     execute bufwinnr(a:bufnr_save) . 'wincmd w'
   endif
 endfunction"}}}
