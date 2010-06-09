@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,6 +86,7 @@ function! vimshell#default_settings()"{{{
   setlocal noreadonly
   setlocal nolist
   setlocal tabstop=8
+  setlocal iskeyword+=-,+
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   
   " Set autocommands.
