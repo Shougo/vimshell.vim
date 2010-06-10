@@ -86,7 +86,7 @@ function! vimshell#default_settings()"{{{
   setlocal noreadonly
   setlocal nolist
   setlocal tabstop=8
-  setlocal iskeyword+=-,+,.,\\,/,!,~
+  setlocal iskeyword+=-,+,.,\\,!,~
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   
   " Set autocommands.

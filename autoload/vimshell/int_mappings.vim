@@ -143,15 +143,9 @@ function! vimshell#int_mappings#restart_command()"{{{
         \ 'process' : l:sub, 
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
-        \ 'command_history' : [], 
-        \ 'cached_output' : '', 
         \}, 'force')
 
   call vimshell#interactive#execute_pty_out(1)
-  if getline(line('$')) =~ '^\s*$'
-    let b:interactive.prompt_history[line('$')] = ''
-    call setline(line('$'), '...')
-  endif
 
   startinsert!
 endfunction"}}}

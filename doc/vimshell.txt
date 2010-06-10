@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 2010-06-10
 - Improved iskeyword for altercmd.
 - Improved skk.vim check.
+- Fixed <Plug>(vimshell_int_restart_command) command.
 
 2010-06-09
 - Fixed auto update and escape sequence error bug.
