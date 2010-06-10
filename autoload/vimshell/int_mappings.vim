@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 10 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ function! vimshell#int_mappings#execute_history(is_insert)"{{{
   " Disable input method.
   if exists('*eskk#is_enabled') && eskk#is_enabled()
     call feedkeys(eskk#disable(), 'n')
-  elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable') 
+  elseif exists('g:skk_version')
     call feedkeys(SkkDisable(), 'n')
   elseif exists('&iminsert')
     let &l:iminsert = 0

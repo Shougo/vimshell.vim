@@ -184,8 +184,10 @@ BUGS							*vimshell-bugs*
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
-2010-06-09
+
+2010-06-10
 - Improved iskeyword for altercmd.
+- Improved skk.vim check.
 
 2010-06-09
 - Fixed auto update and escape sequence error bug.
