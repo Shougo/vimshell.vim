@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 11 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -129,7 +129,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backword_char)  vimshell#int_mappings#delete_backword_char(1)
@@ -148,7 +148,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  i<C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>on_exit()<CR>
@@ -158,7 +158,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)
   nmap <buffer> <CR>      <Plug>(vimshell_int_execute_line)
   nmap <buffer> <C-y>     <Plug>(vimshell_int_paste_prompt)
-  nmap <buffer> <C-r>     <Plug>(vimshell_int_restart_command)
+  nmap <buffer> <C-z>     <Plug>(vimshell_int_restart_command)
   nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
   nmap <buffer> q         <Plug>(vimshell_int_exit)
 endfunction"}}}

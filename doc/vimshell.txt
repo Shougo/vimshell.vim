@@ -185,6 +185,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-11
+- Improved undo.
+- Changed <Plug>(vimshell_int_restart_command) default keymappings.
+
 2010-06-10
 - Improved iskeyword for altercmd.
 - Improved skk.vim check.
