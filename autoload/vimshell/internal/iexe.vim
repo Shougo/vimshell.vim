@@ -127,29 +127,6 @@ function! vimshell#internal#iexe#default_settings()"{{{
 
   " Define mappings.
   call vimshell#int_mappings#define_default_mappings()
-  
-  imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
-  imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
-  imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
-  imap <buffer> <C-a>     <Plug>(vimshell_int_move_head)
-  imap <buffer> <C-u>     <Plug>(vimshell_int_delete_line)
-  imap <buffer> <C-w>     <Plug>(vimshell_int_delete_word)
-  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
-  imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
-  imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  imap <buffer> <C-k>  <Plug>(vimshell_int_history_complete)
-
-  nmap <buffer> <C-p>     <Plug>(vimshell_int_previous_prompt)
-  nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)
-  nmap <buffer> <CR>      <Plug>(vimshell_int_execute_line)
-  nmap <buffer> <C-y>     <Plug>(vimshell_int_paste_prompt)
-  nmap <buffer> <C-z>     <Plug>(vimshell_int_restart_command)
-  nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  nmap <buffer> q         <Plug>(vimshell_int_exit)
-  nmap <buffer> cc         <Plug>(vimshell_int_change_line)
-  nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
-  nmap <buffer> I         <Plug>(vimshell_insert_head)
 endfunction"}}}
 
 function! s:init_bg(sub, args, fd, other_info)"{{{
@@ -176,7 +153,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   augroup vimshell_iexe
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
-    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
+    autocmd BufUnload <buffer>       call vimshell#int_mappings#interrupt(expand('<afile>'))
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorMovedI <buffer>  call s:on_moved_i()
@@ -204,14 +181,6 @@ endfunction"}}}
 function! s:on_moved_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 endfunction"}}}
-function! s:on_interrupt(afile)"{{{
-  call vimshell#interactive#hang_up(a:afile)
-endfunction "}}}
-function! s:on_exit()"{{{
-  if !b:interactive.process.is_valid
-    bdelete
-  endif  
-endfunction "}}}
 
 " Interactive options."{{{
 if vimshell#iswin()

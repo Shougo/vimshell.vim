@@ -80,7 +80,9 @@ endfunction"}}}
 
 " vimshell interactive key-mappings functions.
 function! vimshell#int_mappings#delete_backword_char(is_auto_select)"{{{
-  let l:prefix = pumvisible() ? (a:is_auto_select? "\<C-e>" : "\<C-y>") : ""
+  let l:prefix = pumvisible() ? (a:is_auto_select? (
+        \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")
+        \ : "\<C-y>") : ""
   " Prevent backspace over prompt
   if !has_key(b:interactive.prompt_history, line('.')) || getline('.')[: col('.')-2] !=# b:interactive.prompt_history[line('.')]
     return l:prefix . "\<BS>"

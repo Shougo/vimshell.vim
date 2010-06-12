@@ -404,7 +404,9 @@ function! vimshell#mappings#exit()"{{{
   execute 'bdelete!'. l:vimsh_buf
 endfunction"}}}
 function! vimshell#mappings#delete_backword_char(is_auto_select)"{{{
-  let l:prefix = pumvisible() ? (a:is_auto_select? "\<C-e>" : "\<C-y>") : ""
+  let l:prefix = pumvisible() ? (a:is_auto_select? (
+        \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")
+        \ : "\<C-y>") : ""
   " Prevent backspace over prompt
   if getline('.')[: col('.') - 2] !=# vimshell#get_prompt()
     return l:prefix . "\<BS>"
