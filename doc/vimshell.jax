@@ -340,8 +340,8 @@ cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		与えられた場合、{directory-path}を {substitute-pattern}へ置
 		き換えます。 引数がディレクトリでなかった場合、ファイルの親
 		ディレクトリへ移動します。 ファイルが見つからなかった場合、
-		'cdpath'を参照して移動しようとします。 引数に-を与えると、
-		|vimshell-internal-popd|と同じ意味になります。
+		'cdpath'を参照して移動しようとします。 引数に-で始まる数字を
+		与えると、 |vimshell-internal-popd|と同じ意味になります。
 
 clear 							*vimshell-internal-clear*
 		画面を消去します。
@@ -434,9 +434,12 @@ open {filename}						*vimshell-internal-open*
 		{filename}を関連付け実行します。何が実行されるかはOSやデスク
 		トップ環境に依存します。
 
-popd [{filename}]					*vimshell-internal-popd*
-		{filename}を関連付け実行します。何が実行されるかはOSやデスク
-		トップ環境に依存します。
+popd [{directory-stack-number}]					*vimshell-internal-popd*
+		{directory-stack-number}で示されるディレクトリへ移動します。
+		{directory-stack-number}は|vimshell-internal-dirs|で確認でき
+		ます。{directory-stack-number}を省略すると、0になります。
+		{directory-stack-number}より小さなディレクトリはスタックから
+		取り除かれます。
 
 pwd 							*vimshell-internal-pwd*
 		vimshellのカレントディレクトリを表示します。

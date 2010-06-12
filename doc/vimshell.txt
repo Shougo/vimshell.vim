@@ -193,6 +193,7 @@ CHANGELOG						*vimshell-changelog*
 - Set $EDITOR to cat.
 - Detect blocked time.
 - Improved another <Plug>(vimshell_another_delete_backword_char).
+- Improved popd.
 
 2010-06-11
 - Improved undo.

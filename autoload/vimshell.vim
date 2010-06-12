@@ -161,7 +161,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.variables = {}
   let b:vimshell.system_variables = { 'status' : 0 }
   let b:vimshell.directory_stack = []
-  let b:vimshell.directory_stack[0] = getcwd()
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.hook_functions_table = {
         \ 'precmd' : {}, 'preexec' : {}, 'emptycmd' : {}, 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,18 +41,14 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  if empty(b:vimshell.directory_stack) || getcwd() != b:vimshell.directory_stack[0]
-    " Push current directory.
-    call insert(b:vimshell.directory_stack, getcwd())
-  endif
-
+  let l:cwd = getcwd()
   if isdirectory(l:dir)
     " Move to directory.
     let b:vimshell.save_dir = fnamemodify(l:dir, ':p')
     lcd `=b:vimshell.save_dir`
-  elseif l:dir == '-'
+  elseif l:dir =~ '^-\d*$'
     " Popd.
-    return vimshell#internal#popd#execute('popd', [ 1 ], 
+    return vimshell#internal#popd#execute('popd', [ l:dir[1:] ], 
           \ a:fd,
           \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(l:dir)
@@ -67,12 +63,12 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
       lcd `=b:vimshell.save_dir`
     else
       call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:dir))
-
-      if getcwd() == b:vimshell.directory_stack[0]
-        " Restore directory.
-        let b:vimshell.directory_stack = b:vimshell.directory_stack[1:]
-      endif
     endif
+  endif
+
+  if empty(b:vimshell.directory_stack) || getcwd() != b:vimshell.directory_stack[0]
+    " Push current directory.
+    call insert(b:vimshell.directory_stack, l:cwd)
   endif
   
   if a:other_info.is_interactive

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -186,7 +186,7 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
 
     return l:ret
     "}}}
-  elseif isdirectory(l:dir)"{{{
+  elseif isdirectory(l:dir) || l:dir =~ '^-\d*$'"{{{
     " Directory.
     " Change the working directory like zsh.
 
