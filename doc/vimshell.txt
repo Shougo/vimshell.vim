@@ -194,6 +194,9 @@ CHANGELOG						*vimshell-changelog*
 - Detect blocked time.
 - Improved another <Plug>(vimshell_another_delete_backword_char).
 - Improved popd.
+- Implemented popd completion.
+- Optimized filter.
+- Supported symbolic link and Win32 shortcut.
 
 2010-06-11
 - Improved undo.

@@ -41,6 +41,11 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
+  if (vimshell#iswin() && fnamemodify(l:dir, ':e') ==? 'LNK')
+        \|| getftype(l:dir) ==# 'link'
+    let l:dir = resolve(l:dir)
+  endif
+
   let l:cwd = getcwd()
   if isdirectory(l:dir)
     " Move to directory.
@@ -58,11 +63,24 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
   else
     " Check cd path.
     let l:dirs = split(globpath(&cdpath, l:dir), '\n')
-    if !empty(l:dirs) && isdirectory(l:dirs[0])
+
+    if empty(l:dirs)
+      call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:dir))
+      return
+    endif
+
+    let l:dir = l:dirs[0]
+    if (vimshell#iswin() && fnamemodify(l:dir, ':e') ==? 'LNK')
+          \|| getftype(l:dir) ==# 'link'
+      let l:dir = resolve(l:dir)
+    endif
+
+    if isdirectory(l:dirs[0])
       let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
       lcd `=b:vimshell.save_dir`
     else
       call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:dir))
+      return
     endif
   endif
 
