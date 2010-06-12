@@ -125,18 +125,9 @@ function! vimshell#internal#iexe#default_settings()"{{{
     hi def link InteractivePrompt Identifier
   endif
 
-  " Plugin key-mappings.
-  inoremap <buffer><silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_word)  vimshell#int_mappings#delete_word()
-  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
-  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backword_char)  vimshell#int_mappings#delete_backword_char(1)
-  inoremap <buffer><expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
-
+  " Define mappings.
+  call vimshell#int_mappings#define_default_mappings()
+  
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
   imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
   imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
@@ -148,17 +139,6 @@ function! vimshell#internal#iexe#default_settings()"{{{
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
   imap <buffer> <C-k>  <Plug>(vimshell_int_history_complete)
-
-  nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  i<C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>on_exit()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
-  nnoremap <buffer><expr> <Plug>(vimshell_int_change_line) printf('0%dlc$', strlen(vimshell#interactive#get_prompt()))
-  nmap <buffer> <Plug>(vimshell_int_delete_line) <Plug>(vimshell_int_change_line)<ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call vimshell#int_mappings#move_head()<CR>
 
   nmap <buffer> <C-p>     <Plug>(vimshell_int_previous_prompt)
   nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)

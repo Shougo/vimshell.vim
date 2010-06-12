@@ -189,6 +189,9 @@ CHANGELOG						*vimshell-changelog*
 - Added <Plug>(vimshell_change_line) and <Plug>(vimshell_delete_line) keymappings.
 - Improved auto update.
 - Added <Plug>(vimshell_int_delete_word) and <Plug>(vimshell_insert_head) keymappings.
+- Refactoringed mappings.
+- Set $EDITOR to cat.
+- Detect blocked time.
 
 2010-06-11
 - Improved undo.

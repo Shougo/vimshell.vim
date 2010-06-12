@@ -210,6 +210,10 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   if !b:interactive.process.is_valid
     return
   endif
+  
+  if has('reltime')
+    let l:start = reltime()
+  endif
 
   let l:outputed = 0
   let l:read = b:interactive.process.read(-1, 40)
@@ -231,6 +235,14 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endif
   endif
   
+  if has('reltime')
+    let l:reltime = split(reltimestr(reltime(start)))[0]
+
+    if l:reltime > '1.0'
+      echo 'Blocked about ' . l:reltime . 'sec.'
+    endif
+  endif
+
   if b:interactive.process.eof
     call vimshell#interactive#exit()
   endif
@@ -239,6 +251,10 @@ endfunction"}}}
 function! vimshell#interactive#execute_pipe_out()"{{{
   if !b:interactive.process.is_valid
     return
+  endif
+
+  if has('reltime')
+    let l:start = reltime()
   endif
 
   if !b:interactive.process.stdout.eof
@@ -257,6 +273,14 @@ function! vimshell#interactive#execute_pipe_out()"{{{
 
       let l:read = b:interactive.process.stderr.read(-1, 40)
     endwhile
+  endif
+  
+  if has('reltime')
+    let l:reltime = split(reltimestr(reltime(start)))[0]
+
+    if l:reltime > '1.0'
+      echo 'Blocked about ' . l:reltime . 'sec.'
+    endif
   endif
 
   if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
