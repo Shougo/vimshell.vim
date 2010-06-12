@@ -89,6 +89,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
         \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
         \ 'is_background': 0, 
         \ 'args' : l:args,
+        \ 'echoback_linenr' : 0
         \}
 
   call vimshell#interactive#execute_pty_out(1)
@@ -129,6 +130,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_word)  vimshell#int_mappings#delete_word()
   inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
@@ -140,6 +142,7 @@ function! vimshell#internal#iexe#default_settings()"{{{
   imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
   imap <buffer> <C-a>     <Plug>(vimshell_int_move_head)
   imap <buffer> <C-u>     <Plug>(vimshell_int_delete_line)
+  imap <buffer> <C-w>     <Plug>(vimshell_int_delete_word)
   inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
@@ -153,6 +156,9 @@ function! vimshell#internal#iexe#default_settings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>on_exit()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
+  nnoremap <buffer><expr> <Plug>(vimshell_int_change_line) printf('0%dlc$', strlen(vimshell#interactive#get_prompt()))
+  nmap <buffer> <Plug>(vimshell_int_delete_line) <Plug>(vimshell_int_change_line)<ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call vimshell#int_mappings#move_head()<CR>
 
   nmap <buffer> <C-p>     <Plug>(vimshell_int_previous_prompt)
   nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)
@@ -161,6 +167,9 @@ function! vimshell#internal#iexe#default_settings()"{{{
   nmap <buffer> <C-z>     <Plug>(vimshell_int_restart_command)
   nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
   nmap <buffer> q         <Plug>(vimshell_int_exit)
+  nmap <buffer> cc         <Plug>(vimshell_int_change_line)
+  nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
+  nmap <buffer> I         <Plug>(vimshell_insert_head)
 endfunction"}}}
 
 function! s:init_bg(sub, args, fd, other_info)"{{{
@@ -208,6 +217,7 @@ endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
   if b:interactive.process.is_valid
+    " Ignore key sequences.
     call feedkeys("\<C-r>\<ESC>", 'n')
   endif
 endfunction"}}}

@@ -265,6 +265,9 @@ function! vimshell#mappings#delete_line()"{{{
     startinsert!
   endif
 endfunction"}}}
+function! vimshell#mappings#delete_word()"{{{
+  return vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
+endfunction"}}}
 function! vimshell#mappings#clear()"{{{
   " Clean up the screen.
   let l:line = getline('.')

@@ -77,7 +77,12 @@ function! vimshell#int_mappings#move_head()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
+  
   call search(vimshell#escape_match(b:interactive.prompt_history[line('.')]), 'be', line('.'))
+  if col('.') != col('$')-1
+    normal! l
+  endif
+  
   startinsert
 endfunction"}}}
 function! vimshell#int_mappings#delete_line()"{{{
@@ -93,6 +98,9 @@ function! vimshell#int_mappings#delete_line()"{{{
   if l:col == l:mcol-1
     startinsert!
   endif
+endfunction"}}}
+function! vimshell#int_mappings#delete_word()"{{{
+  return vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert)"{{{
   " Search cursor file.
@@ -143,6 +151,7 @@ function! vimshell#int_mappings#restart_command()"{{{
         \ 'process' : l:sub, 
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
+        \ 'echoback_linenr' : 0
         \}, 'force')
 
   call vimshell#interactive#execute_pty_out(1)

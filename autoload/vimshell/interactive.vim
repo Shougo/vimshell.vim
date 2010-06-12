@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -134,6 +134,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   try
     " Delete input text.
     call s:delete_input(l:in)
+    let b:interactive.echoback_linenr = line('.')
     
     if l:in =~ "\<C-d>$"
       " EOF.
@@ -492,6 +493,7 @@ function! s:check_all_output()"{{{
   endwhile
   
   if exists('b:interactive') && b:interactive.process.is_valid
+    " Ignore key sequences.
     call feedkeys("g\<ESC>", 'n')
   endif
 endfunction"}}}
@@ -508,8 +510,9 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
-  elseif !has_key(b:interactive.prompt_history, line('.'))
-          \|| vimshell#interactive#get_cur_line(line('.')) == ''
+  elseif line('.') == b:interactive.echoback_linenr ||
+        \(!has_key(b:interactive.prompt_history, line('.'))
+        \|| vimshell#interactive#get_cur_line(line('.')) == '')
     " Check input.
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')

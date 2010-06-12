@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 12 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,7 +78,7 @@ augroup vimshell
   autocmd GUIEnter * set vb t_vb=
 augroup end
 
-" User utility functions."{{{
+" User utility functions.
 function! vimshell#default_settings()"{{{
   setlocal buftype=nofile
   setlocal noswapfile
@@ -102,6 +102,9 @@ function! vimshell#default_settings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_exit) :<C-u>call vimshell#mappings#exit()<CR>
+  nnoremap <buffer><expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
+  nmap <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call vimshell#mappings#move_head()<CR>
 
   inoremap <buffer><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
   inoremap <buffer><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
@@ -112,6 +115,7 @@ function! vimshell#default_settings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_delete_word)  vimshell#mappings#delete_word()
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
   
@@ -138,6 +142,12 @@ function! vimshell#default_settings()"{{{
   nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
   " Search end argument.
   nmap <buffer> E <Plug>(vimshell_move_end_argument)
+  " Change line.
+  nmap <buffer> cc <Plug>(vimshell_change_line)
+  " Delete line.
+  nmap <buffer> dd <Plug>(vimshell_delete_line)
+  " Insert head.
+  nmap <buffer> I <Plug>(vimshell_insert_head)
   "}}}
 
   " Insert mode key-mappings."{{{
@@ -152,8 +162,10 @@ function! vimshell#default_settings()"{{{
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.
   imap <buffer> <C-a> <Plug>(vimshell_move_head)
-  " Delete all entered characters in the current line
+  " Delete all entered characters in the current line.
   imap <buffer> <C-u> <Plug>(vimshell_delete_line)
+  " Delete previous word characters in the current line.
+  imap <buffer> <C-w> <Plug>(vimshell_delete_word)
   " Push current line to stack.
   imap <buffer> <C-z> <Plug>(vimshell_push_current_line)
   " Insert last word.
@@ -167,7 +179,6 @@ function! vimshell#default_settings()"{{{
   imap <buffer> <BS>     <Plug>(vimshell_delete_backword_char)
   "}}}
 endfunction"}}}
-"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{

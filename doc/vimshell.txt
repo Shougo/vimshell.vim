@@ -185,6 +185,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-12
+- Added <Plug>(vimshell_change_line) and <Plug>(vimshell_delete_line) keymappings.
+- Improved auto update.
+- Added <Plug>(vimshell_int_delete_word) and <Plug>(vimshell_insert_head) keymappings.
+
 2010-06-11
 - Improved undo.
 - Changed <Plug>(vimshell_int_restart_command) default keymappings.
