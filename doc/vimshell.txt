@@ -197,6 +197,7 @@ CHANGELOG						*vimshell-changelog*
 - Implemented popd completion.
 - Optimized filter.
 - Supported symbolic link and Win32 shortcut.
+- Improved resolve.
 
 2010-06-11
 - Improved undo.

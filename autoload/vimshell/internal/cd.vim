@@ -41,10 +41,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  if (vimshell#iswin() && fnamemodify(l:dir, ':e') ==? 'LNK')
-        \|| getftype(l:dir) ==# 'link'
-    let l:dir = resolve(l:dir)
-  endif
+  let l:dir = vimshell#resolve(l:dir)
 
   let l:cwd = getcwd()
   if isdirectory(l:dir)
@@ -69,11 +66,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
       return
     endif
 
-    let l:dir = l:dirs[0]
-    if (vimshell#iswin() && fnamemodify(l:dir, ':e') ==? 'LNK')
-          \|| getftype(l:dir) ==# 'link'
-      let l:dir = resolve(l:dir)
-    endif
+    let l:dir = vimshell#resolve(l:dirs[0])
 
     if isdirectory(l:dirs[0])
       let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
