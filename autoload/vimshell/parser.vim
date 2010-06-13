@@ -171,15 +171,16 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
       let l:args = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(l:args, l:program))
       return vimshell#parser#execute_command(l:execute, l:args, a:fd, a:other_info)
     else
-      return vimshell#execute_internal_command('exe', a:args, a:fd, a:other_info)
+      return vimshell#execute_internal_command('exe', insert(a:args, l:program), a:fd, a:other_info)
     endif
-  else"{{{
+  else
     throw printf('Error: File "%s" is not found.', l:program)
   endif
   "}}}
 
   return 0
-endfunction"}}}
+endfunction
+"}}}
 
 function! vimshell#parser#split_statements(script)"{{{
   let l:max = len(a:script)
