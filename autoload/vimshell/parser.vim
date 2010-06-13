@@ -168,7 +168,7 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     if !empty(l:ext) && has_key(g:vimshell_execute_file_list, l:ext)
       " Execute file.
       let l:execute = split(g:vimshell_execute_file_list[l:ext])[0]
-      let l:args = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(l:args, l:program))
+      let l:args = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(a:args, l:program))
       return vimshell#parser#execute_command(l:execute, l:args, a:fd, a:other_info)
     else
       return vimshell#execute_internal_command('exe', insert(a:args, l:program), a:fd, a:other_info)

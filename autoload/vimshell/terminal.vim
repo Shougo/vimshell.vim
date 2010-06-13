@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,8 @@ let s:terminal_info = {}
 function! vimshell#terminal#print(string)"{{{
   let l:string = substitute(a:string, '\r\n', '\n', 'g')
   
-  if l:string !~ '[\e\r\b]' && col('.') == col('$')
+  "if l:string !~ '[\e\r\b]' && col('.') == col('$')
+  if 0
     " Optimized print.
     let l:lines = split(l:string, '\n', 1)
     call setline('.', getline('.') . l:lines[0])
@@ -42,6 +43,11 @@ function! vimshell#terminal#print(string)"{{{
   let l:newstr = ''
   let l:pos = 0
   let l:max = len(l:string)
+  let s:col = col('.')
+  let s:line = line('.')
+  let s:lines = {}
+  let s:lines[s:line] = getline('.')
+  
   while l:pos < l:max
     let l:matched = 0
 
@@ -69,11 +75,6 @@ function! vimshell#terminal#print(string)"{{{
           break
         endif
       endfor
-
-      if !l:matched
-        let l:newstr .= l:char
-        let l:pos += 1
-      endif
     elseif has_key(s:control_sequence, l:char)
       " Check other pattern.
       " Print rest string.
@@ -83,11 +84,30 @@ function! vimshell#terminal#print(string)"{{{
       call call(s:control_sequence[l:char], [], s:control)
 
       let l:pos += 1
+      continue
+    endif
+
+    if !l:matched
+      let l:newstr .= l:char
+      let l:pos += 1
     endif
   endwhile
 
   " Print rest string.
   call s:output_string(l:newstr)
+
+  " Set lines.
+  for [l:linenr, l:line] in items(s:lines)
+    call setline(l:linenr, l:line)
+  endfor
+  "echomsg string(s:lines)
+  let s:lines = {}
+  
+  " Move pos.
+  let l:oldpos = getpos('.')
+  let l:oldpos[1] = s:line
+  let l:oldpos[2] = s:col
+  call setpos('.', l:oldpos)
 
   redraw
 endfunction"}}}
@@ -143,16 +163,13 @@ function! s:output_string(string)"{{{
     return
   endif
   
-  let l:line = getline('.') 
-  let l:left_line = l:line[: col('.') - 1]
-  let l:right_line = l:line[col('.') :]
-  if col('.') == 1
-    call setline('.', a:string . l:right_line)
-  else
-    call setline('.', l:left_line . a:string . l:right_line)
-  endif
+  let l:line = s:lines[s:line]
+  let l:left_line = l:line[: s:col - 1]
+  let l:right_line = l:line[s:col :]
+
+  let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
   
-  execute 'normal!' len(a:string).'l'
+  let s:col += len(a:string)
 endfunction"}}}
 
 " Escape sequence functions.
@@ -167,7 +184,7 @@ function! s:escape.highlight(matchstr)"{{{
         \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
         \]
 
-  let [l:lnum, l:col] = [line('.'), (getline('.') == '')? 1: col('.')+1]
+  let [l:lnum, l:col] = [s:line, s:col]
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . l:lnum . '_' . l:col
   execute 'syntax region' l:syntax_name 'start=+\%' . l:lnum . 'l\%' . l:col . 'c+ end=+\%$+' 'contains=ALL'
 
@@ -248,18 +265,19 @@ function! s:escape.highlight(matchstr)"{{{
 endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
-  let l:pos = getpos('.')
-  let l:pos[1] = l:args[0]
-  let l:pos[2] = l:args[1]
-  call setpos('.', l:pos)
+  
+  let s:line = l:args[0]
+  let s:col = l:args[1]
 endfunction"}}}
 function! s:escape.clear_entire_screen(matchstr)"{{{
   let l:reg = @x
   1,$ delete x
   let @x = l:reg
+
+  let s:lines = {}
 endfunction"}}}
 function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
-  if col('.') == col('$')
+  if line('.') == line('$')
     return
   endif
   
@@ -268,7 +286,7 @@ function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
   let @x = l:reg
 endfunction"}}}
 function! s:escape.move_head()"{{{
-  normal! 0
+  let s:col = 1
 endfunction"}}}
 
 " Control sequence functions.
@@ -276,16 +294,24 @@ let s:control = {}
 function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
-  call append('.', '')
-  normal! j0
+  if s:line == line('$')
+    " Append new line.
+    call append('$', '')
+  endif
+  
+  let s:line += 1
+  let s:col = 1
+  let s:lines[s:line] = ''
 endfunction"}}}
 function! s:control.carriage_return()"{{{
-  normal! 0
+  let s:col = 1
 endfunction"}}}
 function! s:control.clear_entire_screen()"{{{
   let l:reg = @x
   1,$ delete x
   let @x = l:reg
+
+  let s:lines = {}
 endfunction"}}}
 
 " escape sequence list. {{{
