@@ -398,10 +398,6 @@ h [{pattern}]						*vimshell-internal-h*
 		|vimshell-internal-h|により実行したコマンドはヒストリに登録
 		されません。
 
-hide							*vimshell-internal-hide*
-		vimshellバッファを裏に隠します。|vimshell-internal-exit|とは
-		違い、終了はしません。
-
 histdel [{history-number}]				*vimshell-internal-histdel*
 		{history-number}に一致するヒストリを削除します。ヒストリ番
 		号は|vimshell-internal-history|で確認できます。

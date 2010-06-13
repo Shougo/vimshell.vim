@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimdiff.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,10 +33,8 @@ function! vimshell#internal#vimdiff#execute(program, args, fd, other_info)
     return 0
   endif
 
-  let l:context = a:other_info
-  let l:context.fd = a:fd
-  call vimshell#print_prompt(l:context)
-
+  let l:winnr = winnr()
+  
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -53,5 +51,5 @@ function! vimshell#internal#vimdiff#execute(program, args, fd, other_info)
 
   vertical diffsplit `=a:args[1]`
 
-  return 1
+  execute l:winnr.'wincmd w'
 endfunction

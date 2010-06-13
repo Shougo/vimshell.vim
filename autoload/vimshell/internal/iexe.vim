@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   if vimshell#iswin() && l:args[0] =~ 'cmd\%(\.exe\)\?'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
-      call vimshell#error_line(a:fd, 'cmdproxy.exe is not found. Please install it.')
+      call vimshell#error_line(a:fd, 'iexe: cmdproxy.exe is not found. Please install it.')
       return 0
     endif
 
@@ -69,7 +69,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   try
     let l:sub = vimproc#ptyopen(l:args)
   catch 'list index out of range'
-    let l:error = printf('File: "%s" is not found.', l:args[0])
+    let l:error = printf('iexe: File "%s" is not found.', l:args[0])
 
     call vimshell#error_line(a:fd, l:error)
 
@@ -96,7 +96,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
   startinsert!
 
-  return 1
+  wincmd w
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
@@ -133,12 +133,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  " Init buffer.
-  if a:other_info.is_interactive
-    let l:context = a:other_info
-    let l:context.fd = a:fd
-    call vimshell#print_prompt(l:context)
-  endif
   " Split nicely.
   call vimshell#split_nicely()
 
@@ -158,10 +152,6 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorMovedI <buffer>  call s:on_moved_i()
   augroup END
-
-  $
-
-  startinsert!
 endfunction"}}}
 
 function! s:insert_enter()"{{{

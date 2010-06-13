@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mkcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Sep 2009
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ function! vimshell#internal#mkcd#execute(program, args, fd, other_info)
         " Substitute current directory.
         let l:arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
     elseif len(a:args) > 2
-        call vimshell#error_line(a:fd, 'Too many arguments.')
+        call vimshell#error_line(a:fd, 'mkcd: Too many arguments.')
         return
     else
         " Filename escape.

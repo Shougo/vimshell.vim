@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Apr 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,7 +31,7 @@ function! vimshell#internal#bcd#execute(program, args, fd, other_info)
     " Move to alternate buffer directory.
     let l:bufname = bufnr('#')
   elseif len(a:args) > 2
-    call vimshell#error_line(a:fd, 'Too many arguments.')
+    call vimshell#error_line(a:fd, 'bcd: Too many arguments.')
     return
   else
     let l:bufname = bufnr(a:args[0])
@@ -43,6 +43,6 @@ function! vimshell#internal#bcd#execute(program, args, fd, other_info)
     let l:bufdir = fnamemodify(bufname(l:bufnumber), ':p:h')
     return vimshell#internal#cd#execute('cd', [ l:bufdir ], a:fd, a:other_info)
   else
-    call vimshell#error_line(a:fd, printf('Buffer "%s" is not found.', l:arguments))
+    call vimshell#error_line(a:fd, printf('bcd: Buffer "%s" is not found.', l:arguments))
   endif
 endfunction

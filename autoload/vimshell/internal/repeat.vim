@@ -1,8 +1,7 @@
 "=============================================================================
 " FILE: repeat.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2009
-" Usage: Just source this file.
+" Last Modified: 13 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,36 +22,23 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.0, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.0:
-"     - Initial version.
-""}}}
-"-----------------------------------------------------------------------------
-" TODO: "{{{
-"     - Nothing.
-""}}}
-" Bugs"{{{
-"     -
-""}}}
 "=============================================================================
 
 function! vimshell#internal#repeat#execute(program, args, fd, other_info)
-    " Repeat command.
+  " Repeat command.
 
-    if len(a:args) < 2 || a:args[0] !~ '\d\+'
-        call vimshell#error_line(a:fd, 'Arguments error.')
-    else
-        " Repeat.
-        let l:max = a:args[0]
-        let l:i = 0
-        let l:skip_prompt = 0
-        while l:i < l:max
-            let l:skip_prompt = vimshell#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
-            let l:i += 1
-        endwhile
-        return l:skip_prompt
-    endif
-    return 0
+  if len(a:args) < 2 || a:args[0] !~ '\d\+'
+    call vimshell#error_line(a:fd, 'repeat: Arguments error.')
+  else
+    " Repeat.
+    let l:max = a:args[0]
+    let l:i = 0
+    let l:skip_prompt = 0
+    while l:i < l:max
+      let l:skip_prompt = vimshell#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
+      let l:i += 1
+    endwhile
+    return l:skip_prompt
+  endif
+  return 0
 endfunction

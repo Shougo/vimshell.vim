@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
     if l:char != 0
       let l:char = nr2char(l:char)
       if l:char == "\<C-z>"
-        call vimshell#error_line(a:fd, 'Background Executed.')
+        call vimshell#error_line(a:fd, 'exe: Background executed.')
 
         " Background execution.
         call vimshell#internal#bg#init(l:args, a:fd, a:other_info, 'background', a:other_info.is_interactive)
@@ -66,7 +66,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
       elseif l:char == "\<C-d>"
         " Interrupt.
         call vimshell#interactive#force_exit()
-        call vimshell#error_line(a:fd, 'Interrupted.')
+        call vimshell#error_line(a:fd, 'exe: Interrupted.')
         return 0
       endif
     endif

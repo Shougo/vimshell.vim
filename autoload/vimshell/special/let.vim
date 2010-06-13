@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: let.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Apr 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ function! vimshell#special#let#execute(program, args, fd, other_info)
     let l:args = join(a:args)
 
     if l:args !~ '^$$\?\h\w*'
-        call vimshell#error_line(a:fd, 'Wrong syntax.')
+        call vimshell#error_line(a:fd, 'let: Wrong syntax.')
         return
     endif
 

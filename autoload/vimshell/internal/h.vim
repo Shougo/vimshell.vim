@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
 
     if l:num >= len(g:vimshell#hist_buffer)
       " Error.
-      call vimshell#error_line(a:fd, 'Not found in history.')
+      call vimshell#error_line(a:fd, 'h: Not found in history.')
       return 0
     endif
 
@@ -52,7 +52,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
 
     if !exists('l:hist')
       " Error.
-      call vimshell#error_line(a:fd, 'Not found in history.')
+      call vimshell#error_line(a:fd, 'h: Not found in history.')
       return 0
     endif
   endif

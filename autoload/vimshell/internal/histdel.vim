@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: histdel.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,6 +43,6 @@ function! vimshell#internal#histdel#execute(program, args, fd, other_info)
     endfor
     let g:vimshell#hist_buffer = l:new_hist
   else
-    call vimshell#error_line(a:fd, 'Arguments required.')
+    call vimshell#error_line(a:fd, 'histdel: Arguments required.')
   endif
 endfunction

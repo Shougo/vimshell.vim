@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   try
     let l:sub = vimproc#popen3(l:args)
   catch 'list index out of range'
-    let l:error = printf('File: "%s" is not found.', l:args[0])
+    let l:error = printf('bg: File "%s" is not found.', l:args[0])
 
     call vimshell#error_line(a:fd, l:error)
 
@@ -108,13 +108,6 @@ function! vimshell#internal#bg#vimshell_bg(args)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)"{{{
-  " Init buffer.
-  if a:other_info.is_interactive
-    let l:context = a:other_info
-    let l:context.fd = a:fd
-    call vimshell#print_prompt(l:context)
-  endif
-
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -154,11 +147,6 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   call s:on_execute()
 
   wincmd w
-  if a:other_info.is_interactive
-    call vimshell#start_insert(a:other_info.is_insert)
-  endif
-
-  return 1
 endfunction"}}}
 
 function! s:on_execute()"{{{

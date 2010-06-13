@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
 
   if empty(b:vimshell.directory_stack)
     " Error.
-    call vimshell#error_line(a:fd, 'Directory stack is empty.')
+    call vimshell#error_line(a:fd, 'popd: Directory stack is empty.')
     return
   endif
 
@@ -42,13 +42,13 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
     let l:pop = 0
   else
     " Error.
-    call vimshell#error_line(a:fd, 'Arguments error .')
+    call vimshell#error_line(a:fd, 'popd: Arguments error.')
     return
   endif
 
   if l:pop >= len(b:vimshell.directory_stack)
     " Overflow.
-    call vimshell#error_line(a:fd, printf("Not found '%d' in directory stack.", l:pop))
+    call vimshell#error_line(a:fd, printf("popd: Not found '%d' in directory stack.", l:pop))
     return
   endif
 

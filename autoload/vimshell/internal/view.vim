@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
 
   if empty(a:args)
     if a:fd.stdin == ''
-      vimshell#error_line(a:fd, 'Filename required.')
+      vimshell#error_line(a:fd, 'view: Filename required.')
       return 0
     endif
     
@@ -51,10 +51,6 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
     endif
   endif
   
-  let l:context = a:other_info
-  let l:context.fd = a:fd
-  call vimshell#print_prompt(l:context)
-  
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -72,5 +68,6 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
 
   lcd `=l:cwd`
   setlocal nomodifiable
-  return 1
+
+  wincmd w
 endfunction

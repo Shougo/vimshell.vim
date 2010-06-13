@@ -667,6 +667,10 @@ endfunction"}}}
 function! vimshell#iswin()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
+function! vimshell#resolve(filename)"{{{
+  return ((vimshell#iswin() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
+        \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
+endfunction"}}}
 function! vimshell#get_program_pattern()"{{{
   return 
         \'^\s*\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+\ze\%($\|\s*\%(=\s*\)\?\)'

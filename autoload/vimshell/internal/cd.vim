@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     " Substitute current directory.
     let l:dir = substitute(getcwd(), a:args[0], a:args[1], 'g')
   elseif len(a:args) > 2
-    call vimshell#error_line(a:fd, 'Too many arguments.')
+    call vimshell#error_line(a:fd, 'cd: Too many arguments.')
     return
   else
     " Filename escape.
@@ -62,7 +62,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
     let l:dirs = split(globpath(&cdpath, l:dir), '\n')
 
     if empty(l:dirs)
-      call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:dir))
+      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', l:dir))
       return
     endif
 
@@ -72,7 +72,7 @@ function! vimshell#internal#cd#execute(program, args, fd, other_info)
       let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
       lcd `=b:vimshell.save_dir`
     else
-      call vimshell#error_line(a:fd, printf('File "%s" is not found.', l:dir))
+      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', l:dir))
       return
     endif
   endif

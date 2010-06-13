@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 13 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -137,7 +137,6 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     let l:line = printf('%s %s', a:program, join(a:args, ' '))
   endif
   let l:program = a:program
-  let l:arguments = a:args
   let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
   let l:command = vimshell#getfilename(program)
 
@@ -148,43 +147,11 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     "}}}
   elseif has_key(g:vimshell#special_func_table, l:program)"{{{
     " Other special commands.
-    return call(g:vimshell#special_func_table[l:program], [l:program, l:arguments, a:fd, a:other_info])
+    return call(g:vimshell#special_func_table[l:program], [l:program, a:args, a:fd, a:other_info])
     "}}}
   elseif has_key(g:vimshell#internal_func_table, l:program)"{{{
     " Internal commands.
-
-    " Search pipe.
-    let l:args = []
-    let i = 0
-    let l:fd = copy(a:fd)
-    for arg in l:arguments
-      if arg == '|'
-        if i+1 == len(l:arguments) 
-          call vimshell#error_line(a:fd, 'Wrong pipe used.')
-          return 0
-        endif
-
-        " Create temporary file.
-        let l:temp = tempname()
-        let l:fd.stdout = l:temp
-        call writefile([], l:temp)
-        break
-      endif
-      call add(l:args, arg)
-      let i += 1
-    endfor
-    let l:ret = call(g:vimshell#internal_func_table[l:program], [l:program, l:args, l:fd, a:other_info])
-
-    if i < len(l:arguments)
-      " Process pipe.
-      let l:prog = l:arguments[i + 1]
-      let l:fd = copy(a:fd)
-      let l:fd.stdin = temp
-      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[i+2 :], l:fd, a:other_info)
-      call delete(l:temp)
-    endif
-
-    return l:ret
+    return call(g:vimshell#internal_func_table[l:program], [l:program, a:args, a:fd, a:other_info])
     "}}}
   elseif isdirectory(l:dir) || l:dir =~ '^-\d*$'"{{{
     " Directory.
@@ -201,45 +168,11 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     if !empty(l:ext) && has_key(g:vimshell_execute_file_list, l:ext)
       " Execute file.
       let l:execute = split(g:vimshell_execute_file_list[l:ext])[0]
-      let l:arguments = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(l:arguments, l:program))
-      return vimshell#parser#execute_command(l:execute, l:arguments, a:fd, a:other_info)
+      let l:args = extend(split(g:vimshell_execute_file_list[l:ext])[1:], insert(l:args, l:program))
+      return vimshell#parser#execute_command(l:execute, l:args, a:fd, a:other_info)
+    else
+      return vimshell#execute_internal_command('exe', a:args, a:fd, a:other_info)
     endif
-
-    " Search pipe.
-    let l:args = []
-    let i = 0
-    let l:fd = copy(a:fd)
-    for arg in l:arguments
-      if arg == '|'
-        if i+1 == len(l:arguments) 
-          call vimshell#error_line(a:fd, 'Wrong pipe used.')
-          return 0
-        endif
-
-        " Check internal command.
-        let l:prog = l:arguments[i + 1]
-        if !has_key(g:vimshell#special_func_table, l:prog) && !has_key(g:vimshell#internal_func_table, l:prog)
-          " Create temporary file.
-          let l:temp = tempname()
-          let l:fd.stdout = l:temp
-          call writefile([], l:temp)
-          break
-        endif
-      endif
-      call add(l:args, arg)
-      let i += 1
-    endfor
-    let l:ret = vimshell#execute_internal_command('exe', insert(l:args, l:program), l:fd, a:other_info)
-
-    if i < len(l:arguments)
-      " Process pipe.
-      let l:fd = copy(a:fd)
-      let l:fd.stdin = temp
-      let l:ret = vimshell#parser#execute_command(l:prog, l:arguments[i+2 :], l:fd, a:other_info)
-      call delete(l:temp)
-    endif
-
-    return l:ret"}}}
   else"{{{
     throw printf('Error: File "%s" is not found.', l:program)
   endif
