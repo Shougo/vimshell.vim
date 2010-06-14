@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Changed hook specification.
 - Improved parse alias.
 - Deleted auto_popd.
+- Implemented vimshell#hook#get().
 
 2010-06-13
 - Fixed vimsh error.
