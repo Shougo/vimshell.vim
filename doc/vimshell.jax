@@ -285,22 +285,22 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('i', 'iexe')
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
-	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
-	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
-	\| call vimshell#hook#add('emptycmd', 'g:my_emptycmd')
-	\| call vimshell#hook#add('precmd', 'g:my_precmd')
-	\| call vimshell#hook#add('preexec', 'g:my_preexec')
+	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\| call vimshell#hook#set('emptycmd', ['g:my_emptycmd'])
+	\| call vimshell#hook#set('preprompt', ['g:my_precmd'])
+	\| call vimshell#hook#set('preexec', ['g:my_preexec'])
 
-	function! g:my_chpwd()
+	function! g:my_chpwd(args, context)
 	  call vimshell#execute('echo "chpwd"')
 	endfunction
-	function! g:my_emptycmd()
+	function! g:my_emptycmd(args, context)
 	  call vimshell#execute('echo "emptycmd"')
 	endfunction
-	function! g:my_precmd()
+	function! g:my_preprompt(args, context)
 	  call vimshell#execute('echo "precmd"')
 	endfunction
-	function! g:my_preexec()
+	function! g:my_preexec(cmdline, context)
 	  call vimshell#execute('echo "preexec"')
 	endfunction
 <
@@ -556,27 +556,43 @@ vimshellには関数がまだありませんが、決められたフック地点
 ようにしています。
 >
 	autocmd FileType vimshell
-	\ call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	\ call vimshell#hook#set('chpwd', ['g:my_chpwd'])
 	
-	function! g:my_chpwd()
+	function! g:my_chpwd(args, context)
 		call vimshell#execute('ls')
 	endfunction
 <
-vimshellでは次のようなフック地点が用意されています。
-フック地点の名前は、bashやzshに存在するフック関数名と似せてあります。
+vimshellでは次のようなフック地点が用意されています。 フック地点の名前は、
+bashやzshに存在するフック関数名と似せてあります。 フック関数はargsという引数
+を表すディクショナリ変数と、contextというコンテキスト情報を引数に取ります。
+フィルターとして動作する、一部のフック関数はcmdlineを第一引数に取ります。
+|vimshell#hook#set()|の第二引数は関数名のリストとなっていて、ここで指定され
+た順番で関数が呼び出されます。
 
 chpwd							*vimshell-hook-chpwd*
 		vimshellのカレントディレクトリが変更されるときに呼びだされます。
 
+preparse						*vimshell-hook-preparse*
+		エイリアスのパース前に呼びだされます。第一引数はcmdlineとい
+		うコマンドライン文字列で、戻り値は変更後のコマンドライン文字
+		列です。
+
 preexec							*vimshell-hook-preexec*
-		コマンド実行前に呼びだされます。この関数内でプロンプトの内容
-		を変更しても、実行するコマンドは変化しません。
+		エイリアスのパース後、コマンドの実行前に呼びだされます。第一
+		引数はcmdlineというコマンドライン文字列で、戻り値は変更後の
+		コマンドライン文字列です。
 
 emptycmd						*vimshell-hook-emptycmd*
-		コマンド名が空のときに呼びだされます。この関数内でプロンプト
-		の内容を変更すると、実行するコマンドが変化します。
+		コマンド名が空のときに呼びだされます。第一引数はcmdlineとい
+		うコマンドライン文字列で、戻り値は変更後のコマンドライン文
+		字列です。
 
-precmd							*vimshell-hook-precmd*
+notfound						*vimshell-hook-notfound*
+		コマンドが存在しないときに呼びだされます。第一引数はcmdline
+		というコマンドライン文字列で、戻り値は変更後のコマンドライ
+		ン文字列です。
+
+preprompt						*vimshell-hook-preprompt*
 		コマンド実行後、プロンプト表示前に呼びだされます。
 
 ==============================================================================

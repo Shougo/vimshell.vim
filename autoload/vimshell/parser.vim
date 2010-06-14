@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 14 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,12 @@ function! vimshell#parser#eval_script(script, context)"{{{
   let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
-    let [l:program, l:script] = vimshell#parser#parse_alias(l:statement)
+    let l:statement = vimshell#parser#parse_alias(l:statement)
+    
+    " Call preexec filter.
+    let l:statement = vimshell#hook#call_filter('preexec', a:context, l:statement)
+
+    let [l:program, l:script] = vimshell#parser#parse_program(l:statement)
 
     if has_key(g:vimshell#special_func_table, l:program)
       " Special commands.
@@ -106,22 +111,28 @@ function! vimshell#parser#eval_script(script, context)"{{{
   return l:skip_prompt
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
-  let l:statement = s:parse_galias(a:statement)
-
   " Get program.
-  let l:program = matchstr(l:statement, vimshell#get_program_pattern())
+  let l:program = matchstr(s:parse_galias(a:statement), vimshell#get_program_pattern())
   if l:program  == ''
     throw 'Error: Invalid command name.'
   endif
-  let l:script = l:statement[len(l:program) :]
+  let l:script = a:statement[len(l:program) :]
 
   if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
     " Expand alias.
-    let l:alias = s:recursive_expand_alias(l:program)
-    let l:script = join(vimshell#parser#split_args(l:alias)) . l:script
-    let l:program = matchstr(l:script, vimshell#get_program_pattern())
-    let l:script = l:script[len(l:program) :]
+    let l:program = s:recursive_expand_alias(l:program)
   endif
+  
+  return l:program . l:script
+endfunction"}}}
+function! vimshell#parser#parse_program(statement)"{{{
+  " Get program.
+  let l:program = matchstr(a:statement, vimshell#get_program_pattern())
+  if l:program  == ''
+    throw 'Error: Invalid command name.'
+  endif
+  let l:script = a:statement[len(l:program) :]
+
   if l:program != '' && l:program[0] == '~'
     " Parse tilde.
     let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]

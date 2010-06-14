@@ -163,8 +163,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.directory_stack = []
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.hook_functions_table = {
-        \ 'precmd' : {}, 'preexec' : {}, 'emptycmd' : {}, 
-        \ 'chpwd' : {}, 
+        \ 'preprompt' : [], 'preparse' : [], 'preexec' : [], 'emptycmd' : [], 
+        \ 'chpwd' : [], 'notfound' : [],
         \}
 
   " Set environment variables.
@@ -391,8 +391,8 @@ function! vimshell#print_prompt(...)"{{{
 
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   
-  " Call precmd hook.
-  call vimshell#hook#call('precmd', l:context)
+  " Call preprompt hook.
+  call vimshell#hook#call('preprompt', l:context)
   
   " Search prompt
   if empty(b:vimshell.commandline_stack)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Apr 2010
+" Last Modified: 14 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,30 +24,45 @@
 " }}}
 "=============================================================================
 
-function! vimshell#hook#add(hook_point, func_name)"{{{
-  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
-    throw 'Hook point "' . a:hook_point . '" is not supported.'
+function! vimshell#hook#call(hook_point, context, ...)"{{{
+  if !a:context.is_interactive
+    return
   endif
   
-  let b:vimshell.hook_functions_table[a:hook_point][a:func_name] = a:func_name
-endfunction"}}}
-function! vimshell#hook#call(hook_point, context)"{{{
-  call vimshell#set_context(a:context)
-
+  let l:context = a:context
+  let l:context.is_interactive = 0
+  call vimshell#set_context(l:context)
+  
+  let l:args = (a:0 == 0)? {} : a:1
+  
   " Call hook function.
-  for l:func_name in values(b:vimshell.hook_functions_table[a:hook_point])
-    call call(l:func_name, [])
+  for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
+    call call(l:func_name, [l:args, l:context])
   endfor
 endfunction"}}}
-function! vimshell#hook#del(hook_point, func_name)"{{{
+function! vimshell#hook#call_filter(hook_point, context, arg)"{{{
+  if !a:context.is_interactive
+    return a:arg
+  endif
+
+  let l:context = a:context
+  let l:context.is_interactive = 0
+  call vimshell#set_context(l:context)
+
+  " Call hook function.
+  let l:arg = a:arg
+  for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
+    let l:arg = call(l:func_name, [l:arg, l:context])
+  endfor
+
+  return l:arg
+endfunction"}}}
+function! vimshell#hook#set(hook_point, func_list)"{{{
   if !has_key(b:vimshell.hook_functions_table, a:hook_point)
     throw 'Hook point "' . a:hook_point . '" is not supported.'
   endif
-  if !has_key(b:vimshell.hook_functions_table[a:hook_point], a:func_name)
-    throw 'Hook function "' . a:func_name . '" is not found.'
-  endif
   
-  call remove(b:vimshell.hook_functions_table[a:hook_point], a:func_name)
+  let b:vimshell.hook_functions_table[a:hook_point] = a:func_list
 endfunction"}}}
 
 " vim: foldmethod=marker

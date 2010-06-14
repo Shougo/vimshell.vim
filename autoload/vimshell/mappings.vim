@@ -166,6 +166,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     endif
   endif
 
+  let l:oldpos = getpos('.')
+
   $
 
   " Get command line.
@@ -181,12 +183,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     " Popd.
     call vimshell#execute_internal_command('cd', ['-'], {}, {})
   elseif l:line =~ '^\s*$'
-      " Call emptycmd hook.
-      call vimshell#hook#call('emptycmd', l:context)
-
-      " Get command line again.
-      " Because: hook functions may change command line.
-      let l:line = vimshell#get_prompt_command()
+    " Call emptycmd filter.
+    let l:line = vimshell#hook#call_filter('emptycmd', l:context, l:line)
   endif
 
   if l:line =~ '^\s*$\|^\s*-\s*$'
@@ -205,17 +203,31 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     return
   endtry
 
-  " Call preexec hook.
-  call vimshell#hook#call('preexec', l:context)
+  " Call preparse filter.
+  let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
 
   try
     let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
-  catch
-    let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, l:message)
-
+  catch /^Error: File ".*" is not found./
+    " Command not found.
+    let l:oldline = l:line
+    let l:line = vimshell#hook#call_filter('notfound', l:context, l:line)
+    if l:line !=# l:oldline
+      " Retry.
+      call setpos('.', l:oldpos)
+      call setline('.', l:line)
+      call vimshell#mappings#execute_line(a:is_insert)
+    endif
+    
+    " Error.
+    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
     call vimshell#print_prompt(l:context)
-
+    call vimshell#start_insert(a:is_insert)
+    return
+  catch
+    " Error.
+    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    call vimshell#print_prompt(l:context)
     call vimshell#start_insert(a:is_insert)
     return
   endtry

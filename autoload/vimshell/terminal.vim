@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 14 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,7 +165,7 @@ function! s:output_string(string)"{{{
   
   let l:line = s:lines[s:line]
   let l:left_line = l:line[: s:col - 1]
-  let l:right_line = l:line[s:col :]
+  let l:right_line = l:line[s:col+len(a:string) :]
 
   let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
   

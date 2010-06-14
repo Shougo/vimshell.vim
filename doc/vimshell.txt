@@ -142,9 +142,9 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('i', 'iexe')
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
-	\| call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
 	
-	function! g:my_chpwd()
+	function! g:my_chpwd(args, context)
 		call vimshell#execute('ls')
 	endfunction
 <
@@ -164,9 +164,9 @@ ALTER COMMAND						*vimshell-alter-command*
 HOOK							*vimshell-hook*
 >
 	autocmd FileType vimshell
-	\ call vimshell#hook#add('chpwd', 'g:my_chpwd')
+	\ call vimshell#hook#set('chpwd', ['g:my_chpwd'])
 	
-	function! g:my_chpwd(context)
+	function! g:my_chpwd(args, context)
 		call vimshell#execute('ls', a:context)
 	endfunction
 <
@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2010-06-14
+- Overwrite text in vimshell#terminal#print().
+- Changed hook specification.
+- Improved parse alias.
 
 2010-06-13
 - Fixed vimsh error.
