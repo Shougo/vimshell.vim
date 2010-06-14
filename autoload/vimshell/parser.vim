@@ -164,7 +164,7 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     " Internal commands.
     return call(g:vimshell#internal_func_table[l:program], [l:program, a:args, a:fd, a:other_info])
     "}}}
-  elseif isdirectory(l:dir) || l:dir =~ '^-\d*$'"{{{
+  elseif isdirectory(l:dir)"{{{
     " Directory.
     " Change the working directory like zsh.
 
