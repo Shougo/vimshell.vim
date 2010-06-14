@@ -64,5 +64,12 @@ function! vimshell#hook#set(hook_point, func_list)"{{{
   
   let b:vimshell.hook_functions_table[a:hook_point] = a:func_list
 endfunction"}}}
+function! vimshell#hook#get(hook_point)"{{{
+  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
+    throw 'Hook point "' . a:hook_point . '" is not supported.'
+  endif
+  
+  return b:vimshell.hook_functions_table[a:hook_point]
+endfunction"}}}
 
 " vim: foldmethod=marker
