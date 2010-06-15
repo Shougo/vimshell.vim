@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,7 +73,7 @@ function! vimshell#terminal#print(string)"{{{
         " Check match pattern.
         for l:pattern in keys(s:escape_sequence_match)
           if l:checkstr =~ l:pattern
-            let l:matched = 1
+            let l:matched = 2
             break
           endif
         endfor
@@ -86,7 +86,8 @@ function! vimshell#terminal#print(string)"{{{
 
         let l:matchstr = matchstr(l:checkstr, l:pattern)
 
-        call call(s:escape_sequence_match[l:pattern], [l:matchstr], s:escape)
+        call call((l:matched == 1 ? 
+              \ s:escape_sequence_simple[l:pattern] : s:escape_sequence_match[l:pattern]), [l:matchstr], s:escape)
 
         let l:pos += len(l:matchstr) + 1
         continue
@@ -198,9 +199,19 @@ function! s:escape.highlight(matchstr)"{{{
         \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
         \]
 
-  let [l:lnum, l:col] = [s:line, s:col]
-  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . l:lnum . '_' . l:col
-  execute 'syntax region' l:syntax_name 'start=+\%' . l:lnum . 'l\%' . l:col . 'c+ end=+\%$+' 'contains=ALL'
+  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+  
+  if a:matchstr =~ '^\[\%(\d\+;\)*\d\+m.'
+    " Optimized syntax highlight.
+    let l:string = matchstr(a:matchstr, '^\[\%(\d\+;\)*\d\+m\zs.*')
+    
+    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c+ end=+\%' . s:line . 'l\%'. (s:col+len(l:string)) . 'c+ contains=ALL'
+
+    " Output.
+    call s:output_string(l:string)
+  else
+    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c\|\n+ end=+\%$+' 'contains=ALL'
+  endif
 
   if !has_key(s:terminal_info, bufnr('%'))
     let s:terminal_info[bufnr('%')] = {
@@ -338,8 +349,8 @@ let s:escape_sequence_match = {
       \ '^(\d' : s:escape.ignore,
       \ '^)\d' : s:escape.ignore,
       \ 
-      \ '^\[\%(\d\+;\)*\d\+m' : s:escape.highlight,
-      \
+      \ '^\[\%(\d\+;\)*\d\+m\%([^\e]\{-1,}\ze\e\[0m\)\?' : s:escape.highlight,
+      \ 
       \ '^\[\d\+;\d\+r' : s:escape.ignore,
       \
       \ '^\[\d\+A' : s:escape.ignore,
