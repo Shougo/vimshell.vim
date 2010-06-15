@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,6 +25,7 @@
 "=============================================================================
 
 let s:last_interactive_bufnr = 1
+let s:save_updatetime = &updatetime
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   " Interactive execute command.
@@ -155,11 +156,15 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! s:insert_enter()"{{{
-  let s:save_updatetime = &updatetime
-  let &updatetime = g:vimshell_interactive_update_time
+  if &updatetime > g:vimshell_interactive_update_time
+    let s:save_updatetime = &updatetime
+    let &updatetime = g:vimshell_interactive_update_time
+  endif
 endfunction"}}}
 function! s:insert_leave()"{{{
-  let &updatetime = s:save_updatetime
+  if &updatetime < s:update_time_save
+    let &updatetime = s:save_updatetime
+  endif
 endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))

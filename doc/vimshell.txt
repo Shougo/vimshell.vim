@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-15
+- Improved interactive update.
+
 2010-06-14
 - Overwrite text in vimshell#terminal#print().
 - Changed hook specification.
