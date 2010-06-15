@@ -109,6 +109,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let keyword.abbr = l:abbr
 
     " Escape word.
+    let keyword.orig = keyword.word
     let keyword.word = escape(keyword.word, ' *?[]"={}')
   endfor
 
@@ -116,9 +117,10 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in filter(split(substitute(glob(a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 
-        \ 'isdirectory(v:val) || (vimshell#iswin() && fnamemodify(v:val, ":e") ==? "LNK" && isdirectory(resolve(v:val)))')
-    let l:dict = { 'word' : keyword, 'menu' : 'directory' }
+  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
+        \ 'isdirectory(v:val.orig) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(v:val.orig)))')
+    let l:dict = l:keyword
+    let l:dict.menu = 'directory'
 
     call add(l:ret, l:dict)
   endfor
@@ -193,13 +195,19 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
   let l:ret = []
-  if has('win32') || has('win64')
+
+  let l:pattern = printf('[/~]\?\f\+[%s]\f*$', l:PATH_SEPARATOR)
+  if vimshell#iswin()
     let l:path = substitute($PATH, '\\\?;', ',', 'g')
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-    let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
+
+    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
+    let l:list = map(filter(split(l:files, '\n'),
           \'"." . fnamemodify(v:val, ":e") =~ '.string(l:exts)), 'fnamemodify(v:val, ":t:r")')
   else
     let l:path = substitute($PATH, '/\?:', ',', 'g')
+
+    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
     let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
           \'executable(v:val)'), 'fnamemodify(v:val, ":t:r")')
   endif

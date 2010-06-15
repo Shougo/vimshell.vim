@@ -588,8 +588,8 @@ function! vimshell#get_current_args()"{{{
     return []
   endif
   
-  let l:args = vimshell#parser#split_args(l:commands[-1])
-  if vimshell#get_cur_text() =~ '\s\+$'
+  let l:args = vimshell#parser#split_args_through(l:commands[-1])
+  if vimshell#get_cur_text() =~ '\\\@!\s\+$'
     " Add blank argument.
     call add(l:args, '')
   endif
