@@ -25,7 +25,7 @@
 "=============================================================================
 
 let s:last_interactive_bufnr = 1
-let s:save_updatetime = &updatetime
+let s:update_time_save = &updatetime
 
 function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   " Interactive execute command.
@@ -157,13 +157,13 @@ endfunction"}}}
 
 function! s:insert_enter()"{{{
   if &updatetime > g:vimshell_interactive_update_time
-    let s:save_updatetime = &updatetime
+    let s:update_time_save = &updatetime
     let &updatetime = g:vimshell_interactive_update_time
   endif
 endfunction"}}}
 function! s:insert_leave()"{{{
   if &updatetime < s:update_time_save
-    let &updatetime = s:save_updatetime
+    let &updatetime = s:update_time_save
   endif
 endfunction"}}}
 function! s:on_hold_i()"{{{

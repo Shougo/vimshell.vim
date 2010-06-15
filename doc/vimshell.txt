@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-06-15
 - Improved interactive update.
+- Optimized escape sequence.
 
 2010-06-14
 - Overwrite text in vimshell#terminal#print().
