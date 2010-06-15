@@ -37,7 +37,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     if l:num >= len(g:vimshell#hist_buffer)
       " Error.
       call vimshell#error_line(a:fd, 'h: Not found in history.')
-      return 0
+      return
     endif
 
     let l:hist = g:vimshell#hist_buffer[l:num]
@@ -53,7 +53,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     if !exists('l:hist')
       " Error.
       call vimshell#error_line(a:fd, 'h: Not found in history.')
-      return 0
+      return
     endif
   endif
 
@@ -63,7 +63,7 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
   call vimshell#set_prompt_command(l:hist)
 
   try
-    let l:skip_prompt = vimshell#parser#eval_script(l:hist, a:other_info)
+    call vimshell#parser#eval_script(l:hist, a:other_info)
   catch /.*/
     call vimshell#error_line({}, v:exception)
     let l:context = a:other_info
@@ -75,20 +75,4 @@ function! vimshell#internal#h#execute(program, args, fd, other_info)
     endif
     return
   endtry
-
-  if l:skip_prompt
-    " Skip prompt.
-    return
-  endif
-
-  if a:other_info.is_interactive
-    let l:context = a:other_info
-    let l:context.fd = a:fd
-    call vimshell#print_prompt(l:context)
-    if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
-      call vimshell#start_insert()
-    endif
-  endif
-
-  return 1
 endfunction

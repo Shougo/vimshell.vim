@@ -30,7 +30,7 @@ function! vimshell#internal#vimdiff#execute(program, args, fd, other_info)
   if len(a:args) != 2
     " Error.
     call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
-    return 0
+    return
   endif
 
   let l:winnr = winnr()

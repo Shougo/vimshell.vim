@@ -206,8 +206,9 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   " Call preparse filter.
   let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
 
+  let l:bufnr_save = bufnr('%')
   try
-    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
+    call vimshell#parser#eval_script(l:line, l:context)
   catch /^Error: File ".*" is not found./
     " Command not found.
     let l:oldline = l:line
@@ -242,7 +243,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     call vimshell#append_history(l:line)
   endif
 
-  if l:skip_prompt
+  if bufnr('%') != l:bufnr_save
     " Skip prompt.
     return
   endif

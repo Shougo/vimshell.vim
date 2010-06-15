@@ -41,7 +41,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
   endif
 
   if empty(l:args)
-    return 0
+    return
   elseif l:args[0] == 'shell'
     " Background shell.
     if has('win32') || has('win64')
@@ -58,7 +58,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
       shell
     endif
 
-    return 0
+    return
   endif
   
   " Background execute.
@@ -80,7 +80,7 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 
     call vimshell#error_line(a:fd, l:error)
 
-    return 0
+    return
   endtry
 
   " Set variables.

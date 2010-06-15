@@ -725,7 +725,7 @@ endfunction"}}}
 function! vimshell#execute(cmdline, ...)"{{{
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   try
-    let l:skip_prompt = vimshell#parser#eval_script(a:cmdline, l:context)
+    call vimshell#parser#eval_script(a:cmdline, l:context)
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line(l:context.fd, l:message)
@@ -789,7 +789,7 @@ function! s:special_command(program, args, fd, other_info)"{{{
     call vimshell#execute_internal_command('exe', insert(l:arguments, l:program), a:fd, a:other_info)
   endif
 
-  return 0
+  return
 endfunction"}}}
 function! s:special_internal(program, args, fd, other_info)"{{{
   if empty(a:args)
@@ -810,7 +810,7 @@ function! s:special_internal(program, args, fd, other_info)"{{{
     endif
   endif
 
-  return 0
+  return
 endfunction"}}}
 
 

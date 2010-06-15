@@ -35,9 +35,5 @@ function! vimshell#internal#exit#execute(program, args, fd, other_info)
       call vimshell#alternate_buffer()
     endif
     execute 'bdelete!'. vimsh_buf
-    return 1
-  else
-    " Return prompt line.
-    return 0
   endif
 endfunction

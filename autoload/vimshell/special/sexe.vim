@@ -84,6 +84,6 @@ function! vimshell#special#sexe#execute(program, args, fd, other_info)"{{{
 
   let b:vimshell.system_variables['status'] = v:shell_error
 
-  return 0
+  return
 endfunction"}}}
 

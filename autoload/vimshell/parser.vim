@@ -34,7 +34,6 @@ function! vimshell#parser#check_script(script)"{{{
   return 0
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
-  let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
     let l:statement = vimshell#parser#parse_alias(l:statement)
@@ -99,16 +98,9 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
     endif
 
-    if l:program == ''
-      " Echo file.
-      let l:program = 'cat'
-    endif
-
-    let l:skip_prompt = vimshell#parser#execute_command(l:program, l:args, l:fd, a:context)
+    call vimshell#parser#execute_command(l:program, l:args, l:fd, a:context)
     redraw
   endfor
-
-  return l:skip_prompt
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
   " Get program.
@@ -188,8 +180,6 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     throw printf('Error: File "%s" is not found.', l:program)
   endif
   "}}}
-
-  return 0
 endfunction
 "}}}
 

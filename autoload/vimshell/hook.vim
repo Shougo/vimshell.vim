@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ function! vimshell#hook#call(hook_point, context, ...)"{{{
     return
   endif
   
-  let l:context = a:context
+  let l:context = copy(a:context)
   let l:context.is_interactive = 0
   call vimshell#set_context(l:context)
   
@@ -45,7 +45,7 @@ function! vimshell#hook#call_filter(hook_point, context, arg)"{{{
     return a:arg
   endif
 
-  let l:context = a:context
+  let l:context = copy(a:context)
   let l:context.is_interactive = 0
   call vimshell#set_context(l:context)
 

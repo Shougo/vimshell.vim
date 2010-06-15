@@ -188,8 +188,10 @@ CHANGELOG						*vimshell-changelog*
 2010-06-15
 - Improved interactive update.
 - Optimized escape sequence.
-- Optimized highlight.
-- Improved highlight.
+- Optimized highlight escape sequence.
+- Improved highlight escape sequence.
+- Improved skip prompt.
+- Fixed context bug.
 
 2010-06-14
 - Overwrite text in vimshell#terminal#print().

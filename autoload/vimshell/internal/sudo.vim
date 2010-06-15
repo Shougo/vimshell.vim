@@ -28,7 +28,7 @@ function! vimshell#internal#sudo#execute(program, args, fd, other_info)
   " Execute GUI program.
   if empty(a:args)
     call vimshell#error_line(a:fd, 'sudo: Arguments required.')
-    return 0
+    return
   elseif a:args[0] == 'vim'
     let l:args = a:args[1:]
     let l:args[0] = 'sudo:' . l:args[0]

@@ -37,7 +37,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
   endif
   
   if empty(l:args)
-    return 0
+    return
   endif
 
   if has_key(s:interactive_option, fnamemodify(l:args[0], ':r'))
@@ -50,7 +50,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
       call vimshell#error_line(a:fd, 'iexe: cmdproxy.exe is not found. Please install it.')
-      return 0
+      return
     endif
 
     let l:args[0] = 'cmdproxy.exe'
@@ -74,7 +74,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
     call vimshell#error_line(a:fd, l:error)
 
-    return 0
+    return
   endtry
 
   call s:init_bg(l:sub, l:args, a:fd, a:other_info)

@@ -29,6 +29,6 @@ function! vimshell#internal#open#execute(program, args, fd, other_info)"{{{
 
   call vimshell#open(join(a:args))
 
-  return 0
+  return
 endfunction"}}}
 
