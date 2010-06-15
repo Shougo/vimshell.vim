@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved interactive update.
 - Optimized escape sequence.
 - Optimized highlight.
+- Improved highlight.
 
 2010-06-14
 - Overwrite text in vimshell#terminal#print().
