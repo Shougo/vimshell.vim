@@ -192,6 +192,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved highlight escape sequence.
 - Improved skip prompt.
 - Fixed context bug.
+- Fixed window split bug.
 
 2010-06-14
 - Overwrite text in vimshell#terminal#print().

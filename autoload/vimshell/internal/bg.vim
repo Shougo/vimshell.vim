@@ -146,7 +146,7 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   
   call s:on_execute()
 
-  wincmd w
+  wincmd p
 endfunction"}}}
 
 function! s:on_execute()"{{{

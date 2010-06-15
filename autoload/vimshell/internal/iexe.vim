@@ -97,7 +97,7 @@ function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
 
   startinsert!
 
-  wincmd w
+  wincmd p
 endfunction"}}}
 
 function! vimshell#internal#iexe#vimshell_iexe(args)"{{{

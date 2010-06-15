@@ -69,5 +69,5 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
   lcd `=l:cwd`
   setlocal nomodifiable
 
-  wincmd w
+  wincmd p
 endfunction
