@@ -67,5 +67,5 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
 
   lcd `=l:cwd`
 
-  wincmd w
+  wincmd p
 endfunction

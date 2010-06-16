@@ -33,12 +33,11 @@ function! vimshell#internal#repeat#execute(program, args, fd, other_info)
     " Repeat.
     let l:max = a:args[0]
     let l:i = 0
-    let l:skip_prompt = 0
     while l:i < l:max
-      let l:skip_prompt = vimshell#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
+      call vimshell#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
       let l:i += 1
     endwhile
-    return l:skip_prompt
+    return
   endif
-  return 0
+  return
 endfunction

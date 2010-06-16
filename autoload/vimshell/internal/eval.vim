@@ -36,15 +36,10 @@ function! vimshell#internal#eval#execute(program, args, fd, other_info)
         \}
 
   try
-    let l:skip_prompt = vimshell#parser#eval_script(l:line, l:context)
+    call vimshell#parser#eval_script(l:line, l:context)
   catch /.*/
     let l:message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line({}, l:message)
     return
   endtry
-
-  if l:skip_prompt
-    " Skip prompt.
-    return 1
-  endif
 endfunction

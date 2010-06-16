@@ -30,7 +30,7 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
   if empty(a:args)
     if a:fd.stdin == ''
       vimshell#error_line(a:fd, 'view: Filename required.')
-      return 0
+      return
     endif
     
     " Read from stdin.
@@ -47,7 +47,7 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
         call vimshell#print_line(a:fd, l:line)
       endfor
 
-      return 0
+      return
     endif
   endif
   
@@ -69,5 +69,5 @@ function! vimshell#internal#view#execute(program, args, fd, other_info)
   lcd `=l:cwd`
   setlocal nomodifiable
 
-  wincmd w
+  wincmd p
 endfunction

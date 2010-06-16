@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,8 +29,7 @@ let s:terminal_info = {}
 function! vimshell#terminal#print(string)"{{{
   let l:string = substitute(a:string, '\r\n', '\n', 'g')
   
-  "if l:string !~ '[\e\r\b]' && col('.') == col('$')
-  if 0
+  if l:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(l:string, '\n', 1)
     call setline('.', getline('.') . l:lines[0])
@@ -49,8 +48,6 @@ function! vimshell#terminal#print(string)"{{{
   let s:lines[s:line] = getline('.')
   
   while l:pos < l:max
-    let l:matched = 0
-
     let l:char = l:string[l:pos]
     if l:char !~ '[[:cntrl:]]'
       let l:newstr .= l:char
@@ -59,23 +56,43 @@ function! vimshell#terminal#print(string)"{{{
       continue
     endif
 
-    if l:char == "\<ESC>"
+    if l:char == "\<ESC>""{{{
       " Check escape sequence.
-      for l:pattern in keys(s:escape_sequence)
-        let l:matchstr = matchstr(l:string, '^'.l:pattern, l:pos)
-        if l:matchstr != ''
-          " Print rest string.
-          call s:output_string(l:newstr)
-          let l:newstr = ''
-
-          call call(s:escape_sequence[l:pattern], [l:matchstr], s:escape)
-          
+      let l:checkstr = l:string[l:pos+1 :]
+      let l:matched = 0
+      
+      " Check simple pattern.
+      for l:pattern in keys(s:escape_sequence_simple)
+        if neocomplcache#head_match(l:checkstr, l:pattern)
           let l:matched = 1
-          let l:pos += len(l:matchstr)
           break
         endif
       endfor
-    elseif has_key(s:control_sequence, l:char)
+
+      if !l:matched
+        " Check match pattern.
+        for l:pattern in keys(s:escape_sequence_match)
+          if l:checkstr =~ l:pattern
+            let l:matched = 2
+            break
+          endif
+        endfor
+      endif
+      
+      if l:matched
+        " Print rest string.
+        call s:output_string(l:newstr)
+        let l:newstr = ''
+
+        let l:matchstr = matchstr(l:checkstr, l:pattern)
+
+        call call((l:matched == 1 ? 
+              \ s:escape_sequence_simple[l:pattern] : s:escape_sequence_match[l:pattern]), [l:matchstr], s:escape)
+
+        let l:pos += len(l:matchstr) + 1
+        continue
+      endif"}}}
+    elseif has_key(s:control_sequence, l:char)"{{{
       " Check other pattern.
       " Print rest string.
       call s:output_string(l:newstr)
@@ -85,12 +102,10 @@ function! vimshell#terminal#print(string)"{{{
 
       let l:pos += 1
       continue
-    endif
+    endif"}}}
 
-    if !l:matched
-      let l:newstr .= l:char
-      let l:pos += 1
-    endif
+    let l:newstr .= l:char
+    let l:pos += 1
   endwhile
 
   " Print rest string.
@@ -176,17 +191,39 @@ endfunction"}}}
 let s:escape = {}
 function! s:escape.ignore(matchstr)"{{{
 endfunction"}}}
-function! s:escape.highlight(matchstr)"{{{
-  let l:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
-  let l:grey_table = [
-        \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
-        \0x58, 0x62, 0x6C, 0x76, 0x80, 0x8A, 0x94, 0x9E, 
-        \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
-        \]
 
-  let [l:lnum, l:col] = [s:line, s:col]
-  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . l:lnum . '_' . l:col
-  execute 'syntax region' l:syntax_name 'start=+\%' . l:lnum . 'l\%' . l:col . 'c+ end=+\%$+' 'contains=ALL'
+let s:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
+let s:grey_table = [
+      \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
+      \0x58, 0x62, 0x6C, 0x76, 0x80, 0x8A, 0x94, 0x9E, 
+      \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
+      \]
+let s:highlight_table = {
+      \ 0 : ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE', 
+      \ 1 : ' cterm=BOLD gui=BOLD',
+      \ 3 : ' cterm=ITALIC gui=ITALIC',
+      \ 4 : ' cterm=UNDERLINE gui=UNDERLINE',
+      \ 7 : ' cterm=REVERSE gui=REVERSE',
+      \ 8 : ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000',
+      \ 21 : ' cterm=UNDERLINE gui=UNDERLINE',
+      \ 39 : ' ctermfg=NONE guifg=NONE', 
+      \ 49 : ' ctermbg=NONE guibg=NONE', 
+      \}
+function! s:escape.highlight(matchstr)"{{{
+
+  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+  
+  if a:matchstr !~ '^\[[0-9;]\+m$'
+    " Optimized syntax highlight.
+    let l:string = matchstr(a:matchstr, '^\[[0-9;]\+m\zs.*')
+    
+    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c+ end=+\%' . s:line . 'l\%'. (s:col+len(l:string)) . 'c+ contains=ALL'
+
+    " Output.
+    call s:output_string(l:string)
+  else
+    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c\|\n+ end=+\%$+' 'contains=ALL'
+  endif
 
   if !has_key(s:terminal_info, bufnr('%'))
     let s:terminal_info[bufnr('%')] = {
@@ -197,65 +234,71 @@ function! s:escape.highlight(matchstr)"{{{
   call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
 
   let l:highlight = ''
-  for l:color_code in split(matchstr(a:matchstr, '[0-9;]\+'), ';')
-    if l:color_code == 0"{{{
-      let l:highlight .= ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE'
-    elseif l:color_code == 1
-      let l:highlight .= ' cterm=BOLD gui=BOLD'
-    elseif l:color_code == 4
-      let l:highlight .= ' cterm=UNDERLINE gui=UNDERLINE'
-    elseif l:color_code == 7
-      let l:highlight .= ' cterm=REVERSE gui=REVERSE'
-    elseif l:color_code == 8
-      let l:highlight .= ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000'
-    elseif 30 <= l:color_code && l:color_code <= 37 
+  let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
+  for l:color_code in l:highlight_list
+    if has_key(s:highlight_table, l:color_code)"{{{
+      " Use table.
+      let l:highlight .= s:highlight_table[l:color_code]
+    elseif 30 <= l:color_code && l:color_code <= 37
       " Foreground color.
       let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:vimshell_escape_colors[l:color_code - 30])
     elseif l:color_code == 38
+      if len(l:highlight_list) < 3
+        " Error.
+        break
+      endif
+      
       " Foreground 256 colors.
-      let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
+      let l:color = l:highlight_list[2]
       if l:color >= 232
         " Grey scale.
-        let l:gcolor = l:grey_table[(l:color - 232)]
+        let l:gcolor = s:grey_table[(l:color - 232)]
         let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
       elseif l:color >= 16
         " RGB.
         let l:gcolor = l:color - 16
-        let l:red = l:color_table[l:gcolor / 36]
-        let l:green = l:color_table[(l:gcolor % 36) / 6]
-        let l:blue = l:color_table[l:gcolor % 6]
+        let l:red = s:color_table[l:gcolor / 36]
+        let l:green = s:color_table[(l:gcolor % 36) / 6]
+        let l:blue = s:color_table[l:gcolor % 6]
 
         let l:highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
       else
         let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:vimshell_escape_colors[l:color])
       endif
       break
-    elseif l:color_code == 39
-      " TODO
     elseif 40 <= l:color_code && l:color_code <= 47 
       " Background color.
       let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:vimshell_escape_colors[l:color_code - 40])
     elseif l:color_code == 48
+      if len(l:highlight_list) < 3
+        " Error.
+        break
+      endif
+      
       " Background 256 colors.
-      let l:color = split(matchstr(a:matchstr, '[0-9;]\+'), ';')[2]
+      let l:color = l:highlight_list[2]
       if l:color >= 232
         " Grey scale.
-        let l:gcolor = l:grey_table[(l:color - 232)]
+        let l:gcolor = s:grey_table[(l:color - 232)]
         let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
       elseif l:color >= 16
         " RGB.
         let l:gcolor = l:color - 16
-        let l:red = l:color_table[l:gcolor / 36]
-        let l:green = l:color_table[(l:gcolor % 36) / 6]
-        let l:blue = l:color_table[l:gcolor % 6]
+        let l:red = s:color_table[l:gcolor / 36]
+        let l:green = s:color_table[(l:gcolor % 36) / 6]
+        let l:blue = s:color_table[l:gcolor % 6]
 
         let l:highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
       else
         let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:vimshell_escape_colors[l:color])
       endif
       break
-    elseif l:color_code == 49
-      " TODO
+    elseif 90 <= l:color_code && l:color_code <= 99
+      " Foreground color(high intensity).
+      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 82, g:vimshell_escape_colors[l:color_code - 82])
+    elseif 100 <= l:color_code && l:color_code <= 109
+      " Background color(high intensity).
+      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 92, g:vimshell_escape_colors[l:color_code - 92])
     endif"}}}
   endfor
   if l:highlight != ''
@@ -316,91 +359,94 @@ endfunction"}}}
 
 " escape sequence list. {{{
 " pattern: function
-let s:escape_sequence = {
-      \ '\e\[?\dh' : s:escape.ignore,
-      \ '\e\[?\dl' : s:escape.ignore,
-      \ '\e(\a' : s:escape.ignore,
-      \ '\e)\a' : s:escape.ignore,
-      \ '\e(\d' : s:escape.ignore,
-      \ '\e)\d' : s:escape.ignore,
-      \ '\eN' : s:escape.ignore,
-      \ '\eO' : s:escape.ignore,
+let s:escape_sequence_match = {
+      \ '^\[?\dh' : s:escape.ignore,
+      \ '^\[?\dl' : s:escape.ignore,
+      \ '^(\a' : s:escape.ignore,
+      \ '^)\a' : s:escape.ignore,
+      \ '^(\d' : s:escape.ignore,
+      \ '^)\d' : s:escape.ignore,
       \ 
-      \ '\e\[m' : s:escape.ignore,
-      \ '\e\[\%(\d\+;\)*\d\+m' : s:escape.highlight,
+      \ '^\[[0-9;]\+m\%([^\e]\{-1,}\ze\e\[0m\)\?' : s:escape.highlight,
+      \ 
+      \ '^\[\d\+;\d\+r' : s:escape.ignore,
       \
-      \ '\e\[\d\+;\d\+r' : s:escape.ignore,
+      \ '^\[\d\+A' : s:escape.ignore,
+      \ '^\[\d\+B' : s:escape.ignore,
+      \ '^\[\d\+C' : s:escape.ignore,
+      \ '^\[\d\+D' : s:escape.ignore,
+      \ '^\[\d\+;\d\+H' : s:escape.move_cursor,
       \
-      \ '\e\[\d\+A' : s:escape.ignore,
-      \ '\e\[\d\+B' : s:escape.ignore,
-      \ '\e\[\d\+C' : s:escape.ignore,
-      \ '\e\[\d\+D' : s:escape.ignore,
-      \ '\e\[H' : s:escape.ignore,
-      \ '\e\[;H' : s:escape.ignore,
-      \ '\e\[\d\+;\d\+H' : s:escape.move_cursor,
-      \ '\e\[f' : s:escape.ignore,
-      \ '\e\[;f' : s:escape.ignore,
-      \ '\eM' : s:escape.ignore,
-      \ '\eE' : s:escape.ignore,
-      \ '\e7' : s:escape.ignore,
-      \ '\e8' : s:escape.ignore,
+      \ '^[\dg' : s:escape.ignore,
       \
-      \ '\e[g' : s:escape.ignore,
-      \ '\e[\dg' : s:escape.ignore,
+      \ '^#\d' : s:escape.ignore,
       \
-      \ '\e#\d' : s:escape.ignore,
+      \ '^\dn' : s:escape.ignore,
+      \ '^\d\+;\d\+R' : s:escape.ignore,
       \
-      \ '\e\[K' : s:escape.ignore,
-      \ '\e\[0K' : s:escape.ignore,
-      \ '\e\[1K' : s:escape.ignore,
-      \ '\e\[2K' : s:escape.ignore,
+      \ '^\[?1;\d\+0c' : s:escape.ignore,
       \
-      \ '\e\[J' : s:escape.clear_screen_from_cursor_down,
-      \ '\e\[0J' : s:escape.ignore,
-      \ '\e\[1J' : s:escape.ignore,
-      \ '\e\[2J' : s:escape.clear_entire_screen,
+      \ '^\[2;\dy' : s:escape.ignore,
       \
-      \ '\e\dn' : s:escape.ignore,
-      \ '\e\d\+;\d\+R' : s:escape.ignore,
+      \ '^\[\dq' : s:escape.ignore,
       \
-      \ '\e\[c' : s:escape.ignore,
-      \ '\e\[0c' : s:escape.ignore,
-      \ '\e\[?1;\d\+0c' : s:escape.ignore,
+      \ '^\d\+;\d\+' : s:escape.ignore,
       \
-      \ '\ec' : s:escape.ignore,
-      \ '\e\[2;\dy' : s:escape.ignore,
-      \
-      \ '\e\[\dq' : s:escape.ignore,
-      \
-      \ '\e<' : s:escape.ignore,
-      \ '\e=' : s:escape.ignore,
-      \ '\e>' : s:escape.ignore,
-      \ '\eF' : s:escape.ignore,
-      \ '\eG' : s:escape.ignore,
-      \
-      \ '\eA' : s:escape.move_head,
-      \ '\eB' : s:escape.ignore,
-      \ '\eC' : s:escape.ignore,
-      \ '\eD' : s:escape.ignore,
-      \ '\eH' : s:escape.ignore,
-      \ '\e\d\+;\d\+' : s:escape.ignore,
-      \ '\eI' : s:escape.ignore,
-      \
-      \ '\eK' : s:escape.ignore,
-      \ '\eJ' : s:escape.ignore,
-      \
-      \ '\eZ' : s:escape.ignore,
-      \ '\e/Z' : s:escape.ignore,
-      \
-      \ '\e\[0G' : s:escape.ignore,
-      \ '\e\[>\dl' : s:escape.ignore,
-      \ '\e\[>\dh' : s:escape.ignore,
+      \ '^\[>\dl' : s:escape.ignore,
+      \ '^\[>\dh' : s:escape.ignore,
       \}
-let s:control_sequence = {
-      \ "\<C-h>" : s:escape.ignore,
-      \ "\<BS>" : s:escape.ignore,
-      \ "\<Del>" : s:escape.ignore,
-      \ "\<C-l>" : s:escape.ignore,
+let s:escape_sequence_simple = {
+      \ 'N' : s:escape.ignore,
+      \ 'O' : s:escape.ignore,
+      \ 
+      \ '[m' : s:escape.ignore,
+      \
+      \ '[H' : s:escape.ignore,
+      \ '[;H' : s:escape.ignore,
+      \ '[f' : s:escape.ignore,
+      \ '[;f' : s:escape.ignore,
+      \ 'M' : s:escape.ignore,
+      \ 'E' : s:escape.ignore,
+      \ '7' : s:escape.ignore,
+      \ '8' : s:escape.ignore,
+      \
+      \ '[g' : s:escape.ignore,
+      \
+      \ '[K' : s:escape.ignore,
+      \ '[0K' : s:escape.ignore,
+      \ '[1K' : s:escape.ignore,
+      \ '[2K' : s:escape.ignore,
+      \
+      \ '[J' : s:escape.clear_screen_from_cursor_down,
+      \ '[0J' : s:escape.ignore,
+      \ '[1J' : s:escape.ignore,
+      \ '[2J' : s:escape.clear_entire_screen,
+      \
+      \ '[c' : s:escape.ignore,
+      \ '[0c' : s:escape.ignore,
+      \
+      \ 'c' : s:escape.ignore,
+      \
+      \ '<' : s:escape.ignore,
+      \ '=' : s:escape.ignore,
+      \ '>' : s:escape.ignore,
+      \ 'F' : s:escape.ignore,
+      \ 'G' : s:escape.ignore,
+      \
+      \ 'A' : s:escape.move_head,
+      \ 'B' : s:escape.ignore,
+      \ 'C' : s:escape.ignore,
+      \ 'D' : s:escape.ignore,
+      \ 'H' : s:escape.ignore,
+      \ 'I' : s:escape.ignore,
+      \
+      \ 'K' : s:escape.ignore,
+      \ 'J' : s:escape.ignore,
+      \
+      \ 'Z' : s:escape.ignore,
+      \ '/Z' : s:escape.ignore,
+      \
+      \ '[0G' : s:escape.ignore,
       \}
 "}}}
 " control sequence list. {{{

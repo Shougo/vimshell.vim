@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,6 @@ function! vimshell#parser#check_script(script)"{{{
   return 0
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
-  let l:skip_prompt = 0
   " Split statements.
   for l:statement in vimshell#parser#split_statements(a:script)
     let l:statement = vimshell#parser#parse_alias(l:statement)
@@ -99,16 +98,9 @@ function! vimshell#parser#eval_script(script, context)"{{{
       endif
     endif
 
-    if l:program == ''
-      " Echo file.
-      let l:program = 'cat'
-    endif
-
-    let l:skip_prompt = vimshell#parser#execute_command(l:program, l:args, l:fd, a:context)
+    call vimshell#parser#execute_command(l:program, l:args, l:fd, a:context)
     redraw
   endfor
-
-  return l:skip_prompt
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
   " Get program.
@@ -188,8 +180,6 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     throw printf('Error: File "%s" is not found.', l:program)
   endif
   "}}}
-
-  return 0
 endfunction
 "}}}
 
@@ -219,7 +209,6 @@ function! vimshell#parser#split_statements(script)"{{{
       let l:statement .= l:string
     elseif a:script[i] == '\'
       " Escape.
-      let l:statement .= '\'
       let i += 1
 
       if i >= len(a:script)
@@ -315,6 +304,65 @@ function! vimshell#parser#split_args(script)"{{{
   endfor
 
   return l:ret
+endfunction"}}}
+function! vimshell#parser#split_args_through(script)"{{{
+  let l:script = a:script
+  let l:max = len(l:script)
+  let l:args = []
+  let l:arg = ''
+  let i = 0
+  while i < l:max
+    if l:script[i] == "'"
+      " Single quote.
+      let [l:string, i] = s:skip_single_quote(l:script, i)
+      let l:arg .= l:string
+      if l:arg == ''
+        call add(l:args, '')
+      endif
+    elseif l:script[i] == '"'
+      " Double quote.
+      let [l:string, i] = s:skip_double_quote(l:script, i)
+      let l:arg .= l:string
+      if l:arg == ''
+        call add(l:args, '')
+      endif
+    elseif l:script[i] == '`'
+      " Back quote.
+      let [l:string, i] = s:skip_back_quote(l:script, i)
+      let l:arg .= l:string
+      if l:arg == ''
+        call add(l:args, '')
+      endif
+    elseif l:script[i] == '\'
+      " Escape.
+      let i += 1
+
+      if i > l:max
+        throw 'Exception: Join to next line (\).'
+      endif
+
+      let l:arg .= '\'.l:script[i]
+      let i += 1
+    elseif l:script[i] != ' '
+      let l:arg .= l:script[i]
+      let i += 1
+    else
+      " Space.
+      if l:arg != ''
+        call add(l:args, l:arg)
+      endif
+
+      let l:arg = ''
+
+      let i += 1
+    endif
+  endwhile
+
+  if l:arg != ''
+    call add(l:args, l:arg)
+  endif
+
+  return l:args
 endfunction"}}}
 function! vimshell#parser#split_pipe(script)"{{{
   let l:script = ''

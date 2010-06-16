@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 15 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,6 +109,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let keyword.abbr = l:abbr
 
     " Escape word.
+    let keyword.orig = keyword.word
     let keyword.word = escape(keyword.word, ' *?[]"={}')
   endfor
 
@@ -116,9 +117,10 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in filter(split(substitute(glob(a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 
-        \ 'isdirectory(v:val) || (vimshell#iswin() && fnamemodify(v:val, ":e") ==? "LNK" && isdirectory(resolve(v:val)))')
-    let l:dict = { 'word' : keyword, 'menu' : 'directory' }
+  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
+        \ 'isdirectory(v:val.orig) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(v:val.orig)))')
+    let l:dict = l:keyword
+    let l:dict.menu = 'directory'
 
     call add(l:ret, l:dict)
   endfor
@@ -149,7 +151,7 @@ endfunction"}}}
 function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
   let l:ret = []
 
-  for keyword in vimshell#complete#helper#keyword_filter(range(len(b:vimshell.directory_stack)), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(range(len(b:vimshell.directory_stack)), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : b:vimshell.directory_stack[keyword] }
 
     call add(l:ret, l:dict)
@@ -159,7 +161,7 @@ function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_filter(keys(b:vimshell.alias_table), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(b:vimshell.alias_table), a:cur_keyword_str)
     let l:dict = { 'word' : keyword }
 
     if len(b:vimshell.alias_table[keyword]) > 15
@@ -175,7 +177,7 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#specials(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_filter(keys(g:vimshell#special_func_table), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#special_func_table), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : 'special' }
     call add(l:ret, l:dict)
   endfor 
@@ -184,7 +186,7 @@ function! vimshell#complete#helper#specials(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_filter(keys(g:vimshell#internal_func_table), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#internal_func_table), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : 'internal' }
     call add(l:ret, l:dict)
   endfor 
@@ -193,13 +195,19 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
   let l:ret = []
-  if has('win32') || has('win64')
+
+  let l:pattern = printf('[/~]\?\f\+[%s]\f*$', l:PATH_SEPARATOR)
+  if vimshell#iswin()
     let l:path = substitute($PATH, '\\\?;', ',', 'g')
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-    let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
+
+    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
+    let l:list = map(filter(split(l:files, '\n'),
           \'"." . fnamemodify(v:val, ":e") =~ '.string(l:exts)), 'fnamemodify(v:val, ":t:r")')
   else
     let l:path = substitute($PATH, '/\?:', ',', 'g')
+
+    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
     let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
           \'executable(v:val)'), 'fnamemodify(v:val, ":t:r")')
   endif
@@ -243,7 +251,12 @@ endfunction"}}}
 function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
 
-  return filter(a:list, printf("v:val.word[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
+  return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
+endfunction"}}}
+function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str)"{{{
+  let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
+
+  return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
 endfunction"}}}
 
 " vim: foldmethod=marker

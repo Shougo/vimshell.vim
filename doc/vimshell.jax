@@ -302,6 +302,7 @@ EXAMPLES						*vimshell-examples*
 	endfunction
 	function! g:my_preexec(cmdline, context)
 	  call vimshell#execute('echo "preexec"')
+	  return a:cmdline
 	endfunction
 <
 プロンプトをユーザー名にしているだけで、後は凝った設定はしてないです。 ちな

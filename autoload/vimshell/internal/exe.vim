@@ -39,7 +39,7 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
   
   " Execute command.
   if s:init_process(a:fd, l:args, l:options)
-    return 0
+    return
   endif
 
   echo 'Running command.'
@@ -60,14 +60,12 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
         " Background execution.
         call vimshell#internal#bg#init(l:args, a:fd, a:other_info, 'background', a:other_info.is_interactive)
 
-        wincmd w
         unlet b:interactive
-        return 1
       elseif l:char == "\<C-d>"
         " Interrupt.
         call vimshell#interactive#force_exit()
         call vimshell#error_line(a:fd, 'exe: Interrupted.')
-        return 0
+        return
       endif
     endif
   endwhile
@@ -76,8 +74,6 @@ function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
   echo ''
 
   let b:vimshell.system_variables['status'] = b:interactive.status
-
-  return 0
 endfunction"}}}
 
 function! s:init_process(fd, args, options)
@@ -110,5 +106,5 @@ function! s:init_process(fd, args, options)
   endif
   call b:interactive.process.stdin.close()
 
-  return 0
+  return
 endfunction
