@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-16
+- Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().
+
 2010-06-15
 - Improved interactive update.
 - Optimized escape sequence.

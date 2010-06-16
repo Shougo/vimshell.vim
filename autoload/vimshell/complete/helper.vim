@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 16 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,6 +24,7 @@
 " }}}
 "=============================================================================
 
+" cur_keyword_str [, path]
 function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   if a:0 > 1
     echoerr 'Too many arguments.'
@@ -40,9 +41,8 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   let l:is_win = has('win32') || has('win64')
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
-  if a:0 == 1
-    let l:mask = a:1
-  elseif l:cur_keyword_str =~ '\*$'
+  " Set mask.
+  if l:cur_keyword_str =~ '\*$'
     let l:mask = ''
   else
     let l:mask = '*'
@@ -60,17 +60,19 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   endif
 
   try
-    let l:glob = l:cur_keyword_str . l:mask
-    let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
+    let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
+    let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
+    
     if empty(l:files)
       " Add '*' to a delimiter.
       let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let l:glob = l:cur_keyword_str . l:mask
+      let l:glob = (a:0 == 1) ? glob(l:cur_keyword_str . l:mask) : globpath(a:1, l:cur_keyword_str . l:mask)
       let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
     endif
   catch
     return []
   endtry
+  
   if empty(l:files)
     return []
   endif
@@ -130,7 +132,8 @@ endfunction"}}}
 function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   " Check dup.
   let l:check = {}
-  for keyword in filter(split(substitute(globpath(&cdpath, a:cur_keyword_str . '*'), '\\', '/', 'g'), '\n'), 'isdirectory(v:val)')
+  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath), 
+        \ 'isdirectory(v:val.orig) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(v:val.orig)))')
     if !has_key(l:check, keyword) && keyword =~ '/'
       let l:check[keyword] = keyword
     endif
@@ -141,7 +144,8 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   for keyword in keys(l:check)
     " Substitute home path.
     let keyword = substitute(keyword, l:home_pattern, '\~/', '')
-    let l:dict = { 'word' : escape(keyword, ' *?[]"={}'), 'abbr' : keyword.'/', 'menu' : 'directory' }
+    let l:dict = l:keyword
+    let l:dict.menu = 'directory'
 
     call add(l:ret, l:dict)
   endfor
