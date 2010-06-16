@@ -285,7 +285,7 @@ function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
   .+1,$ delete x
   let @x = l:reg
 endfunction"}}}
-function! s:escape.move_head()"{{{
+function! s:escape.move_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
 
