@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed print_prompt() bug.
 - Implemented delete_backword_char escape sequence.
 - Added some escape sequences support.
+- Improved echoback check.
 
 2010-06-15
 - Improved interactive update.

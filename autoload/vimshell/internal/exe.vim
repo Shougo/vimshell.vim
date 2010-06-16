@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 16 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -98,6 +98,7 @@ function! s:init_process(fd, args, options)
         \ 'encoding' : a:options['--encoding'], 
         \ 'is_pty' : !vimshell#iswin(), 
         \ 'is_background': 0, 
+        \ 'echoback_linenr' : -1,
         \}
 
   " Input from stdin.

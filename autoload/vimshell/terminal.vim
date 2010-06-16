@@ -32,7 +32,9 @@ function! vimshell#terminal#print(string)"{{{
   if l:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(l:string, '\n', 1)
-    call setline('.', getline('.') . l:lines[0])
+    if exists('b:interactive') && line('.') != b:interactive.echoback_linenr
+      call setline('.', getline('.') . l:lines[0])
+    endif
     call append('.', l:lines[1:])
     execute 'normal!' (len(l:lines)-1).'j$'
     
@@ -173,7 +175,7 @@ function! vimshell#terminal#clear_highlight()"{{{
   endfor
 endfunction"}}}
 function! s:output_string(string)"{{{
-  if a:string == ''
+  if a:string == '' || (exists('b:interactive') && s:line == b:interactive.echoback_linenr)
     return
   endif
   
@@ -340,6 +342,10 @@ function! s:control.newline()"{{{
   let s:lines[s:line] = ''
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
+  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+    return
+  endif
+  
   let l:line = s:lines[s:line]
   
   if s:col == 1

@@ -133,7 +133,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   try
     " Delete input text.
-    call s:delete_input(l:in)
+    "call s:delete_input(l:in)
     let b:interactive.echoback_linenr = line('.')
     
     if l:in =~ "\<C-d>$"
@@ -182,7 +182,7 @@ function! vimshell#interactive#send_string(string)"{{{
 
   try
     " Delete input text.
-    call s:delete_input(l:in)
+    "call s:delete_input(l:in)
     
     if l:in =~ "\<C-d>$"
       " EOF.
