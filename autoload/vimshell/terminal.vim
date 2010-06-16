@@ -210,20 +210,9 @@ let s:highlight_table = {
       \ 49 : ' ctermbg=NONE guibg=NONE', 
       \}
 function! s:escape.highlight(matchstr)"{{{
-
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
   
-  if a:matchstr !~ '^\[[0-9;]\+m$'
-    " Optimized syntax highlight.
-    let l:string = matchstr(a:matchstr, '^\[[0-9;]\+m\zs.*')
-    
-    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c+ end=+\%' . s:line . 'l\%'. (s:col+len(l:string)) . 'c+ contains=ALL'
-
-    " Output.
-    call s:output_string(l:string)
-  else
-    execute 'syntax region' l:syntax_name 'start=+\%' . s:line . 'l\%' . s:col . 'c\|\n+ end=+\%$+' 'contains=ALL'
-  endif
+  let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+\%%$+ contains=ALL', s:line, s:col)
 
   if !has_key(s:terminal_info, bufnr('%'))
     let s:terminal_info[bufnr('%')] = {
@@ -231,7 +220,6 @@ function! s:escape.highlight(matchstr)"{{{
           \}
     return
   endif
-  call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
 
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
@@ -293,17 +281,20 @@ function! s:escape.highlight(matchstr)"{{{
         let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:vimshell_escape_colors[l:color])
       endif
       break
-    elseif 90 <= l:color_code && l:color_code <= 99
+    elseif 90 <= l:color_code && l:color_code <= 97
       " Foreground color(high intensity).
       let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 82, g:vimshell_escape_colors[l:color_code - 82])
-    elseif 100 <= l:color_code && l:color_code <= 109
+    elseif 100 <= l:color_code && l:color_code <= 107
       " Background color(high intensity).
       let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 92, g:vimshell_escape_colors[l:color_code - 92])
     endif"}}}
   endfor
   if l:highlight != ''
+    execute 'syntax region' l:syntax_name l:syntax_command
     execute 'highlight link' l:syntax_name 'Normal'
     execute 'highlight' l:syntax_name l:highlight
+
+    call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
@@ -367,7 +358,7 @@ let s:escape_sequence_match = {
       \ '^(\d' : s:escape.ignore,
       \ '^)\d' : s:escape.ignore,
       \ 
-      \ '^\[[0-9;]\+m\%([^\e]\{-1,}\ze\e\[0m\)\?' : s:escape.highlight,
+      \ '^\[[0-9;]\+m' : s:escape.highlight,
       \ 
       \ '^\[\d\+;\d\+r' : s:escape.ignore,
       \

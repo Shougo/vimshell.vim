@@ -187,6 +187,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-06-16
 - Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().
+- Improved highlight sequences.
+- Fixed print_prompt() bug.
 
 2010-06-15
 - Improved interactive update.

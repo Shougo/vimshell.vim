@@ -391,6 +391,8 @@ function! vimshell#print_prompt(...)"{{{
 
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
   
+  $
+  
   " Call preprompt hook.
   call vimshell#hook#call('preprompt', l:context)
   
@@ -410,7 +412,6 @@ function! vimshell#print_prompt(...)"{{{
         call setline('$', l:secondary)
       else
         call append('$', l:secondary)
-        $
       endif
     endfor
     
@@ -434,8 +435,9 @@ function! vimshell#print_prompt(...)"{{{
     call setline('$', l:new_prompt)
   else
     call append('$', l:new_prompt)
-    $
   endif
+
+  $
   let &modified = 0
 endfunction"}}}
 function! vimshell#print_secondary_prompt()"{{{
