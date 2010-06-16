@@ -189,6 +189,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().
 - Improved highlight sequences.
 - Fixed print_prompt() bug.
+- Implemented delete_backword_char escape sequence.
+- Added some escape sequences support.
 
 2010-06-15
 - Improved interactive update.

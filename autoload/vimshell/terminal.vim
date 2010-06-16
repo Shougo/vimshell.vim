@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 16 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,7 +115,6 @@ function! vimshell#terminal#print(string)"{{{
   for [l:linenr, l:line] in items(s:lines)
     call setline(l:linenr, l:line)
   endfor
-  "echomsg string(s:lines)
   let s:lines = {}
   
   " Move pos.
@@ -212,7 +211,7 @@ let s:highlight_table = {
 function! s:escape.highlight(matchstr)"{{{
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
   
-  let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+\%%$+ contains=ALL', s:line, s:col)
+  let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
 
   if !has_key(s:terminal_info, bufnr('%'))
     let s:terminal_info[bufnr('%')] = {
@@ -297,6 +296,9 @@ function! s:escape.highlight(matchstr)"{{{
     call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
   endif
 endfunction"}}}
+function! s:escape.highlight_restore(matchstr)"{{{
+  call s:escape.highlight('[0m')
+endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
@@ -336,6 +338,19 @@ function! s:control.newline()"{{{
   let s:line += 1
   let s:col = 1
   let s:lines[s:line] = ''
+endfunction"}}}
+function! s:control.delete_backword_char()"{{{
+  let l:line = s:lines[s:line]
+  
+  if s:col == 1
+    return
+  elseif s:col == 2
+    let s:lines[s:line] = l:line[s:col :] 
+  else
+    let s:lines[s:line] = l:line[: s:col-2] . l:line[s:col :] 
+  endif
+  
+  let s:col -= 1
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1
@@ -390,7 +405,7 @@ let s:escape_sequence_simple = {
       \ 'N' : s:escape.ignore,
       \ 'O' : s:escape.ignore,
       \ 
-      \ '[m' : s:escape.ignore,
+      \ '[m' : s:escape.highlight_restore,
       \
       \ '[H' : s:escape.ignore,
       \ '[;H' : s:escape.ignore,
@@ -445,7 +460,7 @@ let s:escape_sequence_simple = {
 let s:control_sequence = {
       \ "\<LF>" : s:control.newline,
       \ "\<CR>" : s:control.carriage_return,
-      \ "\<C-h>" : s:control.ignore,
+      \ "\<C-h>" : s:control.delete_backword_char,
       \ "\<BS>" : s:control.ignore,
       \ "\<Del>" : s:control.ignore,
       \ "\<C-l>" : s:control.clear_entire_screen,
