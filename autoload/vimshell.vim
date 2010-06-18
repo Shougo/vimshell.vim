@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -387,6 +387,10 @@ function! vimshell#error_line(fd, string)"{{{
   $
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
+  if &filetype !=# 'vimshell'
+    return
+  endif
+  
   " Save current directory.
   let b:vimshell.prompt_current_dir[vimshell#get_prompt_linenr()] = getcwd()
 
@@ -495,6 +499,10 @@ function! vimshell#getfilename(program)"{{{
   endif
 endfunction"}}}
 function! vimshell#start_insert(...)"{{{
+  if &filetype !=# 'vimshell'
+    return
+  endif
+
   let l:is_insert = (a:0 == 0)? 1 : a:1
 
   if l:is_insert
@@ -502,9 +510,7 @@ function! vimshell#start_insert(...)"{{{
     $
     startinsert!
 
-    if exists('&iminsert')
-      let &l:iminsert = 0
-    endif
+    call vimshell#imdisable()
   else
     normal! $
   endif
@@ -720,6 +726,16 @@ function! vimshell#alternate_buffer()"{{{
     else
       bnext
     endif
+  endif
+endfunction"}}}
+function! vimshell#imdisable()"{{{
+  " Disable input method.
+  if exists('*eskk#is_enabled') && eskk#is_enabled()
+    call feedkeys(eskk#disable(), 'n')
+  elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
+    call feedkeys(SkkDisable(), 'n')
+  elseif exists('&iminsert')
+    let &l:iminsert = 0
   endif
 endfunction"}}}
 "}}}

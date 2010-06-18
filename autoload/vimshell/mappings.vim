@@ -206,7 +206,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   " Call preparse filter.
   let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
 
-  let l:bufnr_save = bufnr('%')
   try
     call vimshell#parser#eval_script(l:line, l:context)
   catch /^Error: File ".*" is not found./
@@ -241,11 +240,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   " Not append history if starts spaces or dups.
   if l:line !~ '^\s'
     call vimshell#append_history(l:line)
-  endif
-
-  if bufnr('%') != l:bufnr_save
-    " Skip prompt.
-    return
   endif
 
   call vimshell#print_prompt(l:context)

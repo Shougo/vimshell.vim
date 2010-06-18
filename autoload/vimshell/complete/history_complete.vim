@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,9 +25,7 @@
 "=============================================================================
 
 function! vimshell#complete#history_complete#whole()"{{{
-  if exists('&iminsert')
-    let &l:iminsert = 0
-  endif
+  call vimshell#imdisable()
 
   if !vimshell#check_prompt()
     " Ignore.
@@ -46,9 +44,7 @@ function! vimshell#complete#history_complete#whole()"{{{
   endif
 endfunction"}}}
 function! vimshell#complete#history_complete#insert()"{{{
-  if exists('&iminsert')
-    let &l:iminsert = 0
-  endif
+  call vimshell#imdisable()
 
   if !vimshell#check_prompt()
     " Ignore.

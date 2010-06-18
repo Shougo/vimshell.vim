@@ -73,8 +73,11 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endtry
   
-  if empty(l:files) || len(l:files) > g:vimshell_max_list
+  if empty(l:files) || 
     return []
+  elseif len(l:files) > g:vimshell_max_list
+    " Trunk items.
+    let l:files = l:files[: g:neocomplcache_max_list - 1]
   endif
 
   let l:list = []

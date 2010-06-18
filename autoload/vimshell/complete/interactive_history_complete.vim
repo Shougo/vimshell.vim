@@ -25,9 +25,7 @@
 "=============================================================================
 
 function! vimshell#complete#interactive_history_complete#complete()"{{{
-  if exists('&iminsert')
-    let &l:iminsert = 0
-  endif
+  call vimshell#imdisable()
 
   " Interactive completion.
 
