@@ -136,19 +136,16 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   " Check dup.
   let l:check = {}
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath), 
-        \ 'isdirectory(v:val.orig) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(v:val.orig)))')
-    if !has_key(l:check, keyword) && keyword =~ '/'
-      let l:check[keyword] = keyword
+        \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(expand(v:val.orig), ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
+    if !has_key(l:check, keyword.word) && keyword.word =~ '/'
+      let l:check[keyword.word] = keyword
     endif
   endfor
 
   let l:ret = []
-  let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
-  for keyword in keys(l:check)
-    " Substitute home path.
-    let keyword = substitute(keyword, l:home_pattern, '\~/', '')
+  for keyword in values(l:check)
     let l:dict = l:keyword
-    let l:dict.menu = 'directory'
+    let l:dict.menu = 'cdpath'
 
     call add(l:ret, l:dict)
   endfor

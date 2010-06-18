@@ -192,6 +192,7 @@ CHANGELOG						*vimshell-changelog*
 - Refactoringed.
 - Improved imdisable.
 - Fixed fatal print bug.
+- Fixed cdpath complete.
 
 2010-06-16
 - Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().
