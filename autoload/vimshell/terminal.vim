@@ -87,7 +87,7 @@ function! vimshell#terminal#print(string)"{{{
         call s:output_string(l:newstr)
         let l:newstr = ''
 
-        call call(s:escape_sequence_simple_char2[l:checkchar3], [''], s:escape)
+        call call(s:escape_sequence_simple_char3[l:checkchar3], [''], s:escape)
 
         let l:pos += 4
         continue
