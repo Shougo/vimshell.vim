@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,11 +27,9 @@
 let s:terminal_info = {}
 
 function! vimshell#terminal#print(string)"{{{
-  let l:string = substitute(a:string, '\r\n', '\n', 'g')
-  
-  if l:string !~ '[\e\r\b]' && col('.') == col('$')
+  if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
-    let l:lines = split(l:string, '\n', 1)
+    let l:lines = split(a:string, '\n', 1)
     if exists('b:interactive') && line('.') != b:interactive.echoback_linenr
       call setline('.', getline('.') . l:lines[0])
     endif
@@ -43,55 +41,76 @@ function! vimshell#terminal#print(string)"{{{
   
   let l:newstr = ''
   let l:pos = 0
-  let l:max = len(l:string)
+  let l:max = len(a:string)
   let s:col = col('.')
   let s:line = line('.')
   let s:lines = {}
   let s:lines[s:line] = getline('.')
   
   while l:pos < l:max
-    let l:char = l:string[l:pos]
-    if l:char !~ '[[:cntrl:]]'
+    let l:char = a:string[l:pos]
+    if l:char !~ '[[:cntrl:]]'"{{{
       let l:newstr .= l:char
-      let l:pos += 1
-
-      continue
-    endif
-
-    if l:char == "\<ESC>""{{{
+      let l:pos += 1"}}}
+    elseif l:char == "\<ESC>""{{{
       " Check escape sequence.
-      let l:checkstr = l:string[l:pos+1 :]
-      let l:matched = 0
-      
-      " Check simple pattern.
-      for l:pattern in keys(s:escape_sequence_simple)
-        if neocomplcache#head_match(l:checkstr, l:pattern)
-          let l:matched = 1
-          break
-        endif
-      endfor
-
-      if !l:matched
-        " Check match pattern.
-        for l:pattern in keys(s:escape_sequence_match)
-          if l:checkstr =~ l:pattern
-            let l:matched = 2
-            break
-          endif
-        endfor
+      let l:checkstr = a:string[l:pos+1 :]
+      if l:checkstr == ''
+        break
       endif
       
-      if l:matched
-        " Print rest string.
+      " Check simple pattern.
+      let l:checkchar1 = l:checkstr[0]
+      if has_key(s:escape_sequence_simple_char1, l:checkchar1)"{{{
         call s:output_string(l:newstr)
         let l:newstr = ''
 
-        let l:matchstr = matchstr(l:checkstr, l:pattern)
+        call call(s:escape_sequence_simple_char1[l:checkchar1], [''], s:escape)
 
-        call call((l:matched == 1 ? 
-              \ s:escape_sequence_simple[l:pattern] : s:escape_sequence_match[l:pattern]), [l:matchstr], s:escape)
+        let l:pos += 2
+        continue
+      endif"}}}
+      let l:checkchar2 = l:checkstr[: 1]
+      if l:checkchar2 != '' && has_key(s:escape_sequence_simple_char2, l:checkchar2)"{{{
+        call s:output_string(l:newstr)
+        let l:newstr = ''
 
-        let l:pos += len(l:matchstr) + 1
+        call call(s:escape_sequence_simple_char2[l:checkchar2], [''], s:escape)
+
+        let l:pos += 3
+        continue
+      endif"}}}
+      let l:checkchar3 = l:checkstr[: 2]
+      if l:checkchar3 != '' && has_key(s:escape_sequence_simple_char3, l:checkchar3)"{{{
+        call s:output_string(l:newstr)
+        let l:newstr = ''
+
+        call call(s:escape_sequence_simple_char2[l:checkchar3], [''], s:escape)
+
+        let l:pos += 4
+        continue
+      endif"}}}
+
+      let l:matched = 0
+      " Check match pattern.
+      for l:pattern in keys(s:escape_sequence_match)"{{{
+        if l:checkstr =~ l:pattern
+          let l:matched = 1
+
+          " Print rest string.
+          call s:output_string(l:newstr)
+          let l:newstr = ''
+
+          let l:matchstr = matchstr(l:checkstr, l:pattern)
+
+          call call(s:escape_sequence_match[l:pattern], [l:matchstr], s:escape)
+
+          let l:pos += len(l:matchstr) + 1
+          break
+        endif
+      endfor"}}}
+      
+      if l:matched
         continue
       endif"}}}
     elseif has_key(s:control_sequence, l:char)"{{{
@@ -139,24 +158,54 @@ function! vimshell#terminal#filter(string)"{{{
     let l:matched = 0
     
     let l:char = a:string[l:pos]
-    if l:char == "\<ESC>"
-      " Check escape sequence.
-      for l:pattern in keys(s:escape_sequence)
-        let l:matchstr = matchstr(a:string, '^'.l:pattern, l:pos)
-        if l:matchstr != ''
+    if l:char !~ '[[:cntrl:]]'"{{{
+      let l:newstr .= l:char
+      let l:pos += 1
+
+      continue"}}}
+    elseif l:char == "\<ESC>""{{{
+      let l:checkstr = a:string[l:pos+1 :]
+      if l:checkstr == ''
+        break
+      endif
+      
+      " Check simple pattern.
+      let l:checkchar1 = l:checkstr[0]
+      if has_key(s:escape_sequence_simple_char1, l:checkchar1)"{{{
+        let l:pos += 2
+        continue
+      endif"}}}
+      let l:checkchar2 = l:checkstr[: 1]
+      if l:checkchar2 != '' && has_key(s:escape_sequence_simple_char2, l:checkchar2)"{{{
+        let l:pos += 3
+        continue
+      endif"}}}
+      let l:checkchar3 = l:checkstr[: 2]
+      if l:checkchar3 != '' && has_key(s:escape_sequence_simple_char3, l:checkchar3)"{{{
+        let l:pos += 4
+        continue
+      endif"}}}
+
+      let l:matched = 0
+      " Check match pattern.
+      for l:pattern in keys(s:escape_sequence_match)"{{{
+        if l:checkstr =~ l:pattern
           let l:matched = 1
-          let l:pos += len(l:matchstr)
+          let l:pos += len(matchstr(l:checkstr, l:pattern)) + 1
           break
         endif
-      endfor
-    elseif has_key(s:control_sequence, l:char)
-      continue
-    endif
-    
-    if !l:matched
-      let l:newstr .= a:string[l:pos]
+      endfor"}}}
+      
+      if l:matched
+        continue
+      endif"}}}
+    elseif has_key(s:control_sequence, l:char)"{{{
       let l:pos += 1
-    endif
+      continue
+    endif"}}}
+    
+    let l:newstr .= a:string[l:pos]
+    let l:pos += 1
   endwhile
 
   return l:newstr
@@ -407,35 +456,16 @@ let s:escape_sequence_match = {
       \ '^\[>\dl' : s:escape.ignore,
       \ '^\[>\dh' : s:escape.ignore,
       \}
-let s:escape_sequence_simple = {
+let s:escape_sequence_simple_char1 = {
       \ 'N' : s:escape.ignore,
       \ 'O' : s:escape.ignore,
-      \ 
-      \ '[m' : s:escape.highlight_restore,
       \
-      \ '[H' : s:escape.ignore,
-      \ '[;H' : s:escape.ignore,
-      \ '[f' : s:escape.ignore,
-      \ '[;f' : s:escape.ignore,
       \ 'M' : s:escape.ignore,
       \ 'E' : s:escape.ignore,
       \ '7' : s:escape.ignore,
       \ '8' : s:escape.ignore,
       \
-      \ '[g' : s:escape.ignore,
-      \
       \ '[K' : s:escape.ignore,
-      \ '[0K' : s:escape.ignore,
-      \ '[1K' : s:escape.ignore,
-      \ '[2K' : s:escape.ignore,
-      \
-      \ '[J' : s:escape.clear_screen_from_cursor_down,
-      \ '[0J' : s:escape.ignore,
-      \ '[1J' : s:escape.ignore,
-      \ '[2J' : s:escape.clear_entire_screen,
-      \
-      \ '[c' : s:escape.ignore,
-      \ '[0c' : s:escape.ignore,
       \
       \ 'c' : s:escape.ignore,
       \
@@ -456,8 +486,36 @@ let s:escape_sequence_simple = {
       \ 'J' : s:escape.ignore,
       \
       \ 'Z' : s:escape.ignore,
-      \ '/Z' : s:escape.ignore,
+      \}
+let s:escape_sequence_simple_char2 = {
+      \ '[m' : s:escape.highlight_restore,
       \
+      \ '[H' : s:escape.ignore,
+      \ '[f' : s:escape.ignore,
+      \
+      \ '[g' : s:escape.ignore,
+      \
+      \ '[K' : s:escape.ignore,
+      \
+      \ '[J' : s:escape.clear_screen_from_cursor_down,
+      \
+      \ '[c' : s:escape.ignore,
+      \
+      \ '/Z' : s:escape.ignore,
+      \}
+let s:escape_sequence_simple_char3 = {
+      \ '[;H' : s:escape.ignore,
+      \ '[;f' : s:escape.ignore,
+      \
+      \ '[0K' : s:escape.ignore,
+      \ '[1K' : s:escape.ignore,
+      \ '[2K' : s:escape.ignore,
+      \
+      \ '[0J' : s:escape.ignore,
+      \ '[1J' : s:escape.ignore,
+      \ '[2J' : s:escape.clear_entire_screen,
+      \
+      \ '[0c' : s:escape.ignore,
       \ '[0G' : s:escape.ignore,
       \}
 "}}}

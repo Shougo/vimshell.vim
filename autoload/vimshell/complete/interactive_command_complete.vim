@@ -129,12 +129,12 @@ endfunction"}}}
 
 function! s:get_complete_key()"{{{
   if b:interactive.is_pty
-    " For pty program.
+    " For pty command.
     return "\<TAB>"
   elseif &filetype == 'int-zsh' || &filetype == 'int-nyaos' 
     return "\<C-d>"
   else
-    " For readline program.
+    " For readline command.
     return "\<ESC>?"
   endif
 endfunction"}}}

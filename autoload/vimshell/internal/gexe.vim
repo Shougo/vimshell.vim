@@ -24,13 +24,13 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#gexe#execute(program, args, fd, other_info)
+function! vimshell#internal#gexe#execute(command, args, fd, other_info)
   let l:command = join(a:args)
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
   endif
   
-  " Execute GUI program.
+  " Execute GUI command.
   if vimshell#iswin()
     execute printf('!start %s', l:command)
   else

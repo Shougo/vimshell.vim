@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -94,26 +94,6 @@ function! s:chomp_prompt(cur_text, line)"{{{
 
   return l:cur_text
 endfunction"}}}
-function! s:delete_input(in)"{{{
-  if has_key(b:interactive.prompt_history, line('.'))
-    call setline('.', b:interactive.prompt_history[line('.')])
-  elseif !empty(b:interactive.prompt_history)
-    " Maybe a multi-line command was pasted in.
-    let l:max_prompt = max(keys(b:interactive.prompt_history)) " Only count once.
-    if l:max_prompt < line('$')
-      call setline(l:max_prompt, b:interactive.prompt_history[l:max_prompt])
-      for i in range(l:max_prompt+1, line('$'))
-        delete
-      endfor
-    else
-      " Still nothing? We give up.
-      call setline('.', '')
-    endif
-  else
-    " Still nothing? We give up.
-    call setline('.', '')
-  endif
-endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   if !b:interactive.process.is_valid
@@ -132,8 +112,6 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endif
 
   try
-    " Delete input text.
-    "call s:delete_input(l:in)
     let b:interactive.echoback_linenr = line('.')
     
     if l:in =~ "\<C-d>$"
@@ -181,9 +159,6 @@ function! vimshell#interactive#send_string(string)"{{{
   endif
 
   try
-    " Delete input text.
-    "call s:delete_input(l:in)
-    
     if l:in =~ "\<C-d>$"
       " EOF.
       call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
@@ -479,8 +454,8 @@ function! vimshell#interactive#load_history()"{{{
   endif
 endfunction"}}}
 function! s:append_history(command)"{{{
-  if has_key(g:vimshell_no_save_history_programs, &filetype[4:])
-        \ && g:vimshell_no_save_history_programs[&filetype[4:]]
+  if has_key(g:vimshell_no_save_history_commands, &filetype[4:])
+        \ && g:vimshell_no_save_history_commands[&filetype[4:]]
     return
   endif
   " Reduce blanks.

@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#bcd#execute(program, args, fd, other_info)
+function! vimshell#internal#bcd#execute(command, args, fd, other_info)
   " Change working directory with buffer directory.
 
   if empty(a:args)

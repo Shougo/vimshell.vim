@@ -27,7 +27,7 @@
 let s:last_interactive_bufnr = 1
 let s:update_time_save = &updatetime
 
-function! vimshell#internal#iexe#execute(program, args, fd, other_info)"{{{
+function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
   " Interactive execute command.
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']

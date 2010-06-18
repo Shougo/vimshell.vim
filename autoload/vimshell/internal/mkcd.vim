@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#mkcd#execute(program, args, fd, other_info)
+function! vimshell#internal#mkcd#execute(command, args, fd, other_info)
     " Make directory and change the working directory.
     
     if empty(a:args)

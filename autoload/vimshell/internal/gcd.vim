@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#gcd#execute(program, args, fd, other_info)
+function! vimshell#internal#gcd#execute(command, args, fd, other_info)
   " Change the global working directory.
 
   let l:dir = empty(a:args)? getcwd() : a:args[0]

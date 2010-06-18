@@ -28,8 +28,8 @@ augroup vimshell_bg
   autocmd!
 augroup END
 
-function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
-  " Execute program in background.
+function! vimshell#internal#bg#execute(command, args, fd, other_info)"{{{
+  " Execute command in background.
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding', '--filetype']
         \})
@@ -103,8 +103,8 @@ function! vimshell#internal#bg#execute(program, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
-  let [l:program, l:script] = vimshell#parser#parse_program(vimshell#parser#parse_alias(a:args))
-  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(l:program . ' ' . l:script), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
+  let [l:command, l:script] = vimshell#parser#parse_command(vimshell#parser#parse_alias(a:args))
+  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(l:command . ' ' . l:script), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
 endfunction"}}}
 
 function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)"{{{

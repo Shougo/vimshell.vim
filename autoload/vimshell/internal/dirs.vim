@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#dirs#execute(program, args, fd, other_info)
+function! vimshell#internal#dirs#execute(command, args, fd, other_info)
     " Print directory stack.
     
     let l:cnt = 0

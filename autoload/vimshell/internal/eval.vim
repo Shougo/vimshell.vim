@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#eval#execute(program, args, fd, other_info)
+function! vimshell#internal#eval#execute(command, args, fd, other_info)
   " Evaluate arguments.
 
   let l:line = join(a:args)

@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#exit#execute(program, args, fd, other_info)
+function! vimshell#internal#exit#execute(command, args, fd, other_info)
   " Exit vimshell.
   if a:other_info.is_interactive
     let vimsh_buf = bufnr('%')

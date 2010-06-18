@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#histdel#execute(program, args, fd, other_info)
+function! vimshell#internal#histdel#execute(command, args, fd, other_info)
   " Delete from history.
 
   if !empty(a:args)

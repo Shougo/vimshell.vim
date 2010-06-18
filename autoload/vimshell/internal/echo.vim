@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#echo#execute(program, args, fd, other_info)"{{{
+function! vimshell#internal#echo#execute(command, args, fd, other_info)"{{{
   let l:string = join(a:args)
   if a:fd.stdout == '' && l:string != ''
     call append('.', '')

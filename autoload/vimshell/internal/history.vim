@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#history#execute(program, args, fd, other_info)
+function! vimshell#internal#history#execute(command, args, fd, other_info)
   let l:cnt = 0
   let l:arguments = join(a:args, ' ')
   if l:arguments =~ '^\d\+$'

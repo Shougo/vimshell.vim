@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#cd#execute(program, args, fd, other_info)
+function! vimshell#internal#cd#execute(command, args, fd, other_info)
   " Change the working directory.
 
   if empty(a:args)

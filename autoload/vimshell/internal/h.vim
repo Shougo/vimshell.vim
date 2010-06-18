@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#h#execute(program, args, fd, other_info)
+function! vimshell#internal#h#execute(command, args, fd, other_info)
   " Execute from history.
 
   if empty(a:args) || a:args[0] =~ '^\d\+'

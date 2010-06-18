@@ -185,6 +185,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-18
+- Fixed expand glob bug.
+- Improved escape filter.
+- Added g:vimshell_cat_command option.
+- Refactoringed.
+
 2010-06-16
 - Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().
 - Improved highlight sequences.

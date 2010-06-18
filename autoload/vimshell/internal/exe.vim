@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#exe#execute(program, args, fd, other_info)"{{{
+function! vimshell#internal#exe#execute(command, args, fd, other_info)"{{{
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})

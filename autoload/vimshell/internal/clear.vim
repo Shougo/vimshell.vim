@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#internal#clear#execute(program, args, fd, other_info)
+function! vimshell#internal#clear#execute(command, args, fd, other_info)
   " Clean up the screen.
   % delete _
 

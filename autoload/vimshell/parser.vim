@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -456,8 +456,8 @@ function! vimshell#parser#expand_wildcard(wildcard)"{{{
   endif
 
   " Expand wildcard.
-  let l:expanded = split(escape(glob(l:wildcard), ' '), '\n')
-  let l:exclude_wilde = split(escape(glob(l:exclude[1:]), ' '), '\n')
+  let l:expanded = split(escape(substitute(glob(l:wildcard), '\\', '/', 'g'), ' '), '\n')
+  let l:exclude_wilde = split(escape(substitute(glob(l:exclude[1:]), '\\', '/', 'g'), ' '), '\n')
   if !empty(l:exclude_wilde)
     let l:candidates = l:expanded
     let l:expanded = []

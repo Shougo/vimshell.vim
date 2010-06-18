@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2010
+" Last Modified: 18 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,7 +73,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endtry
   
-  if empty(l:files)
+  if empty(l:files) || len(l:files) > g:vimshell_max_list
     return []
   endif
 

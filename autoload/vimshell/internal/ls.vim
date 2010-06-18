@@ -56,7 +56,7 @@
 ""}}}
 "=============================================================================
 
-function! vimshell#internal#ls#execute(program, args, fd, other_info)
+function! vimshell#internal#ls#execute(command, args, fd, other_info)
     let l:arguments = a:args
 
     " Check pipe.
