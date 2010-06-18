@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Added g:vimshell_cat_command option.
 - Refactoringed.
 - Improved imdisable.
+- Fixed fatal print bug.
 
 2010-06-16
 - Improved vimshell#complete#helper#files() and vimshell#complete#helper#cdpath_directories().

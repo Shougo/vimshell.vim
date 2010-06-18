@@ -51,7 +51,9 @@ function! vimshell#terminal#print(string)"{{{
     let l:char = a:string[l:pos]
     if l:char !~ '[[:cntrl:]]'"{{{
       let l:newstr .= l:char
-      let l:pos += 1"}}}
+      let l:pos += 1
+      continue
+      "}}}
     elseif l:char == "\<ESC>""{{{
       " Check escape sequence.
       let l:checkstr = a:string[l:pos+1 :]
