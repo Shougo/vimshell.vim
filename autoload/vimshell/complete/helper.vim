@@ -73,7 +73,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endtry
   
-  if empty(l:files) || 
+  if empty(l:files)
     return []
   elseif len(l:files) > g:vimshell_max_list
     " Trunk items.
