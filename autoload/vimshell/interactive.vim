@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,22 +57,7 @@ endfunction"}}}
 function! s:get_cur_text()"{{{
   let l:pos = mode() ==# 'i' ? 2 : 1
 
-  let l:cur_text = col('.') < l:pos ? '' : getline('.')[: col('.') - l:pos]
-
-  if l:cur_text != '' && char2nr(l:cur_text[-1:]) >= 0x80
-    let l:len = len(getline('.'))
-
-    " Skip multibyte
-    let l:pos -= 1
-    let l:cur_text = getline('.')[: col('.') - l:pos]
-    let l:fchar = char2nr(l:cur_text[-1:])
-    while col('.')-l:pos+1 < l:len && l:fchar >= 0x80
-      let l:pos -= 1
-
-      let l:cur_text = getline('.')[: col('.') - l:pos]
-      let l:fchar = char2nr(l:cur_text[-1:])
-    endwhile
-  endif
+  let l:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
   
   return l:cur_text
 endfunction"}}}

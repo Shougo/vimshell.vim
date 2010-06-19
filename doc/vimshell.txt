@@ -185,6 +185,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-19
+- Improved get cur_text.
+- Fixed filename completion bug.
+
 2010-06-18
 - Fixed expand glob bug.
 - Improved escape filter.

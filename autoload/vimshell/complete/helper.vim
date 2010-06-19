@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,8 +66,8 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     if empty(l:files)
       " Add '*' to a delimiter.
       let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let l:glob = (a:0 == 1) ? glob(l:cur_keyword_str . l:mask) : globpath(a:1, l:cur_keyword_str . l:mask)
-      let l:files = split(substitute(glob(l:glob), '\\', '/', 'g'), '\n')
+      let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
+      let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
     endif
   catch
     return []
