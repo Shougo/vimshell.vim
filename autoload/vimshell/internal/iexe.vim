@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2010
+" Last Modified: 19 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -142,7 +142,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 
   call vimshell#internal#iexe#default_settings()
   
-  execute 'set filetype=int-'.fnamemodify(a:args[0], ':r')
+  execute 'set filetype=int-'.fnamemodify(a:args[0], ':t:r')
 
   " Set autocommands.
   augroup vimshell_iexe

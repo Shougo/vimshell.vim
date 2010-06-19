@@ -38,7 +38,6 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 
   let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
 
-  let l:is_win = has('win32') || has('win64')
   let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
 
   " Set mask.
@@ -51,7 +50,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   if a:cur_keyword_str =~ '^\$\h\w*'
     let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
     let l:env_ev = eval(l:env)
-    if l:is_win
+    if vimshell#iswin()
       let l:env_ev = substitute(l:env_ev, '\\', '/', 'g')
     endif
     let l:len_env = len(l:env_ev)
@@ -82,13 +81,24 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 
   let l:list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
+  let l:paths = map((a:0 == 1 ? split(&path, ',') : [ getcwd() ]), 'substitute(v:val, "\\\\", "/", "g")')
   for word in l:files
     let l:dict = {
-          \'word' : substitute(word, l:home_pattern, '\~/', ''), 'menu' : 'file'
+          \'word' : word, 'menu' : 'file'
           \}
 
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
+    elseif a:cur_keyword_str =~ '^\~/'
+      let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
+    elseif a:cur_keyword_str !~ '^\.\.\?/'
+      " Path search.
+      for path in l:paths
+        if path != '' && neocomplcache#head_match(word, path . '/')
+          let l:dict.word = l:dict.word[len(path)+1 : ]
+          break
+        endif
+      endfor
     endif
 
     call add(l:list, l:dict)
@@ -101,7 +111,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     if isdirectory(keyword.word)
       let l:abbr .= '/'
       let keyword.menu = 'directory'
-    elseif l:is_win
+    elseif vimshell#iswin()
       if '.'.fnamemodify(keyword.word, ':e') =~ l:exts
         let l:abbr .= '*'
         let keyword.menu = 'executable'
@@ -198,26 +208,29 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
   return l:ret
 endfunction"}}}
 function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
-  let l:ret = []
-
-  let l:pattern = printf('[/~]\?\f\+[%s]\f*$', l:PATH_SEPARATOR)
-  if vimshell#iswin()
-    let l:path = substitute($PATH, '\\\?;', ',', 'g')
-    let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-
-    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
-    let l:list = map(filter(split(l:files, '\n'),
-          \'"." . fnamemodify(v:val, ":e") =~ '.string(l:exts)), 'fnamemodify(v:val, ":t:r")')
+  if a:cur_keyword_str =~ '[/\\]'
+    let l:files = vimshell#complete#helper#files(a:cur_keyword_str)
+  elseif vimshell#iswin()
+    let l:files = vimshell#complete#helper#files(a:cur_keyword_str, substitute($PATH, '\\\?;', ',', 'g'))
   else
-    let l:path = substitute($PATH, '/\?:', ',', 'g')
-
-    let l:files = a:cur_keyword_str =~ l:pattern ? glob(a:cur_keyword_str . '*') : globpath(l:path, a:cur_keyword_str . '*')
-    let l:list = map(filter(split(globpath(l:path, a:cur_keyword_str . '*'), '\n'),
-          \'executable(v:val)'), 'fnamemodify(v:val, ":t:r")')
+    let l:files = vimshell#complete#helper#files(a:cur_keyword_str, substitute($PATH, '/\?:', ',', 'g'))
+  endif
+  
+  if vimshell#iswin()
+    let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
+    let l:list = filter(l:files, '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts))
+    if a:cur_keyword_str !~ '[/\\]'
+      let l:list = map(l:list, 'fnamemodify(v:val.orig, ":t:r")')
+    endif
+  else
+    let l:list = filter(l:files, 'executable(v:val.orig)')
   endif
 
+  let l:ret = []
   for keyword in l:list
-    let l:dict = { 'word' : keyword, 'abbr' : keyword.'*', 'menu' : 'command' }
+    let l:dict = l:keyword
+    let l:dict.menu = 'command'
+
     call add(l:ret, l:dict)
   endfor 
 

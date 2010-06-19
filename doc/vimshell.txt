@@ -188,6 +188,8 @@ CHANGELOG						*vimshell-changelog*
 2010-06-19
 - Improved get cur_text.
 - Fixed filename completion bug.
+- Fixed l:PATH_SEPARATOR error.
+- Fixed command complete.
 
 2010-06-18
 - Fixed expand glob bug.
