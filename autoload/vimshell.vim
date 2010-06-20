@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,10 +32,10 @@ endfunction"}}}
 let s:is_vimproc = exists('*vimproc#system')
 let s:is_version = exists('*vimproc#version')
 if !s:is_vimproc
-  echoerr 'vimproc is not installed. Please install vimproc Ver.4.0 or above.'
+  echoerr 'vimproc is not installed. Please install vimproc Ver.4.1 or above.'
   finish
-elseif !s:is_version
-  echoerr 'Please install vimproc Ver.4.0 or above.'
+elseif !s:is_version || vimproc#version() < 401
+  echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endif
 
@@ -620,40 +620,7 @@ function! vimshell#system(str, ...)"{{{
   return l:output
 endfunction"}}}
 function! vimshell#open(filename)"{{{
-  let l:filename = a:filename
-  if &termencoding != '' && &encoding != &termencoding
-    " Convert encoding.
-    let l:filename = iconv(l:filename, &encoding, &termencoding)
-  endif
-  
-  " Detect desktop environment.
-  if vimshell#iswin()
-    if !isdirectory(a:filename) && executable('fiber.exe')
-      call vimshell#system('fiber "' . l:filename . '"')
-    else
-      execute printf('silent ! start "" "%s"', l:filename)
-    endif
-  elseif has('win32unix')
-    " Cygwin.
-    call vimshell#system('cygstart ''' . l:filename . '''')
-  elseif executable('xdg-open')
-    " Linux.
-    call vimshell#system('xdg-open ''' . l:filename . ''' &')
-  elseif exists('$KDE_FULL_SESSION') && $KDE_FULL_SESSION ==# 'true'
-    " KDE.
-    call vimshell#system('kioclient exec ''' . l:filename . '''')
-  elseif exists('$GNOME_DESKTOP_SESSION_ID')
-    " GNOME.
-    call vimshell#system('gnome-open ''' . l:filename . ''' &')
-  elseif executable('exo-open')
-    " Xfce.
-    call vimshell#system('exo-open ''' . l:filename . ''' &')
-  elseif (has('macunix') || system('uname') =~? '^darwin') && executable('open')
-    " Mac OS.
-    call vimshell#system('open ''' . l:filename . ''' &')
-  else
-    throw 'Not supported.'
-  endif
+  call vimproc#open(a:filename)
 endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
   return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])

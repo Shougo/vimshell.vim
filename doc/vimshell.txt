@@ -185,6 +185,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-20
+- Use vimproc Ver.4.1.
+
 2010-06-19
 - Improved get cur_text.
 - Fixed filename completion bug.
