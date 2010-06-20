@@ -74,7 +74,7 @@ if !exists('g:vimshell_history_max_size')
   let g:vimshell_history_max_size = 1000
 endif
 if !exists('g:vimshell_vimshrc_path')
-  let g:vimshell_vimshrc_path = '~/.vimshrc'
+  let g:vimshell_vimshrc_path = expand('~/.vimshrc')
 endif
 let g:vimshell_vimshrc_path = expand(g:vimshell_vimshrc_path)
 if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))

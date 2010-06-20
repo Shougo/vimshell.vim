@@ -29,12 +29,8 @@ function! vimshell#version()"{{{
 endfunction"}}}
 
 " Check vimproc.
-let s:is_vimproc = exists('*vimproc#system')
 let s:is_version = exists('*vimproc#version')
-if !s:is_vimproc
-  echoerr 'vimproc is not installed. Please install vimproc Ver.4.1 or above.'
-  finish
-elseif !s:is_version || vimproc#version() < 401
+if !s:is_version || vimproc#version() < 401
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endif

@@ -127,7 +127,8 @@ COMMANDS 						*vimshell-commands*
 :VimShellPop {path}					*:VimShellPop*
 			|:VimShell:|と同じですが、こちらは小さいウインドウを
 			ポップアップします。ちょっとだけvimshellの機能を使
-			いたいときに便利です。
+			いたいときに便利です。ウインドウを分割する高さは
+			|g:vimshell_split_height|で決定されます。
 
 :VimShellExecute {path}					*:VimShellExecute*
 			vimshellを起動せずに、{path}で指定された実行ファイルを
@@ -234,30 +235,63 @@ g:vimshell_use_ckw					*g:vimshell_use_ckw*
 			初期値は0です。
 
 g:vimshell_split_height					*g:vimshell_split_height*
+			|:VimShellPop|の分割高さを指定します。指定する値は
+			|winheight(0)|に対するパーセントになります。
 			
+			初期値は30です。
 
 g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
+			vimshellが使用する一時ディレクトリを指定します。ヒス
+			トリファイルもこのディレクトリ下に保存されます。
 			
+			初期値はexpand('~/.vimshell')です。
 
 g:vimshell_history_max_size				*g:vimshell_history_max_size*
-			
+			vimshellが保存するヒストリの最大数を指定します。
 
 g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
+			vimshellが最初に読み込むシェルの設定ファイル.vimshrc
+			を指定します。これはbashでいう.bashrcのことです。そ
+			のファイルの中でエイリアスを定義すると便利でしょう。
 			
+			初期値はexpand('~/.vimshrc')です。
 
 g:vimshell_escape_colors				*g:vimshell_escape_colors*
+			エスケープシーケンスの色づけにおいて、 対応する色の
+			リストです。0~8番目が普通の色、9~15番目が高輝度の色
+			に対応しています。
 			
+			初期値はplugin/vimshell.vimを参照してください。
 
 g:vimshell_cat_command					*g:vimshell_cat_command*
+			vimshellは外部のページャやエディタをうまく扱えないの
+			で、$PAGERや$EDITORに|g:vimshell_cat_command|の値を
+			セットします。初期値は"cat"ですが、この変数の内容を
+			変更することで、 スタマイズできます。
 			
+			初期値は"cat"です。
 
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
+			|vimshell-internal-iexe|において、ヒストリを保存しな
+			いコマンド名を正規表現で指定します。空だと無視され
+			ます。
 			
+			初期値は""です。
 
 g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
+			|vimshell-internal-iexe|がInsert mode中において、自
+			動更新を行うタイミングを制御します。
+			|vimshell-internal-iexe|はこのオプションに基づき、
+			'updatetime'を変更します。
 			
+			初期値は500です。
 
 g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options*
+			コマンド名をキーとするディクショナリ変数になっていて、
+			|vimshell-internal-iexe|で起動するコマンドに与えるオ
+			プションを指定します。 Windows環境などで特殊なオプショ
+			ンを与えないと、うまく対話モードにならないコマンド
+			に使用します。
 			
 			初期値は複雑なので、autoload/internal/iexe.vimを参照
 			してください。
