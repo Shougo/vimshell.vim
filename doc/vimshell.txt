@@ -187,6 +187,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-06-20
 - Use vimproc Ver.4.1.
+- Added g:vimshell_interactive_command_options and g:vimshell_interactive_cygwin_commands.
+- Added g:vimshell_interactive_cygwin_path and g:vimshell_interactive_cygwin_home.
 
 2010-06-19
 - Improved get cur_text.

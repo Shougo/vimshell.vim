@@ -86,14 +86,28 @@ if !exists('g:vimshell_escape_colors')
         \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
         \]
 endif
+if !exists('g:vimshell_cat_command')
+  let g:vimshell_cat_command = 'cat'
+endif
 if !exists('g:vimshell_no_save_history_commands')
   let g:vimshell_no_save_history_commands = {}
 endif
 if !exists('g:vimshell_interactive_update_time')
   let g:vimshell_interactive_update_time = 500
 endif
-if !exists('g:vimshell_cat_command')
-  let g:vimshell_cat_command = 'cat'
+if !exists('g:vimshell_interactive_command_options')
+  let g:vimshell_interactive_command_options = {}
+endif
+
+" For Cygwin commands.
+if !exists('g:vimshell_interactive_cygwin_commands')
+  let g:vimshell_interactive_cygwin_commands = {}
+endif
+if !exists('g:vimshell_interactive_cygwin_path')
+  let g:vimshell_interactive_cygwin_path = 'c:/cygwin/bin'
+endif
+if !exists('g:vimshell_interactive_cygwin_home')
+  let g:vimshell_interactive_cygwin_home = ''
 endif
 "}}}
 

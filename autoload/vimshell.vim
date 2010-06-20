@@ -97,6 +97,13 @@ function! vimshell#default_settings()"{{{
   " Define mappings.
   call vimshell#mappings#define_default_mappings()
 endfunction"}}}
+function! vimshell#set_variables(variable, keys, value)"{{{
+  for key in split(a:keys, ',')
+    if !has_key({a:variable}, key) 
+      let {a:variable}[key] = a:value
+    endif
+  endfor
+endfunction"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 20 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,6 +27,20 @@
 let s:last_interactive_bufnr = 1
 let s:update_time_save = &updatetime
 
+" Set interactive options."{{{
+if vimshell#iswin()
+  " Windows only options.
+  call vimshell#set_variables('g:vimshell_interactive_command_options', 'bash,bc,gosh,python,zsh', '-i')
+  call vimshell#set_variables('g:vimshell_interactive_command_options', 'irb', '--inf-ruby-mode')
+  call vimshell#set_variables('g:vimshell_interactive_command_options', 'powershell', '-Command -')
+  call vimshell#set_variables('g:vimshell_interactive_command_options', 'scala', '--Xnojline')
+  call vimshell#set_variables('g:vimshell_interactive_command_options', 'nyaos', '-t')
+  
+  call vimshell#set_variables('g:vimshell_interactive_cygwin_commands', 'tail,zsh,ssh', 1)
+endif
+call vimshell#set_variables('g:vimshell_interactive_command_options', 'termtter', '--monochrome')
+"}}}
+
 function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
   " Interactive execute command.
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
@@ -40,16 +54,37 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
     return
   endif
 
-  if has_key(s:interactive_option, fnamemodify(l:args[0], ':r'))
-    for l:arg in vimshell#parser#split_args(s:interactive_option[fnamemodify(l:args[0], ':r')])
+  if has_key(g:vimshell_interactive_cygwin_commands, fnamemodify(l:args[0], ':r'))
+    " Use Cygwin pty.
+    call insert(l:args, 'fakecygpty')
+  endif
+
+  let l:use_cygpty = vimshell#iswin() && l:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  if l:use_cygpty
+    if !executable('fakecygpty')
+      call vimshell#error_line(a:fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
+      return
+    endif
+    
+    " Get program path from g:vimshell_interactive_cygwin_path.
+    if len(l:args) < 2
+      call vimshell#error_line(a:fd, 'iexe: command is required.')
+      return
+    endif
+
+    let l:args[1] = vimproc#get_command_name(l:args[1], g:vimshell_interactive_cygwin_path)
+  endif
+
+  if !l:use_cygpty && has_key(g:vimshell_interactive_command_options, fnamemodify(l:args[0], ':r'))
+    for l:arg in vimshell#parser#split_args(g:vimshell_interactive_command_options[fnamemodify(l:args[0], ':r')])
       call add(l:args, l:arg)
     endfor
   endif
 
-  if vimshell#iswin() && l:args[0] =~ 'cmd\%(\.exe\)\?'
+  if vimshell#iswin() && l:args[0] =~ '^cmd\%(\.exe\)\?$'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
-      call vimshell#error_line(a:fd, 'iexe: cmdproxy.exe is not found. Please install it.')
+      call vimshell#error_line(a:fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
       return
     endif
 
@@ -68,7 +103,18 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
 
   " Initialize.
   try
+    if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+      " Set home.
+      let l:home_save = $HOME
+      let $HOME = g:vimshell_interactive_cygwin_home
+    endif
+    
     let l:sub = vimproc#ptyopen(l:args)
+    
+    if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+      " Restore home.
+      let $HOME = l:home_save
+    endif
   catch 'list index out of range'
     let l:error = printf('iexe: File "%s" is not found.', l:args[0])
 
@@ -87,7 +133,7 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
         \ 'command_history' : vimshell#interactive#load_history(), 
-        \ 'is_pty' : (!vimshell#iswin() || (l:args[0] == 'fakecygpty')),
+        \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
         \ 'is_background': 0, 
         \ 'args' : l:args,
         \ 'echoback_linenr' : 0
@@ -176,22 +222,6 @@ endfunction"}}}
 function! s:on_moved_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 endfunction"}}}
-
-" Interactive options."{{{
-if vimshell#iswin()
-  " Windows only.
-  let s:interactive_option = {
-        \ 'bash' : '-i', 'bc' : '-i', 'irb' : '--inf-ruby-mode', 
-        \ 'gosh' : '-i', 'python' : '-i', 'zsh' : '-i', 
-        \ 'powershell' : '-Command -', 
-        \ 'termtter'   : '--monochrome', 
-        \ 'scala'   : '--Xnojline', 'nyaos' : '-t',
-        \}
-else
-  let s:interactive_option = {
-        \'termtter' : '--monochrome', 
-        \}
-endif"}}}
 
 " Command functions.
 function! s:send_string(line1, line2, string)"{{{
