@@ -76,7 +76,6 @@ g:vimshell_max_list					*g:vimshell_max_list*
 			
 
 g:vimshell_use_ckw					*g:vimshell_use_ckw*
-			
 
 g:vimshell_split_height					*g:vimshell_split_height*
 			

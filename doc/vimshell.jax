@@ -208,16 +208,30 @@ g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
 			り尽くしている上級者向けのオプションです。
 
 g:vimshell_ignore_case					*g:vimshell_ignore_case*
+			vimshellが補完候補を検索する際に、大文字小文字を無視
+			するかを制御します。
 			
+			初期値は&ignorecaseです。
 
 g:vimshell_smart_case					*g:vimshell_smart_case*
+			このオプションが有効だと、vimshellが補完候補を検索す
+			る際に、大文字が入力されていれば大文字小文字を無視
+			しなくなります。
 			
+			初期値は0です。
 
 g:vimshell_max_list					*g:vimshell_max_list*
+			vimshellの補完候補の最大数です。補完候補の数がこれを
+			越えると、勝手に候補を切り詰めます。
 			
+			初期値は100です。
 
 g:vimshell_use_ckw					*g:vimshell_use_ckw*
+			|vimshell-internal-shell|を実行する際に、ckwを利用し
+			てシェルを起動するかどうかを制御します。 Windows環境
+			以外では無視されます。
 			
+			初期値は0です。
 
 g:vimshell_split_height					*g:vimshell_split_height*
 			
@@ -234,11 +248,44 @@ g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
 g:vimshell_escape_colors				*g:vimshell_escape_colors*
 			
 
-g:vimshell_no_save_history_programs			*g:vimshell_no_save_history_programs*
+g:vimshell_cat_command					*g:vimshell_cat_command*
+			
+
+g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			
 
 g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
 			
+
+g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options*
+			
+			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			してください。
+
+g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
+			コマンド名をキーとするディクショナリ変数になっていて、
+			fakecygpty経由で起動するコマンドを指定します。sshな
+			ど、Cygwin上でないとうまく動作しないコマンドを
+			|vimshell-internal-iexe|から使 用する際に使います。
+			
+			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			してください。
+
+g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
+			fakecygpty経由のプログラムを実行する際に参照するパス
+			を指定します。 |vimshell-internal-iexe|は第一引数に
+			fakecygptyを指定されたとき、 $PATHではなく、
+			|g:vimshell_interactive_cygwin_path|からコマンドを検
+			索します。
+			
+			初期値は'c:/cygwin/bin'です。
+
+g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
+			fakecygpty経由のプログラムを実行する際に使用する
+			$HOMEを指定します。''を指定すると現在の$HOMEをそのま
+			ま利用します。
+			
+			初期値は''です。
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
