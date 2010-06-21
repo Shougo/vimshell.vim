@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 21 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -219,9 +219,6 @@ function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
   if vimshell#iswin()
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let l:list = filter(l:files, '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts))
-    if a:cur_keyword_str !~ '[/\\]'
-      let l:list = map(l:list, 'fnamemodify(v:val.orig, ":t:r")')
-    endif
   else
     let l:list = filter(l:files, 'executable(v:val.orig)')
   endif
@@ -230,6 +227,10 @@ function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
   for keyword in l:list
     let l:dict = l:keyword
     let l:dict.menu = 'command'
+    if a:cur_keyword_str !~ '[/\\]'
+      let l:dict.word = fnamemodify(l:keyword.word, ':t:r')
+      let l:dict.abbr = fnamemodify(l:keyword.abbr, ':t:r')
+    endif
 
     call add(l:ret, l:dict)
   endfor 

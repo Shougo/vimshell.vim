@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2010
+" Last Modified: 21 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,8 +29,8 @@ function! vimshell#version()"{{{
 endfunction"}}}
 
 " Check vimproc.
-let s:is_version = exists('*vimproc#version')
-if !s:is_version || vimproc#version() < 401
+let s:exists_vimproc_version = exists('*vimproc#version')
+if !s:exists_vimproc_version || vimproc#version() < 401
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endif

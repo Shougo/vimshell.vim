@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-21
+- Fixed command completion bug.
+
 2010-06-20
 - Use vimproc Ver.4.1.
 - Added g:vimshell_interactive_command_options and g:vimshell_interactive_cygwin_commands.
