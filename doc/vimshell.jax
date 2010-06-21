@@ -301,6 +301,8 @@ g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands
 			fakecygpty経由で起動するコマンドを指定します。sshな
 			ど、Cygwin上でないとうまく動作しないコマンドを
 			|vimshell-internal-iexe|から使 用する際に使います。
+			fakecygptyについては、|vimshell-tips-fakecygpty|を
+			参照してください。
 			
 			初期値は複雑なので、autoload/internal/iexe.vimを参照
 			してください。
@@ -721,7 +723,8 @@ auto_cd							*vimshell-tips-auto_cd*
 >
 		vimshell% ls *~*.htm
 <
-		'~'で区切ってパターンを記述することで、「パターンを除外したパターン」という意味になります。
+		'~'で区切ってパターンを記述することで、「パターンを除外したパターン」
+		という意味になります。
 
 バッククオート						*vimshell-tips-backquote*
 >
@@ -732,6 +735,18 @@ auto_cd							*vimshell-tips-auto_cd*
 >
 		vimshell% echo `=3`
 <
+
+fakecygpty						*vimshell-tips-fakecygpty*
+>
+<
+		fakecygptyとはKyotaro Horiguchiさんが開発した、Windowsの
+		パイプとCygwinのptyを接続させて動作させるためのコマンドです。
+		例えば、次のコマンドでCygwinのsshと接続できます。
+		> fakecygpty ssh
+		Meadowのソースコードに含まれていて探すのが大変なので、私がソース
+		コードを再配布しています。
+		http://github.com/Shougo/fakecygpty
+>
 
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*

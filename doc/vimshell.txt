@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-06-21
 - Fixed command completion bug.
+- Added fakecygpty description.
 
 2010-06-20
 - Use vimproc Ver.4.1.
