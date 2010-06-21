@@ -743,9 +743,15 @@ fakecygpty						*vimshell-tips-fakecygpty*
 		パイプとCygwinのptyを接続させて動作させるためのコマンドです。
 		例えば、次のコマンドでCygwinのsshと接続できます。
 		> fakecygpty ssh
-		Meadowのソースコードに含まれていて探すのが大変なので、私がソース
-		コードを再配布しています。
+		Meadowのソースコードに含まれていて探すのが大変なので、私が
+		ソースコードを再配布しています。
 		http://github.com/Shougo/fakecygpty
+		自分でコンパイルするには、Cygwin環境上で
+>
+		$ gcc fakecygpty.c -o fakecygpty.exe
+<
+		というコマンドを実行します。あとはfakecygptyを$PATHの通った
+		ところに置けば準備完了です。
 >
 
 ==============================================================================
