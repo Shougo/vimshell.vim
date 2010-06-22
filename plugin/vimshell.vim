@@ -98,6 +98,9 @@ endif
 if !exists('g:vimshell_interactive_command_options')
   let g:vimshell_interactive_command_options = {}
 endif
+if !exists('g:vimshell_interactive_encodings')
+  let g:vimshell_interactive_encodings = {}
+endif
 
 " For Cygwin commands.
 if !exists('g:vimshell_interactive_cygwin_commands')

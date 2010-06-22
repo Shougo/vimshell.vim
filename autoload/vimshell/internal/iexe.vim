@@ -36,6 +36,8 @@ if vimshell#iswin()
   call vimshell#set_variables('g:vimshell_interactive_command_options', 'scala', '--Xnojline')
   call vimshell#set_variables('g:vimshell_interactive_command_options', 'nyaos', '-t')
   
+  call vimshell#set_variables('g:vimshell_interactive_encodings', 'gosh,fakecygpty', 'utf8')
+  
   call vimshell#set_variables('g:vimshell_interactive_cygwin_commands', 'tail,zsh,ssh', 1)
 endif
 call vimshell#set_variables('g:vimshell_interactive_command_options', 'termtter', '--monochrome')
@@ -46,10 +48,6 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})
-  if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = &termencoding
-  endif
-  
   if empty(l:args)
     return
   endif
@@ -75,13 +73,19 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
     let l:args[1] = vimproc#get_command_name(l:args[1], g:vimshell_interactive_cygwin_path)
   endif
 
-  if !l:use_cygpty && has_key(g:vimshell_interactive_command_options, fnamemodify(l:args[0], ':r'))
-    for l:arg in vimshell#parser#split_args(g:vimshell_interactive_command_options[fnamemodify(l:args[0], ':r')])
+  let l:cmdname = fnamemodify(l:args[0], ':r')
+  if !has_key(l:options, '--encoding')
+    let l:options['--encoding'] = has_key(g:vimshell_interactive_encodings, l:cmdname) ?
+          \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
+  endif
+
+  if !l:use_cygpty && has_key(g:vimshell_interactive_command_options, l:cmdname)
+    for l:arg in vimshell#parser#split_args(g:vimshell_interactive_command_options[l:cmdname])
       call add(l:args, l:arg)
     endfor
   endif
 
-  if vimshell#iswin() && l:args[0] =~ '^cmd\%(\.exe\)\?$'
+  if vimshell#iswin() && l:cmdname == 'cmd'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
       call vimshell#error_line(a:fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
@@ -102,30 +106,22 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
   endif
 
   " Initialize.
-  try
-    if l:use_cygpty
-      if g:vimshell_interactive_cygwin_home != ''
-        " Set $HOME.
-        let l:home_save = $HOME
-        let $HOME = g:vimshell_interactive_cygwin_home
-      endif
+  if l:use_cygpty
+    if g:vimshell_interactive_cygwin_home != ''
+      " Set $HOME.
+      let l:home_save = $HOME
+      let $HOME = g:vimshell_interactive_cygwin_home
     endif
-    
-    let l:sub = vimproc#ptyopen(l:args)
-    
-    if l:use_cygpty
-      if g:vimshell_interactive_cygwin_home != ''
-        " Restore $HOME.
-        let $HOME = l:home_save
-      endif
+  endif
+
+  let l:sub = vimproc#ptyopen(l:args)
+
+  if l:use_cygpty
+    if g:vimshell_interactive_cygwin_home != ''
+      " Restore $HOME.
+      let $HOME = l:home_save
     endif
-  catch 'list index out of range'
-    let l:error = printf('iexe: File "%s" is not found.', l:args[0])
-
-    call vimshell#error_line(a:fd, l:error)
-
-    return
-  endtry
+  endif
 
   call s:init_bg(l:sub, l:args, a:fd, a:other_info)
 

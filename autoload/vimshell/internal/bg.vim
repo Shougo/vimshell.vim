@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,15 +73,7 @@ function! vimshell#internal#bg#execute(command, args, fd, other_info)"{{{
   endif
 
   " Initialize.
-  try
-    let l:sub = vimproc#popen3(l:args)
-  catch 'list index out of range'
-    let l:error = printf('bg: File "%s" is not found.', l:args[0])
-
-    call vimshell#error_line(a:fd, l:error)
-
-    return
-  endtry
+  let l:sub = vimproc#popen3(l:args)
 
   " Set variables.
   let l:interactive = {

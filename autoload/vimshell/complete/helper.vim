@@ -274,6 +274,10 @@ function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
   return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
 endfunction"}}}
 function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str)"{{{
+  if a:cur_keyword_str == ''
+    return a:list
+  endif
+  
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
 
   return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))

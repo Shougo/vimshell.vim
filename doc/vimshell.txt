@@ -188,6 +188,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved gexe.
 - Improved iexe filetype.
 - Improved command completion.
+- Fixed directory stack completion.
+- Added g:vimshell_interactive_encodings option.
 
 2010-06-21
 - Fixed command completion bug.

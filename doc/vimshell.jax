@@ -296,6 +296,14 @@ g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options
 			初期値は複雑なので、autoload/internal/iexe.vimを参照
 			してください。
 
+g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
+			コマンド名をキーとするディクショナリ変数になっていて、
+			|vimshell-internal-iexe|で起動するコマンドのエンコー
+			ディングを指定します。
+			
+			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			してください。
+
 g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			fakecygpty経由で起動するコマンドを指定します。sshな
