@@ -83,7 +83,7 @@ g:vimshell_split_height					*g:vimshell_split_height*
 g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
 			
 
-g:vimshell_history_max_size				*g:vimshell_history_max_size*
+g:vimshell_max_command_history				*g:vimshell_max_command_history*
 			
 
 g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
@@ -190,6 +190,10 @@ CHANGELOG						*vimshell-changelog*
 - Improved command completion.
 - Fixed directory stack completion.
 - Added g:vimshell_interactive_encodings option.
+- Changed g:vimshell_history_max_size as g:vimshell_max_command_history.
+- Added g:vimshell_max_directory_stack option.
+- Improved append history.
+- Improved popd and cd.
 
 2010-06-21
 - Fixed command completion bug.

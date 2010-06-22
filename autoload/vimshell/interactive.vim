@@ -449,7 +449,7 @@ function! s:append_history(command)"{{{
   call insert(filter(b:interactive.command_history, 'v:val != '.string(substitute(l:command, "'", "''", 'g'))), l:command)
 
   " Trunk.
-  let b:interactive.command_history = b:interactive.command_history[: g:vimshell_history_max_size-1]
+  let b:interactive.command_history = b:interactive.command_history[: g:vimshell_max_command_history-1]
 
   let l:history_dir = g:vimshell_temporary_directory . '/int-history'
   if !isdirectory(fnamemodify(l:history_dir, ':p'))

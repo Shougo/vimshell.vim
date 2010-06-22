@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,14 +52,6 @@ function! vimshell#internal#popd#execute(program, args, fd, other_info)
     return
   endif
 
-  lcd `=b:vimshell.directory_stack[l:pop]`
-  if a:other_info.is_interactive
-    " Call chpwd hook.
-    let l:context = a:other_info
-    let l:context.fd = a:fd
-    call vimshell#hook#call('chpwd', l:context)
-  endif
-
-  " Pop from stack.
-  let b:vimshell.directory_stack = b:vimshell.directory_stack[l:pop+1:]
+  return vimshell#internal#cd#execute('cd', [ b:vimshell.directory_stack[l:pop] ], 
+        \ a:fd, a:other_info)
 endfunction

@@ -458,10 +458,10 @@ function! vimshell#append_history(command)"{{{
   " Reduce blanks.
   let l:command = substitute(a:command, '\s\+', ' ', 'g')
   " Filtering.
-  call insert(filter(g:vimshell#hist_buffer, printf("v:val != '%s'", substitute(l:command, "'", "''", 'g'))), l:command)
+  call insert(filter(g:vimshell#hist_buffer, 'v:val != ' . string(a:command)), l:command)
 
   " Trunk.
-  let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_history_max_size-1]
+  let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_max_command_history-1]
 
   let l:history_path = g:vimshell_temporary_directory . '/command-history'
   call writefile(g:vimshell#hist_buffer, l:history_path)

@@ -246,8 +246,15 @@ g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
 			
 			初期値はexpand('~/.vimshell')です。
 
-g:vimshell_history_max_size				*g:vimshell_history_max_size*
+g:vimshell_max_command_history				*g:vimshell_max_command_history*
 			vimshellが保存するヒストリの最大数を指定します。
+			
+			初期値は1000です。
+
+g:vimshell_max_directory_stack				*g:vimshell_max_directory_stack*
+			vimshellが保存するディレクトリスタックの最大数を指定します。
+			
+			初期値は100です。
 
 g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
 			vimshellが最初に読み込むシェルの設定ファイル.vimshrc
@@ -526,8 +533,7 @@ popd [{directory-stack-number}]					*vimshell-internal-popd*
 		{directory-stack-number}で示されるディレクトリへ移動します。
 		{directory-stack-number}は|vimshell-internal-dirs|で確認でき
 		ます。{directory-stack-number}を省略すると、0になります。
-		{directory-stack-number}より小さなディレクトリはスタックから
-		取り除かれます。
+		他のシェルとは異なり、重複しない候補はpopdからは取り除かれません。
 
 pwd 							*vimshell-internal-pwd*
 		vimshellのカレントディレクトリを表示します。
@@ -697,9 +703,8 @@ TIPS							*vimshell-tips*
 		pushdコマンドは存在しません。ディレクトリスタックを参照する
 		には|vimshell-internal-dirs|コマンド、ディレクトリスタックか
 		ら|vimshell-internal-cd|するには |vimshell-internal-popd|コ
-		マンドを使います。他のシェルと同様に、"cd -"で
-		|vimshell-internal-popd|と同じ動作になります。cdを省略して、
-		"-"でも同じ意味です。
+		マンドを使います。他のシェルと同様に、"cd -"でも
+		|vimshell-internal-popd|と同じ動作になります。
 
 auto_cd							*vimshell-tips-auto_cd*
 		ディレクトリ名で実行すると、そのディレクトリに移動します。

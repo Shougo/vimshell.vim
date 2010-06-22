@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,8 +78,11 @@ function! vimshell#internal#cd#execute(command, args, fd, other_info)
   endif
 
   if empty(b:vimshell.directory_stack) || getcwd() != b:vimshell.directory_stack[0]
-    " Push current directory.
-    call insert(b:vimshell.directory_stack, l:cwd)
+    " Push current directory and filtering.
+    call insert(filter(b:vimshell.directory_stack, 'v:val != ' . string(l:cwd)), l:cwd)
+
+    " Trunk.
+    let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
   endif
   
   if a:other_info.is_interactive

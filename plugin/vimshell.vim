@@ -70,8 +70,11 @@ endif
 if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
   call mkdir(fnamemodify(g:vimshell_temporary_directory, ':p'), 'p')
 endif
-if !exists('g:vimshell_history_max_size')
-  let g:vimshell_history_max_size = 1000
+if !exists('g:vimshell_max_command_history')
+  let g:vimshell_max_command_history = 1000
+endif
+if !exists('g:vimshell_max_directory_stack')
+  let g:vimshell_max_directory_stack = 100
 endif
 if !exists('g:vimshell_vimshrc_path')
   let g:vimshell_vimshrc_path = expand('~/.vimshrc')
