@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,17 +103,21 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
 
   " Initialize.
   try
-    if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
-      " Set home.
-      let l:home_save = $HOME
-      let $HOME = g:vimshell_interactive_cygwin_home
+    if l:use_cygpty
+      if g:vimshell_interactive_cygwin_home != ''
+        " Set $HOME.
+        let l:home_save = $HOME
+        let $HOME = g:vimshell_interactive_cygwin_home
+      endif
     endif
     
     let l:sub = vimproc#ptyopen(l:args)
     
-    if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
-      " Restore home.
-      let $HOME = l:home_save
+    if l:use_cygpty
+      if g:vimshell_interactive_cygwin_home != ''
+        " Restore $HOME.
+        let $HOME = l:home_save
+      endif
     endif
   catch 'list index out of range'
     let l:error = printf('iexe: File "%s" is not found.', l:args[0])
@@ -188,7 +192,8 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
 
   call vimshell#internal#iexe#default_settings()
   
-  execute 'set filetype=int-'.fnamemodify(a:args[0], ':t:r')
+  let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.
   augroup vimshell_iexe

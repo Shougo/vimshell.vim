@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: gexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 May 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,13 +30,5 @@ function! vimshell#internal#gexe#execute(command, args, fd, other_info)
     let l:command = iconv(l:command, &encoding, &termencoding)
   endif
   
-  " Execute GUI command.
-  if vimshell#iswin()
-    execute printf('!start %s', l:command)
-  else
-    " For *nix.
-
-    " Background execute.
-    call system(l:command . '&')
-  endif
+  call vimproc#system_bg(l:command)
 endfunction

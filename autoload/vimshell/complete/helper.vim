@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -228,8 +228,10 @@ function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
     let l:dict = l:keyword
     let l:dict.menu = 'command'
     if a:cur_keyword_str !~ '[/\\]'
-      let l:dict.word = fnamemodify(l:keyword.word, ':t:r')
-      let l:dict.abbr = fnamemodify(l:keyword.abbr, ':t:r')
+      let l:dict.word = vimshell#iswin() ? 
+            \ fnamemodify(l:keyword.word, ':t:r') : fnamemodify(l:keyword.word, ':t')
+      let l:dict.abbr = vimshell#iswin() ? 
+            \ fnamemodify(l:keyword.abbr, ':t:r') . '*' : fnamemodify(l:keyword.abbr, ':t')
     endif
 
     call add(l:ret, l:dict)

@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-22
+- Improved gexe.
+- Improved iexe filetype.
+- Improved command completion.
+
 2010-06-21
 - Fixed command completion bug.
 - Added fakecygpty description.
