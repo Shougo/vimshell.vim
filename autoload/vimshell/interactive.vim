@@ -488,12 +488,13 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
 
   if mode() !=# 'i'
     let l:intbuffer_pos = getpos('.')
+    
+    $
+    normal! $
   endif
 
   if a:interactive.is_background
     setlocal modifiable
-    $
-    normal! $
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
   elseif line('.') == b:interactive.echoback_linenr ||
