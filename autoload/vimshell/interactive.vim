@@ -492,6 +492,8 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
 
   if a:interactive.is_background
     setlocal modifiable
+    $
+    normal! $
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
   elseif line('.') == b:interactive.echoback_linenr ||
