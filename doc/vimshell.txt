@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-25
+- Improved mappings.
+- Changed background filetype.
+- Implemented change title escape sequence.
+
 2010-06-24
 - Fixed auto update.
 

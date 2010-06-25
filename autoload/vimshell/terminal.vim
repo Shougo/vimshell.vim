@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 25 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,6 +37,10 @@ function! vimshell#terminal#print(string)"{{{
     execute 'normal!' (len(l:lines)-1).'j$'
     
     return
+  endif
+
+  if !has_key(s:terminal_info, bufnr('%'))
+    call s:init_terminal()
   endif
   
   let l:newstr = ''
@@ -212,18 +216,45 @@ function! vimshell#terminal#filter(string)"{{{
 
   return l:newstr
 endfunction"}}}
+function! vimshell#terminal#set_title()"{{{
+  if !exists('b:interactive')
+    return
+  endif
+  
+  if !has_key(s:terminal_info, bufnr('%'))
+    call s:init_terminal()
+  endif
+
+  let &titlestring = s:terminal_info[bufnr('%')].titlestring
+endfunction"}}}
+function! vimshell#terminal#restore_title()"{{{
+  if !exists('b:interactive')
+    return
+  endif
+  
+  if !has_key(s:terminal_info, bufnr('%'))
+    call s:init_terminal()
+  endif
+
+  let &titlestring = s:terminal_info[bufnr('%')].titlestring_save
+endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
   if !has_key(s:terminal_info, bufnr('%'))
-    let s:terminal_info[bufnr('%')] = {
-          \ 'syntax_names' : []
-          \}
-    return
+    call s:init_terminal()
   endif
   
   for l:syntax_name in s:terminal_info[bufnr('%')].syntax_names
     execute 'highlight clear' l:syntax_name
     execute 'syntax clear' l:syntax_name
   endfor
+endfunction"}}}
+function! s:init_terminal()"{{{
+  let s:terminal_info[bufnr('%')] = {
+        \ 'syntax_names' : [],
+        \ 'titlestring' : &titlestring,
+        \ 'titlestring_save' : &titlestring,
+        \}
+  return
 endfunction"}}}
 function! s:output_string(string)"{{{
   if a:string == '' || (exists('b:interactive') && s:line == b:interactive.echoback_linenr)
@@ -377,6 +408,15 @@ endfunction"}}}
 function! s:escape.move_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
+function! s:escape.change_title(matchstr)"{{{
+  let l:title = matchstr(a:matchstr, '^k\zs.\{-}\ze\e\\')
+  if empty(l:title)
+    let l:title = matchstr(a:matchstr, '^][02];\zs.\{-}\ze'."\<C-g>")
+  endif
+
+  let &titlestring = l:title
+  let s:terminal_info[bufnr('%')].titlestring = l:title
+endfunction"}}}
 
 " Control sequence functions.
 let s:control = {}
@@ -419,18 +459,17 @@ function! s:control.clear_entire_screen()"{{{
 
   let s:lines = {}
 endfunction"}}}
+function! s:control.bell()"{{{
+  echo 'Ring!'
+endfunction"}}}
 
 " escape sequence list. {{{
 " pattern: function
 let s:escape_sequence_match = {
-      \ '^\[?\dh' : s:escape.ignore,
-      \ '^\[?\dl' : s:escape.ignore,
-      \ '^(\a' : s:escape.ignore,
-      \ '^)\a' : s:escape.ignore,
-      \ '^(\d' : s:escape.ignore,
-      \ '^)\d' : s:escape.ignore,
-      \ 
       \ '^\[[0-9;]\+m' : s:escape.highlight,
+      \
+      \ '^k.\{-}\e\\' : s:escape.change_title,
+      \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
       \ 
       \ '^\[\d\+;\d\+r' : s:escape.ignore,
       \
@@ -454,9 +493,6 @@ let s:escape_sequence_match = {
       \ '^\[\dq' : s:escape.ignore,
       \
       \ '^\d\+;\d\+' : s:escape.ignore,
-      \
-      \ '^\[>\dl' : s:escape.ignore,
-      \ '^\[>\dh' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char1 = {
       \ 'N' : s:escape.ignore,
@@ -530,6 +566,7 @@ let s:control_sequence = {
       \ "\<BS>" : s:control.ignore,
       \ "\<Del>" : s:control.ignore,
       \ "\<C-l>" : s:control.clear_entire_screen,
+      \ "\<C-g>" : s:control.bell,
       \}
 "}}}
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2010
+" Last Modified: 25 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,7 @@ function! vimshell#internal#bg#execute(command, args, fd, other_info)"{{{
     let l:options['--encoding'] = &termencoding
   endif
   if !has_key(l:options, '--filetype')
-    let l:options['--filetype'] = 'background'
+    let l:options['--filetype'] = 'vimshell-bg'
   endif
 
   if empty(l:args)

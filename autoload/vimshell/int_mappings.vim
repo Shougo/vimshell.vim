@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -9,7 +9,7 @@
 "     without limitation the rights to use, copy, modify, merge, publish,
 "     distribute, sublicense, and/or sell copies of the Software, and to
 "     permit persons to whom the Software is furnished to do so, subject to
-"     the following conditionvimshell#int_mappings#
+"     the following conditions:
 "
 "     The above copyright notice and this permission notice shall be included
 "     in all copies or substantial portions of the Software.
@@ -24,28 +24,29 @@
 " }}}
 "=============================================================================
 
-" Plugin key-mappings.
-inoremap <silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call vimshell#int_mappings#previous_command()<CR>
-inoremap <silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call vimshell#int_mappings#next_command()<CR>
-inoremap <silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call vimshell#int_mappings#move_head()<CR>
-inoremap <silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call vimshell#int_mappings#delete_line()<CR>
-inoremap <expr> <Plug>(vimshell_int_delete_word)  vimshell#int_mappings#delete_word()
-inoremap <silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(1)<CR>
+" Plugin key-mappings."{{{
+inoremap <silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
+inoremap <silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
+inoremap <silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+inoremap <silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+inoremap <expr> <Plug>(vimshell_int_delete_word)  <SID>delete_word()
+inoremap <silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
 inoremap <silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#int_mappings#interrupt(bufname('%'))<CR>
-inoremap <expr> <Plug>(vimshell_int_delete_backword_char)  vimshell#int_mappings#delete_backword_char(0)
-inoremap <expr> <Plug>(vimshell_int_another_delete_backword_char)  vimshell#int_mappings#delete_backword_char(1)
+inoremap <expr> <Plug>(vimshell_int_delete_backword_char)  <SID>delete_backword_char(0)
+inoremap <expr> <Plug>(vimshell_int_another_delete_backword_char)  <SID>delete_backword_char(1)
 inoremap <expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
 inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
 
-nnoremap <silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call vimshell#int_mappings#previous_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call vimshell#int_mappings#next_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_int_execute_line)  i<C-g>u<ESC>:<C-u>call vimshell#int_mappings#execute_line(0)<CR><ESC>
-nnoremap <silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call vimshell#int_mappings#paste_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_int_execute_line)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
+nnoremap <silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#int_mappings#interrupt(bufname('%'))<CR>
-nnoremap <silent> <Plug>(vimshell_int_exit)       :<C-u>call vimshell#int_mappings#exit()<CR>
-nnoremap <silent> <Plug>(vimshell_int_restart_command)       :<C-u>call vimshell#int_mappings#restart_command()<CR>
+nnoremap <silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>exit()<CR>
+nnoremap <silent> <Plug>(vimshell_int_restart_command)       :<C-u>call <SID>restart_command()<CR>
 nnoremap <expr> <Plug>(vimshell_int_change_line) printf('0%dlc$', strlen(vimshell#interactive#get_prompt()))
 nmap  <Plug>(vimshell_int_delete_line) <Plug>(vimshell_int_change_line)<ESC>
+"}}}
 
 function! vimshell#int_mappings#define_default_mappings()"{{{
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
@@ -63,7 +64,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nmap <buffer> cc         <Plug>(vimshell_int_change_line)
   nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
   nmap <buffer> I         <Plug>(vimshell_insert_head)
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call vimshell#int_mappings#move_head()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
 
   " Insert mode key-mappings.
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
@@ -79,7 +80,11 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
-function! vimshell#int_mappings#delete_backword_char(is_auto_select)"{{{
+function! vimshell#int_mappings#interrupt(afile)"{{{
+  call vimshell#interactive#hang_up(a:afile)
+endfunction "}}}
+
+function! s:delete_backword_char(is_auto_select)"{{{
   let l:prefix = pumvisible() ? (a:is_auto_select? (
         \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")
         \ : "\<C-y>") : ""
@@ -90,7 +95,7 @@ function! vimshell#int_mappings#delete_backword_char(is_auto_select)"{{{
     return l:prefix
   endif
 endfunction"}}}
-function! vimshell#int_mappings#execute_history(is_insert)"{{{
+function! s:execute_history(is_insert)"{{{
   " Search prompt.
   let l:command = vimshell#interactive#get_cur_line(line('.'))
 
@@ -110,19 +115,19 @@ function! vimshell#int_mappings#execute_history(is_insert)"{{{
 
   call vimshell#imdisable()
 endfunction"}}}
-function! vimshell#int_mappings#previous_prompt()"{{{
+function! s:previous_prompt()"{{{
   let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'), 'v:val < line(".")'), 'vimshell#compare_number')
   if !empty(l:prompts)
     execute ':'.l:prompts[-1]
   endif
 endfunction"}}}
-function! vimshell#int_mappings#next_prompt()"{{{
+function! s:next_prompt()"{{{
   let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'), 'v:val > line(".")'), 'vimshell#compare_number')
   if !empty(l:prompts)
     execute ':'.l:prompts[0]
   endif
 endfunction"}}}
-function! vimshell#int_mappings#move_head()"{{{
+function! s:move_head()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
@@ -134,7 +139,7 @@ function! vimshell#int_mappings#move_head()"{{{
   
   startinsert
 endfunction"}}}
-function! vimshell#int_mappings#delete_line()"{{{
+function! s:delete_line()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
@@ -142,16 +147,16 @@ function! vimshell#int_mappings#delete_line()"{{{
   let l:col = col('.')
   let l:mcol = col('$')
   call setline(line('.'), b:interactive.prompt_history[line('.')] . getline('.')[l:col :])
-  call vimshell#int_mappings#move_head()
+  call s:move_head()
 
   if l:col == l:mcol-1
     startinsert!
   endif
 endfunction"}}}
-function! vimshell#int_mappings#delete_word()"{{{
+function! s:delete_word()"{{{
   return vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
 endfunction"}}}
-function! vimshell#int_mappings#execute_line(is_insert)"{{{
+function! s:execute_line(is_insert)"{{{
   " Search cursor file.
   let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
 
@@ -166,10 +171,10 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
     call vimshell#open(l:filename)
   else
     " Execute history.
-    call vimshell#int_mappings#execute_history(a:is_insert)
+    call s:execute_history(a:is_insert)
   endif
 endfunction"}}}
-function! vimshell#int_mappings#paste_prompt()"{{{
+function! s:paste_prompt()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
@@ -179,7 +184,7 @@ function! vimshell#int_mappings#paste_prompt()"{{{
   call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . l:cur_text)
   $
 endfunction"}}}
-function! vimshell#int_mappings#restart_command()"{{{
+function! s:restart_command()"{{{
   if exists('b:interactive') && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
@@ -207,10 +212,7 @@ function! vimshell#int_mappings#restart_command()"{{{
 
   startinsert!
 endfunction"}}}
-function! vimshell#int_mappings#interrupt(afile)"{{{
-  call vimshell#interactive#hang_up(a:afile)
-endfunction "}}}
-function! vimshell#int_mappings#exit()"{{{
+function! s:exit()"{{{
   if !b:interactive.process.is_valid
     bdelete
   endif  

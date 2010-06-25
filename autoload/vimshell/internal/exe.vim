@@ -58,7 +58,7 @@ function! vimshell#internal#exe#execute(command, args, fd, other_info)"{{{
         call vimshell#error_line(a:fd, 'exe: Background executed.')
 
         " Background execution.
-        call vimshell#internal#bg#init(l:args, a:fd, a:other_info, 'background', a:other_info.is_interactive)
+        call vimshell#internal#bg#init(l:args, a:fd, a:other_info, 'vimshell-bg', a:other_info.is_interactive)
 
         unlet b:interactive
       elseif l:char == "\<C-d>"

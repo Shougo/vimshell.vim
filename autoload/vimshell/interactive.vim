@@ -39,6 +39,8 @@ let s:character_regex = ''
 augroup vimshell_interactive
   autocmd!
   autocmd CursorHold * call s:check_all_output()
+  autocmd BufWinEnter,WinEnter * call vimshell#terminal#set_title()
+  autocmd BufWinLeave,WinLeave * call vimshell#terminal#restore_title()
 augroup END
 
 function! vimshell#interactive#get_cur_text()"{{{

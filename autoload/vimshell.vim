@@ -787,7 +787,6 @@ function! s:special_internal(program, args, fd, other_info)"{{{
   return
 endfunction"}}}
 
-
 function! s:restore_current_dir()"{{{
   if !exists('b:vimshell')
     return

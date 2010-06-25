@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 25 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,32 +25,32 @@
 "=============================================================================
 
 " Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call vimshell#mappings#execute_line(0)<CR><ESC>
-nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call vimshell#mappings#previous_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call vimshell#mappings#next_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call vimshell#mappings#delete_previous_output()<CR>
-nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call vimshell#mappings#paste_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call vimshell#mappings#move_end_argument()<CR>
-nnoremap <silent> <Plug>(vimshell_exit) :<C-u>call vimshell#mappings#exit()<CR>
+nnoremap <silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
+nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
+nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
+nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
+nnoremap <silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
 nnoremap <expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
 nmap  <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
-nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call vimshell#mappings#move_head()<CR>
+nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
 
 inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
 inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
 inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
-      \ vimshell#mappings#expand_wildcard() : vimshell#complete#command_complete#complete()
-inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call vimshell#mappings#push_current_line()<CR>
-inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call vimshell#mappings#insert_last_word()<CR>
-inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call vimshell#mappings#run_help()<CR>
-inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call vimshell#mappings#move_head()<CR>
-inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call vimshell#mappings#delete_line()<CR>
-inoremap <expr> <Plug>(vimshell_delete_word)  vimshell#mappings#delete_word()
-inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call vimshell#mappings#clear()<CR>
-inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#mappings#execute_line(1)<CR>
+      \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
+inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call <SID>push_current_line()<CR>
+inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call <SID>insert_last_word()<CR>
+inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call <SID>run_help()<CR>
+inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+inoremap <expr> <Plug>(vimshell_delete_word)  <SID>delete_word()
+inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
+inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
 
-inoremap <expr> <Plug>(vimshell_delete_backword_char)  vimshell#mappings#delete_backword_char(0)
-inoremap <expr> <Plug>(vimshell_another_delete_backword_char)  vimshell#mappings#delete_backword_char(1)
+inoremap <expr> <Plug>(vimshell_delete_backword_char)  <SID>delete_backword_char(0)
+inoremap <expr> <Plug>(vimshell_another_delete_backword_char)  <SID>delete_backword_char(1)
 "}}}
   
 " Define default mappings.
@@ -111,7 +111,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
 endfunction"}}}
 
 " VimShell key-mappings functions.
-function! vimshell#mappings#push_current_line()"{{{
+function! s:push_current_line()"{{{
   " Check current line.
   if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
     return
@@ -124,7 +124,7 @@ function! vimshell#mappings#push_current_line()"{{{
 
   startinsert!
 endfunction"}}}
-function! vimshell#mappings#push_and_execute(command)"{{{
+function! s:push_and_execute(command)"{{{
   " Check current line.
   if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
     return
@@ -135,10 +135,10 @@ function! vimshell#mappings#push_and_execute(command)"{{{
   " Set prompt line.
   call setline(line('.'), vimshell#get_prompt() . a:command)
 
-  call vimshell#mappings#execute_line(1)
+  call s:execute_line(1)
 endfunction"}}}
 
-function! vimshell#mappings#execute_line(is_insert)"{{{
+function! s:execute_line(is_insert)"{{{
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
 
@@ -216,7 +216,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       " Retry.
       call setpos('.', l:oldpos)
       call setline('.', l:line)
-      call vimshell#mappings#execute_line(a:is_insert)
+      call s:execute_line(a:is_insert)
     endif
     
     " Error.
@@ -245,13 +245,13 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   call vimshell#print_prompt(l:context)
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! vimshell#mappings#previous_prompt()"{{{
+function! s:previous_prompt()"{{{
   call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'bWe')
 endfunction"}}}
-function! vimshell#mappings#next_prompt()"{{{
+function! s:next_prompt()"{{{
   call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'We')
 endfunction"}}}
-function! vimshell#mappings#delete_previous_output()"{{{
+function! s:delete_previous_output()"{{{
   let l:prompt = vimshell#escape_match(vimshell#get_prompt())
   if vimshell#get_user_prompt() != ''
     let l:nprompt = '^\[%\] '
@@ -278,9 +278,9 @@ function! vimshell#mappings#delete_previous_output()"{{{
     execute printf('%s,%sdelete', l:prev_line+1, l:next_line-1)
     call append(line('.')-1, "* Output was deleted *")
   endif
-  call vimshell#mappings#next_prompt()
+  call s:next_prompt()
 endfunction"}}}
-function! vimshell#mappings#insert_last_word()"{{{
+function! s:insert_last_word()"{{{
   let l:word = ''
   if !empty(g:vimshell#hist_buffer)
     for w in reverse(split(g:vimshell#hist_buffer[0], '[^\\]\zs\s'))
@@ -293,7 +293,7 @@ function! vimshell#mappings#insert_last_word()"{{{
   call setline(line('.'), getline('.') . l:word)
   startinsert!
 endfunction"}}}
-function! vimshell#mappings#run_help()"{{{
+function! s:run_help()"{{{
   if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
     startinsert!
     return
@@ -324,7 +324,7 @@ function! vimshell#mappings#run_help()"{{{
     call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
   endif
 endfunction"}}}
-function! vimshell#mappings#paste_prompt()"{{{
+function! s:paste_prompt()"{{{
   if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
     return
   endif
@@ -338,30 +338,30 @@ function! vimshell#mappings#paste_prompt()"{{{
   endif
   $
 endfunction"}}}
-function! vimshell#mappings#move_head()"{{{
+function! s:move_head()"{{{
   call search(vimshell#escape_match(vimshell#get_prompt()), 'be', line('.'))
   if col('.') != col('$')-1
     normal! l
   endif
   startinsert
 endfunction"}}}
-function! vimshell#mappings#move_end_argument()"{{{
+function! s:move_end_argument()"{{{
   normal! 0
   call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))
 endfunction"}}}
-function! vimshell#mappings#delete_line()"{{{
+function! s:delete_line()"{{{
   let l:col = col('.')
   let l:mcol = col('$')
   call setline(line('.'), vimshell#get_prompt() . getline('.')[l:col :])
-  call vimshell#mappings#move_head()
+  call s:move_head()
   if l:col == l:mcol-1
     startinsert!
   endif
 endfunction"}}}
-function! vimshell#mappings#delete_word()"{{{
+function! s:delete_word()"{{{
   return vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
 endfunction"}}}
-function! vimshell#mappings#clear()"{{{
+function! s:clear()"{{{
   " Clean up the screen.
   let l:line = getline('.')
   let l:pos = getpos('.')
@@ -389,7 +389,7 @@ function! vimshell#mappings#clear()"{{{
     startinsert!
   endif
 endfunction"}}}
-function! vimshell#mappings#expand_wildcard()"{{{
+function! s:expand_wildcard()"{{{
   " Wildcard.
   if vimshell#get_current_args() <= 0
     return ''
@@ -400,7 +400,7 @@ function! vimshell#mappings#expand_wildcard()"{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
 endfunction"}}}
-function! vimshell#mappings#exit()"{{{
+function! s:exit()"{{{
   let l:vimsh_buf = bufnr('%')
   " Switch buffer.
   if winnr('$') != 1
@@ -410,7 +410,7 @@ function! vimshell#mappings#exit()"{{{
   endif
   execute 'bdelete!'. l:vimsh_buf
 endfunction"}}}
-function! vimshell#mappings#delete_backword_char(is_auto_select)"{{{
+function! s:delete_backword_char(is_auto_select)"{{{
   let l:prefix = pumvisible() ? (a:is_auto_select? (
         \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")
         \ : "\<C-y>") : ""
@@ -421,7 +421,7 @@ function! vimshell#mappings#delete_backword_char(is_auto_select)"{{{
     return l:prefix
   endif
 endfunction"}}}
-function! s:open_file(filename)
+function! s:open_file(filename)"{{{
   " Execute cursor file.
   if a:filename == ''
     return
@@ -446,6 +446,6 @@ function! s:open_file(filename)
     " Edit file.
     call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
   endif
-endfunction
+endfunction"}}}
 
 " vim: foldmethod=marker
