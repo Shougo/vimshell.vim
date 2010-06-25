@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved mappings.
 - Changed background filetype.
 - Implemented change title escape sequence.
+- Improved terminal information.
 
 2010-06-24
 - Fixed auto update.

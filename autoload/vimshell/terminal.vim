@@ -24,8 +24,6 @@
 " }}}
 "=============================================================================
 
-let s:terminal_info = {}
-
 function! vimshell#terminal#print(string)"{{{
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
@@ -39,7 +37,7 @@ function! vimshell#terminal#print(string)"{{{
     return
   endif
 
-  if !has_key(s:terminal_info, bufnr('%'))
+  if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
   
@@ -221,35 +219,35 @@ function! vimshell#terminal#set_title()"{{{
     return
   endif
   
-  if !has_key(s:terminal_info, bufnr('%'))
+  if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
 
-  let &titlestring = s:terminal_info[bufnr('%')].titlestring
+  let &titlestring = b:interactive.terminal.titlestring
 endfunction"}}}
 function! vimshell#terminal#restore_title()"{{{
   if !exists('b:interactive')
     return
   endif
   
-  if !has_key(s:terminal_info, bufnr('%'))
+  if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
 
-  let &titlestring = s:terminal_info[bufnr('%')].titlestring_save
+  let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
-  if !has_key(s:terminal_info, bufnr('%'))
+  if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
   
-  for l:syntax_name in s:terminal_info[bufnr('%')].syntax_names
+  for l:syntax_name in b:interactive.terminal.syntax_names
     execute 'highlight clear' l:syntax_name
     execute 'syntax clear' l:syntax_name
   endfor
 endfunction"}}}
 function! s:init_terminal()"{{{
-  let s:terminal_info[bufnr('%')] = {
+  let b:interactive.terminal = {
         \ 'syntax_names' : [],
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
@@ -296,13 +294,6 @@ function! s:escape.highlight(matchstr)"{{{
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
   
   let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
-
-  if !has_key(s:terminal_info, bufnr('%'))
-    let s:terminal_info[bufnr('%')] = {
-          \ 'syntax_names' : []
-          \}
-    return
-  endif
 
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
@@ -377,7 +368,7 @@ function! s:escape.highlight(matchstr)"{{{
     execute 'highlight link' l:syntax_name 'Normal'
     execute 'highlight' l:syntax_name l:highlight
 
-    call add(s:terminal_info[bufnr('%')].syntax_names, l:syntax_name)
+    call add(b:interactive.terminal.syntax_names, l:syntax_name)
   endif
 endfunction"}}}
 function! s:escape.highlight_restore(matchstr)"{{{
@@ -415,7 +406,7 @@ function! s:escape.change_title(matchstr)"{{{
   endif
 
   let &titlestring = l:title
-  let s:terminal_info[bufnr('%')].titlestring = l:title
+  let b:interactive.terminal.titlestring = l:title
 endfunction"}}}
 
 " Control sequence functions.
