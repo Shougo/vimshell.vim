@@ -457,6 +457,13 @@ endfunction"}}}
 function! vimshell#append_history(command)"{{{
   " Reduce blanks.
   let l:command = substitute(a:command, '\s\+', ' ', 'g')
+  
+  let l:program = matchstr(l:command, vimshell#get_program_pattern())
+  if l:program != '' && has_key(g:vimshell_no_save_history_commands, l:program)
+    " No history command.
+    return
+  endif
+  
   " Filtering.
   call insert(filter(g:vimshell#hist_buffer, 'v:val != ' . string(a:command)), l:command)
 

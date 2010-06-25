@@ -279,11 +279,17 @@ g:vimshell_cat_command					*g:vimshell_cat_command*
 			初期値は"cat"です。
 
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
-			|vimshell-internal-iexe|において、ヒストリを保存しな
-			いコマンド名を正規表現で指定します。空だと無視され
-			ます。
+			ヒストリを保存しないコマンド名をキーとしたディクショ
+			ナリです。存在しないと無視されます。
 			
-			初期値は""です。
+			初期値は{ 'history' : 1, 'h' : 1, 'histdel' : 1 }です。
+
+g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
+			|vimshell-internal-iexe|において、ヒストリを保存しな
+			いコマンド名をキーとしたディクショナリです。存在しな
+			いと無視されます。
+			
+			初期値は{}です。
 
 g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
 			|vimshell-internal-iexe|がInsert mode中において、自

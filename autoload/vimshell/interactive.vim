@@ -441,8 +441,8 @@ function! vimshell#interactive#load_history()"{{{
   endif
 endfunction"}}}
 function! s:append_history(command)"{{{
-  if has_key(g:vimshell_no_save_history_commands, &filetype[4:])
-        \ && g:vimshell_no_save_history_commands[&filetype[4:]]
+  if has_key(g:vimshell_interactive_no_save_history_commands, &filetype[4:])
+        \ && g:vimshell_interactive_no_save_history_commands[&filetype[4:]]
     return
   endif
   " Reduce blanks.
