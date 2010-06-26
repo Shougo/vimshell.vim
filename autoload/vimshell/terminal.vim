@@ -255,7 +255,18 @@ function! s:init_terminal()"{{{
   return
 endfunction"}}}
 function! s:output_string(string)"{{{
-  if a:string == '' || (exists('b:interactive') && s:line == b:interactive.echoback_linenr)
+  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+    if !b:interactive.is_pty && &filetype ==# 'int-gosh'
+      " Note: MinGW gosh is no echoback. Why?
+      let s:line += 1
+      let s:lines[s:line] = a:string
+      let s:col = len(a:string)
+      return
+    else
+      return
+    endif
+  endif
+  if a:string == ''
     return
   endif
   

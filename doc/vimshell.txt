@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-26
+- Fixed output for gosh.
+
 2010-06-25
 - Improved mappings.
 - Changed background filetype.
