@@ -37,15 +37,9 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
   " Save current directiory.
   let l:cwd = getcwd()
 
-  " Split nicely.
-  if winwidth(0) > 2 * &winwidth
-    let l:is_split = 0
-  else
-    let l:is_split = 1
-  endif
-
   if l:filename == ''
-    if l:is_split
+    " Split nicely.
+    if winwidth(0) > 2 * &winwidth
       new
     else
       vnew
@@ -59,7 +53,6 @@ function! vimshell#internal#vim#execute(program, args, fd, other_info)
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry
-
   endif
   
   " Call explorer.

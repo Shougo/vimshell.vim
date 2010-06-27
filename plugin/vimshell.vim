@@ -92,6 +92,9 @@ endif
 if !exists('g:vimshell_cat_command')
   let g:vimshell_cat_command = 'cat'
 endif
+if !exists('g:vimshell_split_command')
+  let g:vimshell_split_command = ''
+endif
 if !exists('g:vimshell_no_save_history_commands')
   let g:vimshell_no_save_history_commands = { 'history' : 1, 'h' : 1, 'histdel' : 1 }
 endif

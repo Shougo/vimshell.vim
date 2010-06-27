@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-27
+- Added g:vimshell_split_command option.
+
 2010-06-26
 - Fixed output for gosh.
 
