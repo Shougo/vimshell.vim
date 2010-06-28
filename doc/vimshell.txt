@@ -193,7 +193,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed print bug.
 - Merged hamaco's change.
 - Fixed dirs and bcd and clear error.
-- Fixed open file.
+- Fixed open cursor file.
 
 2010-06-27
 - Added g:vimshell_split_command option.

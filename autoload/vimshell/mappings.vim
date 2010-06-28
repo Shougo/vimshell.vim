@@ -431,7 +431,7 @@ function! s:open_file(filename)"{{{
     return
   endif
 
-  if a:filename !~ '^\a\+:\|^/'
+  if a:filename !~ '^\a\+:\|^[/~]'
     let l:prompt_nr = vimshell#get_prompt_linenr()
     let l:filename = (has_key(b:vimshell.prompt_current_dir, l:prompt_nr)?
           \ b:vimshell.prompt_current_dir[l:prompt_nr] : getcwd()) . '/' . a:filename
