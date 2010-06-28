@@ -33,7 +33,7 @@ function! vimshell#internal#dirs#execute(command, args, fd, other_info)
         " Default max value.
         let l:max = 20
     elseif l:arguments =~ '^\d\+$'
-        let l:max = str2nr(a:args)
+        let l:max = str2nr(l:arguments)
     else
         " Ignore arguments.
         let l:max = len(b:vimshell.directory_stack)
