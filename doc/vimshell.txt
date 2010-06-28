@@ -188,6 +188,8 @@ CHANGELOG						*vimshell-changelog*
 - Fixed repeat error.
 - Refactoringed interactive.
 - Improved update timing.
+- Fixed print error.
+- Improved <Plug>(vimshell_int_execute_line) behaivior.
 
 2010-06-27
 - Added g:vimshell_split_command option.

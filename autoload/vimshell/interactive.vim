@@ -396,12 +396,12 @@ function! s:error_buffer(fd, string)"{{{
   else
     let l:lines = split(l:string, '\n', 1)
 
-    if getline('$') =~ '!!!$'
-      call setline('$', getline('$')[: -4] . l:lines[0] . '!!!')
-    else
-      call setline('$', getline('$') . '!!!' . l:lines[0] . '!!!')
+    if l:lines[0] != ''
+      let l:line = getline('$') =~ '!!!$' ?
+            \ getline('$')[: -4] . l:lines[0] . '!!!' : getline('$') . '!!!' . l:lines[0] . '!!!'
+      call setline('$', l:line)
     endif
-    call append('$', map(l:lines[1:], '"!!!" . v:val . "!!!"'))
+    call append('$', map(l:lines[1:], 'v:val != "" ? "!!!" . v:val . "!!!" : v:val'))
   endif
 
   " Set cursor.

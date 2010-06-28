@@ -159,6 +159,12 @@ function! s:delete_word()"{{{
   return vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
 endfunction"}}}
 function! s:execute_line(is_insert)"{{{
+  if !a:is_insert
+    " Force execute line.
+    call s:execute_history(a:is_insert)
+    return
+  endif
+  
   " Search cursor file.
   let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
 
