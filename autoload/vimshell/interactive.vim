@@ -67,16 +67,7 @@ function! s:chomp_prompt(cur_text, line)"{{{
   let l:cur_text = a:cur_text
   
   if has_key(b:interactive.prompt_history, a:line)
-    let l:cur_text = l:cur_text[len(b:interactive.prompt_history[a:line]) : ]
-  elseif !empty(b:interactive.prompt_history)
-    " Maybe a multi-line command was pasted in.
-    let l:max_prompt = max(keys(b:interactive.prompt_history)) " Only count once.
-    if l:max_prompt < line('$')
-      let l:cur_text = getline(l:max_prompt)[len(b:interactive.prompt_history[l:max_prompt]) : ]
-      for i in range(l:max_prompt+1, line('$'))
-        let l:cur_text .=  "\<LF>".getline(i)
-      endfor
-    endif
+    let l:cur_text = a:cur_text[len(b:interactive.prompt_history[a:line]) : ]
   endif
 
   return l:cur_text
@@ -89,9 +80,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   let l:in = vimshell#interactive#get_cur_line(line('.'))
 
-  if l:in != ''
-    call s:append_history(l:in)
-  endif
+  call s:append_history(l:in)
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
@@ -118,16 +107,6 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
-
-  if b:interactive.process.is_valid
-    if b:interactive.process.eof
-      call vimshell#interactive#exit()
-    elseif a:is_insert
-      startinsert!
-    else
-      normal! $
-    endif
-  endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
   if !b:interactive.process.is_valid
@@ -201,10 +180,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     return
   endif
   
-  if has('reltime')
-    let l:start = reltime()
-  endif
-
   let l:outputed = 0
   let l:read = b:interactive.process.read(-1, 40)
   while l:read != ''
@@ -225,14 +200,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endif
   endif
   
-  if has('reltime')
-    let l:reltime = split(reltimestr(reltime(start)))[0]
-
-    if l:reltime > '1.0'
-      echo 'Blocked about ' . l:reltime . 'sec.'
-    endif
-  endif
-
   if b:interactive.process.eof
     call vimshell#interactive#exit()
   endif
@@ -241,10 +208,6 @@ endfunction"}}}
 function! vimshell#interactive#execute_pipe_out()"{{{
   if !b:interactive.process.is_valid
     return
-  endif
-
-  if has('reltime')
-    let l:start = reltime()
   endif
 
   if !b:interactive.process.stdout.eof
@@ -265,14 +228,6 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     endwhile
   endif
   
-  if has('reltime')
-    let l:reltime = split(reltimestr(reltime(start)))[0]
-
-    if l:reltime > '1.0'
-      echo 'Blocked about ' . l:reltime . 'sec.'
-    endif
-  endif
-
   if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
     call vimshell#interactive#exit()
   endif

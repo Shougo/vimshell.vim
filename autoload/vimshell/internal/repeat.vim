@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: repeat.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2010
+" Last Modified: 28 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,10 +34,8 @@ function! vimshell#internal#repeat#execute(program, args, fd, other_info)
     let l:max = a:args[0]
     let l:i = 0
     while l:i < l:max
-      call vimshell#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
+      call vimshell#parser#execute_command(a:args[1], a:args[2:], a:fd, a:other_info) 
       let l:i += 1
     endwhile
-    return
   endif
-  return
 endfunction

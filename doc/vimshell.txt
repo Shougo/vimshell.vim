@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-28
+- Fixed repeat error.
+- Refactoringed interactive.
+- Improved update timing.
+
 2010-06-27
 - Added g:vimshell_split_command option.
 - Improved terminal mappings.
