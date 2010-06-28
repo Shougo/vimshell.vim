@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2010
+" Last Modified: 27 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -655,7 +655,9 @@ function! vimshell#get_alias_pattern()"{{{
 endfunction"}}}
 function! vimshell#split_nicely()"{{{
   " Split nicely.
-  if winwidth(0) > 2 * &winwidth
+  if g:vimshell_split_command != ''
+    execute g:vimshell_split_command
+  elseif winwidth(0) > 2 * &winwidth
     vsplit
   else
     split

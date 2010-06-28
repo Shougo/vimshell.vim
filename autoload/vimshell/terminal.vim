@@ -264,7 +264,18 @@ function! s:init_terminal()"{{{
   return
 endfunction"}}}
 function! s:output_string(string)"{{{
-  if a:string == '' || (exists('b:interactive') && s:line == b:interactive.echoback_linenr)
+  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+    if !b:interactive.is_pty && &filetype ==# 'int-gosh'
+      " Note: MinGW gosh is no echoback. Why?
+      let s:line += 1
+      let s:lines[s:line] = a:string
+      let s:col = len(a:string)
+      return
+    else
+      return
+    endif
+  endif
+  if a:string == ''
     return
   endif
   
@@ -487,20 +498,20 @@ function! s:control.newline()"{{{
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
   if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+        \ || s:col == 1
     return
   endif
   
   let l:line = s:lines[s:line]
+  let l:len = len(matchstr(s:line[: s:col-1] , '.$')
   
-  if s:col == 1
-    return
-  elseif s:col == 2
+  if s:col <= l:len + 1
     let s:lines[s:line] = l:line[s:col :] 
   else
-    let s:lines[s:line] = l:line[: s:col-2] . l:line[s:col :] 
+    let s:lines[s:line] = l:line[: s:col-1 - l:len] . l:line[s:col :] 
   endif
   
-  let s:col -= 1
+  let s:col -= l:len
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1

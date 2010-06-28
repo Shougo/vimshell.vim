@@ -278,6 +278,13 @@ g:vimshell_cat_command					*g:vimshell_cat_command*
 			
 			初期値は"cat"です。
 
+g:vimshell_split_command				*g:vimshell_split_command*
+			vimshellが画面を分割するときに用いるExコマンドです。
+			これを空にすると、vimshellがウインドウの大きさを見て
+			最適な画面分割を行います。
+			
+			初期値は""です。
+
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			ヒストリを保存しないコマンド名をキーとしたディクショ
 			ナリです。存在しないと無視されます。
