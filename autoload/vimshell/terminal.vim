@@ -246,6 +246,10 @@ function! vimshell#terminal#restore_title()"{{{
   let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
+  if !exists('b:interactive')
+    return
+  endif
+  
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
