@@ -160,27 +160,24 @@ function! s:delete_word()"{{{
 endfunction"}}}
 function! s:execute_line(is_insert)"{{{
   if !a:is_insert
-    " Force execute line.
-    call s:execute_history(a:is_insert)
-    return
+    " Search cursor file.
+    let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+
+    if &termencoding != '' && &encoding != &termencoding
+      " Convert encoding.
+      let l:filename = iconv(l:filename, &encoding, &termencoding)
+    endif
+
+    " Execute cursor file.
+    if l:filename =~ '^\%(https\?\|ftp\)://'
+      " Open uri.
+      call vimshell#open(l:filename)
+      return
+    endif
   endif
   
-  " Search cursor file.
-  let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
-
-  if &termencoding != '' && &encoding != &termencoding
-    " Convert encoding.
-    let l:filename = iconv(l:filename, &encoding, &termencoding)
-  endif
-
-  " Execute cursor file.
-  if l:filename =~ '^\%(https\?\|ftp\)://'
-    " Open uri.
-    call vimshell#open(l:filename)
-  else
-    " Execute history.
-    call s:execute_history(a:is_insert)
-  endif
+  " Execute history.
+  call s:execute_history(a:is_insert)
 endfunction"}}}
 function! s:paste_prompt()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
