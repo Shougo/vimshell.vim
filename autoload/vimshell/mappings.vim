@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -141,6 +141,10 @@ endfunction"}}}
 function! s:execute_line(is_insert)"{{{
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
+
+    if a:is_insert
+      return
+    endif
 
     if !vimshell#check_prompt('$')
       " Create prompt line.
@@ -435,11 +439,13 @@ function! s:open_file(filename)"{{{
   else
     let l:filename = a:filename
   endif
+
+  let l:filename = expand(l:filename)
   
   if l:filename =~ '^\%(https\?\|ftp\)://'
     " Open URI.
     call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-  elseif isdirectory(expand(l:filename))
+  elseif isdirectory(l:filename)
     " Change directory.
     call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
   else
