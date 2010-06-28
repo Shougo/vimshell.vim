@@ -191,6 +191,8 @@ CHANGELOG						*vimshell-changelog*
 - Fixed print error.
 - Improved <Plug>(vimshell_int_execute_line) behaivior.
 - Fixed print bug.
+- Merged hamaco's change.
+- Fixed dirs and bcd and clear error.
 
 2010-06-27
 - Added g:vimshell_split_command option.
