@@ -27,8 +27,8 @@
 function! vimshell#complete#internal#bcd#get_complete_words(args)"{{{
     let l:ret = vimshell#complete#helper#buffers(a:args[-1])
     for l:keyword in l:ret
-        let l:keyword.menu .= ' ' . fnamemodify(l:keyword.abbr, ':p:h')
-        let l:keyword.abbr = fnamemodify(l:keyword.abbr, ':t')
+        let l:keyword.menu .= ' ' . fnamemodify(l:keyword.word, ':p:h')
+        let l:keyword.abbr = fnamemodify(l:keyword.word, ':t')
     endfor
     
     return l:ret
