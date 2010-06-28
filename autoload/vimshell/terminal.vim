@@ -25,6 +25,7 @@
 "=============================================================================
 
 function! vimshell#terminal#print(string)"{{{
+  "echomsg a:string
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
@@ -507,7 +508,7 @@ function! s:control.delete_backword_char()"{{{
   endif
   
   let l:line = s:lines[s:line]
-  let l:len = len(matchstr(s:line[: s:col-1] , '.$')
+  let l:len = len(matchstr(l:line[: s:col-1] , '.$'))
   
   if s:col <= l:len + 1
     let s:lines[s:line] = l:line[s:col :] 

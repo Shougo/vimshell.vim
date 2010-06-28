@@ -194,6 +194,7 @@ CHANGELOG						*vimshell-changelog*
 - Merged hamaco's change.
 - Fixed dirs and bcd and clear error.
 - Fixed open cursor file.
+- Fixed cursor position in texe.
 
 2010-06-27
 - Added g:vimshell_split_command option.

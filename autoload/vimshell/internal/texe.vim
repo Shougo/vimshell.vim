@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -157,8 +157,10 @@ function! s:insert_enter()"{{{
   endif
 
   call setpos('.', b:interactive.save_cursor)
-  if b:interactive.save_cursor[2] > len(getline(b:interactive.save_cursor[1]))
+  if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
     startinsert!
+  else
+    normal! l
   endif
 endfunction"}}}
 function! s:insert_leave()"{{{

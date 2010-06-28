@@ -80,6 +80,7 @@ function! s:exit()"{{{
 endfunction "}}}
 function! s:send_string()"{{{
   let l:input = input('Please input send string: ')
+  call vimshell#imdisable()
   if l:input != ''
     call vimshell#interactive#send_string(l:input)
   endif

@@ -34,6 +34,7 @@ if !s:exists_vimproc_version || vimproc#version() < 401
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endif
+let s:exists_eskk = exists('*eskk#is_enabled')
 
 " Initialize."{{{
 let s:prompt = exists('g:vimshell_prompt') ? g:vimshell_prompt : 'vimshell% '
@@ -694,7 +695,7 @@ function! vimshell#alternate_buffer()"{{{
 endfunction"}}}
 function! vimshell#imdisable()"{{{
   " Disable input method.
-  if exists('*eskk#is_enabled') && eskk#is_enabled()
+  if exists(s:exists_eskk) && eskk#is_enabled()
     call feedkeys(eskk#disable(), 'n')
   elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
     call feedkeys(SkkDisable(), 'n')
