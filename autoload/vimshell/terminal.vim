@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jun 2010
+" Last Modified: 28 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ function! vimshell#terminal#print(string)"{{{
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
-    if exists('b:interactive') && line('.') != b:interactive.echoback_linenr
+    if !exists('b:interactive') || line('.') != b:interactive.echoback_linenr
       call setline('.', getline('.') . l:lines[0])
     endif
     call append('.', l:lines[1:])
