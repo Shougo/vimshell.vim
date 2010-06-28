@@ -31,7 +31,7 @@ inoremap <silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head
 inoremap <silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
 inoremap <expr> <Plug>(vimshell_int_delete_word)  <SID>delete_word()
 inoremap <silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
-inoremap <silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#int_mappings#interrupt(bufname('%'))<CR>
+inoremap <silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
 inoremap <expr> <Plug>(vimshell_int_delete_backword_char)  <SID>delete_backword_char(0)
 inoremap <expr> <Plug>(vimshell_int_another_delete_backword_char)  <SID>delete_backword_char(1)
 inoremap <expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
@@ -41,7 +41,7 @@ nnoremap <silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous
 nnoremap <silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
 nnoremap <silent> <Plug>(vimshell_int_execute_line)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
 nnoremap <silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#int_mappings#interrupt(bufname('%'))<CR>
+nnoremap <silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
 nnoremap <silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>exit()<CR>
 nnoremap <silent> <Plug>(vimshell_int_restart_command)       :<C-u>call <SID>restart_command()<CR>
 nnoremap <expr> <Plug>(vimshell_int_change_line) printf('0%dlc$', strlen(vimshell#interactive#get_prompt()))
@@ -80,10 +80,6 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
-function! vimshell#int_mappings#interrupt(afile)"{{{
-  call vimshell#interactive#hang_up(a:afile)
-endfunction "}}}
-
 function! s:delete_backword_char(is_auto_select)"{{{
   let l:prefix = pumvisible() ? (a:is_auto_select? (
         \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")

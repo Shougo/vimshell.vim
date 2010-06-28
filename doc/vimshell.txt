@@ -191,6 +191,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved terminal information.
 - Added g:vimshell_interactive_no_save_history_commands option.
 - Fixed append history.
+- Implemented few escape sequences.
+- Implemented texe.
 
 2010-06-24
 - Fixed auto update.

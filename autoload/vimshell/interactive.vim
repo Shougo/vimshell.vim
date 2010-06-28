@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jun 2010
+" Last Modified: 25 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -134,7 +134,7 @@ function! vimshell#interactive#send_string(string)"{{{
     return
   endif
 
-  let l:in = vimshell#interactive#get_cur_line(line('.')) . a:string
+  let l:in = a:string
 
   if l:in != ''
     call s:append_history(l:in)
@@ -155,6 +155,34 @@ function! vimshell#interactive#send_string(string)"{{{
       return
     else
       call b:interactive.process.write(l:in)
+    endif
+  catch
+    call vimshell#interactive#exit()
+    return
+  endtry
+
+  call vimshell#interactive#execute_pty_out(1)
+
+  if !b:interactive.process.eof
+    startinsert!
+  endif
+endfunction"}}}
+function! vimshell#interactive#send_char(char)"{{{
+  if !b:interactive.process.is_valid
+    return
+  endif
+
+  let l:char = nr2char(a:char)
+  try
+    if a:char == "\<C-d>"
+      " EOF.
+      call b:interactive.process.write(b:interactive.is_pty ? "\<C-z>" : "\<C-d>")
+      call vimshell#interactive#execute_pty_out(1)
+
+      call vimshell#interactive#exit()
+      return
+    else
+      call b:interactive.process.write(l:char)
     endif
   catch
     call vimshell#interactive#exit()

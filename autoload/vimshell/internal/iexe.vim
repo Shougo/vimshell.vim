@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2010
+" Last Modified: 25 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -160,17 +160,11 @@ function! vimshell#internal#iexe#default_settings()"{{{
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   syn match   InteractiveErrorHidden            '!!!' contained
-  syn match   InteractivePrompt         '^->\s\|^\.\.\.$'
   syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
   
   hi def link InteractiveMessage WarningMsg
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
-  if has('gui_running')
-    hi InteractivePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-  else
-    hi def link InteractivePrompt Identifier
-  endif
 
   " Define mappings.
   call vimshell#int_mappings#define_default_mappings()
@@ -195,7 +189,7 @@ function! s:init_bg(sub, args, fd, other_info)"{{{
   augroup vimshell_iexe
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
-    autocmd BufUnload <buffer>       call vimshell#int_mappings#interrupt(expand('<afile>'))
+    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorMovedI <buffer>  call s:on_moved_i()

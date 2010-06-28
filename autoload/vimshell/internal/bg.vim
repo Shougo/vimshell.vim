@@ -129,7 +129,7 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   augroup END
   
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call <SID>on_interrupt(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(a:afile)
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
   
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
@@ -148,9 +148,6 @@ function! s:on_execute()"{{{
   redraw
   echo ''
   setlocal nomodifiable
-endfunction"}}}
-function! s:on_interrupt(afile)"{{{
-  call vimshell#interactive#hang_up(a:afile)
 endfunction"}}}
 function! s:on_exit()"{{{
   if !b:interactive.process.is_valid
