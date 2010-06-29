@@ -47,7 +47,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   
   for [l:key, l:value] in items({
         \ '<C-a>' : "\<C-a>", '<C-b>' : "\<C-b>", '<C-c>' : "\<C-c>", '<C-d>' : "\<C-d>", '<C-e>' : "\<C-e>", '<C-f>' : "\<C-f>", '<C-g>' : "\<C-g>",
-        \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<C-m>", '<C-n>' : "\<C-n>",
+        \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<LF>", '<C-n>' : "\<C-n>",
         \ '<C-o>' : "\<C-o>", '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>", '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
         \ '<C-v>' : "\<C-v>", '<C-w>' : "\<C-w>", '<C-x>' : "\<C-x>", '<C-y>' : "\<C-y>", '<C-z>' : "\<C-z>",
         \ '<Home>' : "\<Home>", '<End>' : "\<End>", '<Del>' : "\<Del>", '<BS>' : "\<BS>",

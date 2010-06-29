@@ -169,12 +169,10 @@ function! s:insert_leave()"{{{
   endif
 endfunction"}}}
 function! s:on_hold_i()"{{{
-  if line('.') == line('$')
-    call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
-    if b:interactive.process.is_valid
-      " Ignore key sequences.
-      call feedkeys("\<C-r>\<ESC>", 'n')
-    endif
+  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
+  if b:interactive.process.is_valid
+    " Ignore key sequences.
+    call feedkeys("\<C-r>\<ESC>", 'n')
   endif
 endfunction"}}}
 function! s:on_moved_i()"{{{

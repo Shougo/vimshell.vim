@@ -107,6 +107,13 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
+  if !b:interactive.process.eof
+    if a:is_insert
+      startinsert!
+    else
+      normal! $
+    endif
+  endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
   if !b:interactive.process.is_valid
@@ -193,10 +200,12 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   if l:outputed
     $
     
-    if !b:interactive.process.eof && a:is_insert
-      startinsert!
-    else
-      normal! $
+    if !b:interactive.process.eof
+      if a:is_insert
+        startinsert!
+      else
+        normal! $
+      endif
     endif
   endif
   
@@ -482,9 +491,9 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
-  elseif line('.') == b:interactive.echoback_linenr ||
-        \(!has_key(b:interactive.prompt_history, line('.'))
-        \|| vimshell#interactive#get_cur_line(line('.')) == '')
+  elseif &filetype  == 'vimshell-term'
+        \ || line('.') == b:interactive.echoback_linenr
+        \ || (!has_key(b:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
     " Check input.
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')

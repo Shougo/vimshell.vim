@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-29
+- Fixed texe update.
+
 2010-06-28
 - Fixed repeat error.
 - Refactoringed interactive.
