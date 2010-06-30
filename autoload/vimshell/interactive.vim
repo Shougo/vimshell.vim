@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jun 2010
+" Last Modified: 30 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -148,10 +148,6 @@ function! vimshell#interactive#send_string(string)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(1)
-
-  if !b:interactive.process.eof
-    startinsert!
-  endif
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
@@ -176,10 +172,6 @@ function! vimshell#interactive#send_char(char)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(1)
-
-  if !b:interactive.process.eof
-    startinsert!
-  endif
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_out(is_insert)"{{{
@@ -197,7 +189,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let l:read = b:interactive.process.read(-1, 40)
   endwhile
 
-  if l:outputed
+  if &filetype !=# 'vimshell-term' && l:outputed
     $
     
     if !b:interactive.process.eof
@@ -498,7 +490,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')
 
-    if !a:interactive.process.eof && mode() ==# 'i'
+    if &filetype !=# 'vimshell-term' && !a:interactive.process.eof && mode() ==# 'i'
       startinsert!
     endif
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jun 2010
+" Last Modified: 30 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,6 @@
 "=============================================================================
 
 function! vimshell#terminal#print(string)"{{{
-  "echomsg a:string
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
@@ -39,6 +38,7 @@ function! vimshell#terminal#print(string)"{{{
       let b:interactive.save_cursor[1] = line('$')
       let b:interactive.save_cursor[2] = col('$')
     endif
+    
     return
   endif
 
@@ -49,8 +49,8 @@ function! vimshell#terminal#print(string)"{{{
   let l:newstr = ''
   let l:pos = 0
   let l:max = len(a:string)
-  let s:col = col('.')
   let s:line = line('.')
+  let s:col = col('.')
   let s:lines = {}
   let s:lines[s:line] = getline('.')
   let s:save_pos = [s:line, s:col]
@@ -153,8 +153,8 @@ function! vimshell#terminal#print(string)"{{{
   let l:oldpos[1] = s:line
   let l:oldpos[2] = s:col
   call setpos('.', l:oldpos)
-
-  if has_key(b:interactive, 'save_cursor')
+  
+  if &filetype ==# 'vimshell-term'
     let b:interactive.save_cursor = l:oldpos
   endif
 
@@ -404,6 +404,22 @@ function! s:escape.move_cursor(matchstr)"{{{
   
   let s:line = l:args[0]
   let s:col = l:args[1]
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = ''
+  endif
+  if s:col > len(s:lines[s:line])+1
+    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
+  endif
+endfunction"}}}
+function! s:escape.setup_window(matchstr)"{{{
+  let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  
+  let l:max_line = l:args[1]
+  let l:linenr = l:args[0]
+  while l:linenr <= l:max_line
+    let s:lines[l:linenr] = ''
+    let l:linenr += 1
+  endwhile
 endfunction"}}}
 function! s:escape.delete_whole_line(matchstr)"{{{
   let s:lines[s:line] = ''
@@ -436,40 +452,64 @@ function! s:escape.move_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
 function! s:escape.move_up1(matchstr)"{{{
-  if s:line > 1
-    let s:line -= 1
+  let s:line -= 1
+  if s:line < 1
+    let s:line = 1
+  endif
+
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = repeat(' ', s:col)
   endif
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
-  let n = matchstr(a:matchstr, '\d\+')
-  let s:line = (s:line > n)? s:line - n : 1
+  let s:line -= matchstr(a:matchstr, '\d\+')
+  if s:line < 1
+    let s:line = 1
+  endif
+  
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = repeat(' ', s:col)
+  endif
 endfunction"}}}
 function! s:escape.move_down1(matchstr)"{{{
-  if s:line < len(s:lines)-1
-    let s:line += 1
+  let s:line += 1
+
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = repeat(' ', s:col)
   endif
 endfunction"}}}
 function! s:escape.move_down(matchstr)"{{{
-  let n = matchstr(a:matchstr, '\d\+')
-  let s:line = (s:line > len(s:lines)-1)? s:line + n : len(s:lines)-1
+  let s:line += matchstr(a:matchstr, '\d\+')
+
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = repeat(' ', s:col)
+  endif
 endfunction"}}}
 function! s:escape.move_right1(matchstr)"{{{
-  if s:col < len(s:lines[s:col])-1
-    let s:col += 1
+  let s:col += 1
+  
+  if s:col > len(s:lines[s:line])+1
+    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
   endif
 endfunction"}}}
 function! s:escape.move_right(matchstr)"{{{
-  let n = matchstr(a:matchstr, '\d\+')
-  let s:col = (s:col > len(s:lines[s:col])-1)? s:col + n : len(s:lines[s:col])-1
+  let s:col += matchstr(a:matchstr, '\d\+')
+  
+  if s:col > len(s:lines[s:line])+1
+    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
+  endif
 endfunction"}}}
 function! s:escape.move_left1(matchstr)"{{{
-  if s:col > 1
-    let s:col -= 1
+  let s:col -= 1
+  if s:col < 1
+    let s:col = 1
   endif
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
-  let n = matchstr(a:matchstr, '\d\+')
-  let s:col = (s:col > n)? s:col - n : 1
+  let s:col -= matchstr(a:matchstr, '\d\+')
+  if s:col < 1
+    let s:col = 1
+  endif
 endfunction"}}}
 function! s:escape.save_pos(matchstr)"{{{
   let s:save_pos = [s:line, s:col]
@@ -509,12 +549,7 @@ function! s:control.delete_backword_char()"{{{
   
   let l:line = s:lines[s:line]
   let l:len = len(matchstr(l:line[: s:col-1] , '.$'))
-  
-  if s:col <= l:len + 1
-    let s:lines[s:line] = l:line[s:col :] 
-  else
-    let s:lines[s:line] = l:line[: s:col-1 - l:len] . l:line[s:col :] 
-  endif
+  "let s:lines[s:line] = l:line[: s:col-l:len-1] . l:line[s:col :]
   
   let s:col -= l:len
 endfunction"}}}
@@ -535,12 +570,16 @@ endfunction"}}}
 " escape sequence list. {{{
 " pattern: function
 let s:escape_sequence_match = {
+      \ '^\[20[hl]' : s:escape.ignore,
+      \ '^\[?\d[hl]' : s:escape.ignore,
+      \ '^[()][AB012]' : s:escape.ignore,
+      \
       \ '^\[[0-9;]\+m' : s:escape.highlight,
       \
       \ '^k.\{-}\e\\' : s:escape.change_title,
       \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
       \ 
-      \ '^\[\d\+;\d\+r' : s:escape.ignore,
+      \ '^\[\d\+;\d\+r' : s:escape.setup_window,
       \
       \ '^\[\d\+A' : s:escape.move_up,
       \ '^\[\d\+B' : s:escape.move_down,

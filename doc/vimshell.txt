@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-06-30
+- Improved cursor move.
+
 2010-06-29
 - Fixed texe update.
 
