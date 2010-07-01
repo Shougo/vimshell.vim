@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed <Plug>(vimshell_clear) bug.
 - Improved texe.
 - Fixed escape error in texe.
+- Fixed initial output in texe.
 
 2010-06-30
 - Improved cursor move.

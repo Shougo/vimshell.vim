@@ -148,20 +148,6 @@ function! vimshell#interactive#send_string(string)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(1)
-  if !b:interactive.process.eof
-    if &filetype !=# 'vimshell-term'
-      if a:is_insert
-        startinsert!
-      else
-        normal! $
-      endif
-    elseif b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
-      startinsert!
-    else
-      startinsert
-      normal! l
-    endif
-  endif
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
@@ -186,14 +172,6 @@ function! vimshell#interactive#send_char(char)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(1)
-  if !b:interactive.process.eof
-    if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
-      startinsert!
-    else
-      startinsert
-      normal! l
-    endif
-  endif
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_out(is_insert)"{{{
@@ -211,14 +189,23 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let l:read = b:interactive.process.read(-1, 40)
   endwhile
 
-  if &filetype !=# 'vimshell-term' && l:outputed
-    $
-    
-    if !b:interactive.process.eof
-      if a:is_insert
+  if l:outputed
+    if &filetype !=# 'vimshell-term'
+      $
+
+      if !b:interactive.process.eof
+        if a:is_insert
+          startinsert!
+        else
+          normal! $
+        endif
+      endif
+    else
+      if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
         startinsert!
       else
-        normal! $
+        startinsert
+        normal! l
       endif
     endif
   endif

@@ -104,8 +104,6 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
         \ 'save_cursor' : getpos('.'),
         \}
 
-  startinsert!
-
   wincmd p
 endfunction"}}}
 
