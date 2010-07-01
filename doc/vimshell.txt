@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved texe.
 - Fixed escape error in texe.
 - Fixed initial output in texe.
+- Supported scroll.
 
 2010-06-30
 - Improved cursor move.

@@ -55,6 +55,7 @@ function! vimshell#terminal#print(string)"{{{
   let s:lines = {}
   let s:lines[s:line] = getline('.')
   let s:save_pos = [s:line, s:col]
+  let s:scrolls = 0
   
   while l:pos < l:max
     let l:char = a:string[l:pos]
@@ -154,6 +155,11 @@ function! vimshell#terminal#print(string)"{{{
   let l:oldpos[1] = s:line
   let l:oldpos[2] = s:col
   call setpos('.', l:oldpos)
+  if s:scrolls > 0
+    execute 'normal' s:scrolls."\<C-e>"
+  elseif s:scrolls < 0
+    execute 'normal' (-s:scrolls)."\<C-y>"
+  endif
   
   if &filetype ==# 'vimshell-term'
     let b:interactive.save_cursor = l:oldpos
@@ -480,6 +486,13 @@ function! s:escape.clear_screen_from_cursor_up(matchstr)"{{{
 
   let s:col = 1
 endfunction"}}}
+function! s:escape.move_cursor_home(matchstr)"{{{
+  let s:line = 1
+  let s:col = 1
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = ''
+  endif
+endfunction"}}}
 function! s:escape.move_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
@@ -494,7 +507,12 @@ function! s:escape.move_up1(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
-  let s:line -= matchstr(a:matchstr, '\d\+')
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+  
+  let s:line -= n
   if s:line < 1
     let s:line = 1
   endif
@@ -511,7 +529,12 @@ function! s:escape.move_down1(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_down(matchstr)"{{{
-  let s:line += matchstr(a:matchstr, '\d\+')
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+  
+  let s:line += n
 
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = repeat(' ', s:col)
@@ -525,7 +548,12 @@ function! s:escape.move_right1(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_right(matchstr)"{{{
-  let s:col += matchstr(a:matchstr, '\d\+')
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+  
+  let s:col += n
   
   if s:col > len(s:lines[s:line])+1
     let s:lines[s:line] .= repeat(' ', s:col - len(s:lines[s:line])+1)
@@ -538,7 +566,12 @@ function! s:escape.move_left1(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
-  let s:col -= matchstr(a:matchstr, '\d\+')
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+  
+  let s:col -= n
   if s:col < 1
     let s:col = 1
   endif
@@ -557,6 +590,12 @@ function! s:escape.move_up_head1(matchstr)"{{{
 endfunction"}}}
 function! s:escape.move_up_head(matchstr)"{{{
   let s:col = 1
+endfunction"}}}
+function! s:escape.scroll_up1(matchstr)"{{{
+  let s:scrolls -= 1
+endfunction"}}}
+function! s:escape.scroll_down1(matchstr)"{{{
+  let s:scrolls += 1
 endfunction"}}}
 function! s:escape.move_col(matchstr)"{{{
   let s:col = matchstr(a:matchstr, '\d\+')
@@ -673,17 +712,13 @@ let s:escape_sequence_simple_char1 = {
       \ '=' : s:escape.ignore,
       \ '>' : s:escape.ignore,
       \
-      \ 'A' : s:escape.move_up1,
-      \ 'B' : s:escape.move_down1,
-      \ 'C' : s:escape.move_right1,
-      \ 'D' : s:escape.move_left1,
       \ 'E' : s:escape.move_down_head1,
-      \ 'F' : s:escape.move_up_head1,
       \ 'G' : s:escape.ignore,
       \ 'I' : s:escape.ignore,
       \ 'J' : s:escape.ignore,
       \ 'K' : s:escape.ignore,
-      \ 'M' : s:escape.ignore,
+      \ 'D' : s:escape.scroll_up1,
+      \ 'M' : s:escape.scroll_down1,
       \
       \ 'Z' : s:escape.ignore,
       \ '%' : s:escape.ignore,
@@ -693,8 +728,8 @@ let s:escape_sequence_simple_char2 = {
       \
       \ '[D' : s:escape.move_down1,
       \ '[M' : s:escape.move_up1,
-      \ '[H' : s:escape.ignore,
-      \ '[f' : s:escape.ignore,
+      \ '[H' : s:escape.move_cursor_home,
+      \ '[f' : s:escape.move_cursor_home,
       \
       \ '[g' : s:escape.ignore,
       \
@@ -711,8 +746,8 @@ let s:escape_sequence_simple_char2 = {
       \ '#8' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char3 = {
-      \ '[;H' : s:escape.ignore,
-      \ '[;f' : s:escape.ignore,
+      \ '[;H' : s:escape.move_cursor_home,
+      \ '[;f' : s:escape.move_cursor_home,
       \
       \ '[0K' : s:escape.delete_right_line,
       \ '[1K' : s:escape.delete_left_line,
