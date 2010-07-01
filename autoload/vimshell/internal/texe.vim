@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jun 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,6 +78,8 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
     endif
   endif
 
+  call s:init_bg(l:sub, l:args, a:fd, a:other_info)
+  
   let l:sub = vimproc#ptyopen(l:args)
 
   if vimshell#iswin()
@@ -86,8 +88,6 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
       let $HOME = l:home_save
     endif
   endif
-
-  call s:init_bg(l:sub, l:args, a:fd, a:other_info)
 
   " Set variables.
   let b:interactive = {
@@ -124,7 +124,7 @@ function! vimshell#internal#texe#default_settings()"{{{
   call vimshell#term_mappings#define_default_mappings()
 endfunction"}}}
 
-function! s:init_bg(sub, args, fd, other_info)"{{{
+function! s:init_bg(args, fd, other_info)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 

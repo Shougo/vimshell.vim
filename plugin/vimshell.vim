@@ -128,6 +128,7 @@ command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#internal#bg#vimshell_bg(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#internal#iexe#vimshell_iexe(<q-args>)
+command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellTerminal call vimshell#internal#texe#vimshell_iexe(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellBang call s:bang(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellRead call s:read(<q-args>)
 

@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-01
+- Added :VimShellTerminal command.
+- Improved split window.
+- Fixed <Plug>(vimshell_clear) bug.
+
 2010-06-30
 - Improved cursor move.
 

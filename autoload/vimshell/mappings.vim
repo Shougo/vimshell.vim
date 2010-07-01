@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jun 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -371,27 +371,8 @@ function! s:clear()"{{{
   let l:pos = getpos('.')
   % delete _
 
-  if vimshell#get_user_prompt() != ''
-    " Insert user prompt line.
-    for l:user in split(vimshell#get_user_prompt(), "\\n")
-      let l:secondary = '[%] ' . eval(l:user)
-      if line('$') == 1 && getline('.') == ''
-        call setline(line('$'), l:secondary)
-      else
-        call append(line('$'), l:secondary)
-        normal! j$
-      endif
-    endfor
-  endif
-
-  call append(line('.'), l:line)
-  call setpos('.', l:pos)
-  if col('.')+1 < col('$')
-    normal! l
-    startinsert
-  else
-    startinsert!
-  endif
+  call vimshell#print_prompt()
+  call vimshell#start_insert()
 endfunction"}}}
 function! s:expand_wildcard()"{{{
   " Wildcard.

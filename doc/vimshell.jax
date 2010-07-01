@@ -130,15 +130,20 @@ COMMANDS 						*vimshell-commands*
 			いたいときに便利です。ウインドウを分割する高さは
 			|g:vimshell_split_height|で決定されます。
 
-:VimShellExecute {path}					*:VimShellExecute*
-			vimshellを起動せずに、{path}で指定された実行ファイルを
-			バックグラウンドで起動します。vimshellをGNU screenの
-			ように使えます。
+:VimShellExecute {command}				*:VimShellExecute*
+			vimshellを起動せずに、{command}で指定された実行
+			ファイルをバックグラウンドで起動します。vimshellを
+			GNU screenのように使えます。
 
-:VimShellInteractive {path}				*:VimShellInteractive*
-			vimshellを起動せずに、{path}で指定されたインタプリタ
-			を起動します。EmacsのM-x {interpreter-name}のように
-			使えます。
+:VimShellInteractive {command}				*:VimShellInteractive*
+			vimshellを起動せずに、{command}で指定された
+			インタプリタを起動します。EmacsのM-x 
+			{interpreter-name}のように使えます。
+
+:VimShellTerminal {command}				*:VimShellTerminal*
+			vimshellを起動せずに、{command}で指定された端末
+			プログラムを起動します。Emacsのansi-termのように使え
+			ます。ただしまだ未完成です。
 
 :VimShellBang {path}					*:VimShellBang*
 			vimshellを起動せずに、{path}で指定された実行ファイルを
@@ -431,15 +436,14 @@ bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動します。
 
 bg [{option}...] {command}				*vimshell-internal-bg*
-		{command}をバックグラウンドで起動します。非同期実行機能が有効
-		でないと動作しません。 vimshellのバックグラウンド実行は新た
-		にバッファを開き、そこに{command}の出力を書き出します。 bgの
-		場合、ユーザーからの入力は一切受け付けません。 バックグラウ
-		ンドバッファ上で<C-c>を入力すると、{command}の実行を強制的に
-		終了させます。コマンド名の最後に&を付けると、bg command...と
-		同じ意味となります。
-		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
-		詳しくは|vimshell-execute-options|を参照してください。
+		{command}をバックグラウンドで起動します。vimshellの
+		バックグラウンド実行は新たにバッファを開き、そこに{command}
+		の出力を書き出します。 bgの場合、ユーザーからの入力は一切受け
+		付けません。 バックグラウンドバッファ上で<C-c>を入力すると、
+		{command}の実行を強制的に終了させます。コマンド名の最後に&を
+		付けると、bg command...と同じ意味となります。iexe, exe, bgは
+		オプションを解釈し、それに基づいて挙動を変更します。詳しくは
+		|vimshell-execute-options|を参照してください。
 		ここでは、bgのみに存在するオプションを解説します。
 		
 		--filetype = {filetype-name}
@@ -474,8 +478,7 @@ eval {expression}					*vimshell-internal-expression*
 
 exe [{option}...] {command} 				*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
-		れます。非同期実行機能が有効になっていない場合、挙動は
-		|vimshell-internal-sexe| と同様になります。
+		れます。
 		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
 		詳しくは|vimshell-execute-options|を参照してください。
 		
@@ -522,11 +525,10 @@ history [{history-number}]				*vimshell-internal-history*
 
 iexe [{options}...] {command}				*vimshell-internal-iexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
-		れます。非同期実行機能が有効化されていないとエラーになります。
-		exeとは違い、対話コマンドを実行することに特化しています。入
-		出力を行なうために新しいバッファが生成されます。
-		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
-		詳しくは|vimshell-execute-options|を参照してください。
+		れます。exeとは違い、対話コマンドを実行することに特化しています。
+		入出力を行なうために新しいバッファが生成されます。iexe, exe, bg
+		はオプションを解釈し、それに基づいて挙動を変更します。詳しくは
+		|vimshell-execute-options|を参照してください。
 
 ls [{argument}...]					*vimshell-internal-ls*
 		外部コマンドのlsを適切な引数を与えて実行します。
@@ -570,6 +572,14 @@ sudo {command}						*vimshell-internal-sudo*
 		
 		Windows環境ではsudo.exeが必要です。
 		http://bitbucket.org/wantora/sudo/wiki/Home
+
+texe [{options}...] {command}				*vimshell-internal-texe*
+		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
+		れます。exe, iexeとは違い、端末コマンドを実行することに特化
+		しています。入出力を行なうために新しいバッファが生成されます。
+		このコマンドは、まだ動作が不完全です。
+		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
+		詳しくは|vimshell-execute-options|を参照してください。
 
 vexe {expression}					*vimshell-internal-vexe*
 		{expression}をVim Scriptの文として実行し、出力をvimshellバッ
