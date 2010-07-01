@@ -78,7 +78,7 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
     endif
   endif
 
-  call s:init_bg(l:sub, l:args, a:fd, a:other_info)
+  call s:init_bg(l:args, a:fd, a:other_info)
   
   let l:sub = vimproc#ptyopen(l:args)
 

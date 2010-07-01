@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: term_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,7 +42,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '[', ']', '{', '}', ':', ';', '''', '"', ',', '<', '.', '>', '/', '?',
         \ ]
 
-    execute 'inoremap <buffer><silent>' l:lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
+    execute 'inoremap <buffer><silent>' l:lhs printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
   endfor
   
   for [l:key, l:value] in items({
@@ -50,12 +50,12 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<LF>", '<C-n>' : "\<C-n>",
         \ '<C-o>' : "\<C-o>", '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>", '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
         \ '<C-v>' : "\<C-v>", '<C-w>' : "\<C-w>", '<C-x>' : "\<C-x>", '<C-y>' : "\<C-y>", '<C-z>' : "\<C-z>",
-        \ '<Home>' : "\<Home>", '<End>' : "\<End>", '<Del>' : "\<Del>", '<BS>' : "\<BS>",
-        \ '<Up>' : "\<Up>", '<Down>' : "\<Down>", '<Left>' : "\<Left>", '<Right>' : "\<Right>",
-        \ '<Bar>' : '|',
+        \ '<Home>' : "\<Home>", '<End>' : "\<End>", '<Del>' : "\<Del>", '<BS>' : "\<C-h>",
+        \ '<Up>' : "\<ESC>[A", '<Down>' : "\<ESC>[B", '<Left>' : "\<ESC>[D", '<Right>' : "\<ESC>[C",
+        \ '<Bar>' : '|', '<Space>' : ' ',
         \ })
     
-    execute 'inoremap <buffer><silent>' l:key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:value))
+    execute 'inoremap <buffer><silent>' l:key printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:value))
   endfor
   
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jun 2010
+" Last Modified: 01 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -414,12 +414,14 @@ endfunction"}}}
 function! s:escape.setup_window(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
+  let l:min_line = l:args[0]
   let l:max_line = l:args[1]
-  let l:linenr = l:args[0]
+  let l:linenr = l:min_line
   while l:linenr <= l:max_line
     let s:lines[l:linenr] = ''
     let l:linenr += 1
   endwhile
+  let s:line = l:min_line
 endfunction"}}}
 function! s:escape.delete_whole_line(matchstr)"{{{
   let s:lines[s:line] = ''
@@ -438,15 +440,44 @@ function! s:escape.clear_entire_screen(matchstr)"{{{
   let @x = l:reg
 
   let s:lines = {}
+  let s:line = 1
+  let s:col = 1
 endfunction"}}}
 function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
-  if line('.') == line('$')
-    return
-  endif
+  for l:linenr in keys(s:lines)
+    if l:linenr >= s:line
+      " Clear line.
+      let s:lines[l:linenr] = ''
+    endif
+  endfor
+
+  let l:linenr = 1
+  let l:max_line = line('.')
+  while l:linenr <= l:max_line
+    " Clear line.
+    call setline(l:linenr, '')
+    let l:linenr += 1
+  endwhile
   
-  let l:reg = @x
-  .+1,$ delete x
-  let @x = l:reg
+  let s:col = 1
+endfunction"}}}
+function! s:escape.clear_screen_from_cursor_up(matchstr)"{{{
+  for l:linenr in keys(s:lines)
+    if l:linenr <= s:line
+      " Clear line.
+      let s:lines[l:linenr] = ''
+    endif
+  endfor
+
+  let l:linenr = line('.')
+  let l:max_line = line('$')
+  while l:linenr <= l:max_line
+    " Clear line.
+    call setline(l:linenr, '')
+    let l:linenr += 1
+  endwhile
+  
+  let s:col = 1
 endfunction"}}}
 function! s:escape.move_head(matchstr)"{{{
   let s:col = 1
@@ -511,6 +542,24 @@ function! s:escape.move_left(matchstr)"{{{
     let s:col = 1
   endif
 endfunction"}}}
+function! s:escape.move_down_head1(matchstr)"{{{
+  call s:escape.move_down1(a:matchstr)
+  let s:col = 1
+endfunction"}}}
+function! s:escape.move_down_head(matchstr)"{{{
+  call s:escape.move_down(a:matchstr)
+  let s:col = 1
+endfunction"}}}
+function! s:escape.move_up_head1(matchstr)"{{{
+  call s:escape.move_up1(a:matchstr)
+  let s:col = 1
+endfunction"}}}
+function! s:escape.move_up_head(matchstr)"{{{
+  let s:col = 1
+endfunction"}}}
+function! s:escape.move_col(matchstr)"{{{
+  let s:col = matchstr(a:matchstr, '\d\+')
+endfunction"}}}
 function! s:escape.save_pos(matchstr)"{{{
   let s:save_pos = [s:line, s:col]
 endfunction"}}}
@@ -525,6 +574,9 @@ function! s:escape.change_title(matchstr)"{{{
 
   let &titlestring = l:title
   let b:interactive.terminal.titlestring = l:title
+endfunction"}}}
+function! s:escape.print_control_sequence(matchstr)"{{{
+  call s:output_string("\<ESC>")
 endfunction"}}}
 
 " Control sequence functions.
@@ -572,7 +624,7 @@ endfunction"}}}
 let s:escape_sequence_match = {
       \ '^\[20[hl]' : s:escape.ignore,
       \ '^\[?\d[hl]' : s:escape.ignore,
-      \ '^[()][AB012]' : s:escape.ignore,
+      \ '^[()][AB012UK]' : s:escape.ignore,
       \
       \ '^\[[0-9;]\+m' : s:escape.highlight,
       \
@@ -585,6 +637,9 @@ let s:escape_sequence_match = {
       \ '^\[\d\+B' : s:escape.move_down,
       \ '^\[\d\+C' : s:escape.move_right,
       \ '^\[\d\+D' : s:escape.move_left,
+      \ '^\[\d\+E' : s:escape.move_down_head,
+      \ '^\[\d\+F' : s:escape.move_up_head,
+      \ '^\[\d\+G' : s:escape.move_col,
       \ '^\[\d\+;\d\+[Hf]' : s:escape.move_cursor,
       \
       \ '^[\dg' : s:escape.ignore,
@@ -601,36 +656,37 @@ let s:escape_sequence_match = {
       \ '^\[\dq' : s:escape.ignore,
       \
       \ '^\d\+;\d\+' : s:escape.ignore,
+      \
       \}
 let s:escape_sequence_simple_char1 = {
       \ 'N' : s:escape.ignore,
       \ 'O' : s:escape.ignore,
       \
-      \ 'M' : s:escape.ignore,
-      \ 'E' : s:escape.ignore,
-      \ '7' : s:escape.ignore,
-      \ '8' : s:escape.ignore,
+      \ '7' : s:escape.save_pos,
+      \ '8' : s:escape.restore_pos,
+      \ '(' : s:escape.ignore,
       \
       \ 'c' : s:escape.ignore,
       \
       \ '<' : s:escape.ignore,
       \ '=' : s:escape.ignore,
       \ '>' : s:escape.ignore,
-      \ 'F' : s:escape.ignore,
+      \
+      \ 'A' : s:escape.move_up1,
+      \ 'B' : s:escape.move_down1,
+      \ 'C' : s:escape.move_right1,
+      \ 'D' : s:escape.move_left1,
+      \ 'E' : s:escape.move_down_head1,
+      \ 'F' : s:escape.move_up_head1,
       \ 'G' : s:escape.ignore,
-      \
-      \ 'A' : s:escape.move_head,
-      \ 'B' : s:escape.ignore,
-      \ 'C' : s:escape.ignore,
-      \ 'D' : s:escape.ignore,
-      \ 'H' : s:escape.ignore,
       \ 'I' : s:escape.ignore,
-      \
-      \ 'K' : s:escape.ignore,
       \ 'J' : s:escape.ignore,
+      \ 'K' : s:escape.ignore,
+      \ 'M' : s:escape.ignore,
       \
       \ 'Z' : s:escape.ignore,
       \ '*' : s:escape.clear_entire_screen,
+      \ '%' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char2 = {
       \ '[m' : s:escape.highlight_restore,
@@ -642,9 +698,6 @@ let s:escape_sequence_simple_char2 = {
       \
       \ '[g' : s:escape.ignore,
       \
-      \ '[s' : s:escape.save_pos,
-      \ '[u' : s:escape.restore_pos,
-      \
       \ '[K' : s:escape.delete_right_line,
       \
       \ '[J' : s:escape.clear_screen_from_cursor_down,
@@ -652,6 +705,10 @@ let s:escape_sequence_simple_char2 = {
       \ '[c' : s:escape.ignore,
       \
       \ '/Z' : s:escape.ignore,
+      \ '%@' : s:escape.ignore,
+      \ '%G' : s:escape.ignore,
+      \ '%8' : s:escape.ignore,
+      \ '#8' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char3 = {
       \ '[;H' : s:escape.ignore,
@@ -675,7 +732,6 @@ let s:control_sequence = {
       \ "\<LF>" : s:control.newline,
       \ "\<CR>" : s:control.carriage_return,
       \ "\<C-h>" : s:control.delete_backword_char,
-      \ "\<BS>" : s:control.ignore,
       \ "\<Del>" : s:control.ignore,
       \ "\<C-l>" : s:control.clear_entire_screen,
       \ "\<C-g>" : s:control.bell,

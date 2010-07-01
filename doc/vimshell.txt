@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Added :VimShellTerminal command.
 - Improved split window.
 - Fixed <Plug>(vimshell_clear) bug.
+- Improved texe.
 
 2010-06-30
 - Improved cursor move.
