@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved split window.
 - Fixed <Plug>(vimshell_clear) bug.
 - Improved texe.
+- Fixed escape error in texe.
 
 2010-06-30
 - Improved cursor move.

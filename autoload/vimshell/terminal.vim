@@ -25,6 +25,7 @@
 "=============================================================================
 
 function! vimshell#terminal#print(string)"{{{
+  "echomsg a:string
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
@@ -451,8 +452,8 @@ function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
     endif
   endfor
 
-  let l:linenr = 1
-  let l:max_line = line('.')
+  let l:linenr = line('.')
+  let l:max_line = line('$')
   while l:linenr <= l:max_line
     " Clear line.
     call setline(l:linenr, '')
@@ -468,15 +469,15 @@ function! s:escape.clear_screen_from_cursor_up(matchstr)"{{{
       let s:lines[l:linenr] = ''
     endif
   endfor
-
-  let l:linenr = line('.')
-  let l:max_line = line('$')
+  
+  let l:linenr = 1
+  let l:max_line = line('.')
   while l:linenr <= l:max_line
     " Clear line.
     call setline(l:linenr, '')
     let l:linenr += 1
   endwhile
-  
+
   let s:col = 1
 endfunction"}}}
 function! s:escape.move_head(matchstr)"{{{
@@ -527,7 +528,7 @@ function! s:escape.move_right(matchstr)"{{{
   let s:col += matchstr(a:matchstr, '\d\+')
   
   if s:col > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
+    let s:lines[s:line] .= repeat(' ', s:col - len(s:lines[s:line])+1)
   endif
 endfunction"}}}
 function! s:escape.move_left1(matchstr)"{{{
@@ -685,7 +686,6 @@ let s:escape_sequence_simple_char1 = {
       \ 'M' : s:escape.ignore,
       \
       \ 'Z' : s:escape.ignore,
-      \ '*' : s:escape.clear_entire_screen,
       \ '%' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char2 = {

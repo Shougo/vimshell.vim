@@ -27,8 +27,8 @@
 " Plugin key-mappings."{{{
 nnoremap <silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
 nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
-inoremap <silent> <Plug>(vimshell_term_send_escape)       <C-o>:call vimshell#interactive#send_char(char2nr("\<ESC>"))<CR>
-inoremap <silent> <Plug>(vimshell_term_send_string)       <C-o>:call <SID>send_string()<CR>
+execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
+inoremap <silent> <Plug>(vimshell_term_send_string)       <ESC>:call <SID>send_string()<CR>
 "}}}
 
 function! vimshell#term_mappings#define_default_mappings()"{{{
