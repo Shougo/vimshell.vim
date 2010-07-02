@@ -117,6 +117,7 @@ function! vimshell#internal#texe#default_settings()"{{{
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
+  let $VIMSHELL_TERM = 'terminal'
 
   setlocal buftype=nofile
   setlocal noswapfile

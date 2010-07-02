@@ -94,6 +94,7 @@ function! s:init_process(fd, args, options)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
+  let $VIMSHELL_TERM = 'execute'
 
   let l:sub = vimproc#plineopen3(l:commands)
 

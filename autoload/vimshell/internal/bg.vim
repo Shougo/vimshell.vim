@@ -120,6 +120,7 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
+  let $VIMSHELL_TERM = 'background'
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline

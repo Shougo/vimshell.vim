@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-07-02
 - Set $COLUMNS and $LINES.
+- Set $VIMSHELL_TERM.
 
 2010-07-01
 - Added :VimShellTerminal command.
