@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-02
+- Set $COLUMNS and $LINES.
+
 2010-07-01
 - Added :VimShellTerminal command.
 - Improved split window.

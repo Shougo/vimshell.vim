@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 02 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -151,6 +151,12 @@ function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
 endfunction"}}}
 
 function! vimshell#internal#iexe#default_settings()"{{{
+  " Set environment variables.
+  let $TERMCAP = 'COLUMNS=' . winwidth(0)
+  let $VIMSHELL = 1
+  let $COLUMNS = winwidth(0)-5
+  let $LINES = winheight(0)
+
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal wrap
@@ -179,7 +185,7 @@ function! s:init_bg(args, fd, other_info)"{{{
 
   edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
-
+  
   call vimshell#internal#iexe#default_settings()
   
   let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'

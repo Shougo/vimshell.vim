@@ -115,6 +115,12 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   let &filetype = a:filetype
   let b:interactive = a:interactive
 
+  " Set environment variables.
+  let $TERMCAP = 'COLUMNS=' . winwidth(0)
+  let $VIMSHELL = 1
+  let $COLUMNS = winwidth(0)-5
+  let $LINES = winheight(0)
+
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   syn match   InteractiveErrorHidden            '!!!' contained

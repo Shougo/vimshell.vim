@@ -175,8 +175,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let $TERM = 'vt100'
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
-  let $COLUMNS = winwidth(0) * 8 / 10
-  let $LINES = winheight(0) * 8 / 10
+  let $COLUMNS = winwidth(0)-5
+  let $LINES = winheight(0)
   let $SHELL = 'vimshell'
   let $EDITOR = g:vimshell_cat_command
   let $PAGER = g:vimshell_cat_command
