@@ -187,6 +187,9 @@ CHANGELOG						*vimshell-changelog*
 2010-07-02
 - Set $COLUMNS and $LINES.
 - Set $VIMSHELL_TERM.
+- Added g:vimshell_environment_term option.
+- Improved interactive history.
+- Set nomodifiable in texe.
 
 2010-07-01
 - Added :VimShellTerminal command.

@@ -172,7 +172,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \}
 
   " Set environment variables.
-  let $TERM = 'vt100'
+  let $TERM = g:vimshell_environment_term
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5

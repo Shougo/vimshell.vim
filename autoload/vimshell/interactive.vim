@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 02 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -122,7 +122,7 @@ function! vimshell#interactive#send_string(string)"{{{
 
   let l:in = a:string
 
-  if l:in != ''
+  if l:in != '' && &filetype !=# 'vimshell-term'
     call s:append_history(l:in)
   endif
 
@@ -153,6 +153,8 @@ function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
     return
   endif
+
+  setlocal modifiable
 
   let l:char = nr2char(a:char)
   try

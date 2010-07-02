@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 02 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,37 +24,37 @@
 " }}}
 "=============================================================================
 
-" Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
-nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
-nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
-nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
-nnoremap <silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
-nnoremap <expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
-nmap  <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
-nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
-
-inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
-inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
-inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
-      \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
-inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call <SID>push_current_line()<CR>
-inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call <SID>insert_last_word()<CR>
-inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call <SID>run_help()<CR>
-inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
-inoremap <expr> <Plug>(vimshell_delete_word)  <SID>delete_word()
-inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
-inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
-
-inoremap <expr> <Plug>(vimshell_delete_backword_char)  <SID>delete_backword_char(0)
-inoremap <expr> <Plug>(vimshell_another_delete_backword_char)  <SID>delete_backword_char(1)
-"}}}
-  
 " Define default mappings.
 function! vimshell#mappings#define_default_mappings()"{{{
+  " Plugin keymappings"{{{
+  nnoremap <silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
+  nnoremap <silent> <Plug>(vimshell_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
+  nnoremap <silent> <Plug>(vimshell_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
+  nnoremap <silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
+  nnoremap <silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
+  nnoremap <silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
+  nnoremap <silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
+  nnoremap <expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
+  nmap  <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
+  nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
+
+  inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
+  inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
+  inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
+        \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
+  inoremap <silent> <Plug>(vimshell_push_current_line)  <ESC>:<C-u>call <SID>push_current_line()<CR>
+  inoremap <silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call <SID>insert_last_word()<CR>
+  inoremap <silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call <SID>run_help()<CR>
+  inoremap <silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
+  inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
+  inoremap <expr> <Plug>(vimshell_delete_word)  <SID>delete_word()
+  inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
+  inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
+
+  inoremap <expr> <Plug>(vimshell_delete_backword_char)  <SID>delete_backword_char(0)
+  inoremap <expr> <Plug>(vimshell_another_delete_backword_char)  <SID>delete_backword_char(1)
+  "}}}
+  
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
     return
   endif

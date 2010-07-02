@@ -142,7 +142,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   call vimshell#internal#texe#default_settings()
   
   " Set autocommands.
-  augroup vimshell_iexe
+  augroup vimshell_texe
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
@@ -169,6 +169,8 @@ function! s:insert_enter()"{{{
   endif
 endfunction"}}}
 function! s:insert_leave()"{{{
+  setlocal nomodifiable
+  
   if &updatetime < s:update_time_save
     let &updatetime = s:update_time_save
   endif
