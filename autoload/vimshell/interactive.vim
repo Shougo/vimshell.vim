@@ -24,6 +24,8 @@
 " }}}
 "=============================================================================
 
+let s:last_interactive_bufnr = 1
+
 " Utility functions.
 
 function! s:SID_PREFIX()
@@ -36,12 +38,18 @@ let s:password_regex =
       \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
 let s:character_regex = ''
 
-augroup vimshell_interactive
+augroup vimshell-interactive
   autocmd!
   autocmd CursorHold * call s:check_all_output()
   autocmd BufWinEnter,WinEnter * call vimshell#terminal#set_title()
-  autocmd BufWinLeave,WinLeave * call vimshell#terminal#restore_title()
+  autocmd BufWinLeave,WinLeave * call s:winleave(expand('<afile>'))
 augroup END
+
+command! -range -nargs=? VimShellSendString call s:send_region(<line1>, <line2>, <q-args>)
+
+" Dummy.
+function! vimshell#interactive#init()"{{{
+endfunction"}}}
 
 function! vimshell#interactive#get_cur_text()"{{{
   " Get cursor text without prompt.
@@ -149,6 +157,12 @@ function! vimshell#interactive#send_string(string)"{{{
 
   call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}
+function! vimshell#interactive#send_input()"{{{
+  let l:input = input('Please input send string: ')
+  call vimshell#imdisable()
+  setlocal modifiable
+  call vimshell#interactive#send_string(l:input)
+endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
     return
@@ -174,6 +188,33 @@ function! vimshell#interactive#send_char(char)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(1)
+endfunction"}}}
+function! s:send_region(line1, line2, string)"{{{
+  let l:winnr = bufwinnr(s:last_interactive_bufnr)
+  if l:winnr <= 0
+    return
+  endif
+  
+  " Check alternate buffer.
+  if getwinvar(l:winnr, '&filetype') =~ '^int-'
+    if a:string != ''
+      let l:string = a:string . "\<LF>"
+    else
+      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
+    endif
+    let l:line = split(l:string, "\<LF>")[0]
+    
+    execute winnr('#') 'wincmd w'
+
+    " Save prompt.
+    let l:prompt = vimshell#interactive#get_prompt(line('$'))
+    let l:prompt_nr = line('$')
+    
+    " Send string.
+    call vimshell#interactive#send_string(l:string)
+    
+    call setline(l:prompt_nr, l:prompt . l:line)
+  endif
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_out(is_insert)"{{{
@@ -463,7 +504,7 @@ function! s:check_all_output()"{{{
     if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       let l:interactive = getbufvar(l:bufnr, 'interactive')
       let l:filetype = getbufvar(l:bufnr, '&filetype')
-      if l:interactive.is_background || l:filetype =~ '^int-'
+      if l:interactive.is_background || l:filetype =~ '^int-' || l:filetype ==# 'vimshell-term'
         " Check output.
         call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
       endif
@@ -496,11 +537,16 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   elseif &filetype  == 'vimshell-term'
         \ || line('.') == b:interactive.echoback_linenr
         \ || (!has_key(b:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
-    " Check input.
+    if &filetype == 'vimshell-term' && mode() !=# 'i'
+      call setpos('.', b:interactive.save_cursor)
+      setlocal modifiable
+    endif
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')
 
-    if &filetype !=# 'vimshell-term' && !a:interactive.process.eof && mode() ==# 'i'
+    if &filetype == 'vimshell-term'
+      setlocal nomodifiable
+    elseif !a:interactive.process.eof && mode() ==# 'i'
       startinsert!
     endif
   endif
@@ -512,6 +558,10 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
     execute bufwinnr(a:bufnr_save) . 'wincmd w'
   endif
+endfunction"}}}
+function! s:winleave(bufnr)"{{{
+  call vimshell#terminal#restore_title()
+  let s:last_interactive_bufnr = a:bufnr
 endfunction"}}}
 
 " vim: foldmethod=marker

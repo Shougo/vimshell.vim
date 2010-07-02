@@ -36,6 +36,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <expr> <Plug>(vimshell_int_delete_backword_char)  <SID>delete_backword_char(0)
   inoremap <expr> <Plug>(vimshell_int_another_delete_backword_char)  <SID>delete_backword_char(1)
   inoremap <expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
+  inoremap <expr> <Plug>(vimshell_int_send_input)  <ESC>:<C-u>call vimshell#interactive#send_input()<CR>
   inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
 
   nnoremap <silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
@@ -77,6 +78,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
   imap <buffer> <C-k>  <Plug>(vimshell_int_history_complete)
+  imap <buffer> <C-v>  <Plug>(vimshell_int_send_input)
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.

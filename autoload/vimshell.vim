@@ -73,6 +73,9 @@ endif"}}}
 augroup vimshell
   autocmd!
   autocmd GUIEnter * set vb t_vb=
+  
+  " Detect vimshell rc file.
+  autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
 augroup end
 
 " User utility functions.

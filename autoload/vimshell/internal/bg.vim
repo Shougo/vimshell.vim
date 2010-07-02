@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-augroup vimshell_bg
+augroup vimshell-bg
   autocmd!
 augroup END
 
@@ -131,7 +131,7 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
 
-  augroup vimshell_bg
+  augroup vimshell-bg
     autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
   augroup END
   

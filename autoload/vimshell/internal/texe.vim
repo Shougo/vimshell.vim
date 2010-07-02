@@ -103,6 +103,7 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
         \ 'echoback_linenr' : 0,
         \ 'save_cursor' : getpos('.'),
         \}
+  call vimshell#interactive#init()
 
   wincmd p
 endfunction"}}}
@@ -142,7 +143,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   call vimshell#internal#texe#default_settings()
   
   " Set autocommands.
-  augroup vimshell_texe
+  augroup vimshell-texe
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))

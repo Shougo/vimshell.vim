@@ -190,6 +190,8 @@ CHANGELOG						*vimshell-changelog*
 - Added g:vimshell_environment_term option.
 - Improved interactive history.
 - Set nomodifiable in texe.
+- Implemented send input.
+- Implemented texe auto update.
 
 2010-07-01
 - Added :VimShellTerminal command.

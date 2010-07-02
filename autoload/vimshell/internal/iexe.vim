@@ -24,7 +24,6 @@
 " }}}
 "=============================================================================
 
-let s:last_interactive_bufnr = 1
 let s:update_time_save = &updatetime
 
 " Set interactive options."{{{
@@ -193,11 +192,10 @@ function! s:init_bg(args, fd, other_info)"{{{
   execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.
-  augroup vimshell_iexe
+  augroup vimshell-iexe
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd BufWinLeave,WinLeave <buffer>       let s:last_interactive_bufnr = expand('<afile>')
     autocmd CursorHoldI <buffer>  call s:on_hold_i()
     autocmd CursorMovedI <buffer>  call s:on_moved_i()
   augroup END
@@ -226,35 +224,4 @@ endfunction"}}}
 function! s:on_moved_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 endfunction"}}}
-
-" Command functions.
-function! s:send_string(line1, line2, string)"{{{
-  let l:winnr = bufwinnr(s:last_interactive_bufnr)
-  if l:winnr <= 0
-    return
-  endif
-  
-  " Check alternate buffer.
-  if getwinvar(l:winnr, '&filetype') =~ '^int-'
-    if a:string != ''
-      let l:string = a:string . "\<LF>"
-    else
-      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
-    endif
-    let l:line = split(l:string, "\<LF>")[0]
-    
-    execute winnr('#') 'wincmd w'
-
-    " Save prompt.
-    let l:prompt = vimshell#interactive#get_prompt(line('$'))
-    let l:prompt_nr = line('$')
-    
-    " Send string.
-    call vimshell#interactive#send_string(l:string)
-    
-    call setline(l:prompt_nr, l:prompt . l:line)
-  endif
-endfunction"}}}
-
-command! -range -nargs=? VimShellSendString call s:send_string(<line1>, <line2>, <q-args>)
 

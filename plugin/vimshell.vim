@@ -152,7 +152,7 @@ function! s:read(cmdline)"{{{
   call append('.', split(vimshell#system(l:program . ' ' . l:script), '\n'))
 endfunction"}}}
 
-augroup VimShell
+augroup vimshell
   " Detect vimshell rc file.
   autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
 augroup END
