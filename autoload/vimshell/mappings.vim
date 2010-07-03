@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jul 2010
+" Last Modified: 03 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -396,9 +396,14 @@ function! s:exit()"{{{
   execute 'bdelete!'. l:vimsh_buf
 endfunction"}}}
 function! s:delete_backword_char(is_auto_select)"{{{
-  let l:prefix = pumvisible() ? (a:is_auto_select? (
-        \ exists('*neocomplcache#cancel_popup')? neocomplcache#cancel_popup() : "\<C-e>")
-        \ : "\<C-y>") : ""
+  if !pumvisible()
+    let l:prefix = ''
+  elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
+    let l:prefix = "\<C-e>"
+  else
+    let l:prefix = "\<C-y>"
+  endif
+  
   " Prevent backspace over prompt
   if getline('.')[: col('.') - 2] !=# vimshell#get_prompt()
     return l:prefix . "\<BS>"

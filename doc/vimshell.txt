@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed terminal clear bug.
 - Improved escape highlight.
 - Added g:vimshell_disable_escape_highlight option.
+- Detect g:neocomplcache_enable_auto_select option.
 
 2010-07-02
 - Set $COLUMNS and $LINES.
