@@ -55,8 +55,13 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
 
   let l:cmdname = fnamemodify(l:args[0], ':r')
   if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = has_key(g:vimshell_interactive_encodings, l:cmdname) ?
-          \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
+    if vimshell#iswin()
+      " Use UTF-8 Cygwin.
+      let l:options['--encoding'] = 'utf8'
+    else
+      let l:options['--encoding'] = has_key(g:vimshell_interactive_encodings, l:cmdname) ?
+            \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
+    endif
   endif
 
   " Encoding conversion.

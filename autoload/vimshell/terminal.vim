@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 03 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,6 +25,8 @@
 "=============================================================================
 
 function! vimshell#terminal#print(string)"{{{
+  setlocal modifiable
+  
   "echomsg a:string
   if a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
@@ -262,14 +264,16 @@ function! vimshell#terminal#clear_highlight()"{{{
     call s:init_terminal()
   endif
   
-  for l:syntax_name in b:interactive.terminal.syntax_names
-    execute 'highlight clear' l:syntax_name
-    execute 'syntax clear' l:syntax_name
+  for l:syntax_names in values(b:interactive.terminal.syntax_names)
+    for l:syntax_name in values(l:syntax_names)
+      execute 'highlight clear' l:syntax_name
+      execute 'syntax clear' l:syntax_name
+    endfor
   endfor
 endfunction"}}}
 function! s:init_terminal()"{{{
   let b:interactive.terminal = {
-        \ 'syntax_names' : [],
+        \ 'syntax_names' : {},
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
         \}
@@ -395,12 +399,22 @@ function! s:escape.highlight(matchstr)"{{{
       let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 92, g:vimshell_escape_colors[l:color_code - 92])
     endif"}}}
   endfor
-  if l:highlight != ''
+  
+  if l:highlight != '' && !g:vimshell_disable_escape_highlight
+    if !has_key(b:interactive.terminal.syntax_names, s:line)
+      let b:interactive.terminal.syntax_names[s:line] = {}
+    endif
+    if has_key(b:interactive.terminal.syntax_names[s:line], s:col)
+      " Clear previous highlight.
+      let l:prev_syntax = b:interactive.terminal.syntax_names[s:line][s:col]
+      execute 'highlight clear' l:prev_syntax
+      execute 'syntax clear' l:prev_syntax
+    endif
+    let b:interactive.terminal.syntax_names[s:line][s:col] = l:syntax_name
+
     execute 'syntax region' l:syntax_name l:syntax_command
     execute 'highlight link' l:syntax_name 'Normal'
     execute 'highlight' l:syntax_name l:highlight
-
-    call add(b:interactive.terminal.syntax_names, l:syntax_name)
   endif
 endfunction"}}}
 function! s:escape.highlight_restore(matchstr)"{{{
@@ -458,11 +472,11 @@ function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
     endif
   endfor
 
-  let l:linenr = line('.')
+  let l:linenr = s:line
   let l:max_line = line('$')
   while l:linenr <= l:max_line
     " Clear line.
-    call setline(l:linenr, '')
+    let s:lines[l:linenr] = ''
     let l:linenr += 1
   endwhile
   
@@ -477,10 +491,10 @@ function! s:escape.clear_screen_from_cursor_up(matchstr)"{{{
   endfor
   
   let l:linenr = 1
-  let l:max_line = line('.')
+  let l:max_line = s:line
   while l:linenr <= l:max_line
     " Clear line.
-    call setline(l:linenr, '')
+    let s:lines[l:linenr] = ''
     let l:linenr += 1
   endwhile
 

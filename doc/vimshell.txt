@@ -184,6 +184,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-03
+- Improved texe update.
+- Fixed terminal clear bug.
+- Improved escape highlight.
+- Added g:vimshell_disable_escape_highlight option.
+
 2010-07-02
 - Set $COLUMNS and $LINES.
 - Set $VIMSHELL_TERM.

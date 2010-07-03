@@ -232,24 +232,23 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let l:read = b:interactive.process.read(-1, 40)
   endwhile
 
-  if l:outputed
-    if &filetype !=# 'vimshell-term'
-      $
+  if l:outputed && &filetype !=# 'vimshell-term'
+    $
 
-      if !b:interactive.process.eof
-        if a:is_insert
-          startinsert!
-        else
-          normal! $
-        endif
-      endif
-    else
-      if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
+    if !b:interactive.process.eof
+      if a:is_insert
         startinsert!
       else
-        startinsert
-        normal! l
+        normal! $
       endif
+    endif
+  elseif &filetype ==# 'vimshell-term' && a:is_insert
+    call setpos('.', b:interactive.save_cursor)
+    if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
+      startinsert!
+    else
+      startinsert
+      normal! l
     endif
   endif
   
