@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: iexe.vim
+" FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 04 Jul 2010
 " License: MIT license  {{{
@@ -24,9 +24,9 @@
 " }}}
 "=============================================================================
 
-function! vimshell#complete#internal#iexe#get_complete_words(args)"{{{
-  return vimshell#iswin() && len(a:args) > 1 && a:args[1] == 'fakecygpty' ?
-        \ vimshell#complete#helper#commands(a:args[-1], g:vimshell_interactive_cygwin_path) : 
+function! vimshell#complete#internal#texe#get_complete_words(args)"{{{
+  return vimshell#iswin() ?
+        \ vimshell#complete#helper#commands(a:args[-1], g:vimshell_interactive_cygwin_path) :
         \ vimshell#complete#helper#commands(a:args[-1])
 endfunction"}}}
 " vim: foldmethod=marker
