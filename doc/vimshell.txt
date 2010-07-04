@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Highlights history output.
 - Implemented texe completion.
 - Improved commands completion.
+- Check window size.
 
 2010-07-03
 - Improved texe update.
