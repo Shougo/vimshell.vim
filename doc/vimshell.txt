@@ -187,6 +187,8 @@ CHANGELOG						*vimshell-changelog*
 2010-07-04
 - Improved history.
 - Added g:vimshell_external_history_path option.
+- Improved history and h command.
+- Highlights history output.
 
 2010-07-03
 - Improved texe update.

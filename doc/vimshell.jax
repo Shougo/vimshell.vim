@@ -526,21 +526,23 @@ gexe {command} 						*vimshell-internal-gexe*
 
 h [{pattern}]						*vimshell-internal-h*
 		{pattern}に一致するヒストリを実行します。{pattern}が数字で
-		与えられた場合、{pattern}をヒストリ番号として検索します。 ヒ
-		ストリ番号は|vimshell-internal-history|で確認できます。
-		{pattern}を省略すると、 直前のコマンドを実行します。
-		|vimshell-internal-h|により実行したコマンドはヒストリに登録
-		されません。
+		与えられた場合、{pattern}をヒストリ番号として検索します。
+		{pattern}が文字列の場合、その文字列に最初にマッチする履歴を
+		実行します。ヒ ストリ番号は|vimshell-internal-history|で確認
+		できます。{pattern}を省略すると、 直前のコマンドを実行しま
+		す。|vimshell-internal-h|により実行したコマンドはヒストリに
+		登録 されません。
 
 histdel [{history-number}]				*vimshell-internal-histdel*
 		{history-number}に一致するヒストリを削除します。ヒストリ番
 		号は|vimshell-internal-history|で確認できます。
 		{history-number}を省略すると、 無視されます。
 
-history [{history-number}]				*vimshell-internal-history*
-		ディレクトリスタックの一覧を{max}個表示します。
-		{max}を省略すると、10になります。
-		この一覧上で<Enter>を押すことで、その履歴を実行できます。
+history [{search-string}]				*vimshell-internal-history*
+		ディレクトリスタックの一覧を{search-string}個表示します。
+		{search-string} を省略すると、20になります。{search-string}
+		が文字列の場合、その文字 列にマッチする候補を一覧できます。
+		この一覧上で<Enter>を押す ことで、その履歴を実行できます。
 
 iexe [{options}...] {command}				*vimshell-internal-iexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,19 +28,33 @@ function! vimshell#internal#history#execute(command, args, fd, other_info)
   let l:cnt = 0
   let l:arguments = join(a:args, ' ')
   if l:arguments =~ '^\d\+$'
+    let l:search = ''
     let l:max = str2nr(l:arguments)
   elseif empty(l:arguments)
     " Default max value.
+    let l:search = ''
     let l:max = 20
   else
+    let l:search = l:arguments
     let l:max = len(g:vimshell#hist_buffer)
   endif
-  if l:max >= len(g:vimshell#hist_buffer)
+  
+  if l:max <=0 || l:max >= len(g:vimshell#hist_buffer)
     " Overflow.
     let l:max = len(g:vimshell#hist_buffer)
   endif
-  while l:cnt < l:max
-    call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, g:vimshell#hist_buffer[l:cnt]))
+  
+  let l:list = []
+  let l:cnt = 1
+  for l:hist in g:vimshell#hist_buffer
+    if vimshell#head_match(l:hist, l:search)
+      call add(l:list, [l:cnt, l:hist])
+    endif
+
     let l:cnt += 1
-  endwhile
+  endfor
+  
+  for [l:cnt, l:hist] in l:list[: l:max-1]
+    call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, l:hist))
+  endfor
 endfunction
