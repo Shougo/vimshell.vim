@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,13 +101,27 @@ function! vimshell#complete#history_complete#omnifunc_whole(findstart, base)"{{{
       endfor
 
       if l:matched
-        call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+        call add(l:complete_words, { 'word' : hist, 'menu' : 'history' })
       endif
     endfor
+    for hist in vimshell#history#external_read(g:vimshell_external_history_path)
+      let l:matched = 1
+      for l:str in l:bases
+        if stridx(hist, l:str) == -1
+          let l:matched = 0
+          break
+        endif
+      endfor
+
+      if l:matched
+        call add(l:complete_words, { 'word' : hist, 'menu' : 'external-history' })
+      endif
+    endfor
+    
     let l:complete_words = l:complete_words[: g:vimshell_max_list]
   else
     for hist in g:vimshell#hist_buffer[: g:vimshell_max_list]
-      call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+      call add(l:complete_words, { 'word' : hist, 'menu' : 'history' })
     endfor
   endif
 
@@ -134,6 +148,7 @@ function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{
   else
     let &ignorecase = g:vimshell_ignore_case
   endif
+  
   let l:complete_words = []
   if a:base != ''
     for hist in g:vimshell#hist_buffer
@@ -141,6 +156,13 @@ function! vimshell#complete#history_complete#omnifunc_insert(findstart, base)"{{
         call add(l:complete_words, { 'word' : hist, 'menu' : 'history' })
       endif
     endfor
+    
+    for hist in vimshell#history#external_read(g:vimshell_external_history_path)
+      if stridx(hist, a:base) != -1
+        call add(l:complete_words, { 'word' : hist, 'menu' : 'external-history' })
+      endif
+    endfor
+    
     let l:complete_words = l:complete_words[: g:vimshell_max_list]
   else
     for hist in g:vimshell#hist_buffer[: g:vimshell_max_list]

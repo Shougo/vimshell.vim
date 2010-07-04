@@ -302,6 +302,13 @@ g:vimshell_split_command				*g:vimshell_split_command*
 			
 			初期値は""です。
 
+g:vimshell_external_history_path			*g:vimshell_external_history_path*
+			vimshellが履歴検索に使用する外部シェルの履歴ファイル
+			へのパスです。これを空にすると無視されます。zshの拡
+			張履歴ファイルも自動認識します。
+			
+			初期値は""です。
+
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			ヒストリを保存しないコマンド名をキーとしたディクショ
 			ナリです。存在しないと無視されます。

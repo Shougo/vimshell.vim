@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-04
+- Improved history.
+- Added g:vimshell_external_history_path option.
+
 2010-07-03
 - Improved texe update.
 - Fixed terminal clear bug.

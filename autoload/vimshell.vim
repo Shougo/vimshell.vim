@@ -145,13 +145,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
 
   " Load history.
-  let l:history_path = g:vimshell_temporary_directory . '/command-history'
-  if !filereadable(l:history_path)
-    " Create file.
-    call writefile([], l:history_path)
-  endif
-  let g:vimshell#hist_buffer = readfile(l:history_path)
-  let g:vimshell#hist_size = getfsize(l:history_path)
+  let g:vimshell#hist_buffer = vimshell#history#read()
 
   " Initialize variables.
   let b:vimshell = {}
@@ -457,36 +451,6 @@ function! vimshell#print_secondary_prompt()"{{{
   call append('$', vimshell#get_secondary_prompt())
   $
   let &modified = 0
-endfunction"}}}
-function! vimshell#append_history(command)"{{{
-  " Reduce blanks.
-  let l:command = substitute(a:command, '\s\+', ' ', 'g')
-  
-  let l:program = matchstr(l:command, vimshell#get_program_pattern())
-  if l:program != '' && has_key(g:vimshell_no_save_history_commands, l:program)
-    " No history command.
-    return
-  endif
-  
-  " Filtering.
-  call insert(filter(g:vimshell#hist_buffer, 'v:val != ' . string(a:command)), l:command)
-
-  " Trunk.
-  let g:vimshell#hist_buffer = g:vimshell#hist_buffer[:g:vimshell_max_command_history-1]
-
-  let l:history_path = g:vimshell_temporary_directory . '/command-history'
-  call writefile(g:vimshell#hist_buffer, l:history_path)
-
-  let vimshell#hist_size = getfsize(l:history_path)
-endfunction"}}}
-function! vimshell#remove_history(command)"{{{
-  " Filtering.
-  call filter(g:vimshell#hist_buffer, printf("v:val !~ '^%s\s*'", a:command))
-
-  let l:history_path = g:vimshell_temporary_directory . '/command-history'
-  call writefile(g:vimshell#hist_buffer, l:history_path)
-
-  let vimshell#hist_size = getfsize(l:history_path)
 endfunction"}}}
 function! vimshell#getfilename(program)"{{{
   " Command search.

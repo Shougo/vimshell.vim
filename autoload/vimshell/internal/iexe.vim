@@ -131,7 +131,7 @@ function! vimshell#internal#iexe#execute(command, args, fd, other_info)"{{{
         \ 'encoding' : l:options['--encoding'],
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
-        \ 'command_history' : vimshell#interactive#load_history(), 
+        \ 'command_history' : vimshell#history#interactive_read(), 
         \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
         \ 'is_background': 0, 
         \ 'args' : l:args,

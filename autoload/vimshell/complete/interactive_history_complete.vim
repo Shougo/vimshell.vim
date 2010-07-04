@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive_history_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 May 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,13 +72,13 @@ function! vimshell#complete#interactive_history_complete#omnifunc(findstart, bas
       endfor
 
       if l:matched
-        call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+        call add(l:complete_words, { 'word' : hist, 'menu' : 'int-history' })
       endif
     endfor
     let l:complete_words = l:complete_words[: g:vimshell_max_list]
   else
     for hist in b:interactive.command_history
-      call add(l:complete_words, { 'word' : hist, 'menu' : 'history', 'icase' : &ignorecase })
+      call add(l:complete_words, { 'word' : hist, 'menu' : 'int-history' })
     endfor
   endif
 
