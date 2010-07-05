@@ -207,24 +207,28 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
 
   return l:ret
 endfunction"}}}
-function! vimshell#complete#helper#commands(cur_keyword_str)"{{{
+function! vimshell#complete#helper#commands(cur_keyword_str, ...)"{{{
   if a:cur_keyword_str =~ '[/\\]'
     let l:files = vimshell#complete#helper#files(a:cur_keyword_str)
-  elseif vimshell#iswin()
-    let l:files = vimshell#complete#helper#files(a:cur_keyword_str, substitute($PATH, '\\\?;', ',', 'g'))
   else
-    let l:files = vimshell#complete#helper#files(a:cur_keyword_str, substitute($PATH, '/\?:', ',', 'g'))
+    let l:path = a:0 > 1 ? a:1 : vimshell#iswin() ? substitute($PATH, '\\\?;', ',', 'g') : substitute($PATH, '/\?:', ',', 'g')
+    let l:files = vimshell#complete#helper#files(a:cur_keyword_str, l:path)
   endif
   
   if vimshell#iswin()
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-    let l:list = filter(l:files, '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts))
+    let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
+          \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts) :
+          \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts)
   else
-    let l:list = filter(l:files, 'executable(v:val.orig)')
+    let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
+          \ 'isdirectory(v:val.orig) || executable(v:val.orig)' : 'executable(v:val.orig)'
   endif
 
+  call filter(l:files, l:pattern)
+
   let l:ret = []
-  for keyword in l:list
+  for keyword in l:files
     let l:dict = l:keyword
     let l:dict.menu = 'command'
     if a:cur_keyword_str !~ '[/\\]'

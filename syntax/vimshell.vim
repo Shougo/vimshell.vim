@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 May 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,6 +62,7 @@ else
     syn match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
     syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
+syn region   VimShellHistory  start=+^\s*\d\+:\s[^[:space:]]+ end=+.*+ oneline
 
 execute "syn region   VimShellExe start=".string('^'.vimshell#escape_match(vimshell#get_prompt())) "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
 syn match VimShellExe '[|;]\s*\f\+' contained contains=VimShellSpecial,VimShellArguments
@@ -85,6 +86,7 @@ hi def link VimShellConstants Constant
 hi def link VimShellSpecial PreProc
 hi def link VimShellVariable Comment
 hi def link VimShellComment Identifier
+hi def link VimShellHistory Comment
 hi def link VimShellNormal Normal
 
 hi def link VimShellExe Statement

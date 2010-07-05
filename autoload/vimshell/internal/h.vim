@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jun 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,9 +42,9 @@ function! vimshell#internal#h#execute(command, args, fd, other_info)
 
     let l:hist = g:vimshell#hist_buffer[l:num]
   else
-    let l:args = '^' . escape(join(a:args), '~" \.^$[]*')
+    let l:args = join(a:args)
     for h in g:vimshell#hist_buffer
-      if h =~ l:args
+      if vimshell#head_match(h, l:args)
         let l:hist = h
         break
       endif

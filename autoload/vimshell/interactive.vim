@@ -88,7 +88,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   let l:in = vimshell#interactive#get_cur_line(line('.'))
 
-  call s:append_history(l:in)
+  call vimshell#history#interactive_append(l:in)
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
@@ -133,7 +133,7 @@ function! vimshell#interactive#send_string(string)"{{{
   let l:in = a:string
 
   if l:in != '' && &filetype !=# 'vimshell-term'
-    call s:append_history(l:in)
+    call vimshell#history#interactive_append(l:in)
   endif
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
@@ -243,24 +243,22 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     let l:read = b:interactive.process.read(-1, 40)
   endwhile
 
-  if l:outputed
-    if &filetype !=# 'vimshell-term'
-      $
-
-      if !b:interactive.process.eof
-        if a:is_insert
-          startinsert!
-        else
-          normal! $
-        endif
-      endif
-    elseif a:is_insert
-      if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
+  if l:outputed && &filetype !=# 'vimshell-term'
+    $
+    if !b:interactive.process.eof
+      if a:is_insert
         startinsert!
       else
-        startinsert
-        normal! l
+        normal! $
       endif
+    endif
+  elseif &filetype ==# 'vimshell-term' && a:is_insert
+    call setpos('.', b:interactive.save_cursor)
+    if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
+      startinsert!
+    else
+      startinsert
+      normal! l
     endif
   endif
   
@@ -471,39 +469,6 @@ function! s:error_buffer(fd, string)"{{{
   $
 
   redraw
-endfunction"}}}
-
-function! vimshell#interactive#load_history()"{{{
-  let l:history_dir = g:vimshell_temporary_directory . '/int-history'
-  if !isdirectory(fnamemodify(l:history_dir, ':p'))
-    call mkdir(fnamemodify(l:history_dir, ':p'), 'p')
-  endif
-
-  let l:path = l:history_dir . '/'.&filetype
-  if filereadable(l:path)
-    return readfile(l:path)
-  else
-    return []
-  endif
-endfunction"}}}
-function! s:append_history(command)"{{{
-  if has_key(g:vimshell_interactive_no_save_history_commands, &filetype[4:])
-        \ && g:vimshell_interactive_no_save_history_commands[&filetype[4:]]
-    return
-  endif
-  " Reduce blanks.
-  let l:command = substitute(a:command, '\s\+', ' ', 'g')
-  " Filtering.
-  call insert(filter(b:interactive.command_history, 'v:val != '.string(substitute(l:command, "'", "''", 'g'))), l:command)
-
-  " Trunk.
-  let b:interactive.command_history = b:interactive.command_history[: g:vimshell_max_command_history-1]
-
-  let l:history_dir = g:vimshell_temporary_directory . '/int-history'
-  if !isdirectory(fnamemodify(l:history_dir, ':p'))
-    call mkdir(fnamemodify(l:history_dir, ':p'), 'p')
-  endif
-  call writefile(b:interactive.command_history, l:history_dir . '/'.&filetype)
 endfunction"}}}
 
 " Autocmd functions.

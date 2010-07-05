@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2010
+" Last Modified: 04 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,6 +25,8 @@
 "=============================================================================
 
 function! vimshell#complete#internal#iexe#get_complete_words(args)"{{{
-    return vimshell#complete#helper#command_args(a:args)
+  return vimshell#iswin() && len(a:args) > 1 && a:args[1] == 'fakecygpty' ?
+        \ vimshell#complete#helper#commands(a:args[-1], g:vimshell_interactive_cygwin_path) : 
+        \ vimshell#complete#helper#commands(a:args[-1])
 endfunction"}}}
 " vim: foldmethod=marker

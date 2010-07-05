@@ -89,6 +89,9 @@ if !exists('g:vimshell_escape_colors')
         \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
         \]
 endif
+if !exists('g:vimshell_disable_escape_highlight')
+  let g:vimshell_disable_escape_highlight = 0
+endif
 if !exists('g:vimshell_cat_command')
   let g:vimshell_cat_command = 'cat'
 endif
@@ -97,6 +100,9 @@ if !exists('g:vimshell_environment_term')
 endif
 if !exists('g:vimshell_split_command')
   let g:vimshell_split_command = ''
+endif
+if !exists('g:vimshell_external_history_path')
+  let g:vimshell_external_history_path = ''
 endif
 if !exists('g:vimshell_no_save_history_commands')
   let g:vimshell_no_save_history_commands = { 'history' : 1, 'h' : 1, 'histdel' : 1 }
