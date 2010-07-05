@@ -128,6 +128,8 @@ function! vimshell#interactive#send_string(string)"{{{
     return
   endif
 
+  setlocal modifiable
+  
   let l:in = a:string
 
   if l:in != '' && &filetype !=# 'vimshell-term'
@@ -160,7 +162,6 @@ endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let l:input = input('Please input send string: ')
   call vimshell#imdisable()
-  setlocal modifiable
   call vimshell#interactive#send_string(l:input)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
@@ -196,7 +197,8 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   
   " Check alternate buffer.
-  if getwinvar(l:winnr, '&filetype') =~ '^int-'
+  let l:filetype = getwinvar(l:winnr, '&filetype')
+  if l:filetype =~ '^int-' || l:filetype ==# 'vimshell-term'
     if a:string != ''
       let l:string = a:string . "\<LF>"
     else
@@ -206,14 +208,23 @@ function! s:send_region(line1, line2, string)"{{{
     
     execute winnr('#') 'wincmd w'
 
-    " Save prompt.
-    let l:prompt = vimshell#interactive#get_prompt(line('$'))
-    let l:prompt_nr = line('$')
+    if l:filetype !=# 'vimshell-term'
+      " Save prompt.
+      let l:prompt = vimshell#interactive#get_prompt(line('$'))
+      let l:prompt_nr = line('$')
+    else
+      call setpos('.', b:interactive.save_cursor)
+    endif
     
     " Send string.
     call vimshell#interactive#send_string(l:string)
     
-    call setline(l:prompt_nr, l:prompt . l:line)
+    if l:filetype !=# 'vimshell-term'
+      call setline(l:prompt_nr, l:prompt . l:line)
+    endif
+
+    stopinsert
+    wincmd p
   endif
 endfunction"}}}
 
@@ -243,7 +254,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
           normal! $
         endif
       endif
-    else
+    elseif a:is_insert
       if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
         startinsert!
       else
