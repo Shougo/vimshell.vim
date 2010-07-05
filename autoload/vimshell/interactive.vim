@@ -254,12 +254,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endif
   elseif &filetype ==# 'vimshell-term' && a:is_insert
     call setpos('.', b:interactive.save_cursor)
-    if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
-      startinsert!
-    else
-      startinsert
-      normal! l
-    endif
+    startinsert
   endif
   
   if b:interactive.process.eof

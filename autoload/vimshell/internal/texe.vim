@@ -127,14 +127,14 @@ function! vimshell#internal#texe#default_settings()"{{{
   let $LINES = winheight(0)
   let $VIMSHELL_TERM = 'terminal'
 
+  " Define mappings.
+  call vimshell#term_mappings#define_default_mappings()
+  
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
   setlocal tabstop=8
   setfiletype vimshell-term
-
-  " Define mappings.
-  call vimshell#term_mappings#define_default_mappings()
 endfunction"}}}
 
 function! s:init_bg(args, fd, other_info)"{{{
@@ -175,11 +175,7 @@ function! s:insert_enter()"{{{
   endif
 
   call setpos('.', b:interactive.save_cursor)
-  if b:interactive.save_cursor[2] >= len(getline(b:interactive.save_cursor[1]))
-    startinsert!
-  else
-    normal! l
-  endif
+  startinsert
 endfunction"}}}
 function! s:insert_leave()"{{{
   setlocal nomodifiable

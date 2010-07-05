@@ -28,7 +28,7 @@ function! vimshell#terminal#print(string)"{{{
   setlocal modifiable
   
   "echomsg a:string
-  if a:string !~ '[\e\r\b]' && col('.') == col('$')
+  if &filetype !=# 'vimshell-term' && a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
     if !exists('b:interactive') || line('.') != b:interactive.echoback_linenr
@@ -36,11 +36,6 @@ function! vimshell#terminal#print(string)"{{{
     endif
     call append('.', l:lines[1:])
     execute 'normal!' (len(l:lines)-1).'j$'
-    
-    if exists('b:interactive') && has_key(b:interactive, 'save_cursor')
-      let b:interactive.save_cursor[1] = line('$')
-      let b:interactive.save_cursor[2] = col('$')
-    endif
     
     return
   endif
@@ -152,20 +147,28 @@ function! vimshell#terminal#print(string)"{{{
   endfor
   let s:lines = {}
   
-  " Move pos.
-  let l:oldpos = getpos('.')
-  let l:oldpos[1] = s:line
-  let l:oldpos[2] = s:col
-  call setpos('.', l:oldpos)
+  " Scroll.
   if s:scrolls > 0
     execute 'normal' s:scrolls."\<C-e>"
   elseif s:scrolls < 0
     execute 'normal' (-s:scrolls)."\<C-y>"
   endif
   
+  let l:oldpos = getpos('.')
+  let l:oldpos[1] = s:line
+  let l:oldpos[2] = s:col+1
+  
   if &filetype ==# 'vimshell-term'
     let b:interactive.save_cursor = l:oldpos
+
+    if s:col >= len(getline(s:line))
+      " Append space.
+      call setline(s:line, getline(s:line) . ' ')
+    endif
   endif
+
+  " Move pos.
+  call setpos('.', l:oldpos)
 
   redraw
 endfunction"}}}
