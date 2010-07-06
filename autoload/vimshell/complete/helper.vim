@@ -56,8 +56,12 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let l:len_env = len(l:env_ev)
   else
     let l:len_env = 0
+    
+    if a:cur_keyword_str =~ '^\~\h\w*'
+      let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
+    endif
   endif
-
+  
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
     let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
@@ -87,6 +91,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
           \'word' : word, 'menu' : 'file'
           \}
 
+    let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
       let l:dict.word = l:env . l:dict.word[l:len_env :]
     elseif a:cur_keyword_str =~ '^\~/'
@@ -133,7 +138,7 @@ endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
-        \ 'isdirectory(v:val.orig) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(v:val.orig)))')
+        \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
     let l:dict = l:keyword
     let l:dict.menu = 'directory'
 
@@ -218,11 +223,11 @@ function! vimshell#complete#helper#commands(cur_keyword_str, ...)"{{{
   if vimshell#iswin()
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
-          \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts) :
+          \ 'isdirectory(expand(v:val.orig)) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts) :
           \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts)
   else
     let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
-          \ 'isdirectory(v:val.orig) || executable(v:val.orig)' : 'executable(v:val.orig)'
+          \ 'isdirectory(expand(v:val.orig)) || executable(expand(v:val.orig))' : 'executable(expand(v:val.orig))'
   endif
 
   call filter(l:files, l:pattern)
