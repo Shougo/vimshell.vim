@@ -662,10 +662,10 @@ function! vimshell#alternate_buffer()"{{{
 endfunction"}}}
 function! vimshell#imdisable()"{{{
   " Disable input method.
-  if exists(s:exists_eskk) && eskk#is_enabled()
-    call feedkeys(eskk#disable(), 'n')
+  if s:exists_eskk && eskk#is_enabled()
+    call eskk#disable()
   elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
-    call feedkeys(SkkDisable(), 'n')
+    call SkkDisable()
   elseif exists('&iminsert')
     let &l:iminsert = 0
   endif
