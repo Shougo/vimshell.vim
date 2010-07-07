@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2010
+" Last Modified: 07 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -22,20 +22,6 @@
 "     TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
-" Version: 1.2, for Vim 7.0
-"-----------------------------------------------------------------------------
-" ChangeLog: "{{{
-"   1.2:
-"     - Added date and remark.
-"     - Fixed prompt.
-"
-"   1.1:
-"     - Improved reply.
-"     - Improved URI.
-"
-"   1.0:
-"     - Initial version.
-""}}}
 "=============================================================================
 
 if version < 700
@@ -68,7 +54,7 @@ else
   hi def link TermtterPrompt Identifier
 endif
 
-hi def link TermtterString Comment
+hi def link TermtterString Normal
 hi def link TermtterConstants Constant
 hi def link TermtterCommand Statement
 if has('gui_running')

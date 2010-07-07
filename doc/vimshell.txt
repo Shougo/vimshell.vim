@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-07-07
 - Fixed auto completion bug.
 - Improved :VimShellInteractive and :VimShellExecute and :VimShellTerminal commands.
+- Improved termtter syntax.
 
 2010-07-06
 - Fixed directory compltion bug.
