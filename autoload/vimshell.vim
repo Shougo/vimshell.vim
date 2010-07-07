@@ -120,27 +120,14 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     edit `=l:bufname`
   endif
 
-  " Initialize functions table.
-  if !exists('g:vimshell#internal_func_table')
-    let g:vimshell#internal_func_table = {}
+  " Initialize internal commands table.
+  if !exists('g:vimshell#internal_commands')
+    let g:vimshell#internal_commands= {}
 
     " Search autoload.
-    for list in split(globpath(&runtimepath, 'autoload/vimshell/internal/*.vim'), '\n')
-      let l:func_name = fnamemodify(list, ':t:r')
-      let g:vimshell#internal_func_table[l:func_name] = 'vimshell#internal#' . l:func_name . '#execute'
-    endfor
-  endif
-  if !exists('g:vimshell#special_func_table')
-    " Initialize table.
-    let g:vimshell#special_func_table = {
-          \ 'command' : 's:special_command',
-          \ 'internal' : 's:special_internal',
-          \}
-
-    " Search autoload.
-    for list in split(globpath(&runtimepath, 'autoload/vimshell/special/*.vim'), '\n')
-      let l:func_name = fnamemodify(list, ':t:r')
-      let g:vimshell#special_func_table[l:func_name] = 'vimshell#special#' . l:func_name . '#execute'
+    for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
+      let l:command = fnamemodify(list, ':t:r')
+      let g:vimshell#internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
     endfor
   endif
 
@@ -275,6 +262,9 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   call vimshell#create_shell(a:split_flag, a:directory)
 endfunction"}}}
 
+function! vimshell#available_commands()"{{{
+  return g:vimshell#internal_commands
+endfunction"}}}
 function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
   if empty(a:fd)
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
@@ -726,42 +716,6 @@ function! vimshell#set_galias(name, value)"{{{
 endfunction"}}}
 function! vimshell#get_galias(name)"{{{
   return get(b:vimshell.galias_table, a:name, '')
-endfunction"}}}
-
-" Special functions.
-function! s:special_command(program, args, fd, other_info)"{{{
-  let l:program = a:args[0]
-  let l:arguments = a:args[1:]
-  if has_key(g:vimshell#internal_func_table, l:program)
-    " Internal commands.
-    execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-          \ g:vimshell#internal_func_table[l:program])
-  else
-    call vimshell#execute_internal_command('exe', insert(l:arguments, l:program), a:fd, a:other_info)
-  endif
-
-  return
-endfunction"}}}
-function! s:special_internal(program, args, fd, other_info)"{{{
-  if empty(a:args)
-    " Print internal commands.
-    for func_name in keys(g:vimshell#internal_func_table)
-      call vimshell#print_line(func_name)
-    endfor
-  else
-    let l:program = a:args[0]
-    let l:arguments = a:args[1:]
-    if has_key(g:vimshell#internal_func_table, l:program)
-      " Internal commands.
-      execute printf('call %s(l:program, l:arguments, a:is_interactive, a:has_head_spaces, a:other_info)', 
-            \ g:vimshell#internal_func_table[l:program])
-    else
-      " Error.
-      call vimshell#error_line('', printf('Not found internal command "%s".', l:program))
-    endif
-  endif
-
-  return
 endfunction"}}}
 
 function! s:restore_current_dir()"{{{

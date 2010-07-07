@@ -194,18 +194,9 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
 
   return l:ret
 endfunction"}}}
-function! vimshell#complete#helper#specials(cur_keyword_str)"{{{
-  let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#special_func_table), a:cur_keyword_str)
-    let l:dict = { 'word' : keyword, 'menu' : 'special' }
-    call add(l:ret, l:dict)
-  endfor 
-
-  return l:ret
-endfunction"}}}
 function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#internal_func_table), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#internal_commands), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : 'internal' }
     call add(l:ret, l:dict)
   endfor 

@@ -43,7 +43,8 @@ function! vimshell#parser#eval_script(script, context)"{{{
 
     let [l:program, l:script] = vimshell#parser#parse_program(l:statement)
 
-    if has_key(g:vimshell#special_func_table, l:program)
+    if has_key(g:vimshell#internal_commands, l:program)
+          \ && g:vimshell#internal_commands[l:program].kind ==# 'special'
       " Special commands.
       let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
       let l:args = split(l:script)
@@ -148,13 +149,9 @@ function! vimshell#parser#execute_command(program, args, fd, other_info)"{{{
     " Background execution.
     return vimshell#execute_internal_command('bg', split(substitute(l:line, '&\s*$', '', '')), a:fd, a:other_info)
     "}}}
-  elseif has_key(g:vimshell#special_func_table, l:program)"{{{
-    " Other special commands.
-    return call(g:vimshell#special_func_table[l:program], [l:program, a:args, a:fd, a:other_info])
-    "}}}
-  elseif has_key(g:vimshell#internal_func_table, l:program)"{{{
+  elseif has_key(g:vimshell#internal_commands, l:program)"{{{
     " Internal commands.
-    return call(g:vimshell#internal_func_table[l:program], [l:program, a:args, a:fd, a:other_info])
+    return g:vimshell#internal_commands[l:program].execute(l:program, a:args, a:fd, a:other_info)
     "}}}
   elseif isdirectory(l:dir)"{{{
     " Directory.

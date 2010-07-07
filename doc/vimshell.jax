@@ -1,6 +1,6 @@
 *vimshell.txt*	Vim Scriptで実装された強力なシェル
 
-Version: 7.0
+Version: 7.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -490,7 +490,7 @@ dirs [{max}]						*vimshell-internal-dirs*
 echo [{argument}...]					*vimshell-internal-echo*
 		引数を出力します。
 
-eval {expression}					*vimshell-internal-expression*
+eval {expression}					*vimshell-internal-eval*
 		{expression}をvimshell Scriptとして解釈し、評価結果を表示します。
 		前のバージョンのevとは動作が違います。evの代わりが欲しいなら、
 		alias ev = 'vexe echo'を設定しましょう。
@@ -533,7 +533,7 @@ h [{pattern}]						*vimshell-internal-h*
 		す。|vimshell-internal-h|により実行したコマンドはヒストリに
 		登録 されません。
 
-histdel [{history-number}]				*vimshell-internal-histdel*
+histdel {history-number}				*vimshell-internal-histdel*
 		{history-number}に一致するヒストリを削除します。ヒストリ番
 		号は|vimshell-internal-history|で確認できます。
 		{history-number}を省略すると、 無視されます。
@@ -565,7 +565,7 @@ open {filename}						*vimshell-internal-open*
 		{filename}を関連付け実行します。何が実行されるかはOSやデスク
 		トップ環境に依存します。
 
-popd [{directory-stack-number}]					*vimshell-internal-popd*
+popd [{directory-stack-number}]				*vimshell-internal-popd*
 		{directory-stack-number}で示されるディレクトリへ移動します。
 		{directory-stack-number}は|vimshell-internal-dirs|で確認でき
 		ます。{directory-stack-number}を省略すると、0になります。

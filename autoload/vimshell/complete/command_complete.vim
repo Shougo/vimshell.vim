@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 07 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,7 +92,6 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
   let l:ret =    l:directories
         \+ vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
         \+ vimshell#complete#helper#aliases(a:cur_keyword_str)
-        \+ vimshell#complete#helper#specials(a:cur_keyword_str)
         \+ vimshell#complete#helper#internals(a:cur_keyword_str)
 
   if len(a:cur_keyword_str) >= 1

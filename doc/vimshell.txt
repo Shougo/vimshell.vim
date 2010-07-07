@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 7.0
+Version: 7.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -184,6 +184,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-07
+* Ver.7.1 development is started.
+- Fixed documentation.
+- Using dictionary.
+
+ChangeLog 7.0: {{{
 2010-07-07
 - Fixed auto completion bug.
 - Improved :VimShellInteractive and :VimShellExecute and :VimShellTerminal commands.
@@ -523,7 +529,7 @@ CHANGELOG						*vimshell-changelog*
 2010-04-20
 * Ver.7 development is started.
 * Supported vimproc Ver.4.
-
+}}}
 ChangeLog 6.50: {{{
 2010-04-20
     * Marked as ver.6.50.
