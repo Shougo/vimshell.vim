@@ -164,7 +164,7 @@ endfunction"}}}
 function! s:on_execute()"{{{
   setlocal modifiable
   echo 'Running command.'
-  call vimshell#execute_internal_command(()
+  call vimshell#interactive#execute_pipe_out()
   redraw
   echo ''
   setlocal nomodifiable
