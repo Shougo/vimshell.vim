@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-07
+- Fixed auto completion bug.
+
 2010-07-06
 - Fixed directory compltion bug.
 

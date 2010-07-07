@@ -506,7 +506,6 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
   elseif &filetype  == 'vimshell-term'
-        \ || line('.') == b:interactive.echoback_linenr
         \ || (!has_key(b:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
     if &filetype == 'vimshell-term' && mode() !=# 'i'
       call setpos('.', b:interactive.save_cursor)
