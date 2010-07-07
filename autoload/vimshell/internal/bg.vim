@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2010
+" Last Modified: 07 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -82,7 +82,7 @@ function! vimshell#internal#bg#execute(command, args, fd, other_info)"{{{
         \ 'encoding' : l:options['--encoding'], 
         \ 'is_pty' : !vimshell#iswin(), 
         \ 'is_background' : 1, 
-        \ 'cached_output' : '', 
+        \ 'echoback_linenr' : 0,
         \}
 
   " Input from stdin.
@@ -95,16 +95,18 @@ function! vimshell#internal#bg#execute(command, args, fd, other_info)"{{{
 endfunction"}}}
 
 function! vimshell#internal#bg#vimshell_bg(args)"{{{
-  let [l:command, l:script] = vimshell#parser#parse_command(vimshell#parser#parse_alias(a:args))
-  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(l:command . ' ' . l:script), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
+  call vimshell#internal#bg#execute('bg', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+        \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 
 function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  " Split nicely.
-  call vimshell#split_nicely()
+  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+    " Split nicely.
+    call vimshell#split_nicely()
+  endif
 
   edit `=substitute(join(a:args), '[<>|]', '_', 'g').'&'.(bufnr('$')+1)`
   lcd `=l:cwd`
@@ -132,11 +134,11 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   hi def link InteractiveErrorHidden Ignore
 
   augroup vimshell-bg
-    autocmd BufUnload <buffer>       call s:on_interrupt(expand('<afile>'))
+    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
   
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(a:afile)
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
   
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
@@ -145,7 +147,9 @@ function! vimshell#internal#bg#init(args, fd, other_info, filetype, interactive)
   
   call s:on_execute()
 
-  wincmd p
+  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+    wincmd p
+  endif
 endfunction"}}}
 
 function! s:on_execute()"{{{

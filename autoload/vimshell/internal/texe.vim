@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jul 2010
+" Last Modified: 07 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,11 +112,14 @@ function! vimshell#internal#texe#execute(command, args, fd, other_info)"{{{
         \}
   call vimshell#interactive#init()
 
-  wincmd p
+  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+    wincmd p
+  endif
 endfunction"}}}
 
 function! vimshell#internal#texe#vimshell_texe(args)"{{{
-  call vimshell#internal#texe#execute('texe', vimshell#parser#split_args(a:args), {'stdin' : '', 'stdout' : '', 'stderr' : ''}, {'is_interactive' : 0})
+  call vimshell#internal#texe#execute('texe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+        \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 
 function! vimshell#internal#texe#default_settings()"{{{
@@ -141,8 +144,10 @@ function! s:init_bg(args, fd, other_info)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  " Split nicely.
-  call vimshell#split_nicely()
+  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+    " Split nicely.
+    call vimshell#split_nicely()
+  endif
 
   edit `=fnamemodify(a:args[0], ':r').'$'.(bufnr('$')+1)`
   lcd `=l:cwd`
