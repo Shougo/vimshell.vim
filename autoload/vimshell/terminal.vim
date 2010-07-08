@@ -156,7 +156,7 @@ function! vimshell#terminal#print(string)"{{{
   
   let l:oldpos = getpos('.')
   let l:oldpos[1] = s:line
-  let l:oldpos[2] = s:col+1
+  let l:oldpos[2] = s:col
   
   if &filetype ==# 'vimshell-term'
     let b:interactive.save_cursor = l:oldpos

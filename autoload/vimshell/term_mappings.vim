@@ -29,8 +29,8 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   nnoremap <silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
   nnoremap <silent> <Plug>(vimshell_start_insert)       :<C-u>call <SID>start_insert()<CR>
-  execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
-  inoremap <silent> <Plug>(vimshell_term_send_input)       <ESC>:call vimshell#interactive#send_input()<CR>
+  execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
+  inoremap <silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 
   for l:lhs in [
@@ -43,7 +43,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '[', ']', '{', '}', ':', ';', '''', '"', ',', '<', '.', '>', '/', '?',
         \ ]
 
-    execute 'inoremap <buffer><silent>' l:lhs printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
+    execute 'inoremap <buffer><silent>' l:lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
   endfor
   
   for [l:key, l:value] in items({
@@ -56,7 +56,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<Bar>' : '|', '<Space>' : ' ',
         \ })
     
-    execute 'inoremap <buffer><silent>' l:key printf('<ESC>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:value))
+    execute 'inoremap <buffer><silent>' l:key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:value))
   endfor
   
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)

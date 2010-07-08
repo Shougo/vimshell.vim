@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-09
+- Fixed interactive position.
+
 2010-07-07
 * Ver.7.1 development is started.
 - Fixed documentation.
