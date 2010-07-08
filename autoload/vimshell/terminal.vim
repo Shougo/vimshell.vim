@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -299,8 +299,8 @@ function! s:output_string(string)"{{{
   endif
   
   let l:line = s:lines[s:line]
-  let l:left_line = l:line[: s:col - 1]
-  let l:right_line = l:line[s:col+len(a:string) :]
+  let l:left_line = l:line[: s:col - 2]
+  let l:right_line = l:line[s:col-1+len(a:string) :]
 
   let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
   
@@ -452,10 +452,10 @@ function! s:escape.delete_whole_line(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
 function! s:escape.delete_right_line(matchstr)"{{{
-  let s:lines[s:line] = s:lines[s:line][ : s:col-1]
+  let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
 endfunction"}}}
 function! s:escape.delete_left_line(matchstr)"{{{
-  let s:lines[s:line] = s:lines[s:line][s:col :]
+  let s:lines[s:line] = s:lines[s:line][s:col-1 :]
   let s:col = 1
 endfunction"}}}
 function! s:escape.clear_entire_screen(matchstr)"{{{
