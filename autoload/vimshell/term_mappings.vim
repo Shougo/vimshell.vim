@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: term_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,9 +28,8 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   " Plugin key-mappings."{{{
   nnoremap <silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
-  nnoremap <silent> <Plug>(vimshell_start_insert)       :<C-u>call <SID>start_insert()<CR>
+  nnoremap <silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
   execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
-  execute 'inoremap <silent> <Plug>(vimshell_term_send_semicolon)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(";"))
   inoremap <silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 
@@ -67,10 +66,10 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   " Normal mode key-mappings.
   nmap <buffer> <C-c>     <Plug>(vimshell_term_interrupt)
   nmap <buffer> q         <Plug>(vimshell_term_exit)
-  nmap <buffer> i         <Plug>(vimshell_start_insert)
-  nmap <buffer> I         <Plug>(vimshell_start_insert)
-  nmap <buffer> a         <Plug>(vimshell_start_insert)
-  nmap <buffer> A         <Plug>(vimshell_start_insert)
+  nmap <buffer> i         <Plug>(vimshell_term_start_insert)
+  nmap <buffer> I         <Plug>(vimshell_term_start_insert)
+  nmap <buffer> a         <Plug>(vimshell_term_start_insert)
+  nmap <buffer> A         <Plug>(vimshell_term_start_insert)
 
   " Insert mode key-mappings.
   imap <buffer> <ESC><ESC>         <Plug>(vimshell_term_send_escape)

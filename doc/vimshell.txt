@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed interactive history error.
 - Improved texe update.
 - Fixed iexe execute bug.
+- Fixed texe mappings.
 
 2010-07-07
 * Ver.7.1 development is started.
