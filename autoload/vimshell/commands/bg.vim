@@ -81,7 +81,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \ 'process' : l:sub, 
         \ 'fd' : a:fd, 
         \ 'encoding' : l:options['--encoding'], 
-        \ 'is_pty' : !vimshell#iswin(), 
+        \ 'is_pty' : 0, 
         \ 'is_background' : 1, 
         \ 'echoback_linenr' : 0,
         \}
@@ -92,7 +92,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   endif
   call l:interactive.process.stdin.close()
 
-  return vimshell#internal#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], l:interactive)
+  return vimshell#commands#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], l:interactive)
 endfunction"}}}
 
 function! vimshell#commands#bg#define()

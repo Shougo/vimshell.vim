@@ -298,6 +298,9 @@ function! s:output_string(string)"{{{
     return
   endif
   
+  if !has_key(s:lines, s:line)
+    let s:lines[s:line] = ''
+  endif
   let l:line = s:lines[s:line]
   let l:left_line = l:line[: s:col - 2]
   let l:right_line = l:line[s:col-1+len(a:string) :]
@@ -690,11 +693,11 @@ let s:escape_sequence_match = {
       \ 
       \ '^\[\d\+;\d\+r' : s:escape.setup_window,
       \
-      \ '^\[\d\+A' : s:escape.move_up,
-      \ '^\[\d\+B' : s:escape.move_down,
-      \ '^\[\d\+C' : s:escape.move_right,
-      \ '^\[\d\+D' : s:escape.move_left,
-      \ '^\[\d\+E' : s:escape.move_down_head,
+      \ '^\[\d*A' : s:escape.move_up,
+      \ '^\[\d*B' : s:escape.move_down,
+      \ '^\[\d*C' : s:escape.move_right,
+      \ '^\[\d*D' : s:escape.move_left,
+      \ '^\[\d*E' : s:escape.move_down_head,
       \ '^\[\d\+F' : s:escape.move_up_head,
       \ '^\[\d\+G' : s:escape.move_col,
       \ '^\[\d\+;\d\+[Hf]' : s:escape.move_cursor,

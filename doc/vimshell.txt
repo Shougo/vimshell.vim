@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved texe update.
 - Fixed iexe execute bug.
 - Fixed texe mappings.
+- Fixed some error.
 
 2010-07-07
 * Ver.7.1 development is started.

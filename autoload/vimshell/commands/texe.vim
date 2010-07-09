@@ -126,12 +126,12 @@ endfunction
 
 let s:update_time_save = &updatetime
 
-function! vimshell#internal#texe#vimshell_texe(args)"{{{
+function! vimshell#commands#texe#vimshell_texe(args)"{{{
   call vimshell#execute_internal_command('texe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
         \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 
-function! vimshell#internal#texe#default_settings()"{{{
+function! s:default_settings()"{{{
   " Set environment variables.
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
@@ -161,7 +161,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   edit `=fnamemodify(a:args[0], ':r').'$'.(bufnr('$')+1)`
   lcd `=l:cwd`
 
-  call vimshell#internal#texe#default_settings()
+  call s:default_settings()
   
   " Set autocommands.
   augroup vimshell-texe

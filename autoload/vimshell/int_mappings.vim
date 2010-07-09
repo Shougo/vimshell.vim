@@ -209,7 +209,7 @@ function! s:restart_command()"{{{
   " Initialize.
   let l:sub = vimproc#ptyopen(b:interactive.args)
   
-  call vimshell#internal#iexe#default_settings()
+  call s:default_settings()
 
   " Set variables.
   call extend(b:interactive, {

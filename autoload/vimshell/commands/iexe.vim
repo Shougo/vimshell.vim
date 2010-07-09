@@ -162,12 +162,12 @@ endif
 call vimshell#set_variables('g:vimshell_interactive_command_options', 'termtter', '--monochrome')
 "}}}
 
-function! vimshell#internal#iexe#vimshell_iexe(args)"{{{
+function! vimshell#commands#iexe#vimshell_iexe(args)"{{{
   call vimshell#execute_internal_command('iexe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
         \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 
-function! vimshell#internal#iexe#default_settings()"{{{
+function! s:default_settings()"{{{
   " Set environment variables.
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
@@ -206,7 +206,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   edit `=fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
   
-  call vimshell#internal#iexe#default_settings()
+  call s:default_settings()
   
   let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')

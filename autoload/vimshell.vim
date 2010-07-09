@@ -79,7 +79,7 @@ augroup vimshell
 augroup end
 
 " User utility functions.
-function! vimshell#default_settings()"{{{
+function! s:default_settings()"{{{
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal bufhidden=hide
@@ -166,7 +166,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let $PAGER = g:vimshell_cat_command
   
   " Default settings.
-  call vimshell#default_settings()
+  call s:default_settings()
 
   let l:context = {
         \ 'has_head_spaces' : 0,
@@ -278,7 +278,7 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
     let l:other_info = a:other_info
   endif
 
-  return call('vimshell#internal#' . a:command . '#execute', [a:command, a:args, l:fd, l:other_info])
+  return g:vimshell#internal_commands[a:command].execute(a:command, a:args, l:fd, l:other_info)
 endfunction"}}}
 function! vimshell#read(fd)"{{{
   if empty(a:fd) || a:fd.stdin == ''

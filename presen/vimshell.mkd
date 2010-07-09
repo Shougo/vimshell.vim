@@ -291,7 +291,7 @@ Ver.6.00より、ユーザーが補完処理を定義できるようになりま
 
 ### キーバインド等のカスタマイズ
 
-vimshellのキーバインドは`vimshell#default_settings()`にて定義されています。
+vimshellのキーバインドは`vimshell#mappings#define_default_mappings()`にて定義されています。
 標準的キーバインドを設定してから、
 `setfiletype vimshell`
 を実行するので、ftplugin/vimshell.vimを作成すれば、簡単にカスタマイズできます。

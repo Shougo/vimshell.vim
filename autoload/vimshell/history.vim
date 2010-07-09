@@ -89,7 +89,7 @@ function! vimshell#history#interactive_append(command)"{{{
     call mkdir(fnamemodify(l:history_dir, ':p'), 'p')
   endif
   let l:history_path = l:history_dir . '/'.&filetype
-  if filereadable(l:history_path)
+  if !filereadable(l:history_path)
     " Create new file.
     call writefile([], l:history_path)
   endif

@@ -171,22 +171,16 @@ function! vimshell#interactive#send_char(char)"{{{
 
   setlocal modifiable
 
-  let l:char = nr2char(a:char)
-  try
-    if a:char == "\<C-d>"
-      " EOF.
-      call b:interactive.process.write(b:interactive.is_pty ? "\<C-z>" : "\<C-d>")
-      call vimshell#interactive#execute_pty_out(1)
-
-      call vimshell#interactive#exit()
-      return
-    else
-      call b:interactive.process.write(l:char)
-    endif
-  catch
-    call vimshell#interactive#exit()
-    return
-  endtry
+  if type(a:char) != type([])
+    let l:char = nr2char(a:char)
+  else
+    let l:char = ''
+    for c in a:char
+      let l:char .= nr2char(c)
+    endfor
+  endif
+  
+  call b:interactive.process.write(l:char)
 
   call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}
