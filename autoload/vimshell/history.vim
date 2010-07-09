@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -89,6 +89,10 @@ function! vimshell#history#interactive_append(command)"{{{
     call mkdir(fnamemodify(l:history_dir, ':p'), 'p')
   endif
   let l:history_path = l:history_dir . '/'.&filetype
+  if filereadable(l:history_path)
+    " Create new file.
+    call writefile([], l:history_path)
+  endif
   let b:interactive.command_history = readfile(l:history_path)
 
   " Reduce blanks.

@@ -30,6 +30,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
   nnoremap <silent> <Plug>(vimshell_start_insert)       :<C-u>call <SID>start_insert()<CR>
   execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
+  execute 'inoremap <silent> <Plug>(vimshell_term_send_semicolon)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(";"))
   inoremap <silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 

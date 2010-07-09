@@ -212,8 +212,6 @@ function! s:send_region(line1, line2, string)"{{{
       " Save prompt.
       let l:prompt = vimshell#interactive#get_prompt(line('$'))
       let l:prompt_nr = line('$')
-    else
-      call setpos('.', b:interactive.save_cursor)
     endif
     
     " Send string.
@@ -505,7 +503,6 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
   elseif &filetype  == 'vimshell-term'
         \ || (!has_key(b:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
     if &filetype == 'vimshell-term' && mode() !=# 'i'
-      call setpos('.', b:interactive.save_cursor)
       setlocal modifiable
     endif
 

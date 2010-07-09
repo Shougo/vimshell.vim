@@ -187,6 +187,9 @@ CHANGELOG						*vimshell-changelog*
 2010-07-09
 - Fixed interactive position.
 - Fixed output bug.
+- Fixed interactive history error.
+- Improved texe update.
+- Fixed iexe execute bug.
 
 2010-07-07
 * Ver.7.1 development is started.
