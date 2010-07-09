@@ -135,9 +135,9 @@ endif
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call vimshell#commands#bg#vimshell_bg(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellInteractive call vimshell#commands#iexe#vimshell_iexe(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call vimshell#commands#texe#vimshell_texe(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call s:vimshell_terminal(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellBang call s:bang(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellRead call s:read(<q-args>)
 
@@ -160,6 +160,18 @@ endfunction"}}}
 function! s:execute_completefunc(lead, cmd, pos)"{{{
   silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
   return keys 
+endfunction"}}}
+function! s:vimshell_execute(args)"{{{
+  call vimshell#execute_internal_command('bg', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+        \ { 'is_interactive' : 0, 'is_split' : 1 })
+endfunction"}}}
+function! s:vimshell_interactive(args)"{{{
+  call vimshell#execute_internal_command('iexe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+        \ { 'is_interactive' : 0, 'is_split' : 1 })
+endfunction"}}}
+function! s:vimshell_terminal(args)"{{{
+  call vimshell#execute_internal_command('texe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+        \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 
 augroup vimshell

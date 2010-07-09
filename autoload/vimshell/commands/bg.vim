@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -102,11 +102,6 @@ endfunction
 augroup vimshell-bg
   autocmd!
 augroup END
-
-function! vimshell#commands#bg#vimshell_bg(args)"{{{
-  call vimshell#execute_internal_command('bg', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_split' : 1 })
-endfunction"}}}
 
 function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)"{{{
   " Save current directiory.

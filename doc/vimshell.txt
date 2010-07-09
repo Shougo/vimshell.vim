@@ -196,6 +196,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved listchars.
 - Fixed command line completion.
 - Fixed initialize bug.
+- Deleted screen internal command.
+- Improved commands.
 
 2010-07-07
 * Ver.7.1 development is started.

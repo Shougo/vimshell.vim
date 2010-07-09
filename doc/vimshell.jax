@@ -577,10 +577,6 @@ pwd 							*vimshell-internal-pwd*
 repeat {cnt} {command}					*vimshell-internal-repeat*
 		{command}を{cnt}回実行します。
 
-screen {command}					*vimshell-internal-screen*
-		{command}をscreen上で実行します。端末の機能を用いるプログラ
-		ムを起動したいときに便利です。当然Windows上では動作しません。
-
 shell 							*vimshell-internal-shell*
 		|:shell|を用いて'shell'を起動します。Windows上のGVimでかつ
 		|g:vimshell_use_ckw|が設定されている場合、DOSプロンプトでは
