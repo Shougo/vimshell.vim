@@ -145,6 +145,8 @@ function! s:default_settings()"{{{
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
+  setlocal list
+  setlocal listchars=extends:>,precedes:<
   setlocal tabstop=8
   setfiletype vimshell-term
 endfunction"}}}

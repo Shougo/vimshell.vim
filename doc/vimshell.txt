@@ -193,6 +193,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed texe mappings.
 - Fixed some error.
 - Added <Plug>(vimshell_term_execute_line) mapping.
+- Improved listchars.
 
 2010-07-07
 * Ver.7.1 development is started.

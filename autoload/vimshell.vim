@@ -84,9 +84,11 @@ function! s:default_settings()"{{{
   setlocal noswapfile
   setlocal bufhidden=hide
   setlocal noreadonly
-  setlocal nolist
-  setlocal tabstop=8
   setlocal iskeyword+=-,+,.,\\,!,~
+  setlocal wrap
+  setlocal list
+  setlocal listchars=extends:>,precedes:<
+  setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   
   " Set autocommands.

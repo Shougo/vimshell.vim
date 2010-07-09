@@ -178,6 +178,8 @@ function! s:default_settings()"{{{
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal wrap
+  setlocal list
+  setlocal listchars=extends:>,precedes:<
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
