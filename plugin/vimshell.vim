@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,11 +135,11 @@ endif
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellExecute call vimshell#commands#bg#vimshell_bg(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellInteractive call vimshell#commands#iexe#vimshell_iexe(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellTerminal call vimshell#commands#texe#vimshell_texe(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellBang call s:bang(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#complete#vimshell_execute_complete#completefunc VimShellRead call s:read(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call vimshell#commands#bg#vimshell_bg(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellInteractive call vimshell#commands#iexe#vimshell_iexe(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call vimshell#commands#texe#vimshell_texe(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellBang call s:bang(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellRead call s:read(<q-args>)
 
 " Plugin keymappings"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
@@ -156,6 +156,10 @@ endfunction"}}}
 function! s:read(cmdline)"{{{
   let [l:program, l:script] = vimshell#parser#parse_alias(a:cmdline)
   call append('.', split(vimshell#system(l:program . ' ' . l:script), '\n'))
+endfunction"}}}
+function! s:execute_completefunc(lead, cmd, pos)"{{{
+  silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
+  return keys 
 endfunction"}}}
 
 augroup vimshell

@@ -122,15 +122,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     edit `=l:bufname`
   endif
 
-  " Initialize internal commands table.
   if !exists('g:vimshell#internal_commands')
-    let g:vimshell#internal_commands= {}
-
-    " Search autoload.
-    for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
-      let l:command = fnamemodify(list, ':t:r')
-      let g:vimshell#internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
-    endfor
+    call s:init_internal_commands()
   endif
 
   " Load history.
@@ -268,6 +261,10 @@ function! vimshell#available_commands()"{{{
   return g:vimshell#internal_commands
 endfunction"}}}
 function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
+  if !exists('g:vimshell#internal_commands')
+    call s:init_internal_commands()
+  endif
+  
   if empty(a:fd)
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
   else
@@ -726,6 +723,16 @@ function! s:restore_current_dir()"{{{
   endif
 
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
+endfunction"}}}
+function! s:init_internal_commands()"{{{
+  " Initialize internal commands table.
+  let g:vimshell#internal_commands= {}
+
+  " Search autoload.
+  for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
+    let l:command = fnamemodify(list, ':t:r')
+    let g:vimshell#internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
+  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker
