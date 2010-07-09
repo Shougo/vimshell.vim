@@ -198,6 +198,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed initialize bug.
 - Deleted screen internal command.
 - Improved commands.
+- Improved args complete.
 
 2010-07-07
 * Ver.7.1 development is started.

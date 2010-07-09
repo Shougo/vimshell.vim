@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,6 +96,19 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     let l:context.fd = a:fd
     call vimshell#hook#call('chpwd', l:context)
   endif
+endfunction"}}}
+function! s:command.complete(args)"{{{
+  if a:args[-1] =~ '^-\d*$'
+    let l:ret = vimshell#complete#helper#directory_stack(a:args[-1][1:])
+    for l:keyword in l:ret
+      let l:keyword.abbr = l:keyword.word
+      let l:keyword.word = '-' . l:keyword.word
+    endfor
+  else
+    let l:ret = vimshell#complete#helper#directories(a:args[-1])
+  endif
+    
+  return l:ret
 endfunction"}}}
 
 function! vimshell#commands#cd#define()

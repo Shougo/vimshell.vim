@@ -94,6 +94,9 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   return vimshell#commands#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], l:interactive)
 endfunction"}}}
+function! s:command.complete(args)"{{{
+    return vimshell#complete#helper#command_args(a:args)
+endfunction"}}}
 
 function! vimshell#commands#bg#define()
   return s:command

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bcd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,6 +50,15 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   else
     call vimshell#error_line(a:fd, printf('bcd: Buffer "%s" is not found.', l:arguments))
   endif
+endfunction"}}}
+function! s:command.complete(args)"{{{
+    let l:ret = vimshell#complete#helper#buffers(a:args[-1])
+    for l:keyword in l:ret
+        let l:keyword.menu .= ' ' . fnamemodify(l:keyword.word, ':p:h')
+        let l:keyword.abbr = fnamemodify(l:keyword.word, ':t')
+    endfor
+    
+    return l:ret
 endfunction"}}}
 
 function! vimshell#commands#bcd#define()

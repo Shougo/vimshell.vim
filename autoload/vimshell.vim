@@ -44,6 +44,9 @@ let s:right_prompt = exists('g:vimshell_right_prompt') ? g:vimshell_right_prompt
 if !exists('g:vimshell_execute_file_list')
   let g:vimshell_execute_file_list = {}
 endif
+if !exists('s:internal_commands')
+  let s:internal_commands = {}
+endif
 
 " Disable bell.
 set vb t_vb=
@@ -122,7 +125,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     edit `=l:bufname`
   endif
 
-  if !exists('g:vimshell#internal_commands')
+  if empty(s:internal_commands)
     call s:init_internal_commands()
   endif
 
@@ -258,10 +261,10 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
 endfunction"}}}
 
 function! vimshell#available_commands()"{{{
-  return g:vimshell#internal_commands
+  return s:internal_commands
 endfunction"}}}
 function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
-  if !exists('g:vimshell#internal_commands')
+  if empty(s:internal_commands)
     call s:init_internal_commands()
   endif
   
@@ -277,7 +280,7 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
     let l:other_info = a:other_info
   endif
 
-  return g:vimshell#internal_commands[a:command].execute(a:command, a:args, l:fd, l:other_info)
+  return s:internal_commands[a:command].execute(a:command, a:args, l:fd, l:other_info)
 endfunction"}}}
 function! vimshell#read(fd)"{{{
   if empty(a:fd) || a:fd.stdin == ''
@@ -726,12 +729,12 @@ function! s:restore_current_dir()"{{{
 endfunction"}}}
 function! s:init_internal_commands()"{{{
   " Initialize internal commands table.
-  let g:vimshell#internal_commands= {}
+  let s:internal_commands= {}
 
   " Search autoload.
   for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
     let l:command = fnamemodify(list, ':t:r')
-    let g:vimshell#internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
+    let s:internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
   endfor
 endfunction"}}}
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sudo.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,6 +41,9 @@ function! s:command.execute(program, args, fd, other_info)"{{{
   else
     call vimshell#execute_internal_command('iexe', insert(a:args, 'sudo'), a:fd, a:other_info)
   endif
+endfunction"}}}
+function! s:command.complete(args)"{{{
+    return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
 function! vimshell#commands#sudo#define()

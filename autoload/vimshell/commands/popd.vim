@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: popd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,6 +59,9 @@ function! s:command.execute(program, args, fd, other_info)"{{{
 
   return vimshell#execute_internal_command('cd', [ b:vimshell.directory_stack[l:pop] ], 
         \ a:fd, a:other_info)
+endfunction"}}}
+function! s:command.complete(args)"{{{
+  return vimshell#complete#helper#directory_stack(a:args[-1])
 endfunction"}}}
 
 function! vimshell#commands#popd#define()

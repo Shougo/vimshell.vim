@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2010
+" Last Modified: 09 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -196,7 +196,7 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(g:vimshell#internal_commands), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(vimshell#available_commands()), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : 'internal' }
     call add(l:ret, l:dict)
   endfor 

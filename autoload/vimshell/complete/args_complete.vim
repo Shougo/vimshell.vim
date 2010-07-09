@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,26 +23,6 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
-
-" Initialize funcs table."{{{
-let s:special_funcs = {}
-for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/special/*.vim'), '\n')
-  let func_name = fnamemodify(list, ':t:r')
-  let s:special_funcs[func_name] = 'vimshell#complete#special#' . func_name . '#'
-endfor
-let s:internal_funcs = {}
-for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/internal/*.vim'), '\n')
-  let func_name = fnamemodify(list, ':t:r')
-  let s:internal_funcs[func_name] = 'vimshell#complete#internal#' . func_name . '#'
-endfor
-let s:command_funcs = {}
-for list in split(globpath(&runtimepath, 'autoload/vimshell/complete/command/*.vim'), '\n')
-  let func_name = fnamemodify(list, ':t:r')
-  let s:command_funcs[func_name] = 'vimshell#complete#command#' . func_name . '#'
-endfor
-unlet func_name
-unlet list
-"}}}
 
 function! vimshell#complete#args_complete#complete()"{{{
   call vimshell#imdisable()
@@ -112,16 +92,12 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
 endfunction"}}}
 
 function! vimshell#complete#args_complete#get_complete_words(command, args)"{{{
+  let l:commands = vimshell#available_commands()
+  
   " Get complete words.
-  if has_key(s:special_funcs, a:command)
-    let l:complete_words = call(s:special_funcs[a:command] . 'get_complete_words', [a:args])
-  elseif has_key(s:internal_funcs, a:command)
-    let l:complete_words = call(s:internal_funcs[a:command] . 'get_complete_words', [a:args])
-  elseif has_key(s:command_funcs, a:command)
-    let l:complete_words = call(s:command_funcs[a:command] . 'get_complete_words', [a:args])
-  else
-    let l:complete_words = vimshell#complete#helper#files(a:args[-1])
-  endif
+  let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
+        \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
+  
   return l:complete_words
 endfunction"}}}
 " vim: foldmethod=marker

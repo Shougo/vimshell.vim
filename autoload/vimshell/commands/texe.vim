@@ -119,6 +119,11 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     wincmd p
   endif
 endfunction"}}}
+function! s:command.complete(args)"{{{
+  return vimshell#iswin() ?
+        \ vimshell#complete#helper#commands(a:args[-1], g:vimshell_interactive_cygwin_path) :
+        \ vimshell#complete#helper#commands(a:args[-1])
+endfunction"}}}
 
 function! vimshell#commands#texe#define()
   return s:command
