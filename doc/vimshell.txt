@@ -199,6 +199,7 @@ CHANGELOG						*vimshell-changelog*
 - Deleted screen internal command.
 - Improved commands.
 - Improved args complete.
+- Improved helper function name.
 
 2010-07-07
 * Ver.7.1 development is started.

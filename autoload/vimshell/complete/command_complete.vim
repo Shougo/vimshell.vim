@@ -95,7 +95,7 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
         \+ vimshell#complete#helper#internals(a:cur_keyword_str)
 
   if len(a:cur_keyword_str) >= 1
-    let l:ret += vimshell#complete#helper#commands(a:cur_keyword_str)
+    let l:ret += vimshell#complete#helper#executables(a:cur_keyword_str)
   endif
 
   return l:ret

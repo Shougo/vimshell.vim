@@ -203,7 +203,7 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
 
   return l:ret
 endfunction"}}}
-function! vimshell#complete#helper#commands(cur_keyword_str, ...)"{{{
+function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
   if a:cur_keyword_str =~ '[/\\]'
     let l:files = vimshell#complete#helper#files(a:cur_keyword_str)
   else
@@ -258,7 +258,7 @@ function! vimshell#complete#helper#command_args(args)"{{{
   " command args...
   if len(a:args) == 1
     " Commands.
-    return vimshell#complete#helper#commands(a:args[0])
+    return vimshell#complete#helper#executables(a:args[0])
   else
     " Args.
     return vimshell#complete#args_complete#get_complete_words(a:args[0], a:args[1:])

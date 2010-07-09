@@ -121,8 +121,8 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 endfunction"}}}
 function! s:command.complete(args)"{{{
   return vimshell#iswin() ?
-        \ vimshell#complete#helper#commands(a:args[-1], g:vimshell_interactive_cygwin_path) :
-        \ vimshell#complete#helper#commands(a:args[-1])
+        \ vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
+        \ vimshell#complete#helper#executables(a:args[-1])
 endfunction"}}}
 
 function! vimshell#commands#texe#define()
