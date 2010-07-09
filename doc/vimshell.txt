@@ -200,6 +200,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved commands.
 - Improved args complete.
 - Improved helper function name.
+- Improved internal helper function.
 
 2010-07-07
 * Ver.7.1 development is started.

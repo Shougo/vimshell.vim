@@ -24,8 +24,9 @@
 " }}}
 "=============================================================================
 
-" cur_keyword_str [, path]
 function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
+  " vimshell#complete#helper#files(cur_keyword_str [, path])
+
   if a:0 > 1
     echoerr 'Too many arguments.'
   endif
@@ -195,9 +196,10 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
   return l:ret
 endfunction"}}}
 function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
+  let l:commands = vimshell#available_commands()
   let l:ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(vimshell#available_commands()), a:cur_keyword_str)
-    let l:dict = { 'word' : keyword, 'menu' : 'internal' }
+  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(l:commands), a:cur_keyword_str)
+    let l:dict = { 'word' : keyword, 'menu' : l:commands[keyword].kind }
     call add(l:ret, l:dict)
   endfor 
 
