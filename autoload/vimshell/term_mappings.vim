@@ -29,6 +29,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   nnoremap <silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
   nnoremap <silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
+  nnoremap <silent> <Plug>(vimshell_term_execute_line)       :<C-u>call <SID>execute_line()<CR>
   execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
   inoremap <silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
@@ -78,6 +79,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   nmap <buffer> I         <Plug>(vimshell_term_start_insert)
   nmap <buffer> a         <Plug>(vimshell_term_start_insert)
   nmap <buffer> A         <Plug>(vimshell_term_start_insert)
+  nmap <buffer> <CR>      <Plug>(vimshell_term_execute_line)
 
   " Insert mode key-mappings.
   imap <buffer> <ESC><ESC>         <Plug>(vimshell_term_send_escape)
@@ -95,5 +97,21 @@ function! s:start_insert()"{{{
   setlocal modifiable
   startinsert
 endfunction "}}}
+function! s:execute_line()"{{{
+  " Search cursor file.
+  let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+
+  if &termencoding != '' && &encoding != &termencoding
+    " Convert encoding.
+    let l:filename = iconv(l:filename, &encoding, &termencoding)
+  endif
+
+  " Execute cursor file.
+  if l:filename =~ '^\%(https\?\|ftp\)://'
+    " Open uri.
+    call vimshell#open(l:filename)
+    return
+  endif
+endfunction"}}}
 
 " vim: foldmethod=marker
