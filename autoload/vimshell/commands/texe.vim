@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 10 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -146,7 +146,7 @@ function! s:default_settings()"{{{
   setlocal noswapfile
   setlocal nowrap
   setlocal list
-  setlocal listchars=extends:>,precedes:<
+  setlocal listchars=tab:>-,extends:>,precedes:<
   setlocal tabstop=8
   setfiletype vimshell-term
 endfunction"}}}

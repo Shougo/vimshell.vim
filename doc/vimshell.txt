@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-10
+- Fixed listchars.
+
 2010-07-09
 - Fixed interactive position.
 - Fixed output bug.
