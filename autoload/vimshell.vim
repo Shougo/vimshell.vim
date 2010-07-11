@@ -90,7 +90,6 @@ function! s:default_settings()"{{{
   setlocal iskeyword+=-,+,.,\\,!,~
   setlocal wrap
   setlocal list
-  setlocal listchars=tab:>-,extends:>,precedes:<
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   

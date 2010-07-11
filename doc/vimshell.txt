@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-11
+- ReFixed listchars.
+
 2010-07-10
 - Fixed listchars.
 

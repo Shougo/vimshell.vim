@@ -179,7 +179,6 @@ function! s:default_settings()"{{{
   setlocal noswapfile
   setlocal wrap
   setlocal list
-  setlocal listchars=tab:>-,extends:>,precedes:<
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
