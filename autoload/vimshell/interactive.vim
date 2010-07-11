@@ -509,18 +509,22 @@ function! s:check_output(interactive)"{{{
   if a:interactive.is_background
     " Background
 
-    if !a:interactive.process.stdout.eof
+    if a:interactive.process.stdout.eof
+      let l:outputed = 1
+    else
       let l:read = a:interactive.process.stdout.read(-1, 40)
       let a:interactive.stdout_cache = l:read
       while l:read != ''
         let l:outputed = 1
-        
+
         let l:read .= a:interactive.process.stdout.read(-1, 40)
         let a:interactive.stdout_cache .= l:read
       endwhile
     endif
-
-    if !a:interactive.process.stderr.eof
+    
+    if a:interactive.process.stderr.eof
+      let l:outputed = 1
+    else
       let l:read = a:interactive.process.stderr.read(-1, 40)
       let a:interactive.stderr_cache = l:read
       while l:read != ''
@@ -536,14 +540,18 @@ function! s:check_output(interactive)"{{{
         \ || (!has_key(a:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
     " Term or interactive.
 
-    let l:read = a:interactive.process.read(-1, 40)
-    let a:interactive.stdout_cache = l:read
-    while l:read != ''
+    if a:interactive.process.eof
       let l:outputed = 1
-
+    else
       let l:read = a:interactive.process.read(-1, 40)
-      let a:interactive.stdout_cache .= l:read
-    endwhile
+      let a:interactive.stdout_cache = l:read
+      while l:read != ''
+        let l:outputed = 1
+
+        let l:read = a:interactive.process.read(-1, 40)
+        let a:interactive.stdout_cache .= l:read
+      endwhile
+    endif
   endif
 
   return l:outputed
