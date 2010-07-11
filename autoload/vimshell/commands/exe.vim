@@ -115,6 +115,8 @@ function! s:init_process(fd, args, options)"{{{
         \ 'is_pty' : !vimshell#iswin(), 
         \ 'is_background': 0, 
         \ 'echoback_linenr' : -1,
+        \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
         \}
 
   " Input from stdin.

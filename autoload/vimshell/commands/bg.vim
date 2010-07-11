@@ -84,6 +84,8 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \ 'is_pty' : 0, 
         \ 'is_background' : 1, 
         \ 'echoback_linenr' : 0,
+        \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
         \}
 
   " Input from stdin.

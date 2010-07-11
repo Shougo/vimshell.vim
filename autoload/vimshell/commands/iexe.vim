@@ -122,7 +122,8 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
         \ 'is_background': 0, 
         \ 'args' : l:args,
-        \ 'echoback_linenr' : 0
+        \ 'echoback_linenr' : 0,
+        \ 'stdout_cache' : '',
         \}
 
   call vimshell#interactive#execute_pty_out(1)

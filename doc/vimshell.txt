@@ -187,6 +187,8 @@ CHANGELOG						*vimshell-changelog*
 2010-07-11
 - ReFixed listchars.
 - Improved highlight.
+- Improved g:vimshell_escape_colors.
+- Improved output check.
 
 2010-07-10
 - Fixed listchars.

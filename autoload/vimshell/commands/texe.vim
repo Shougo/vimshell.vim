@@ -112,6 +112,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \ 'save_cursor' : getpos('.'),
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
+        \ 'stdout_cache' : '',
         \}
   call vimshell#interactive#init()
 

@@ -226,14 +226,24 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
   
   let l:outputed = 0
-  let l:read = b:interactive.process.read(-1, 40)
-  while l:read != ''
+
+  " Check cache.
+  if b:interactive.stdout_cache != ''
     let l:outputed = 1
-
-    call s:print_buffer(b:interactive.fd, l:read)
-
+    call s:print_buffer(b:interactive.fd, b:interactive.stdout_cache)
+    let b:interactive.stdout_cache = ''
+  endif
+  
+  if !b:interactive.process.eof
     let l:read = b:interactive.process.read(-1, 40)
-  endwhile
+    while l:read != ''
+      let l:outputed = 1
+
+      call s:print_buffer(b:interactive.fd, l:read)
+
+      let l:read = b:interactive.process.read(-1, 40)
+    endwhile
+  endif
 
   if l:outputed && &filetype !=# 'vimshell-term'
     $
@@ -256,6 +266,12 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     return
   endif
 
+  " Check cache.
+  if b:interactive.stdout_cache != ''
+    call s:print_buffer(b:interactive.fd, b:interactive.stdout_cache)
+    let b:interactive.stdout_cache = ''
+  endif
+  
   if !b:interactive.process.stdout.eof
     let l:read = b:interactive.process.stdout.read(-1, 40)
     while l:read != ''
@@ -265,6 +281,12 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     endwhile
   endif
 
+  " Check cache.
+  if b:interactive.stderr_cache != ''
+    call s:print_buffer(b:interactive.fd, b:interactive.stderr_cache)
+    let b:interactive.stderr_cache = ''
+  endif
+  
   if !b:interactive.process.stderr.eof
     let l:read = b:interactive.process.stderr.read(-1, 40)
     while l:read != ''
@@ -478,7 +500,60 @@ function! s:check_all_output()"{{{
     call feedkeys("g\<ESC>", 'n')
   endif
 endfunction"}}}
+function! s:check_output(interactive)"{{{
+  if !a:interactive.process.is_valid
+    return 0
+  endif
+  
+  let l:outputed = 0
+  if a:interactive.is_background
+    " Background
+
+    if !a:interactive.process.stdout.eof
+      let l:read = a:interactive.process.stdout.read(-1, 40)
+      let a:interactive.stdout_cache = l:read
+      while l:read != ''
+        let l:outputed = 1
+        
+        let l:read .= a:interactive.process.stdout.read(-1, 40)
+        let a:interactive.stdout_cache .= l:read
+      endwhile
+    endif
+
+    if !a:interactive.process.stderr.eof
+      let l:read = a:interactive.process.stderr.read(-1, 40)
+      let a:interactive.stderr_cache = l:read
+      while l:read != ''
+        let l:outputed = 1
+        
+        let l:read .= a:interactive.process.stderr.read(-1, 40)
+        let a:interactive.stderr_cache .= l:read
+      endwhile
+    endif
+
+    let a:interactive.stderr_cache = l:read
+  elseif has_key(a:interactive, 'save_cursor')
+        \ || (!has_key(a:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
+    " Term or interactive.
+
+    let l:read = a:interactive.process.read(-1, 40)
+    let a:interactive.stdout_cache = l:read
+    while l:read != ''
+      let l:outputed = 1
+
+      let l:read = a:interactive.process.read(-1, 40)
+      let a:interactive.stdout_cache .= l:read
+    endwhile
+  endif
+
+  return l:outputed
+endfunction"}}}
 function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
+  " Output check.
+  if !s:check_output(a:interactive)
+    return
+  endif
+  
   if a:bufnr != a:bufnr_save
     execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
@@ -494,8 +569,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
-  elseif &filetype  == 'vimshell-term'
-        \ || (!has_key(b:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
+  else
     if &filetype == 'vimshell-term' && mode() !=# 'i'
       setlocal modifiable
     endif
