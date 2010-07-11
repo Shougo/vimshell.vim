@@ -85,7 +85,7 @@ if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))
 endif
 if !exists('g:vimshell_escape_colors')
   let g:vimshell_escape_colors = [
-        \'#3c3c3c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0',
+        \'#4c4c4c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0',
         \'#686868', '#ff6666', '#66ff66', '#ffd30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
         \]
 endif

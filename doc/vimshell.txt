@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-07-11
 - ReFixed listchars.
+- Improved highlight.
 
 2010-07-10
 - Fixed listchars.
