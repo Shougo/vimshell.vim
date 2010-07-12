@@ -40,8 +40,8 @@ function! vimshell#complete#command_complete#complete()"{{{
 
   " Command completion.
 
-  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#command_complete#omnifunc')
+  if exists(':NeoComplCacheDisable')
+    return neocomplcache#sources#completefunc_complete#call_completefunc('vimshell#complete#command_complete#omnifunc')
   else
     " Set complete function.
     let &l:omnifunc = 'vimshell#complete#command_complete#omnifunc'

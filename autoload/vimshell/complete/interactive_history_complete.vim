@@ -29,8 +29,8 @@ function! vimshell#complete#interactive_history_complete#complete()"{{{
 
   " Interactive completion.
 
-  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#interactive_history_complete#omnifunc')
+  if exists(':NeoComplCacheDisable')
+    return neocomplcache#sources#completefunc_complete#call_completefunc('vimshell#complete#interactive_history_complete#omnifunc')
   else
     " Set complete function.
     let &l:omnifunc = 'vimshell#complete#interactive_history_complete#omnifunc'

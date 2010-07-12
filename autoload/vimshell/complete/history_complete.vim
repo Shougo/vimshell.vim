@@ -34,8 +34,8 @@ function! vimshell#complete#history_complete#whole()"{{{
 
   " Command completion.
 
-  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_whole')
+  if exists(':NeoComplCacheDisable')
+    return neocomplcache#sources#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_whole')
   else
     " Set complete function.
     let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_whole'
@@ -53,8 +53,8 @@ function! vimshell#complete#history_complete#insert()"{{{
 
   " Command completion.
 
-  if exists(':NeoComplCacheDisable') && exists('*neocomplcache#complfunc#completefunc_complete#call_completefunc')
-    return neocomplcache#complfunc#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_insert')
+  if exists(':NeoComplCacheDisable')
+    return neocomplcache#sources#completefunc_complete#call_completefunc('vimshell#complete#history_complete#omnifunc_insert')
   else
     " Set complete function.
     let &l:omnifunc = 'vimshell#complete#history_complete#omnifunc_insert'

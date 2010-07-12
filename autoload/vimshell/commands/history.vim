@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 12 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,7 +30,6 @@ let s:command = {
       \ 'description' : 'history [{search-string}]',
       \}
 function! s:command.execute(command, args, fd, other_info)"{{{
-  let l:cnt = 0
   let l:arguments = join(a:args, ' ')
   if l:arguments =~ '^\d\+$'
     let l:search = ''
@@ -50,6 +49,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   endif
   
   let l:list = []
+  let l:cnt = 0
   for l:hist in g:vimshell#hist_buffer
     if vimshell#head_match(l:hist, l:search)
       call add(l:list, [l:cnt, l:hist])

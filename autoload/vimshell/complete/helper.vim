@@ -81,7 +81,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   elseif len(l:files) > g:vimshell_max_list
     " Trunk items.
-    let l:files = l:files[: g:neocomplcache_max_list - 1]
+    let l:files = l:files[: g:vimshell_max_list - 1]
   endif
 
   let l:list = []
@@ -100,7 +100,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     elseif a:cur_keyword_str !~ '^\.\.\?/'
       " Path search.
       for path in l:paths
-        if path != '' && neocomplcache#head_match(word, path . '/')
+        if path != '' && vimshell#head_match(word, path . '/')
           let l:dict.word = l:dict.word[len(path)+1 : ]
           break
         endif
