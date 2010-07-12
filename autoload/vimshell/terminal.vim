@@ -536,10 +536,12 @@ function! s:escape.move_cursor(matchstr)"{{{
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
-  let s:col = s:width2byte(s:lines[s:line], l:args[1])
-  if s:col > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
+
+  let l:width = l:args[1]
+  if l:width > len(s:lines[s:line])+1
+    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - l:width)
   endif
+  let s:col = s:width2byte(s:lines[s:line], l:width)
 endfunction"}}}
 function! s:escape.setup_window(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
