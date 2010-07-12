@@ -52,7 +52,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<LF>", '<C-n>' : "\<C-n>",
         \ '<C-o>' : "\<C-o>", '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>", '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
         \ '<C-v>' : "\<C-v>", '<C-w>' : "\<C-w>", '<C-x>' : "\<C-x>", '<C-y>' : "\<C-y>", '<C-z>' : "\<C-z>",
-        \ '<C-^>' : "\<C-^>",
+        \ '<C-^>' : "\<C-^>", '<C-_>' : "\<C-_>", '<C-\>' : "\<C-\>",
         \ '<Bar>' : '|', '<Space>' : ' ',
         \ })
     
@@ -63,6 +63,10 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<Home>' : "\<ESC>OH", '<End>' : "\<ESC>OF", '<Del>' : "\<ESC>[3~", '<BS>' : "\<C-h>",
         \ '<Up>' : "\<ESC>[A", '<Down>' : "\<ESC>[B", '<Left>' : "\<ESC>[D", '<Right>' : "\<ESC>[C",
         \ '<PageUp>' : "\<ESC>[5~", '<PageDown>' : "\<ESC>[6~",
+        \ '<F1>' : "\<ESC>OP", '<F2>' : "\<ESC>OQ", '<F3>' : "\<ESC>OR", '<F4>' : "\<ESC>OS",
+        \ '<F5>' : "\<ESC>[15~", '<F6>' : "\<ESC>[17~", '<F7>' : "\<ESC>[18~", '<F8>' : "\<ESC>[19~",
+        \ '<F9>' : "\<ESC>[20~", '<F10>' : "\<ESC>[21~", '<F11>' : "\<ESC>[23~", '<F10>' : "\<ESC>[24~",
+        \ '<Insert>' : "\<ESC>[2~",
         \ })
     
     execute 'inoremap <buffer><silent>' l:key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', string(map(split(l:value, '\zs'), 'char2nr(v:val)')))

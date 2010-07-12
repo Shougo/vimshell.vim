@@ -193,6 +193,7 @@ CHANGELOG						*vimshell-changelog*
 - Implemented magic equal completion.
 - Implemented change cursor shape.
 - Added g:vimshell_terminal_cursor.
+- Added some keys.
 
 2010-07-11
 - ReFixed listchars.
