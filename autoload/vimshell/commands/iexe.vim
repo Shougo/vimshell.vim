@@ -113,6 +113,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   " Set variables.
   let b:interactive = {
+        \ 'type' : 'interactive', 
         \ 'process' : l:sub, 
         \ 'fd' : a:fd, 
         \ 'encoding' : l:options['--encoding'],
@@ -120,7 +121,6 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \ 'prompt_history' : {}, 
         \ 'command_history' : vimshell#history#interactive_read(), 
         \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
-        \ 'is_background': 0, 
         \ 'args' : l:args,
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',

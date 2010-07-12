@@ -28,7 +28,7 @@ function! vimshell#version()"{{{
   return '701'
 endfunction"}}}
 
-" Check vimproc.
+" Check vimproc."{{{
 try
   let s:exists_vimproc_version = vimproc#version()
 catch
@@ -38,7 +38,7 @@ endtry
 if s:exists_vimproc_version < 401
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
-endif
+endif"}}}
 
 " Initialize."{{{
 let s:prompt = exists('g:vimshell_prompt') ? g:vimshell_prompt : 'vimshell% '

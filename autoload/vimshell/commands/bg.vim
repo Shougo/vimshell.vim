@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 12 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,11 +78,11 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   " Set variables.
   let l:interactive = {
+        \ 'type' : 'background', 
         \ 'process' : l:sub, 
         \ 'fd' : a:fd, 
         \ 'encoding' : l:options['--encoding'], 
         \ 'is_pty' : 0, 
-        \ 'is_background' : 1, 
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',

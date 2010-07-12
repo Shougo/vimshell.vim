@@ -484,12 +484,8 @@ function! s:check_all_output()"{{{
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
     if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
-      let l:interactive = getbufvar(l:bufnr, 'interactive')
-      let l:filetype = getbufvar(l:bufnr, '&filetype')
-      if l:interactive.is_background || l:filetype =~ '^int-' || l:filetype ==# 'vimshell-term'
-        " Check output.
-        call vimshell#interactive#check_output(l:interactive, l:bufnr, l:bufnr_save)
-      endif
+      " Check output.
+      call vimshell#interactive#check_output(getbufvar(l:bufnr, 'interactive'), l:bufnr, l:bufnr_save)
     endif
 
     let l:bufnr += 1
@@ -506,8 +502,8 @@ function! s:check_output(interactive)"{{{
   endif
   
   let l:outputed = 0
-  if a:interactive.is_background
-    " Background
+  if a:interactive.type ==# 'background'
+    " Background.
 
     if a:interactive.process.stdout.eof
       let l:outputed = 1
@@ -536,9 +532,12 @@ function! s:check_output(interactive)"{{{
     endif
 
     let a:interactive.stderr_cache = l:read
-  elseif has_key(a:interactive, 'save_cursor')
-        \ || (!has_key(a:interactive.prompt_history, line('.')) || vimshell#interactive#get_cur_line(line('.')) == '')
-    " Term or interactive.
+  elseif a:interactive.type ==# 'terminal'
+        \ || (a:interactive.type ==# 'interactive'
+        \      && (line('.') == a:interactive.echoback_linenr
+        \         || !has_key(a:interactive.prompt_history, line('.'))
+        \         || vimshell#interactive#get_cur_line(line('.')) == ''))
+    " Terminal or interactive.
 
     if a:interactive.process.eof
       let l:outputed = 1
@@ -573,7 +572,7 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     normal! $
   endif
 
-  if a:interactive.is_background
+  if a:interactive.type ==# 'background'
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable

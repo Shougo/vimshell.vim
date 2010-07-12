@@ -109,11 +109,11 @@ function! s:init_process(fd, args, options)"{{{
 
   " Set variables.
   let b:interactive = {
+        \ 'type' : 'execute', 
         \ 'process' : l:sub, 
         \ 'fd' : a:fd, 
         \ 'encoding' : a:options['--encoding'], 
         \ 'is_pty' : !vimshell#iswin(), 
-        \ 'is_background': 0, 
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
