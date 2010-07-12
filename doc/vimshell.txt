@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed for neocomplcache Ver.5.1.
 - Improved eskk and vimproc check.
 - Improved output check.
+- Fixed 256 colors highlight bug.
 
 2010-07-11
 - ReFixed listchars.

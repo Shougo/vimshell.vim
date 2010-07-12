@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 12 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -347,6 +347,7 @@ function! s:escape.highlight(matchstr)"{{{
 
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
+  let l:cnt = 0
   for l:color_code in l:highlight_list
     if has_key(s:highlight_table, l:color_code)"{{{
       " Use table.
@@ -355,13 +356,13 @@ function! s:escape.highlight(matchstr)"{{{
       " Foreground color.
       let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:vimshell_escape_colors[l:color_code - 30])
     elseif l:color_code == 38
-      if len(l:highlight_list) < 3
+      if len(l:highlight_list) - l:cnt < 3
         " Error.
         break
       endif
       
       " Foreground 256 colors.
-      let l:color = l:highlight_list[2]
+      let l:color = l:highlight_list[l:cnt + 2]
       if l:color >= 232
         " Grey scale.
         let l:gcolor = s:grey_table[(l:color - 232)]
@@ -382,13 +383,13 @@ function! s:escape.highlight(matchstr)"{{{
       " Background color.
       let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:vimshell_escape_colors[l:color_code - 40])
     elseif l:color_code == 48
-      if len(l:highlight_list) < 3
+      if len(l:highlight_list) - l:cnt < 3
         " Error.
         break
       endif
       
       " Background 256 colors.
-      let l:color = l:highlight_list[2]
+      let l:color = l:highlight_list[l:cnt + 2]
       if l:color >= 232
         " Grey scale.
         let l:gcolor = s:grey_table[(l:color - 232)]
@@ -412,6 +413,8 @@ function! s:escape.highlight(matchstr)"{{{
       " Background color(high intensity).
       let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 92, g:vimshell_escape_colors[l:color_code - 92])
     endif"}}}
+
+    let l:cnt += 1
   endfor
   
   if l:highlight != '' && !g:vimshell_disable_escape_highlight
