@@ -70,7 +70,6 @@ function! vimshell#terminal#print(string)"{{{
       if l:checkstr != '' && a:string[l:pos+1] == "\<C-h>"
         " <C-h><C-h>
         call s:control.delete_multi_backword_char()
-
         let l:pos += 2
       else
         " <C-h>
@@ -322,7 +321,8 @@ function! s:output_string(string)"{{{
   endif
   let l:line = s:lines[s:line]
   let l:left_line = l:line[: s:col - 2]
-  let l:right_line = l:line[s:col-1+len(a:string) :]
+  let l:len = s:width2byte(l:line[s:col-1 :], len(a:string))
+  let l:right_line = l:line[s:col-1+l:len :]
 
   let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
   
@@ -365,6 +365,8 @@ function! s:width2byte(string, width)"{{{
         let l:pos += 5
         let l:width_cnt += 2
       endif
+    else
+      let l:width_cnt += 1
     endif
 
     let l:pos += 1
