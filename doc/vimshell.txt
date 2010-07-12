@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-07-12
 - Fixed history count.
 - Fixed for neocomplcache Ver.5.1.
+- Improved eskk and vimproc check.
 
 2010-07-11
 - ReFixed listchars.
