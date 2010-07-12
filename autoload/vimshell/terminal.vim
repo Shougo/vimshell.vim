@@ -61,6 +61,25 @@ function! vimshell#terminal#print(string)"{{{
       let l:pos += 1
       continue
       "}}}
+    elseif l:char == "\<C-h>""{{{
+      let l:checkstr = a:string[l:pos+1 :]
+      
+      call s:output_string(l:newstr)
+      let l:newstr = ''
+
+      if l:checkstr != '' && a:string[l:pos+1] == "\<C-h>"
+        " <C-h><C-h>
+        call s:control.delete_multi_backword_char()
+
+        let l:pos += 2
+      else
+        " <C-h>
+        call s:control.delete_backword_char()
+        let l:pos += 1
+      endif
+
+      continue
+      "}}}
     elseif l:char == "\<ESC>""{{{
       " Check escape sequence.
       let l:checkstr = a:string[l:pos+1 :]
@@ -309,12 +328,83 @@ function! s:output_string(string)"{{{
   
   let s:col += len(a:string)
 endfunction"}}}
+function! s:width2byte(string, width)"{{{
+  let l:len = len(a:string)
+  let l:pos = 0
+  let l:fchar = char2nr(a:string[l:pos])
+  let l:width_cnt = 0
+  while l:pos < l:len && l:width_cnt < a:width
+    if l:fchar >= 0x80
+      " Skip multibyte.
+      if l:fchar < 0xc0
+        " Skip UTF-8 on the way.
+        let l:fchar = char2nr(a:string[l:pos])
+        while l:pos < a:length && 0x80 <= l:fchar && l:fchar < 0xc0
+          let l:pos += 1
+          let l:width_cnt += 1
+          let l:fchar = char2nr(a:string[l:pos])
+        endwhile
+      elseif l:fchar < 0xe0
+        " 2byte code.
+        let l:pos += 1
+        let l:width_cnt += 2
+      elseif l:fchar < 0xf0
+        " 3byte code.
+        let l:pos += 2
+        let l:width_cnt += 2
+      elseif l:fchar < 0xf8
+        " 4byte code.
+        let l:pos += 3
+        let l:width_cnt += 2
+      elseif l:fchar < 0xfe
+        " 5byte code.
+        let l:pos += 4
+        let l:width_cnt += 2
+      else
+        " 6byte code.
+        let l:pos += 5
+        let l:width_cnt += 2
+      endif
+    endif
+
+    let l:pos += 1
+    let l:fchar = char2nr(a:string[l:pos])
+  endwhile
+
+  return l:pos
+endfunction"}}}
+function! s:width2byte_r(string, width)"{{{
+  " For multibyte.
+  let l:pos = len(a:string) - 1
+  let l:fchar = char2nr(a:string[l:pos])
+  let l:width_cnt = 0
+  while l:pos >= 0 && l:width_cnt < a:width
+    if l:fchar >= 0x80
+      " Skip multibyte.
+      while l:pos > 0 && 0x80 <= l:fchar && l:fchar < 0xc0
+        let l:pos -= 1
+        let l:fchar = char2nr(a:string[l:pos])
+      endwhile
+
+      let l:width_cnt += 2
+      let l:pos -= 1
+    else
+      let l:width_cnt += 1
+      let l:pos -= 1
+    endif
+
+    let l:fchar = char2nr(a:string[l:pos])
+  endwhile
+
+  return len(a:string) - 1 - l:pos
+endfunction"}}}
 
 " Escape sequence functions.
 let s:escape = {}
 function! s:escape.ignore(matchstr)"{{{
 endfunction"}}}
 
+" Color table."{{{
 let s:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
 let s:grey_table = [
       \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
@@ -339,7 +429,7 @@ let s:highlight_table = {
       \ 29 : ' gui=NONE',
       \ 39 : ' ctermfg=NONE guifg=NONE', 
       \ 49 : ' ctermbg=NONE guibg=NONE', 
-      \}
+      \}"}}}
 function! s:escape.highlight(matchstr)"{{{
   let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
   
@@ -441,10 +531,10 @@ function! s:escape.move_cursor(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
   let s:line = l:args[0]
-  let s:col = l:args[1]
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
+  let s:col = s:width2byte(s:lines[s:line], l:args[1])
   if s:col > len(s:lines[s:line])+1
     let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
   endif
@@ -584,11 +674,13 @@ function! s:escape.move_right(matchstr)"{{{
     let n = 1
   endif
   
-  let s:col += n
-  
-  if s:col > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', s:col - len(s:lines[s:line])+1)
+  let l:line = s:lines[s:line]
+  if s:col+n > len(l:line)+1
+    let s:lines[s:line] .= repeat(' ', s:col+n - len(l:line)+1)
+    let l:line = s:lines[s:line]
   endif
+
+  let s:col += s:width2byte(l:line[s:col-1 :], n)
 endfunction"}}}
 function! s:escape.move_left1(matchstr)"{{{
   let s:col -= 1
@@ -602,7 +694,8 @@ function! s:escape.move_left(matchstr)"{{{
     let n = 1
   endif
   
-  let s:col -= n
+  let l:line = s:lines[s:line]
+  let s:col -= s:width2byte(s:lines[s:line][: s:col - 2], n)
   if s:col < 1
     let s:col = 1
   endif
@@ -688,10 +781,16 @@ function! s:control.delete_backword_char()"{{{
   endif
   
   let l:line = s:lines[s:line]
-  let l:len = len(matchstr(l:line[: s:col-1] , '.$'))
-  "let s:lines[s:line] = l:line[: s:col-l:len-1] . l:line[s:col :]
+  let s:col -= s:width2byte_r(l:line[: s:col - 2], 1)
+endfunction"}}}
+function! s:control.delete_multi_backword_char()"{{{
+  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+        \ || s:col == 1
+    return
+  endif
   
-  let s:col -= l:len
+  let l:line = s:lines[s:line]
+  let s:col -= s:width2byte_r(l:line[: s:col - 2], 2)
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1

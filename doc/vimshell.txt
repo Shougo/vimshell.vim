@@ -194,6 +194,7 @@ CHANGELOG						*vimshell-changelog*
 - Implemented change cursor shape.
 - Added g:vimshell_terminal_cursor.
 - Added some keys.
+- Implemented multibyte cursor move(imcomplete).
 
 2010-07-11
 - ReFixed listchars.
