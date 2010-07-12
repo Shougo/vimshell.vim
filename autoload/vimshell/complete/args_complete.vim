@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: args_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 12 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,6 +97,15 @@ function! vimshell#complete#args_complete#get_complete_words(command, args)"{{{
   " Get complete words.
   let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
         \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
+
+  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$'
+    " Complete file.
+    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=')
+    for keyword in vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
+      let keyword.word = l:prefix . keyword.word
+      call add(l:complete_words, keyword)
+    endfor
+  endif
   
   return l:complete_words
 endfunction"}}}

@@ -190,6 +190,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved eskk and vimproc check.
 - Improved output check.
 - Fixed 256 colors highlight bug.
+- Implemented magic equal completion.
+- Implemented change cursor shape.
 
 2010-07-11
 - ReFixed listchars.

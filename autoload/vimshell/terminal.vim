@@ -649,6 +649,19 @@ endfunction"}}}
 function! s:escape.print_control_sequence(matchstr)"{{{
   call s:output_string("\<ESC>")
 endfunction"}}}
+function! s:escape.change_cursor_shape(matchstr)"{{{
+  let l:arg = matchstr(a:matchstr, '\d\+')
+
+  if l:arg == 0 || l:arg == 1
+    set guicursor=i:block-Cursor/lCursor-blinkwait700-blinkon400-blinkoff250
+  elseif l:arg == 2
+    set guicursor=i:block-Cursor/lCursor-blinkon0
+  elseif l:arg == 3
+    set guicursor=i:hor20-Cursor/lCursor-blinkwait700-blinkon400-blinkoff250
+  elseif l:arg == 4
+    set guicursor=i:hor20-Cursor/lCursor-blinkon0
+  endif
+endfunction"}}}
 
 " Control sequence functions.
 let s:control = {}
@@ -727,6 +740,7 @@ let s:escape_sequence_match = {
       \ '^\[\dq' : s:escape.ignore,
       \
       \ '^\d\+;\d\+' : s:escape.ignore,
+      \ '^\d q' : s:escape.change_cursor_shape,
       \
       \}
 let s:escape_sequence_simple_char1 = {

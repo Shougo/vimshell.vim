@@ -607,7 +607,7 @@ function! vimshell#resolve(filename)"{{{
 endfunction"}}}
 function! vimshell#get_program_pattern()"{{{
   return 
-        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+\ze\%($\|\s*\%(=\s*\)\?\)'
+        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:]._-]\)\+\ze\%($\|\s*\%(=\s*\)\?\)'
 endfunction"}}}
 function! vimshell#get_argument_pattern()"{{{
   return 
