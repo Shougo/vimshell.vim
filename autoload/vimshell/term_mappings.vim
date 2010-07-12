@@ -65,7 +65,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<PageUp>' : "\<ESC>[5~", '<PageDown>' : "\<ESC>[6~",
         \ '<F1>' : "\<ESC>OP", '<F2>' : "\<ESC>OQ", '<F3>' : "\<ESC>OR", '<F4>' : "\<ESC>OS",
         \ '<F5>' : "\<ESC>[15~", '<F6>' : "\<ESC>[17~", '<F7>' : "\<ESC>[18~", '<F8>' : "\<ESC>[19~",
-        \ '<F9>' : "\<ESC>[20~", '<F10>' : "\<ESC>[21~", '<F11>' : "\<ESC>[23~", '<F10>' : "\<ESC>[24~",
+        \ '<F9>' : "\<ESC>[20~", '<F10>' : "\<ESC>[21~", '<F11>' : "\<ESC>[23~", '<F12>' : "\<ESC>[24~",
         \ '<Insert>' : "\<ESC>[2~",
         \ })
     
