@@ -50,7 +50,6 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   endif
   
   let l:list = []
-  let l:cnt = 1
   for l:hist in g:vimshell#hist_buffer
     if vimshell#head_match(l:hist, l:search)
       call add(l:list, [l:cnt, l:hist])
