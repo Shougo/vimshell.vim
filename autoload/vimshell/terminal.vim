@@ -339,7 +339,7 @@ function! s:width2byte(string, width)"{{{
       if l:fchar < 0xc0
         " Skip UTF-8 on the way.
         let l:fchar = char2nr(a:string[l:pos])
-        while l:pos < a:length && 0x80 <= l:fchar && l:fchar < 0xc0
+        while l:pos < l:len && 0x80 <= l:fchar && l:fchar < 0xc0
           let l:pos += 1
           let l:width_cnt += 1
           let l:fchar = char2nr(a:string[l:pos])
@@ -697,7 +697,7 @@ function! s:escape.move_left(matchstr)"{{{
   endif
   
   let l:line = s:lines[s:line]
-  let s:col -= s:width2byte(s:lines[s:line][: s:col - 2], n)
+  let s:col -= s:width2byte_r(l:line[: s:col - 2], n)
   if s:col < 1
     let s:col = 1
   endif
@@ -778,21 +778,17 @@ function! s:control.newline()"{{{
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
   if exists('b:interactive') && s:line == b:interactive.echoback_linenr
-        \ || s:col == 1
     return
   endif
   
-  let l:line = s:lines[s:line]
-  let s:col -= s:width2byte_r(l:line[: s:col - 2], 1)
+  call s:escape.move_left1(1)
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{
   if exists('b:interactive') && s:line == b:interactive.echoback_linenr
-        \ || s:col == 1
     return
   endif
   
-  let l:line = s:lines[s:line]
-  let s:col -= s:width2byte_r(l:line[: s:col - 2], 2)
+  call s:escape.move_left(2)
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1
