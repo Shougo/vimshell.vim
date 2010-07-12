@@ -192,6 +192,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed 256 colors highlight bug.
 - Implemented magic equal completion.
 - Implemented change cursor shape.
+- Added g:vimshell_terminal_cursor.
 
 2010-07-11
 - ReFixed listchars.

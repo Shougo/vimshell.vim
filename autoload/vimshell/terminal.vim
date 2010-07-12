@@ -650,14 +650,18 @@ function! s:escape.print_control_sequence(matchstr)"{{{
   call s:output_string("\<ESC>")
 endfunction"}}}
 function! s:escape.change_cursor_shape(matchstr)"{{{
+  if !exists('+guicursor')
+    return
+  endif
+  
   let l:arg = matchstr(a:matchstr, '\d\+')
 
   if l:arg == 0 || l:arg == 1
-    set guicursor=i:block-Cursor/lCursor-blinkwait700-blinkon400-blinkoff250
+    set guicursor=i:block-Cursor/lCursor
   elseif l:arg == 2
     set guicursor=i:block-Cursor/lCursor-blinkon0
   elseif l:arg == 3
-    set guicursor=i:hor20-Cursor/lCursor-blinkwait700-blinkon400-blinkoff250
+    set guicursor=i:hor20-Cursor/lCursor
   elseif l:arg == 4
     set guicursor=i:hor20-Cursor/lCursor-blinkon0
   endif

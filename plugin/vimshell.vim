@@ -119,6 +119,9 @@ endif
 if !exists('g:vimshell_interactive_encodings')
   let g:vimshell_interactive_encodings = {}
 endif
+if !exists('g:vimshell_terminal_cursor')
+  let g:vimshell_terminal_cursor = 'i:block-Cursor/lCursor'
+endif
 
 " For Cygwin commands.
 if !exists('g:vimshell_interactive_cygwin_commands')

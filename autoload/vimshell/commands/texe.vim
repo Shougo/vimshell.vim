@@ -190,9 +190,11 @@ function! s:insert_enter()"{{{
     call b:interactive.process.set_winsize(winwidth(0), winheight(0))
   endif
 
-  " Save guicursor.
-  let s:guicursor_save = &guicursor
-  set guicursor=i:block-Cursor/lCursor-blinkwait700-blinkon400-blinkoff250
+  if exists('+guicursor')
+    " Save guicursor.
+    let s:guicursor_save = &guicursor
+    let &guicursor = g:vimshell_terminal_cursor
+  endif
 
   call setpos('.', b:interactive.save_cursor)
   startinsert
@@ -204,7 +206,9 @@ function! s:insert_leave()"{{{
     let &updatetime = s:update_time_save
   endif
 
-  let &guicursor = s:guicursor_save
+  if exists('+guicursor')
+    let &guicursor = s:guicursor_save
+  endif
 endfunction"}}}
 function! s:on_hold_i()"{{{
   call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
