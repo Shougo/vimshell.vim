@@ -298,6 +298,8 @@ function! s:init_terminal()"{{{
         \ 'syntax_names' : {},
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
+        \ 'region_top' : 1,
+        \ 'region_bottom' : b:interactive.height,
         \}
   return
 endfunction"}}}
@@ -547,18 +549,21 @@ function! s:escape.move_cursor(matchstr)"{{{
   endif
   let s:col = s:width2byte(s:lines[s:line], l:width)
 endfunction"}}}
-function! s:escape.setup_window(matchstr)"{{{
+function! s:escape.setup_scrolling_region(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
-  let l:min_line = s:line + l:args[0] - 1
-  let l:max_line = s:line + l:args[1] - 1
-  let l:linenr = l:min_line
-  while l:linenr <= l:max_line
+  let l:top = l:args[0]
+  let l:bottom = l:args[1]
+  let l:linenr = l:top
+  while l:linenr <= l:bottom
     if !has_key(s:lines, l:linenr)
       let s:lines[l:linenr] = ''
     endif
     let l:linenr += 1
   endwhile
+
+  let b:interactive.terminal.region_top = l:top
+  let b:interactive.terminal.region_bottom = l:bottom
 endfunction"}}}
 function! s:escape.delete_whole_line(matchstr)"{{{
   let s:lines[s:line] = ''
@@ -820,7 +825,7 @@ let s:escape_sequence_match = {
       \ '^k.\{-}\e\\' : s:escape.change_title,
       \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
       \ 
-      \ '^\[\d\+;\d\+r' : s:escape.setup_window,
+      \ '^\[\d\+;\d\+r' : s:escape.setup_scrolling_region,
       \
       \ '^\[\d*A' : s:escape.move_up,
       \ '^\[\d*B' : s:escape.move_down,

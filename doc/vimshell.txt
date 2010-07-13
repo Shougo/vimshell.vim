@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-07-13
 - Improved terminal update.
+- Fixed scrolling region.
 
 2010-07-12
 - Fixed history count.
