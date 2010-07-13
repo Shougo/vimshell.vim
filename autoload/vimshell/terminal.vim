@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2010
+" Last Modified: 13 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,6 +56,7 @@ function! vimshell#terminal#print(string)"{{{
   
   while l:pos < l:max
     let l:char = a:string[l:pos]
+
     if l:char !~ '[[:cntrl:]]'"{{{
       let l:newstr .= l:char
       let l:pos += 1
@@ -160,8 +161,8 @@ function! vimshell#terminal#print(string)"{{{
   call s:output_string(l:newstr)
 
   " Set lines.
-  for [l:linenr, l:line] in items(s:lines)
-    call setline(l:linenr, l:line)
+  for l:linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
+    call setline(l:linenr, s:lines[l:linenr])
   endfor
   let s:lines = {}
   
@@ -400,6 +401,9 @@ function! s:width2byte_r(string, width)"{{{
 
   return len(a:string) - 1 - l:pos
 endfunction"}}}
+function! s:sortfunc(i1, i2)"{{{
+  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction"}}}
 
 " Escape sequence functions.
 let s:escape = {}
@@ -546,14 +550,15 @@ endfunction"}}}
 function! s:escape.setup_window(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
-  let l:min_line = l:args[0]
-  let l:max_line = l:args[1]
+  let l:min_line = s:line + l:args[0] - 1
+  let l:max_line = s:line + l:args[1] - 1
   let l:linenr = l:min_line
   while l:linenr <= l:max_line
-    let s:lines[l:linenr] = ''
+    if !has_key(s:lines, l:linenr)
+      let s:lines[l:linenr] = ''
+    endif
     let l:linenr += 1
   endwhile
-  let s:line = l:min_line
 endfunction"}}}
 function! s:escape.delete_whole_line(matchstr)"{{{
   let s:lines[s:line] = ''
@@ -795,15 +800,12 @@ endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1
 endfunction"}}}
-function! s:control.clear_entire_screen()"{{{
-  let l:reg = @x
-  1,$ delete x
-  let @x = l:reg
-
-  let s:lines = {}
-endfunction"}}}
 function! s:control.bell()"{{{
   echo 'Ring!'
+endfunction"}}}
+function! s:control.shift_in()"{{{
+endfunction"}}}
+function! s:control.shift_out()"{{{
 endfunction"}}}
 
 " escape sequence list. {{{
@@ -916,8 +918,9 @@ let s:control_sequence = {
       \ "\<CR>" : s:control.carriage_return,
       \ "\<C-h>" : s:control.delete_backword_char,
       \ "\<Del>" : s:control.ignore,
-      \ "\<C-l>" : s:control.clear_entire_screen,
       \ "\<C-g>" : s:control.bell,
+      \ "\<C-o>" : s:control.shift_in,
+      \ "\<C-n>" : s:control.shift_out,
       \}
 "}}}
 
