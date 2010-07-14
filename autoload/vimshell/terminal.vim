@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2010
+" Last Modified: 14 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -299,7 +299,8 @@ function! s:init_terminal()"{{{
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
         \ 'region_top' : 1,
-        \ 'region_bottom' : b:interactive.height,
+        \ 'region_bottom' : 
+        \          (has_key(b:interactive, 'height') ? b:interactive.height : winheight(0)),
         \}
   return
 endfunction"}}}
