@@ -38,10 +38,10 @@ let s:password_regex =
       \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
 let s:character_regex = ''
 
-augroup vimshell-interactive
-  autocmd!
+augroup vimshell
+  autocmd VimEnter * set vb t_vb=
   autocmd CursorHold * call s:check_all_output()
-  autocmd BufWinEnter,WinEnter * call vimshell#terminal#set_title()
+  autocmd BufWinEnter,WinEnter * call s:winenter(expand('<afile>'))
   autocmd BufWinLeave,WinLeave * call s:winleave(expand('<afile>'))
 augroup END
 
@@ -598,9 +598,20 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     execute bufwinnr(a:bufnr_save) . 'wincmd w'
   endif
 endfunction"}}}
+function! s:winenter(bufnr)"{{{
+  if !exists('b:interactive')
+    return
+  endif
+
+  call vimshell#terminal#set_title()
+endfunction"}}}
 function! s:winleave(bufnr)"{{{
-  call vimshell#terminal#restore_title()
   let s:last_interactive_bufnr = a:bufnr
+  if !exists('b:interactive')
+    return
+  endif
+  
+  call vimshell#terminal#restore_title()
 endfunction"}}}
 
 " vim: foldmethod=marker

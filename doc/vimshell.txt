@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-14
+- Changed list and wrap settings.
+
 2010-07-13
 - Improved terminal update.
 - Fixed scrolling region.

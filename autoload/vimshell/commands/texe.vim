@@ -85,7 +85,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
       let $HOME = g:vimshell_interactive_cygwin_home
     endif
   endif
-
+  
   call s:init_bg(l:args, a:fd, a:other_info)
   
   let l:sub = vimproc#ptyopen(l:args)
@@ -146,7 +146,7 @@ function! s:default_settings()"{{{
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
-  setlocal list
+  setlocal nolist
   setlocal tabstop=8
   setfiletype vimshell-term
 endfunction"}}}
@@ -166,7 +166,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   call s:default_settings()
   
   " Set autocommands.
-  augroup vimshell-texe
+  augroup vimshell
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))

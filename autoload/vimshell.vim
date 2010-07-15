@@ -77,14 +77,6 @@ elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:
   finish
 endif"}}}
 
-augroup vimshell
-  autocmd!
-  autocmd GUIEnter * set vb t_vb=
-  
-  " Detect vimshell rc file.
-  autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
-augroup end
-
 " User utility functions.
 function! s:default_settings()"{{{
   setlocal buftype=nofile
@@ -92,8 +84,8 @@ function! s:default_settings()"{{{
   setlocal bufhidden=hide
   setlocal noreadonly
   setlocal iskeyword+=-,+,.,\\,!,~
-  setlocal wrap
-  setlocal list
+  setlocal nowrap
+  setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   

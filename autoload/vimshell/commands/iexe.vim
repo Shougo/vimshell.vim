@@ -178,8 +178,8 @@ function! s:default_settings()"{{{
 
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal wrap
-  setlocal list
+  setlocal nowrap
+  setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
@@ -214,7 +214,7 @@ function! s:init_bg(args, fd, other_info)"{{{
   execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.
-  augroup vimshell-iexe
+  augroup vimshell
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))

@@ -104,10 +104,6 @@ function! vimshell#commands#bg#define()
   return s:command
 endfunction
 
-augroup vimshell-bg
-  autocmd!
-augroup END
-
 function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
@@ -122,6 +118,7 @@ function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal nowrap
+  setlocal nolist
   setlocal nomodifiable
   let &filetype = a:filetype
   let b:interactive = a:interactive
@@ -142,7 +139,7 @@ function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
 
-  augroup vimshell-bg
+  augroup vimshell
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
   
