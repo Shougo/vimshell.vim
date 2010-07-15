@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-15
+- Improved tilde substitution.
+
 2010-07-14
 - Changed list and wrap settings.
 
