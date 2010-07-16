@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2010
+" Last Modified: 16 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,12 +26,13 @@
 
 let s:command = {
       \ 'name' : 'bg',
-      \ 'kind' : 'internal',
+      \ 'kind' : 'execute',
       \ 'description' : 'bg [{option}...] {command}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(commands, context)"{{{
   " Execute command in background.
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+  let l:commands = a:commands
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding', '--filetype']
         \})
   if !has_key(l:options, '--encoding')
@@ -40,28 +41,11 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   if !has_key(l:options, '--filetype')
     let l:options['--filetype'] = 'vimshell-bg'
   endif
-
-  if empty(l:args)
-    return
-  elseif l:args[0] == 'shell'
-    " Background shell.
-    if has('win32') || has('win64')
-      if g:vimshell_use_ckw
-        " Use ckw.
-        silent execute printf('!start ckw -e %s', &shell)
-      else
-        silent execute printf('!start %s', &shell)
-      endif
-    elseif &term =~ '^screen'
-      silent execute printf('!screen %s', &shell)
-    else
-      " Can't Background execute.
-      shell
-    endif
-
+  
+  if empty(l:commands[0].args)
     return
   endif
-  
+
   " Background execute.
   if exists('b:interactive') && b:interactive.process.is_valid
     " Delete zombee process.
@@ -70,17 +54,19 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    for l:command in l:commands
+      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    endfor
   endif
 
   " Initialize.
-  let l:sub = vimproc#popen3(l:args)
+  let l:sub = vimproc#plineopen3(l:commands)
 
   " Set variables.
   let l:interactive = {
         \ 'type' : 'background', 
         \ 'process' : l:sub, 
-        \ 'fd' : a:fd, 
+        \ 'fd' : a:context.fd, 
         \ 'encoding' : l:options['--encoding'], 
         \ 'is_pty' : 0, 
         \ 'echoback_linenr' : 0,
@@ -90,11 +76,11 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   " Input from stdin.
   if l:interactive.fd.stdin != ''
-    call l:interactive.process.stdin.write(vimshell#read(a:fd))
+    call l:interactive.process.stdin.write(vimshell#read(a:context.fd))
   endif
   call l:interactive.process.stdin.close()
 
-  return vimshell#commands#bg#init(l:args, a:fd, a:other_info, l:options['--filetype'], l:interactive)
+  return vimshell#commands#bg#init(a:commands, a:context, l:options['--filetype'], l:interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
@@ -104,16 +90,20 @@ function! vimshell#commands#bg#define()
   return s:command
 endfunction
 
-function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)"{{{
+function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     " Split nicely.
     call vimshell#split_nicely()
   endif
 
-  edit `=substitute(join(a:args), '[<>|]', '_', 'g').'&'.(bufnr('$')+1)`
+  let l:args = ''
+  for l:command in a:commands
+    let l:args .= join(l:command.args)
+  endfor
+  edit `=substitute(l:args, '[<>|]', '_', 'g').'&'.(bufnr('$')+1)`
   lcd `=l:cwd`
   setlocal buftype=nofile
   setlocal noswapfile
@@ -133,9 +123,6 @@ function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   syn match   InteractiveErrorHidden            '!!!' contained
-  syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
-  
-  hi def link InteractiveMessage WarningMsg
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
 
@@ -153,7 +140,7 @@ function! vimshell#commands#bg#init(args, fd, other_info, filetype, interactive)
   
   call s:on_execute()
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     wincmd p
   endif
 endfunction"}}}

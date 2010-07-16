@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2010
+" Last Modified: 16 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,14 +26,22 @@
 
 let s:command = {
       \ 'name' : 'iexe',
-      \ 'kind' : 'internal',
+      \ 'kind' : 'execute',
       \ 'description' : 'iexe [{options}...] {command}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+  
+  if len(a:commands) > 1
+    call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
+    return
+  endif
+  
+  let l:commands = a:commands
+  let [l:args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding']
         \})
+  
   if empty(l:args)
     return
   endif
@@ -46,13 +54,13 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   let l:use_cygpty = vimshell#iswin() && l:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   if l:use_cygpty
     if !executable('fakecygpty')
-      call vimshell#error_line(a:fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
+      call vimshell#error_line(a:context.fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
     
     " Get program path from g:vimshell_interactive_cygwin_path.
     if len(l:args) < 2
-      call vimshell#error_line(a:fd, 'iexe: command is required.')
+      call vimshell#error_line(a:context.fd, 'iexe: command is required.')
       return
     endif
 
@@ -74,7 +82,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   if vimshell#iswin() && l:cmdname == 'cmd'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
-      call vimshell#error_line(a:fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
+      call vimshell#error_line(a:context.fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
       return
     endif
 
@@ -83,7 +91,9 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    for l:command in l:commands
+      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    endfor
   endif
 
   if exists('b:interactive') && b:interactive.process.is_valid
@@ -100,7 +110,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     endif
   endif
 
-  call s:init_bg(l:args, a:fd, a:other_info)
+  call s:init_bg(l:args, a:context)
   
   let l:sub = vimproc#ptyopen(l:args)
 
@@ -115,7 +125,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   let b:interactive = {
         \ 'type' : 'interactive', 
         \ 'process' : l:sub, 
-        \ 'fd' : a:fd, 
+        \ 'fd' : a:context.fd, 
         \ 'encoding' : l:options['--encoding'],
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
@@ -132,10 +142,10 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     startinsert!
   endif
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     wincmd p
     
-    if has_key(a:other_info, 'is_split') && a:other_info.is_split
+    if has_key(a:context, 'is_split') && a:context.is_split
       stopinsert
     endif
   endif
@@ -186,9 +196,6 @@ function! s:default_settings()"{{{
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   syn match   InteractiveErrorHidden            '!!!' contained
-  syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
-  
-  hi def link InteractiveMessage WarningMsg
   hi def link InteractiveError Error
   hi def link InteractiveErrorHidden Ignore
 
@@ -196,11 +203,11 @@ function! s:default_settings()"{{{
   call vimshell#int_mappings#define_default_mappings()
 endfunction"}}}
 
-function! s:init_bg(args, fd, other_info)"{{{
+function! s:init_bg(args, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     " Split nicely.
     call vimshell#split_nicely()
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 16 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,24 +26,31 @@
 
 let s:command = {
       \ 'name' : 'exe',
-      \ 'kind' : 'internal',
+      \ 'kind' : 'execute',
       \ 'description' : 'exe [{option}...] {command}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+function! s:command.execute(commands, context)"{{{
+  let l:commands = a:commands
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding']
         \})
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
   endif
+  
+  if empty(l:commands[0].args)
+    return
+  endif
 
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    for l:command in l:commands
+      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    endfor
   endif
   
   " Execute command.
-  if s:init_process(a:fd, l:args, l:options)
+  if s:init_process(l:commands, a:context, l:options)
     return
   endif
 
@@ -60,16 +67,16 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     if l:char != 0
       let l:char = nr2char(l:char)
       if l:char == "\<C-z>"
-        call vimshell#error_line(a:fd, 'exe: Background executed.')
+        call vimshell#error_line(a:context.fd, 'exe: Background executed.')
 
         " Background execution.
-        call vimshell#commands#bg#init(l:args, a:fd, a:other_info, 'vimshell-bg', a:other_info.is_interactive)
+        call vimshell#commands#bg#init(l:commands, a:context, 'vimshell-bg', b:interactive)
 
         unlet b:interactive
       elseif l:char == "\<C-d>"
         " Interrupt.
         call vimshell#interactive#force_exit()
-        call vimshell#error_line(a:fd, 'exe: Interrupted.')
+        call vimshell#error_line(a:context.fd, 'exe: Interrupted.')
         return
       endif
     endif
@@ -85,19 +92,12 @@ function! vimshell#commands#exe#define()
   return s:command
 endfunction
 
-function! s:init_process(fd, args, options)"{{{
+function! s:init_process(commands, context, options)"{{{
   if exists('b:interactive') && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif
   
-  let l:commands = []
-  let l:command = {
-        \ 'args' : a:args,
-        \ 'fd' : {}
-        \}
-  call add(l:commands, l:command)
-
   " Set environment variables.
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
@@ -105,13 +105,13 @@ function! s:init_process(fd, args, options)"{{{
   let $LINES = winheight(0)
   let $VIMSHELL_TERM = 'execute'
 
-  let l:sub = vimproc#plineopen3(l:commands)
+  let l:sub = vimproc#plineopen3(a:commands)
 
   " Set variables.
   let b:interactive = {
         \ 'type' : 'execute', 
         \ 'process' : l:sub, 
-        \ 'fd' : a:fd, 
+        \ 'fd' : a:context.fd, 
         \ 'encoding' : a:options['--encoding'], 
         \ 'is_pty' : !vimshell#iswin(), 
         \ 'echoback_linenr' : -1,
@@ -121,7 +121,7 @@ function! s:init_process(fd, args, options)"{{{
 
   " Input from stdin.
   if b:interactive.fd.stdin != ''
-    call b:interactive.process.stdin.write(vimshell#read(a:fd))
+    call b:interactive.process.stdin.write(vimshell#read(a:context.fd))
   endif
   call b:interactive.process.stdin.close()
 

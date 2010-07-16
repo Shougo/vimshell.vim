@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2010
+" Last Modified: 16 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,14 +26,21 @@
 
 let s:command = {
       \ 'name' : 'texe',
-      \ 'kind' : 'internal',
+      \ 'kind' : 'execute',
       \ 'description' : 'texe [{options}...] {command}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+  if len(a:commands) > 1
+    call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
+    return
+  endif
+  
+  let l:commands = a:commands
+  let [l:args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding']
         \})
+  
   if empty(l:args)
     return
   endif
@@ -43,12 +50,12 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     call insert(l:args, 'fakecygpty')
 
     if !executable('fakecygpty')
-      call vimshell#error_line(a:fd, 'texe: "fakecygpty.exe" is required. Please install it.')
+      call vimshell#error_line(a:context.fd, 'texe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
 
     if len(l:args) < 2
-      call vimshell#error_line(a:fd, 'texe: command is required.')
+      call vimshell#error_line(a:context.fd, 'texe: command is required.')
       return
     endif
 
@@ -69,7 +76,9 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    call map(l:args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    for l:command in l:commands
+      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+    endfor
   endif
 
   if exists('b:interactive') && b:interactive.process.is_valid
@@ -86,7 +95,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     endif
   endif
   
-  call s:init_bg(l:args, a:fd, a:other_info)
+  call s:init_bg(l:args, a:context)
   
   let l:sub = vimproc#ptyopen(l:args)
 
@@ -101,7 +110,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   let b:interactive = {
         \ 'type': 'terminal', 
         \ 'process' : l:sub, 
-        \ 'fd' : a:fd, 
+        \ 'fd' : a:context.fd, 
         \ 'encoding' : l:options['--encoding'],
         \ 'is_secret': 0, 
         \ 'prompt_history' : {}, 
@@ -116,7 +125,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
         \}
   call vimshell#interactive#init()
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     wincmd p
   endif
 endfunction"}}}
@@ -151,11 +160,11 @@ function! s:default_settings()"{{{
   setfiletype vimshell-term
 endfunction"}}}
 
-function! s:init_bg(args, fd, other_info)"{{{
+function! s:init_bg(args, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  if !has_key(a:other_info, 'is_split') || a:other_info.is_split
+  if !has_key(a:context, 'is_split') || a:context.is_split
     " Split nicely.
     call vimshell#split_nicely()
   endif

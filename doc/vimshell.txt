@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-17
+- Improved killed message.
+- Implemented pipe.
+
 2010-07-15
 - Improved tilde substitution.
 

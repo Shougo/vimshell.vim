@@ -320,6 +320,9 @@ function! vimshell#interactive#exit()"{{{
 
   let b:interactive.status = eval(l:status)
   if &filetype != 'vimshell'
+    syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
+    hi def link InteractiveMessage WarningMsg
+    
     call append(line('$'), '*Exit*')
     
     $
@@ -342,6 +345,9 @@ function! vimshell#interactive#force_exit()"{{{
   endtry
 
   if &filetype != 'vimshell'
+    syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
+    hi def link InteractiveMessage WarningMsg
+    
     setlocal modifiable
     
     call append(line('$'), '*Killed*')
@@ -365,6 +371,9 @@ function! vimshell#interactive#hang_up(afile)"{{{
     endif
     
     if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') != 'vimshell'
+      syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
+      hi def link InteractiveMessage WarningMsg
+      
       setlocal modifiable
       
       call append(line('$'), '*Killed*')

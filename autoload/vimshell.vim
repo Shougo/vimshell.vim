@@ -268,14 +268,16 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
   else
     let l:fd = a:fd
   endif
+  
+  let l:commands = [ { 'args' : insert(a:args, a:command), 'fd' : l:fd } ]
 
   if empty(a:other_info)
-    let l:other_info = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
+    let l:context = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
   else
-    let l:other_info = a:other_info
+    let l:context = a:other_info
   endif
 
-  return s:internal_commands[a:command].execute(a:command, a:args, l:fd, l:other_info)
+  return vimshell#parser#execute_command(l:commands, l:context)
 endfunction"}}}
 function! vimshell#read(fd)"{{{
   if empty(a:fd) || a:fd.stdin == ''
