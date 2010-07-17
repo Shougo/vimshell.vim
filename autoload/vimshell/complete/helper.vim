@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2010
+" Last Modified: 17 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,6 +74,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
       let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
     endif
   catch
+    call vimshell#echo_error(v:exception)
     return []
   endtry
   

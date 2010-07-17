@@ -375,6 +375,9 @@ function! vimshell#error_line(fd, string)"{{{
 
   $
 endfunction"}}}
+function! vimshell#echo_error(string)"{{{
+  echohl Error | echo a:string | echohl None
+endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
   if &filetype !=# 'vimshell'
     return

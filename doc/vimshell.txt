@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved killed message.
 - Implemented pipe.
 - Optimized head match.
+- Improved print error.
 
 2010-07-15
 - Improved tilde substitution.
