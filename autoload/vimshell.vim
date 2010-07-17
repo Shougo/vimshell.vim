@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jul 2010
+" Last Modified: 17 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,8 +57,7 @@ set vb t_vb=
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
-  return a:headstr == '' || a:checkstr ==# a:headstr
-        \|| a:checkstr[: len(a:headstr)-1] ==# a:headstr
+  return stridx(a:checkstr, a:headstr) == 0
 endfunction"}}}
 function! vimshell#tail_match(checkstr, tailstr)"{{{
   return a:tailstr == '' || a:checkstr ==# a:tailstr
