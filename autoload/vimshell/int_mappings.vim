@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 18 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <expr> <Plug>(vimshell_int_delete_backword_char)  <SID>delete_backword_char(0)
   inoremap <expr> <Plug>(vimshell_int_another_delete_backword_char)  <SID>delete_backword_char(1)
   inoremap <expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
-  inoremap <expr> <Plug>(vimshell_int_send_input)  <ESC>:<C-u>call vimshell#interactive#send_input()<CR>
+  inoremap <silent> <Plug>(vimshell_int_send_input)  <ESC>:<C-u>call vimshell#interactive#send_input()<CR>
   inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
 
   nnoremap <silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
