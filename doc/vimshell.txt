@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-21
+- Improved initialize autoload.
+
 2010-07-18
 - Fixed <Plug>(vimshell_int_send_input) error.
 

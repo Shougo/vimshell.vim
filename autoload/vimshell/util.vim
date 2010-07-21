@@ -24,6 +24,8 @@
 " }}}
 "=============================================================================
 
+" Original function is from mattn.
+" http://github.com/mattn/googlereader-vim/tree/master
 function! vimshell#util#truncate(str, num)"{{{
   let mx_first = '^\(.\)\(.*\)$'
   let str = a:str
@@ -50,7 +52,7 @@ function! vimshell#util#truncate(str, num)"{{{
   return ret
 endfunction"}}}
 
-function! s:wcswidth(str)"{{{
+function! vimshell#util#wcswidth(str)"{{{
   let mx_first = '^\(.\)'
   let str = a:str
   let width = 0
