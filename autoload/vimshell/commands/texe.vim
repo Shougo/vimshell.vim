@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -81,7 +81,7 @@ function! s:command.execute(commands, context)"{{{
     endfor
   endif
 
-  if exists('b:interactive') && b:interactive.process.is_valid
+  if !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif
@@ -171,6 +171,10 @@ function! s:init_bg(args, context)"{{{
 
   edit `=fnamemodify(a:args[0], ':r').'$'.(bufnr('$')+1)`
   lcd `=l:cwd`
+  
+  call s:default_settings()
+  
+  execute 'set filetype=term-'.fnamemodify(a:args[0], ':t:r')
 
   call s:default_settings()
   

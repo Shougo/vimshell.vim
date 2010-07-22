@@ -167,7 +167,7 @@ endfunction"}}}
 function! s:execute_line(is_insert)"{{{
   if !a:is_insert
     " Search cursor file.
-    let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+    let l:filename = matchstr(substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g'), '\h\w*://\f\+')
 
     if &termencoding != '' && &encoding != &termencoding
       " Convert encoding.
@@ -196,7 +196,7 @@ function! s:paste_prompt()"{{{
   $
 endfunction"}}}
 function! s:restart_command()"{{{
-  if exists('b:interactive') && b:interactive.process.is_valid
+  if !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif

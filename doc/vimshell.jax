@@ -168,6 +168,10 @@ COMMANDS 						*vimshell-commands*
 			まるで|quickrun|を使っているかのようにインタプリタを
 			操作できます。
 
+:VimShellSendBuffer {bufname}				*:VimShellSendBuffer*
+			裏ウインドウを{bufname}として設定します。{bufname}が
+			画面に表示されていない場合、自動的に開きます。
+
 ------------------------------------------------------------------------------
 VARIABLES 						*vimshell-variables*
 

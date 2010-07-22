@@ -184,6 +184,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-22
+- Improved search cursor file.
+- Added :VimShellSendBuffer command.
+- Changed terminal filetype.
+- Improved multibyte.
+
 2010-07-21
 - Improved initialize autoload.
 

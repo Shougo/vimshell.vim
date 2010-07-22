@@ -156,7 +156,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let $SHELL = 'vimshell'
   let $EDITOR = g:vimshell_cat_command
   let $PAGER = g:vimshell_cat_command
-  
+
   " Default settings.
   call s:default_settings()
 
@@ -167,6 +167,18 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
   call vimshell#set_context(l:context)
+  
+  " Set interactive variables.
+  let b:interactive = {
+        \ 'type' : 'vimshell', 
+        \ 'process' : {}, 
+        \ 'fd' : l:context.fd, 
+        \ 'encoding' : &encoding, 
+        \ 'is_pty' : 0, 
+        \ 'echoback_linenr' : -1,
+        \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
+        \}
   
   " Load rc file.
   if filereadable(g:vimshell_vimshrc_path)

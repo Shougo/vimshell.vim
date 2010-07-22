@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,7 @@ augroup vimshell
 augroup END
 
 command! -range -nargs=? VimShellSendString call s:send_region(<line1>, <line2>, <q-args>)
+command! -complete=buffer -nargs=1 VimShellSendBuffer call s:send_buffer(<q-args>)
 
 " Dummy.
 function! vimshell#interactive#init()"{{{
@@ -132,7 +133,7 @@ function! vimshell#interactive#send_string(string)"{{{
   
   let l:in = a:string
 
-  if l:in != '' && &filetype !=# 'vimshell-term'
+  if l:in != '' && b:interactive.type !=# 'terminal'
     call vimshell#history#interactive_append(l:in)
   endif
 
@@ -191,8 +192,8 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   
   " Check alternate buffer.
-  let l:filetype = getwinvar(l:winnr, '&filetype')
-  if l:filetype =~ '^int-' || l:filetype ==# 'vimshell-term'
+  let l:type = b:interactive.type
+  if l:type ==# 'interactive' || l:type ==# 'terminal'
     if a:string != ''
       let l:string = a:string . "\<LF>"
     else
@@ -202,7 +203,7 @@ function! s:send_region(line1, line2, string)"{{{
     
     execute winnr('#') 'wincmd w'
 
-    if l:filetype !=# 'vimshell-term'
+    if l:type !=# 'terminal'
       " Save prompt.
       let l:prompt = vimshell#interactive#get_prompt(line('$'))
       let l:prompt_nr = line('$')
@@ -211,12 +212,22 @@ function! s:send_region(line1, line2, string)"{{{
     " Send string.
     call vimshell#interactive#send_string(l:string)
     
-    if l:filetype !=# 'vimshell-term'
+    if l:type !=# 'terminal'
       call setline(l:prompt_nr, l:prompt . l:line)
     endif
 
     stopinsert
     wincmd p
+  endif
+endfunction"}}}
+function! s:send_buffer(bufname)"{{{
+  let s:last_interactive_bufnr = bufnr(a:bufname)
+  let l:winnr = bufwinnr(s:last_interactive_bufnr)
+  if s:last_interactive_bufnr >= 0 && l:winnr <= 0
+    " Open buffer.
+    call vimshell#split_nicely()
+
+    execute edit a:bufname
   endif
 endfunction"}}}
 
@@ -245,7 +256,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endwhile
   endif
 
-  if l:outputed && &filetype !=# 'vimshell-term'
+  if l:outputed && b:interactive.type !=# 'terminal'
     $
     if !b:interactive.process.eof
       if a:is_insert
@@ -319,7 +330,7 @@ function! vimshell#interactive#exit()"{{{
   endif
 
   let b:interactive.status = eval(l:status)
-  if &filetype != 'vimshell'
+  if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
     hi def link InteractiveMessage WarningMsg
     
@@ -344,7 +355,7 @@ function! vimshell#interactive#force_exit()"{{{
   catch
   endtry
 
-  if &filetype != 'vimshell'
+  if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
     hi def link InteractiveMessage WarningMsg
     
@@ -370,7 +381,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
       endtry
     endif
     
-    if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') != 'vimshell'
+    if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') !=# 'vimshell'
       syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
       hi def link InteractiveMessage WarningMsg
       
@@ -492,7 +503,7 @@ function! s:check_all_output()"{{{
 
   let l:bufnr = 1
   while l:bufnr <= bufnr('$')
-    if buflisted(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
+    if bufexists(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       " Check output.
       call vimshell#interactive#check_output(getbufvar(l:bufnr, 'interactive'), l:bufnr, l:bufnr_save)
     endif
@@ -500,13 +511,13 @@ function! s:check_all_output()"{{{
     let l:bufnr += 1
   endwhile
   
-  if exists('b:interactive') && b:interactive.process.is_valid
+  if !empty(b:interactive.process) && b:interactive.process.is_valid
     " Ignore key sequences.
     call feedkeys("g\<ESC>", 'n')
   endif
 endfunction"}}}
 function! s:check_output(interactive)"{{{
-  if !a:interactive.process.is_valid
+  if empty(a:interactive.process) || !a:interactive.process.is_valid
     return 0
   endif
   
@@ -581,18 +592,19 @@ function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
     normal! $
   endif
 
-  if a:interactive.type ==# 'background'
+  let l:type = a:interactive.type
+  if l:type ==# 'background'
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
   else
-    if &filetype == 'vimshell-term' && mode() !=# 'i'
+    if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
     endif
 
     call vimshell#interactive#execute_pty_out(mode() ==# 'i')
 
-    if &filetype == 'vimshell-term'
+    if l:type ==# 'terminal'
       setlocal nomodifiable
     elseif !a:interactive.process.eof && mode() ==# 'i'
       startinsert!
@@ -611,15 +623,15 @@ function! s:winenter(bufnr)"{{{
   if !exists('b:interactive')
     return
   endif
-
+  
   call vimshell#terminal#set_title()
 endfunction"}}}
 function! s:winleave(bufnr)"{{{
-  let s:last_interactive_bufnr = a:bufnr
   if !exists('b:interactive')
     return
   endif
   
+  let s:last_interactive_bufnr = a:bufnr
   call vimshell#terminal#restore_title()
 endfunction"}}}
 

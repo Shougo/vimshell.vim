@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,10 +28,10 @@ function! vimshell#terminal#print(string)"{{{
   setlocal modifiable
   
   "echomsg a:string
-  if &filetype !=# 'vimshell-term' && a:string !~ '[\e\r\b]' && col('.') == col('$')
+  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
     let l:lines = split(a:string, '\n', 1)
-    if !exists('b:interactive') || line('.') != b:interactive.echoback_linenr
+    if line('.') != b:interactive.echoback_linenr
       call setline('.', getline('.') . l:lines[0])
     endif
     call append('.', l:lines[1:])
@@ -63,12 +63,11 @@ function! vimshell#terminal#print(string)"{{{
       continue
       "}}}
     elseif l:char == "\<C-h>""{{{
-      let l:checkstr = a:string[l:pos+1 :]
-      
+      " Print rest string.
       call s:output_string(l:newstr)
       let l:newstr = ''
-
-      if l:checkstr != '' && a:string[l:pos+1] == "\<C-h>"
+      
+      if l:pos + 1 < l:max && a:string[l:pos+1] == "\<C-h>"
         " <C-h><C-h>
         call s:control.delete_multi_backword_char()
         let l:pos += 2
@@ -77,7 +76,7 @@ function! vimshell#terminal#print(string)"{{{
         call s:control.delete_backword_char()
         let l:pos += 1
       endif
-
+      
       continue
       "}}}
     elseif l:char == "\<ESC>""{{{
@@ -177,7 +176,7 @@ function! vimshell#terminal#print(string)"{{{
   let l:oldpos[1] = s:line
   let l:oldpos[2] = s:col
   
-  if &filetype ==# 'vimshell-term'
+  if b:interactive.type ==# 'terminal'
     let b:interactive.save_cursor = l:oldpos
 
     if s:col >= len(getline(s:line))
@@ -256,10 +255,6 @@ function! vimshell#terminal#filter(string)"{{{
   return l:newstr
 endfunction"}}}
 function! vimshell#terminal#set_title()"{{{
-  if !exists('b:interactive')
-    return
-  endif
-  
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
@@ -267,10 +262,6 @@ function! vimshell#terminal#set_title()"{{{
   let &titlestring = b:interactive.terminal.titlestring
 endfunction"}}}
 function! vimshell#terminal#restore_title()"{{{
-  if !exists('b:interactive')
-    return
-  endif
-  
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
@@ -278,10 +269,6 @@ function! vimshell#terminal#restore_title()"{{{
   let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
-  if !exists('b:interactive')
-    return
-  endif
-  
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
@@ -305,7 +292,7 @@ function! s:init_terminal()"{{{
   return
 endfunction"}}}
 function! s:output_string(string)"{{{
-  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+  if s:line == b:interactive.echoback_linenr
     if !b:interactive.is_pty && &filetype ==# 'int-gosh'
       " Note: MinGW gosh is no echoback. Why?
       let s:line += 1
@@ -325,84 +312,11 @@ function! s:output_string(string)"{{{
   endif
   let l:line = s:lines[s:line]
   let l:left_line = l:line[: s:col - 2]
-  let l:len = s:width2byte(l:line[s:col-1 :], len(a:string))
-  let l:right_line = l:line[s:col-1+l:len :]
+  let l:right_line = vimshell#util#truncate_head(l:line[s:col-1 :], vimshell#util#wcswidth(a:string))
 
   let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
   
   let s:col += len(a:string)
-endfunction"}}}
-function! s:width2byte(string, width)"{{{
-  let l:len = len(a:string)
-  let l:pos = 0
-  let l:fchar = char2nr(a:string[l:pos])
-  let l:width_cnt = 0
-  while l:pos < l:len && l:width_cnt < a:width
-    if l:fchar >= 0x80
-      " Skip multibyte.
-      if l:fchar < 0xc0
-        " Skip UTF-8 on the way.
-        let l:fchar = char2nr(a:string[l:pos])
-        while l:pos < l:len && 0x80 <= l:fchar && l:fchar < 0xc0
-          let l:pos += 1
-          let l:width_cnt += 1
-          let l:fchar = char2nr(a:string[l:pos])
-        endwhile
-      elseif l:fchar < 0xe0
-        " 2byte code.
-        let l:pos += 1
-        let l:width_cnt += 2
-      elseif l:fchar < 0xf0
-        " 3byte code.
-        let l:pos += 2
-        let l:width_cnt += 2
-      elseif l:fchar < 0xf8
-        " 4byte code.
-        let l:pos += 3
-        let l:width_cnt += 2
-      elseif l:fchar < 0xfe
-        " 5byte code.
-        let l:pos += 4
-        let l:width_cnt += 2
-      else
-        " 6byte code.
-        let l:pos += 5
-        let l:width_cnt += 2
-      endif
-    else
-      let l:width_cnt += 1
-    endif
-
-    let l:pos += 1
-    let l:fchar = char2nr(a:string[l:pos])
-  endwhile
-
-  return l:pos
-endfunction"}}}
-function! s:width2byte_r(string, width)"{{{
-  " For multibyte.
-  let l:pos = len(a:string) - 1
-  let l:fchar = char2nr(a:string[l:pos])
-  let l:width_cnt = 0
-  while l:pos >= 0 && l:width_cnt < a:width
-    if l:fchar >= 0x80
-      " Skip multibyte.
-      while l:pos > 0 && 0x80 <= l:fchar && l:fchar < 0xc0
-        let l:pos -= 1
-        let l:fchar = char2nr(a:string[l:pos])
-      endwhile
-
-      let l:width_cnt += 2
-      let l:pos -= 1
-    else
-      let l:width_cnt += 1
-      let l:pos -= 1
-    endif
-
-    let l:fchar = char2nr(a:string[l:pos])
-  endwhile
-
-  return len(a:string) - 1 - l:pos
 endfunction"}}}
 function! s:sortfunc(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
@@ -548,7 +462,7 @@ function! s:escape.move_cursor(matchstr)"{{{
   if l:width > len(s:lines[s:line])+1
     let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - l:width)
   endif
-  let s:col = s:width2byte(s:lines[s:line], l:width)
+  let s:col = vimshell#util#truncate_len(s:lines[s:line], l:width)
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
@@ -695,7 +609,7 @@ function! s:escape.move_right(matchstr)"{{{
     let l:line = s:lines[s:line]
   endif
 
-  let s:col += s:width2byte(l:line[s:col-1 :], n)
+  let s:col += vimshell#util#truncate_len(l:line[s:col-1 :], n)
 endfunction"}}}
 function! s:escape.move_left1(matchstr)"{{{
   let s:col -= 1
@@ -710,7 +624,7 @@ function! s:escape.move_left(matchstr)"{{{
   endif
   
   let l:line = s:lines[s:line]
-  let s:col -= s:width2byte_r(l:line[: s:col - 2], n)
+  let s:col -= vimshell#util#truncate_len_reverse(l:line[: s:col - 2], n)
   if s:col < 1
     let s:col = 1
   endif
@@ -758,7 +672,7 @@ function! s:escape.print_control_sequence(matchstr)"{{{
   call s:output_string("\<ESC>")
 endfunction"}}}
 function! s:escape.change_cursor_shape(matchstr)"{{{
-  if !exists('+guicursor')
+  if !exists('+guicursor') || b:interactive.type !=# 'terminal'
     return
   endif
   
@@ -790,14 +704,14 @@ function! s:control.newline()"{{{
   let s:lines[s:line] = ''
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
-  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+  if s:line == b:interactive.echoback_linenr
     return
   endif
   
   call s:escape.move_left1(1)
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{
-  if exists('b:interactive') && s:line == b:interactive.echoback_linenr
+  if s:line == b:interactive.echoback_linenr
     return
   endif
   

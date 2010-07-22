@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jun 2010
+" Last Modified: 22 Jun 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,15 +41,82 @@ function! vimshell#util#truncate(str, num)"{{{
     if width + cells > a:num
       break
     endif
-    let width = width + cells
+    let width += cells
     let ret .= char
     let str = substitute(str, mx_first, '\2', '')
   endwhile
   while width + 1 <= a:num
     let ret .= " "
-    let width = width + 1
+    let width += 1
   endwhile
+  
   return ret
+endfunction"}}}
+function! vimshell#util#truncate_len(str, num)"{{{
+  let mx_first = '^\(.\)\(.*\)$'
+  let str = a:str
+  let ret = 0
+  let width = 0
+  while 1
+    let char = substitute(str, mx_first, '\1', '')
+    let ucs = char2nr(char)
+    if ucs == 0
+      break
+    endif
+    let cells = s:wcwidth(ucs)
+    if width + cells > a:num
+      break
+    endif
+    let width += cells
+    let ret += len(char)
+    let str = substitute(str, mx_first, '\2', '')
+  endwhile
+  
+  return ret
+endfunction"}}}
+function! vimshell#util#truncate_len_reverse(str, num)"{{{
+  let mx_first = '^\(.*\)\(.\)$'
+  let str = a:str
+  let ret = 0
+  let width = 0
+  while 1
+    let char = substitute(str, mx_first, '\2', '')
+    let ucs = char2nr(char)
+    if ucs == 0
+      break
+    endif
+    let cells = s:wcwidth(ucs)
+    if width + cells > a:num
+      break
+    endif
+    let width += cells
+    let ret += len(char)
+    let str = substitute(str, mx_first, '\1', '')
+  endwhile
+  
+  return ret
+endfunction"}}}
+function! vimshell#util#truncate_head(str, num)"{{{
+  let mx_first = '^\(.\)\(.*\)$'
+  let str = a:str
+  let ret = ''
+  let width = 0
+  while 1
+    let char = substitute(str, mx_first, '\1', '')
+    let ucs = char2nr(char)
+    if ucs == 0
+      break
+    endif
+    let cells = s:wcwidth(ucs)
+    if width + cells > a:num
+      break
+    endif
+    let width += cells
+    let ret .= char
+    let str = substitute(str, mx_first, '\2', '')
+  endwhile
+  
+  return a:str[len(ret):]
 endfunction"}}}
 
 function! vimshell#util#wcswidth(str)"{{{
@@ -61,7 +128,7 @@ function! vimshell#util#wcswidth(str)"{{{
     if ucs == 0
       break
     endif
-    let width = width + s:wcwidth(ucs)
+    let width += s:wcwidth(ucs)
     let str = substitute(str, mx_first, '', '')
   endwhile
   return width
