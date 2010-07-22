@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Changed terminal filetype.
 - Improved multibyte.
 - Optimized escape sequence.
+- Improved scroll region.
 
 2010-07-21
 - Improved initialize autoload.

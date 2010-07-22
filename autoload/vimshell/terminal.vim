@@ -51,8 +51,6 @@ function! vimshell#terminal#print(string)"{{{
   let s:col = col('.')
   let s:lines = {}
   let s:lines[s:line] = getline('.')
-  let s:save_pos = [s:line, s:col]
-  let s:scrolls = 0
   
   while l:pos < l:max
     let l:char = a:string[l:pos]
@@ -170,13 +168,6 @@ function! vimshell#terminal#print(string)"{{{
   endfor
   let s:lines = {}
   
-  " Scroll.
-  if s:scrolls > 0
-    execute 'normal' s:scrolls."\<C-e>"
-  elseif s:scrolls < 0
-    execute 'normal' (-s:scrolls)."\<C-y>"
-  endif
-  
   let l:oldpos = getpos('.')
   let l:oldpos[1] = s:line
   let l:oldpos[2] = s:col
@@ -285,6 +276,7 @@ function! s:init_terminal()"{{{
         \ 'syntax_names' : {},
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
+        \ 'save_pos' : getpos('.')[1 : 2],
         \ 'region_top' : 0,
         \ 'region_bottom' : 0,
         \ 'standard_character_set' : 'United States',
@@ -333,6 +325,38 @@ function! s:output_string(string)"{{{
 endfunction"}}}
 function! s:sortfunc(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
+endfunction"}}}
+function! s:scroll_up(number)"{{{
+  let l:line = b:interactive.terminal.region_bottom
+  let l:end = b:interactive.terminal.region_top - a:number
+  while l:line >= l:end
+    let s:lines[l:line] = has_key(s:lines, l:line - a:number) ?
+          \ s:lines[l:line - a:number] : getline(l:line - a:number)
+
+    let l:line -= 1
+  endwhile
+  
+  let i = 0
+  while i < a:number
+    let s:lines[b:interactive.terminal.region_top + i] = ''
+    let i += 1
+  endwhile
+endfunction"}}}
+function! s:scroll_down(number)"{{{
+  let l:line = b:interactive.terminal.region_top
+  let l:end = b:interactive.terminal.region_bottom - a:number
+  while l:line <= l:end
+    let s:lines[l:line] = has_key(s:lines, l:line + a:number) ?
+          \ s:lines[l:line + a:number] : getline(l:line + a:number)
+
+    let l:line += 1
+  endwhile
+  
+  let i = 0
+  while i < a:number
+    let s:lines[b:interactive.terminal.region_bottom - i] = ''
+    let i += 1
+  endwhile
 endfunction"}}}
 
 " Escape sequence functions.
@@ -486,18 +510,8 @@ function! s:escape.setup_scrolling_region(matchstr)"{{{
     let b:interactive.terminal.region_bottom = 0
   endif
   
-  let l:top = l:args[0]
-  let l:bottom = l:args[1]
-  let l:linenr = l:top
-  while l:linenr <= l:bottom
-    if !has_key(s:lines, l:linenr)
-      let s:lines[l:linenr] = ''
-    endif
-    let l:linenr += 1
-  endwhile
-
-  let b:interactive.terminal.region_top = l:top
-  let b:interactive.terminal.region_bottom = l:bottom
+  let b:interactive.terminal.region_top = l:args[0]
+  let b:interactive.terminal.region_bottom = l:args[1]
 endfunction"}}}
 function! s:escape.clear_line(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
@@ -570,13 +584,18 @@ function! s:escape.move_up(matchstr)"{{{
     let n = 1
   endif
   
-  let s:line -= n
-  if s:line < 1
-    let s:line = 1
-  endif
-  
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = repeat(' ', s:col)
+  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
+    " Scroll up n lines.
+    call s:scroll_up(n)
+  else
+    let s:line -= n
+    if s:line < 1
+      let s:line = 1
+    endif
+
+    if !has_key(s:lines, s:line)
+      let s:lines[s:line] = repeat(' ', s:col)
+    endif
   endif
 endfunction"}}}
 function! s:escape.move_down(matchstr)"{{{
@@ -585,10 +604,15 @@ function! s:escape.move_down(matchstr)"{{{
     let n = 1
   endif
   
-  let s:line += n
+  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
+    " Scroll down n lines.
+    call s:scroll_down(n)
+  else
+    let s:line += n
 
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = repeat(' ', s:col)
+    if !has_key(s:lines, s:line)
+      let s:lines[s:line] = repeat(' ', s:col)
+    endif
   endif
 endfunction"}}}
 function! s:escape.move_right(matchstr)"{{{
@@ -629,19 +653,19 @@ function! s:escape.move_up_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
 function! s:escape.scroll_up1(matchstr)"{{{
-  let s:scrolls -= 1
+  call s:scroll_up(1)
 endfunction"}}}
 function! s:escape.scroll_down1(matchstr)"{{{
-  let s:scrolls += 1
+  call s:scroll_down(1)
 endfunction"}}}
 function! s:escape.move_col(matchstr)"{{{
   let s:col = matchstr(a:matchstr, '\d\+')
 endfunction"}}}
 function! s:escape.save_pos(matchstr)"{{{
-  let s:save_pos = [s:line, s:col]
+  let b:interactive.terminal.save_pos = [s:line, s:col]
 endfunction"}}}
 function! s:escape.restore_pos(matchstr)"{{{
-  let [s:line, s:col] = s:save_pos
+  let [s:line, s:col] = b:interactive.terminal.save_pos
 endfunction"}}}
 function! s:escape.change_title(matchstr)"{{{
   let l:title = matchstr(a:matchstr, '^k\zs.\{-}\ze\e\\')
@@ -688,14 +712,15 @@ let s:control = {}
 function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
-  if s:line == line('$')
-    " Append new line.
-    call append('$', '')
+  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
+    " Scroll down one line.
+    call s:scroll_down(1)
+  else
+    let s:line += 1
+    let s:lines[s:line] = ''
   endif
   
-  let s:line += 1
   let s:col = 1
-  let s:lines[s:line] = ''
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
   if s:line == b:interactive.echoback_linenr
