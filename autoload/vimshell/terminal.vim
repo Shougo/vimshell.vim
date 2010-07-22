@@ -642,8 +642,7 @@ function! s:escape.move_left(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_down_head1(matchstr)"{{{
-  call s:escape.move_down('')
-  let s:col = 1
+  call s:control.newline()
 endfunction"}}}
 function! s:escape.move_down_head(matchstr)"{{{
   call s:escape.move_down(a:matchstr)
@@ -705,6 +704,9 @@ function! s:escape.change_character_set(matchstr)"{{{
       let b:interactive.terminal.alternate_character_set = 'Line Drawing'
     endif
   endif
+endfunction"}}}
+function! s:escape.reset(matchstr)"{{{
+  call s:init_terminal()
 endfunction"}}}
 
 " Control sequence functions.
@@ -800,7 +802,7 @@ let s:escape_sequence_simple_char1 = {
       \ '8' : s:escape.restore_pos,
       \ '(' : s:escape.ignore,
       \
-      \ 'c' : s:escape.ignore,
+      \ 'c' : s:escape.reset,
       \
       \ '<' : s:escape.ignore,
       \ '=' : s:escape.ignore,

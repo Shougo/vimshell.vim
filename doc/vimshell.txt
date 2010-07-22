@@ -191,6 +191,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved multibyte.
 - Optimized escape sequence.
 - Improved scroll region.
+- Implemented reset escape sequence.
 
 2010-07-21
 - Improved initialize autoload.
