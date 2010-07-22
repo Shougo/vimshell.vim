@@ -86,6 +86,21 @@ function! vimshell#terminal#print(string)"{{{
         break
       endif
       
+      " Check CSI pattern.
+      if l:checkstr =~ '^\[[0-9;]*.'
+        let l:matchstr = matchstr(l:checkstr, '^\[[0-9;]*.')
+
+        if has_key(s:escape_sequence_csi, l:matchstr[-1:])
+          call s:output_string(l:newstr)
+          let l:newstr = ''
+
+          call call(s:escape_sequence_csi[l:matchstr[-1:]], [l:matchstr], s:escape)
+
+          let l:pos += len(l:matchstr) + 1
+          continue
+        endif
+      endif
+      
       " Check simple pattern.
       let l:checkchar1 = l:checkstr[0]
       if has_key(s:escape_sequence_simple_char1, l:checkchar1)"{{{
@@ -730,43 +745,36 @@ endfunction"}}}
 
 " escape sequence list. {{{
 " pattern: function
+let s:escape_sequence_csi = {
+      \ 'l' : s:escape.ignore,
+      \ 'h' : s:escape.ignore,
+      \
+      \ 'm' : s:escape.highlight,
+      \ 'r' : s:escape.setup_scrolling_region,
+      \ 'A' : s:escape.move_up,
+      \ 'B' : s:escape.move_down,
+      \ 'C' : s:escape.move_right,
+      \ 'D' : s:escape.move_left,
+      \ 'E' : s:escape.move_down_head,
+      \ 'F' : s:escape.move_up_head,
+      \ 'G' : s:escape.move_col,
+      \ 'H' : s:escape.move_cursor,
+      \ 'f' : s:escape.move_cursor,
+      \
+      \ 'g' : s:escape.ignore,
+      \ 'c' : s:escape.ignore,
+      \ 'y' : s:escape.ignore,
+      \ 'q' : s:escape.ignore,
+      \}
 let s:escape_sequence_match = {
-      \ '^\[20[hl]' : s:escape.ignore,
       \ '^\[?\d[hl]' : s:escape.ignore,
       \ '^[()][AB012UK]' : s:escape.ignore,
-      \
-      \ '^\[[0-9;]\+m' : s:escape.highlight,
-      \
       \ '^k.\{-}\e\\' : s:escape.change_title,
       \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
-      \ 
-      \ '^\[\d\+;\d\+r' : s:escape.setup_scrolling_region,
-      \
-      \ '^\[\d*A' : s:escape.move_up,
-      \ '^\[\d*B' : s:escape.move_down,
-      \ '^\[\d*C' : s:escape.move_right,
-      \ '^\[\d*D' : s:escape.move_left,
-      \ '^\[\d*E' : s:escape.move_down_head,
-      \ '^\[\d\+F' : s:escape.move_up_head,
-      \ '^\[\d\+G' : s:escape.move_col,
-      \ '^\[\d\+;\d\+[Hf]' : s:escape.move_cursor,
-      \
-      \ '^[\dg' : s:escape.ignore,
-      \
       \ '^#\d' : s:escape.ignore,
-      \
       \ '^\dn' : s:escape.ignore,
-      \ '^\d\+;\d\+R' : s:escape.ignore,
-      \
       \ '^\[?1;\d\+0c' : s:escape.ignore,
-      \
-      \ '^\[2;\dy' : s:escape.ignore,
-      \
-      \ '^\[\dq' : s:escape.ignore,
-      \
-      \ '^\d\+;\d\+' : s:escape.ignore,
       \ '^\d q' : s:escape.change_cursor_shape,
-      \
       \}
 let s:escape_sequence_simple_char1 = {
       \ 'N' : s:escape.ignore,

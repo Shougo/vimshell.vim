@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Added :VimShellSendBuffer command.
 - Changed terminal filetype.
 - Improved multibyte.
+- Optimized escape sequence.
 
 2010-07-21
 - Improved initialize autoload.

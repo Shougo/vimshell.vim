@@ -194,7 +194,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       " Suffix execution.
       let l:args = extend(split(g:vimshell_execute_file_list[l:ext]), a:commands[0].args)
       let l:commands = [ { 'args' : l:args, 'fd' : l:fd } ]
-      return vimshell#parser#execute_command(l:execute, l:args, l:fd, a:context)
+      return vimshell#parser#execute_command(l:commands, a:context)
     elseif l:command != '' || executable(l:program)
       " Execute external commands.
       return vimshell#execute_internal_command('exe', insert(l:args, l:program), l:fd, a:context)
