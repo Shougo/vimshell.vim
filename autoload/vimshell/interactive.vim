@@ -439,7 +439,6 @@ function! s:print_buffer(fd, string)"{{{
   endif
 
   if has_key(b:interactive, 'prompt_history') && getline('$') != '' 
-        \&& !has_key(b:interactive.prompt_history, line('$'))
     let b:interactive.prompt_history[line('$')] = getline('$')
   endif
 endfunction"}}}
