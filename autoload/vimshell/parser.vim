@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 22 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,25 +37,30 @@ function! vimshell#parser#eval_script(script, context)"{{{
   let l:internal_commands = vimshell#available_commands()
   
   " Split statements.
-  for l:statement in vimshell#parser#split_statements(a:script)
-    let l:statement = vimshell#parser#parse_alias(l:statement)
+  for l:statement in vimshell#parser#parse_statements(a:script)
+    let l:statement.statement = vimshell#parser#parse_alias(l:statement.statement)
     
     " Call preexec filter.
-    let l:statement = vimshell#hook#call_filter('preexec', a:context, l:statement)
+    let l:statement.statement = vimshell#hook#call_filter('preexec', a:context, l:statement.statement)
 
-    let l:program = vimshell#parser#parse_program(l:statement)
+    let l:program = vimshell#parser#parse_program(l:statement.statement)
 
     if has_key(l:internal_commands, l:program)
           \ && l:internal_commands[l:program].kind ==# 'special'
       " Special commands.
       let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-      let l:commands = [ { 'args' : split(l:statement), 'fd' : l:fd } ]
+      let l:commands = [ { 'args' : split(l:statement.statement), 'fd' : l:fd } ]
     else
-      let l:commands = vimshell#parser#parse_pipe(l:statement)
+      let l:commands = vimshell#parser#parse_pipe(l:statement.statement)
     endif
 
-    call vimshell#parser#execute_command(l:commands, a:context)
+    let l:ret = vimshell#parser#execute_command(l:commands, a:context)
     redraw
+    
+    if (l:statement.condition ==# 'true' && l:ret)
+          \ || (l:statement.condition ==# 'false' && !l:ret)
+      return
+    endif
   endfor
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
@@ -64,14 +69,15 @@ function! vimshell#parser#parse_alias(statement)"{{{
   if l:program  == ''
     throw 'Error: Invalid command name.'
   endif
-  let l:script = a:statement[len(l:program) :]
+  
+  let l:statement = a:statement
 
   if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
     " Expand alias.
-    let l:program = s:recursive_expand_alias(l:program)
+    let l:statement = join(vimshell#parser#split_args(s:recursive_expand_alias(l:program))) . a:statement[len(l:program) :]
   endif
   
-  return l:program . l:script
+  return l:statement
 endfunction"}}}
 function! vimshell#parser#parse_program(statement)"{{{
   " Get program.
@@ -147,10 +153,89 @@ function! vimshell#parser#parse_pipe(statement)"{{{
 
   return l:commands
 endfunction"}}}
+function! vimshell#parser#parse_statements(script)"{{{
+  let l:max = len(a:script)
+  let l:statements = []
+  let l:statement = ''
+  let i = 0
+  while i < l:max
+    if a:script[i] == ';'
+      if l:statement != ''
+        call add(l:statements,
+              \ { 'statement' : l:statement,
+              \   'condition' : 'always',
+              \})
+      endif
+      let l:statement = ''
+      let i += 1
+    elseif a:script[i] == '&'
+      if i+1 < len(a:script) && a:script[i+1] == '&'
+        if l:statement != ''
+          call add(l:statements,
+                \ { 'statement' : l:statement,
+                \   'condition' : 'true',
+                \})
+        endif
+        let i += 2
+      else
+        let i += 1
+      endif
+    elseif a:script[i] == '|'
+      if i+1 < len(a:script) && a:script[i+1] == '|'
+        if l:statement != ''
+          call add(l:statements,
+                \ { 'statement' : l:statement,
+                \   'condition' : 'false',
+                \})
+        endif
+        let i += 2
+      else
+        let i += 1
+      endif
+    elseif a:script[i] == "'"
+      " Single quote.
+      let [l:string, i] = s:skip_single_quote(a:script, i)
+      let l:statement .= l:string
+    elseif a:script[i] == '"'
+      " Double quote.
+      let [l:string, i] = s:skip_double_quote(a:script, i)
+      let l:statement .= l:string
+    elseif a:script[i] == '`'
+      " Back quote.
+      let [l:string, i] = s:skip_back_quote(a:script, i)
+      let l:statement .= l:string
+    elseif a:script[i] == '\'
+      " Escape.
+      let i += 1
+
+      if i >= len(a:script)
+        throw 'Exception: Join to next line (\).'
+      endif
+
+      let l:statement .= '\' . a:script[i]
+      let i += 1
+    elseif a:script[i] == '#'
+      " Comment.
+      break
+    else
+      let l:statement .= a:script[i]
+      let i += 1
+    endif
+  endwhile
+
+  if l:statement != ''
+    call add(l:statements,
+          \ { 'statement' : l:statement,
+          \   'condition' : 'always',
+          \})
+  endif
+
+  return l:statements
+endfunction"}}}
 
 function! vimshell#parser#execute_command(commands, context)"{{{
   if empty(a:commands)
-    return
+    return 0
   endif
   
   let l:internal_commands = vimshell#available_commands()
@@ -218,6 +303,24 @@ function! vimshell#parser#split_statements(script)"{{{
       endif
       let l:statement = ''
       let i += 1
+    elseif a:script[i] == '&'
+      if i+1 < len(a:script) && a:script[i+1] == '&'
+        if l:statement != ''
+          call add(l:statements, l:statement)
+        endif
+        let i += 2
+      else
+        let i += 1
+      endif
+    elseif a:script[i] == '|'
+      if i+1 < len(a:script) && a:script[i+1] == '|'
+        if l:statement != ''
+          call add(l:statements, l:statement)
+        endif
+        let i += 2
+      else
+        let i += 1
+      endif
     elseif a:script[i] == "'"
       " Single quote.
       let [l:string, i] = s:skip_single_quote(a:script, i)

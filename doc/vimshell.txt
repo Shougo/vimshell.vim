@@ -193,6 +193,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved scroll region.
 - Implemented reset escape sequence.
 - Improved interactive.
+- Fixed expand alias.
+- Improved parser.
 
 2010-07-21
 - Improved initialize autoload.
