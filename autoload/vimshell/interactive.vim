@@ -28,10 +28,6 @@ let s:last_interactive_bufnr = 1
 
 " Utility functions.
 
-function! s:SID_PREFIX()
-  return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
-endfunction
-
 let s:password_regex = 
       \'\%(Enter \\|[Oo]ld \\|[Nn]ew \\|''s \\|login \\|'''  .
       \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
@@ -497,6 +493,20 @@ function! s:error_buffer(fd, string)"{{{
 endfunction"}}}
 
 " Autocmd functions.
+function! vimshell#interactive#check_insert_output()"{{{
+  if exists('b:interactive') && line('.') == line('$')
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    if !empty(b:interactive.process) && b:interactive.process.is_valid
+      " Ignore key sequences.
+      call feedkeys("\<C-r>\<ESC>", 'n')
+    endif
+  endif
+endfunction"}}}
+function! vimshell#interactive#check_moved_output()"{{{
+  if exists('b:interactive') && line('.') == line('$')
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+  endif
+endfunction"}}}
 function! s:check_all_output()"{{{
   let l:bufnr_save = bufnr('%')
 
@@ -504,7 +514,7 @@ function! s:check_all_output()"{{{
   while l:bufnr <= bufnr('$')
     if bufexists(l:bufnr) && bufwinnr(l:bufnr) > 0 && type(getbufvar(l:bufnr, 'interactive')) != type('')
       " Check output.
-      call vimshell#interactive#check_output(getbufvar(l:bufnr, 'interactive'), l:bufnr, l:bufnr_save)
+      call s:check_output(getbufvar(l:bufnr, 'interactive'), l:bufnr, l:bufnr_save)
     endif
 
     let l:bufnr += 1
@@ -515,7 +525,51 @@ function! s:check_all_output()"{{{
     call feedkeys("g\<ESC>", 'n')
   endif
 endfunction"}}}
-function! s:check_output(interactive)"{{{
+function! s:check_output(interactive, bufnr, bufnr_save)"{{{
+  " Output cache.
+  if !s:cache_output(a:interactive)
+    return
+  endif
+  
+  if a:bufnr != a:bufnr_save
+    execute bufwinnr(a:bufnr) . 'wincmd w'
+  endif
+
+  if mode() !=# 'i'
+    let l:intbuffer_pos = getpos('.')
+    
+    $
+    normal! $
+  endif
+
+  let l:type = a:interactive.type
+  if l:type ==# 'background'
+    setlocal modifiable
+    call vimshell#interactive#execute_pipe_out()
+    setlocal nomodifiable
+  else
+    if l:type ==# 'terminal' && mode() !=# 'i'
+      setlocal modifiable
+    endif
+
+    call vimshell#interactive#execute_pty_out(mode() ==# 'i')
+
+    if l:type ==# 'terminal'
+      setlocal nomodifiable
+    elseif !a:interactive.process.eof && mode() ==# 'i'
+      startinsert!
+    endif
+  endif
+
+  if mode() !=# 'i'
+    call setpos('.', l:intbuffer_pos)
+  endif
+
+  if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+    execute bufwinnr(a:bufnr_save) . 'wincmd w'
+  endif
+endfunction"}}}
+function! s:cache_output(interactive)"{{{
   if empty(a:interactive.process) || !a:interactive.process.is_valid
     return 0
   endif
@@ -574,50 +628,7 @@ function! s:check_output(interactive)"{{{
 
   return l:outputed
 endfunction"}}}
-function! vimshell#interactive#check_output(interactive, bufnr, bufnr_save)"{{{
-  " Output check.
-  if !s:check_output(a:interactive)
-    return
-  endif
-  
-  if a:bufnr != a:bufnr_save
-    execute bufwinnr(a:bufnr) . 'wincmd w'
-  endif
 
-  if mode() !=# 'i'
-    let l:intbuffer_pos = getpos('.')
-    
-    $
-    normal! $
-  endif
-
-  let l:type = a:interactive.type
-  if l:type ==# 'background'
-    setlocal modifiable
-    call vimshell#interactive#execute_pipe_out()
-    setlocal nomodifiable
-  else
-    if l:type ==# 'terminal' && mode() !=# 'i'
-      setlocal modifiable
-    endif
-
-    call vimshell#interactive#execute_pty_out(mode() ==# 'i')
-
-    if l:type ==# 'terminal'
-      setlocal nomodifiable
-    elseif !a:interactive.process.eof && mode() ==# 'i'
-      startinsert!
-    endif
-  endif
-
-  if mode() !=# 'i'
-    call setpos('.', l:intbuffer_pos)
-  endif
-
-  if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-    execute bufwinnr(a:bufnr_save) . 'wincmd w'
-  endif
-endfunction"}}}
 function! s:winenter(bufnr)"{{{
   if !exists('b:interactive')
     return

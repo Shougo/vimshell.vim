@@ -183,7 +183,8 @@ function! s:init_bg(args, context)"{{{
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd CursorHoldI <buffer>  call s:on_hold_i()
+    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
+    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
   augroup END
 endfunction"}}}
 
@@ -222,15 +223,5 @@ function! s:insert_leave()"{{{
   if exists('+guicursor')
     let &guicursor = s:guicursor_save
   endif
-endfunction"}}}
-function! s:on_hold_i()"{{{
-  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
-  if b:interactive.process.is_valid
-    " Ignore key sequences.
-    call feedkeys("\<C-r>\<ESC>", 'n')
-  endif
-endfunction"}}}
-function! s:on_moved_i()"{{{
-  call vimshell#interactive#check_output(b:interactive, bufnr('%'), bufnr('%'))
 endfunction"}}}
 
