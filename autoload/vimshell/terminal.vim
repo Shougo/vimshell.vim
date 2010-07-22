@@ -122,16 +122,6 @@ function! vimshell#terminal#print(string)"{{{
         let l:pos += 3
         continue
       endif"}}}
-      let l:checkchar3 = l:checkstr[: 2]
-      if l:checkchar3 != '' && has_key(s:escape_sequence_simple_char3, l:checkchar3)"{{{
-        call s:output_string(l:newstr)
-        let l:newstr = ''
-
-        call call(s:escape_sequence_simple_char3[l:checkchar3], [''], s:escape)
-
-        let l:pos += 4
-        continue
-      endif"}}}
 
       let l:matched = 0
       " Check match pattern.
@@ -239,11 +229,6 @@ function! vimshell#terminal#filter(string)"{{{
         let l:pos += 3
         continue
       endif"}}}
-      let l:checkchar3 = l:checkstr[: 2]
-      if l:checkchar3 != '' && has_key(s:escape_sequence_simple_char3, l:checkchar3)"{{{
-        let l:pos += 4
-        continue
-      endif"}}}
 
       let l:matched = 0
       " Check match pattern.
@@ -300,9 +285,11 @@ function! s:init_terminal()"{{{
         \ 'syntax_names' : {},
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
-        \ 'region_top' : 1,
-        \ 'region_bottom' : 
-        \          (has_key(b:interactive, 'height') ? b:interactive.height : winheight(0)),
+        \ 'region_top' : 0,
+        \ 'region_bottom' : 0,
+        \ 'standard_character_set' : 'United States',
+        \ 'alternate_character_set' : 'United States',
+        \ 'current_character_set' : 'United States',
         \}
   return
 endfunction"}}}
@@ -322,16 +309,27 @@ function! s:output_string(string)"{{{
     return
   endif
   
+  let l:string = a:string
+
+  if b:interactive.terminal.current_character_set =~# 'Line Drawing'
+    " Convert characters.
+    let l:string = ''
+    for c in split(a:string, '\zs')
+      let l:string .= has_key(s:drawing_character_table, c)?
+            \ s:drawing_character_table[c] : c
+    endfor
+  endif
+  
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
   let l:line = s:lines[s:line]
   let l:left_line = l:line[: s:col - 2]
-  let l:right_line = vimshell#util#truncate_head(l:line[s:col-1 :], vimshell#util#wcswidth(a:string))
+  let l:right_line = vimshell#util#truncate_head(l:line[s:col-1 :], vimshell#util#wcswidth(l:string))
 
-  let s:lines[s:line] = (s:col == 1)? a:string . l:right_line : l:left_line . a:string . l:right_line
+  let s:lines[s:line] = (s:col == 1)? l:string . l:right_line : l:left_line . l:string . l:right_line
   
-  let s:col += len(a:string)
+  let s:col += len(l:string)
 endfunction"}}}
 function! s:sortfunc(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
@@ -376,6 +374,10 @@ function! s:escape.highlight(matchstr)"{{{
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
   let l:cnt = 0
+  if empty(l:highlight_list)
+    " Default.
+    let l:highlight_list = [ 0 ]
+  endif
   for l:color_code in l:highlight_list
     if has_key(s:highlight_table, l:color_code)"{{{
       " Use table.
@@ -462,18 +464,15 @@ function! s:escape.highlight(matchstr)"{{{
     execute 'highlight' l:syntax_name l:highlight
   endif
 endfunction"}}}
-function! s:escape.highlight_restore(matchstr)"{{{
-  call s:escape.highlight('[0m')
-endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
   
-  let s:line = l:args[0]
+  let s:line = empty(l:args) ? 1 : l:args[0]
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
 
-  let l:width = l:args[1]
+  let l:width = empty(l:args) ? 1 : l:args[1]
   if l:width > len(s:lines[s:line])+1
     let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - l:width)
   endif
@@ -481,6 +480,11 @@ function! s:escape.move_cursor(matchstr)"{{{
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  if empty(l:args)
+    " Clear scrolling region.
+    let b:interactive.terminal.region_top = 0
+    let b:interactive.terminal.region_bottom = 0
+  endif
   
   let l:top = l:args[0]
   let l:bottom = l:args[1]
@@ -495,80 +499,69 @@ function! s:escape.setup_scrolling_region(matchstr)"{{{
   let b:interactive.terminal.region_top = l:top
   let b:interactive.terminal.region_bottom = l:bottom
 endfunction"}}}
-function! s:escape.delete_whole_line(matchstr)"{{{
-  let s:lines[s:line] = ''
-  let s:col = 1
-endfunction"}}}
-function! s:escape.delete_right_line(matchstr)"{{{
-  let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
-endfunction"}}}
-function! s:escape.delete_left_line(matchstr)"{{{
-  let s:lines[s:line] = s:lines[s:line][s:col-1 :]
-  let s:col = 1
-endfunction"}}}
-function! s:escape.clear_entire_screen(matchstr)"{{{
-  let l:reg = @x
-  1,$ delete x
-  let @x = l:reg
-
-  let s:lines = {}
-  let s:line = 1
-  let s:col = 1
-endfunction"}}}
-function! s:escape.clear_screen_from_cursor_down(matchstr)"{{{
-  for l:linenr in keys(s:lines)
-    if l:linenr >= s:line
-      " Clear line.
-      let s:lines[l:linenr] = ''
-    endif
-  endfor
-
-  let l:linenr = s:line
-  let l:max_line = line('$')
-  while l:linenr <= l:max_line
-    " Clear line.
-    let s:lines[l:linenr] = ''
-    let l:linenr += 1
-  endwhile
-  
-  let s:col = 1
-endfunction"}}}
-function! s:escape.clear_screen_from_cursor_up(matchstr)"{{{
-  for l:linenr in keys(s:lines)
-    if l:linenr <= s:line
-      " Clear line.
-      let s:lines[l:linenr] = ''
-    endif
-  endfor
-  
-  let l:linenr = 1
-  let l:max_line = s:line
-  while l:linenr <= l:max_line
-    " Clear line.
-    let s:lines[l:linenr] = ''
-    let l:linenr += 1
-  endwhile
-
-  let s:col = 1
-endfunction"}}}
-function! s:escape.move_cursor_home(matchstr)"{{{
-  let s:line = 1
-  let s:col = 1
-  if !has_key(s:lines, s:line)
+function! s:escape.clear_line(matchstr)"{{{
+  let l:param = matchstr(a:matchstr, '\d\+')
+  if l:param == '' || l:param == '0'
+    " Clear right line.
+    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
+  elseif l:param == '1'
+    " Clear left line.
+    let s:lines[s:line] = s:lines[s:line][s:col-1 :]
+    let s:col = 1
+  elseif l:param == '2'
+    " Clear whole line.
     let s:lines[s:line] = ''
+    let s:col = 1
   endif
 endfunction"}}}
-function! s:escape.move_head(matchstr)"{{{
-  let s:col = 1
-endfunction"}}}
-function! s:escape.move_up1(matchstr)"{{{
-  let s:line -= 1
-  if s:line < 1
-    let s:line = 1
-  endif
+function! s:escape.clear_screen(matchstr)"{{{
+  let l:param = matchstr(a:matchstr, '\d\+')
+  if l:param == '' || l:param == '0'
+    " Clear screen from cursor down.
+    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
+    for l:linenr in keys(s:lines)
+      if l:linenr >= s:line
+        " Clear line.
+        let s:lines[l:linenr] = ''
+      endif
+    endfor
 
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = repeat(' ', s:col)
+    let l:linenr = s:line
+    let l:max_line = line('$')
+    while l:linenr <= l:max_line
+      " Clear line.
+      let s:lines[l:linenr] = ''
+      let l:linenr += 1
+    endwhile
+
+    let s:col = 1
+  elseif l:param == '1'
+    " Clear screen from cursor up.
+    for l:linenr in keys(s:lines)
+      if l:linenr <= s:line
+        " Clear line.
+        let s:lines[l:linenr] = ''
+      endif
+    endfor
+
+    let l:linenr = 1
+    let l:max_line = s:line
+    while l:linenr <= l:max_line
+      " Clear line.
+      let s:lines[l:linenr] = ''
+      let l:linenr += 1
+    endwhile
+
+    let s:col = 1
+  elseif l:param == '2'
+    " Clear entire screen.
+    let l:reg = @x
+    1,$ delete x
+    let @x = l:reg
+
+    let s:lines = {}
+    let s:line = 1
+    let s:col = 1
   endif
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
@@ -586,13 +579,6 @@ function! s:escape.move_up(matchstr)"{{{
     let s:lines[s:line] = repeat(' ', s:col)
   endif
 endfunction"}}}
-function! s:escape.move_down1(matchstr)"{{{
-  let s:line += 1
-
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = repeat(' ', s:col)
-  endif
-endfunction"}}}
 function! s:escape.move_down(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
@@ -603,13 +589,6 @@ function! s:escape.move_down(matchstr)"{{{
 
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = repeat(' ', s:col)
-  endif
-endfunction"}}}
-function! s:escape.move_right1(matchstr)"{{{
-  let s:col += 1
-  
-  if s:col > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - s:col)
   endif
 endfunction"}}}
 function! s:escape.move_right(matchstr)"{{{
@@ -626,12 +605,6 @@ function! s:escape.move_right(matchstr)"{{{
 
   let s:col += vimshell#util#truncate_len(l:line[s:col-1 :], n)
 endfunction"}}}
-function! s:escape.move_left1(matchstr)"{{{
-  let s:col -= 1
-  if s:col < 1
-    let s:col = 1
-  endif
-endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
@@ -645,15 +618,11 @@ function! s:escape.move_left(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_down_head1(matchstr)"{{{
-  call s:escape.move_down1(a:matchstr)
+  call s:escape.move_down('')
   let s:col = 1
 endfunction"}}}
 function! s:escape.move_down_head(matchstr)"{{{
   call s:escape.move_down(a:matchstr)
-  let s:col = 1
-endfunction"}}}
-function! s:escape.move_up_head1(matchstr)"{{{
-  call s:escape.move_up1(a:matchstr)
   let s:col = 1
 endfunction"}}}
 function! s:escape.move_up_head(matchstr)"{{{
@@ -703,6 +672,16 @@ function! s:escape.change_cursor_shape(matchstr)"{{{
     set guicursor=i:hor20-Cursor/lCursor-blinkon0
   endif
 endfunction"}}}
+function! s:escape.change_character_set(matchstr)"{{{
+  if a:matchstr =~ '^[()]0'
+    " Line drawing set.
+    if a:matchstr =~ '^('
+      let b:interactive.terminal.standard_character_set = 'Line Drawing'
+    else
+      let b:interactive.terminal.alternate_character_set = 'Line Drawing'
+    endif
+  endif
+endfunction"}}}
 
 " Control sequence functions.
 let s:control = {}
@@ -723,7 +702,7 @@ function! s:control.delete_backword_char()"{{{
     return
   endif
   
-  call s:escape.move_left1(1)
+  call s:escape.move_left('')
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{
   if s:line == b:interactive.echoback_linenr
@@ -739,9 +718,19 @@ function! s:control.bell()"{{{
   echo 'Ring!'
 endfunction"}}}
 function! s:control.shift_in()"{{{
+  let b:interactive.terminal.current_character_set = b:interactive.terminal.standard_character_set
 endfunction"}}}
 function! s:control.shift_out()"{{{
+  let b:interactive.terminal.current_character_set = b:interactive.terminal.alternate_character_set
 endfunction"}}}
+
+let s:drawing_character_table = {
+      \ 'j' : '+', 'k' : '+', 'l' : '+', 'm' : '+', 'n' : '+',
+      \ 'o' : '-', 'p' : '-', 'q' : '-',
+      \ 'r' : '_', 's' : '_',
+      \ 't' : '+', 'u' : '+', 'v' : '+', 'w' : '+',
+      \ 'x' : '|',
+      \ }
 
 " escape sequence list. {{{
 " pattern: function
@@ -760,6 +749,8 @@ let s:escape_sequence_csi = {
       \ 'G' : s:escape.move_col,
       \ 'H' : s:escape.move_cursor,
       \ 'f' : s:escape.move_cursor,
+      \ 'J' : s:escape.clear_screen,
+      \ 'K' : s:escape.clear_line,
       \
       \ 'g' : s:escape.ignore,
       \ 'c' : s:escape.ignore,
@@ -768,7 +759,7 @@ let s:escape_sequence_csi = {
       \}
 let s:escape_sequence_match = {
       \ '^\[?\d[hl]' : s:escape.ignore,
-      \ '^[()][AB012UK]' : s:escape.ignore,
+      \ '^[()][AB012UK]' : s:escape.change_character_set,
       \ '^k.\{-}\e\\' : s:escape.change_title,
       \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
       \ '^#\d' : s:escape.ignore,
@@ -802,41 +793,11 @@ let s:escape_sequence_simple_char1 = {
       \ '%' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char2 = {
-      \ '[m' : s:escape.highlight_restore,
-      \
-      \ '[D' : s:escape.move_down1,
-      \ '[M' : s:escape.move_up1,
-      \ '[H' : s:escape.move_cursor_home,
-      \ '[f' : s:escape.move_cursor_home,
-      \
-      \ '[g' : s:escape.ignore,
-      \
-      \ '[K' : s:escape.delete_right_line,
-      \
-      \ '[J' : s:escape.clear_screen_from_cursor_down,
-      \
-      \ '[c' : s:escape.ignore,
-      \
       \ '/Z' : s:escape.ignore,
       \ '%@' : s:escape.ignore,
       \ '%G' : s:escape.ignore,
       \ '%8' : s:escape.ignore,
       \ '#8' : s:escape.ignore,
-      \}
-let s:escape_sequence_simple_char3 = {
-      \ '[;H' : s:escape.move_cursor_home,
-      \ '[;f' : s:escape.move_cursor_home,
-      \
-      \ '[0K' : s:escape.delete_right_line,
-      \ '[1K' : s:escape.delete_left_line,
-      \ '[2K' : s:escape.delete_whole_line,
-      \
-      \ '[0J' : s:escape.ignore,
-      \ '[1J' : s:escape.ignore,
-      \ '[2J' : s:escape.clear_entire_screen,
-      \
-      \ '[0c' : s:escape.ignore,
-      \ '[0G' : s:escape.ignore,
       \}
 "}}}
 " control sequence list. {{{
