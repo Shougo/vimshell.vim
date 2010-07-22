@@ -511,7 +511,7 @@ function! s:check_all_output()"{{{
     let l:bufnr += 1
   endwhile
   
-  if !empty(b:interactive.process) && b:interactive.process.is_valid
+  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
     " Ignore key sequences.
     call feedkeys("g\<ESC>", 'n')
   endif

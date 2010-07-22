@@ -645,8 +645,7 @@ function! s:escape.move_down_head1(matchstr)"{{{
   call s:control.newline()
 endfunction"}}}
 function! s:escape.move_down_head(matchstr)"{{{
-  call s:escape.move_down(a:matchstr)
-  let s:col = 1
+  call s:control.newline()
 endfunction"}}}
 function! s:escape.move_up_head(matchstr)"{{{
   let s:col = 1
@@ -714,14 +713,7 @@ let s:control = {}
 function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
-  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
-    " Scroll down one line.
-    call s:scroll_down(1)
-  else
-    let s:line += 1
-    let s:lines[s:line] = ''
-  endif
-  
+  call s:escape.move_down(1)
   let s:col = 1
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
