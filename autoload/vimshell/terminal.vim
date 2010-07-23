@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 23 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -504,14 +504,20 @@ function! s:escape.move_cursor(matchstr)"{{{
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
   let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
-  if empty(l:args)
-    " Clear scrolling region.
-    let b:interactive.terminal.region_top = 0
-    let b:interactive.terminal.region_bottom = 0
+  
+  let l:top = empty(l:args) ? 0 : l:args[0]
+  let l:bottom = empty(l:args) ? 0 : l:args[1]
+  
+  if l:top == 1
+    if (vimshell#iswin() && l:bottom == 25)
+          \|| (!vimshell#iswin() && l:bottom == b:interactive.height)
+      " Clear scrolling region.
+      let [l:top, l:bottom] = [0, 0]
+    endif
   endif
   
-  let b:interactive.terminal.region_top = l:args[0]
-  let b:interactive.terminal.region_bottom = l:args[1]
+  let b:interactive.terminal.region_top = l:top
+  let b:interactive.terminal.region_bottom = l:bottom
 endfunction"}}}
 function! s:escape.clear_line(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
@@ -714,7 +720,11 @@ function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
   call s:escape.move_down(1)
-  let s:col = 1
+  
+  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
+  else
+    let s:col = 1
+  endif
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
   if s:line == b:interactive.echoback_linenr
@@ -748,7 +758,9 @@ let s:drawing_character_table = {
       \ 'o' : '-', 'p' : '-', 'q' : '-',
       \ 'r' : '_', 's' : '_',
       \ 't' : '+', 'u' : '+', 'v' : '+', 'w' : '+',
-      \ 'x' : '|',
+      \ 'x' : '|', 'a' : '#', '+' : '^', ',' : '<',
+      \ '.' : 'v', 'I' : '0', '-' : '>', '''' : '*',
+      \ 'h' : '#', 'n' : '+', '~' : 'O',
       \ }
 
 " escape sequence list. {{{
