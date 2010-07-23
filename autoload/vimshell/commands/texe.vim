@@ -176,8 +176,6 @@ function! s:init_bg(args, context)"{{{
   
   execute 'set filetype=term-'.fnamemodify(a:args[0], ':t:r')
 
-  call s:default_settings()
-  
   " Set autocommands.
   augroup vimshell
     autocmd InsertEnter <buffer>       call s:insert_enter()

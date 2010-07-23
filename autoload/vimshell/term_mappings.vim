@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: term_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 23 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,12 +26,12 @@
 
 function! vimshell#term_mappings#define_default_mappings()"{{{
   " Plugin key-mappings."{{{
-  nnoremap <silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
-  nnoremap <silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
-  nnoremap <silent> <Plug>(vimshell_term_execute_line)       :<C-u>call <SID>execute_line()<CR>
-  execute 'inoremap <silent> <Plug>(vimshell_term_send_escape)' printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr("\<ESC>"))
-  inoremap <silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_execute_line)       :<C-u>call <SID>execute_line()<CR>
+  inoremap <buffer><silent><expr> <Plug>(vimshell_term_send_escape) vimshell#term_mappings#send_key("\<ESC>")
+  inoremap <buffer><silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 
   for l:lhs in [
@@ -44,7 +44,8 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '[', ']', '{', '}', ':', ';', '''', '"', ',', '<', '.', '>', '/', '?',
         \ ]
 
-    execute 'inoremap <buffer><silent>' l:lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
+    execute 'inoremap <buffer><silent><expr>' l:lhs 'vimshell#term_mappings#send_key('. string(l:lhs) .')'
+    "execute 'inoremap <buffer><silent>' l:lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
   endfor
   
   for [l:key, l:value] in items({
@@ -89,6 +90,12 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   imap <buffer> <ESC><ESC>         <Plug>(vimshell_term_send_escape)
   imap <buffer> <C-Space>  <C-@>
   imap <buffer> <C-@>              <Plug>(vimshell_term_send_input)
+endfunction"}}}
+function! vimshell#term_mappings#send_key(key)"{{{
+  return printf("\<C-o>:call vimshell#interactive#send_char(%s)\<CR>", char2nr(a:key))
+endfunction"}}}
+function! vimshell#term_mappings#send_keys(keys)"{{{
+  return printf("\<C-o>:call vimshell#interactive#send_char(%s)\<CR>", string(map(split(l:keys, '\zs'), 'char2nr(v:val)')))
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
