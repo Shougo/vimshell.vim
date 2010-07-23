@@ -95,7 +95,7 @@ function! vimshell#term_mappings#send_key(key)"{{{
   return printf("\<C-o>:call vimshell#interactive#send_char(%s)\<CR>", char2nr(a:key))
 endfunction"}}}
 function! vimshell#term_mappings#send_keys(keys)"{{{
-  return printf("\<C-o>:call vimshell#interactive#send_char(%s)\<CR>", string(map(split(l:keys, '\zs'), 'char2nr(v:val)')))
+  return printf("\<C-o>:call vimshell#interactive#send_char(%s)\<CR>", string(map(split(a:keys, '\zs'), 'char2nr(v:val)')))
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
