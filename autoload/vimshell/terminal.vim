@@ -731,10 +731,38 @@ function! s:control.delete_backword_char()"{{{
     return
   endif
   
-  call s:escape.move_left('')
+  if s:col == 1
+    " Wrap above line.
+    if s:line > 1
+      let s:line -= 1
+    endif
+    
+    if !has_key(s:lines, s:line)
+      let s:lines[s:line] = getline(s:line)
+    endif
+    
+    let s:col = len(s:lines[s:line])
+    return
+  endif
+  
+  call s:escape.move_left(1)
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{
   if s:line == b:interactive.echoback_linenr
+    return
+  endif
+  
+  if s:col == 1
+    " Wrap above line.
+    if s:line > 1
+      let s:line -= 1
+    endif
+    
+    if !has_key(s:lines, s:line)
+      let s:lines[s:line] = getline(s:line)
+    endif
+    
+    let s:col = len(s:lines[s:line])
     return
   endif
   

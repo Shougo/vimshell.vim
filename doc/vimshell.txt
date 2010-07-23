@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved documentation.
 - Improved drawing character set.
 - Improved scroll down.
+- Implemented wrap around bs.
 
 2010-07-22
 - Improved search cursor file.
