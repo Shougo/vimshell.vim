@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: git.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Feb 2010
+" Last Modified: 23 Jul 2010
 " Usage: Just source this file.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
@@ -69,7 +69,7 @@ function! vimshell#vcs#git#action_message()"{{{
   let l:action = []
   let l:current_action = ''
   let l:files = []
-  for l:status in split(vimshell#system('git status'), '\n')
+  for l:status in split(vimshell#system('git status', '', 500), '\n')
     if l:status =~# '^\s*#\s*unmerged'
       if l:current_action != '' && len(l:files) > 0
         call add(l:action, printf('%s:%d', l:current_action, len(l:files)))

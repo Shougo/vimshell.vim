@@ -25,10 +25,14 @@
 " }}}
 "=============================================================================
 
+if !exists('g:vimshell_vcs_print_null')
+  let g:vimshell_vcs_print_null = 0
+endif
+
 function! vimshell#vcs#info(string, ...)"{{{
     let l:func_name = s:load_vcs_plugin()
     if l:func_name == ''
-        return ''
+        return g:vimshell_vcs_print_null ? '[novcs]-(noinfo)' : ''
     endif
 
     if call(l:func_name . 'action_message', []) != '' && !empty(a:000)

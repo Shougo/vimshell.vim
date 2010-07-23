@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-23
+- Implemented g:vimshell_vcs_print_null option.
+- Implemented timeout in vcs.
+- Improved documentation.
+
 2010-07-22
 - Improved search cursor file.
 - Added :VimShellSendBuffer command.

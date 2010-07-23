@@ -386,6 +386,13 @@ g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
 			
 			初期値は''です。
 
+g:vimshell_vcs_print_null				*g:vimshell_vcs_print_null*
+			これが0以外のとき、vimshellの|vimshell-tips-vcs_info|
+			において、利用できるVCSプラグインが存在しないとき、
+			'[novcs]-(noinfo)'と表示します。
+			
+			初期値は0です。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
@@ -777,12 +784,11 @@ auto_cd							*vimshell-tips-auto_cd*
 		-> 00 01 02 03 04 05 06 07 08 09
 <
 ワイルドカード						*vimshell-tips-wildcard*
+		ワイルドカードも普通に使えます。指定されたファイルが存在し
+		ない場合、zshのようにエラーになります。
 >
 		vimshell% ls *.htm
 <
-		ワイルドカードも普通に使えます。指定されたファイルが存在し
-		ない場合、zshのようにエラーになります。
-		
 		ワイルドカードの除外もサポートしました。
 >
 		vimshell% ls *~*.htm
@@ -791,22 +797,22 @@ auto_cd							*vimshell-tips-auto_cd*
 		という意味になります。
 
 バッククオート						*vimshell-tips-backquote*
+		コマンドの引数にコマンドの実行結果が使えます。
 >
 		vimshell% echo `ls`
 <
-		コマンドの引数にコマンドの実行結果が使えます。
 		Vim scriptの埋め込みもできます。
 >
 		vimshell% echo `=3`
 <
 
 fakecygpty						*vimshell-tips-fakecygpty*
->
-<
 		fakecygptyとはKyotaro Horiguchiさんが開発した、Windowsの
 		パイプとCygwinのptyを接続させて動作させるためのコマンドです。
 		例えば、次のコマンドでCygwinのsshと接続できます。
+>
 		> fakecygpty ssh
+<
 		Meadowのソースコードに含まれていて探すのが大変なので、私が
 		ソースコードを再配布しています。
 		http://github.com/Shougo/fakecygpty
@@ -817,6 +823,16 @@ fakecygpty						*vimshell-tips-fakecygpty*
 		というコマンドを実行します。あとはfakecygptyを$PATHの通った
 		ところに置けば準備完了です。
 >
+vcs_info						*vimshell-tips-vcs-info*
+
+		vimshellには、zshが実装しているようなVCSとの連携機能がありま
+		す。標準ではgitにしか対応していませんが、プラグインを追加す
+		ることで、さまざまなVCSに対応できます。
+>
+		let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+<
+		たとえば、このようにvimshellの右プロンプトにVCSの情報を表示
+		できます。フォーマットはzshのvcs_infoに準拠しています。
 
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*
