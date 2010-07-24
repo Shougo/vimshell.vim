@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 24 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,9 +42,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     call insert(l:arguments, 'ls')
   endif
 
-  let l:other_info = a:other_info
-  let l:other_info.is_interactive = 1
-  call vimshell#execute_internal_command('exe', l:arguments, a:fd, l:other_info)
+  call vimshell#execute_internal_command('exe', l:arguments, a:fd, a:other_info)
 endfunction"}}}
 
 function! vimshell#commands#ls#define()

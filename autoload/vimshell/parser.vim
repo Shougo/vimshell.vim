@@ -240,6 +240,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   let l:program = a:commands[0].args[0]
   let l:args = a:commands[0].args[1:]
   let l:fd = a:commands[0].fd
+  let l:line = join(a:commands[0].args)
   
   " Check pipeline.
   if has_key(l:internal_commands, l:program)
@@ -256,7 +257,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     let l:context.fd = l:fd
     return l:internal_commands['exe'].execute(a:commands, l:context)
   else"{{{
-    let l:line = join(a:commands[0].args)
     let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
     let l:command = vimshell#getfilename(program)
     let l:ext = fnamemodify(l:program, ':e')

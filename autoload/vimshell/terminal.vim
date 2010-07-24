@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2010
+" Last Modified: 24 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -271,6 +271,7 @@ function! vimshell#terminal#clear_highlight()"{{{
     endfor
   endfor
 endfunction"}}}
+
 function! s:init_terminal()"{{{
   let b:interactive.terminal = {
         \ 'syntax_names' : {},
@@ -338,6 +339,9 @@ function! s:scroll_up(number)"{{{
   
   let i = 0
   while i < a:number
+    " Clear previous highlight.
+    call s:clear_highlight_line(b:interactive.terminal.region_top + i)
+    
     let s:lines[b:interactive.terminal.region_top + i] = ''
     let i += 1
   endwhile
@@ -354,9 +358,20 @@ function! s:scroll_down(number)"{{{
   
   let i = 0
   while i < a:number
+    " Clear previous highlight.
+    call s:clear_highlight_line(b:interactive.terminal.region_bottom - i)
+    
     let s:lines[b:interactive.terminal.region_bottom - i] = ''
     let i += 1
   endwhile
+endfunction"}}}
+function! s:clear_highlight_line(linenr)"{{{
+  if has_key(b:interactive.terminal.syntax_names, a:linenr)
+    for [l:col, l:prev_syntax] in items(b:interactive.terminal.syntax_names[a:linenr])
+      execute 'highlight clear' l:prev_syntax
+      execute 'syntax clear' l:prev_syntax
+    endfor
+  endif
 endfunction"}}}
 
 " Escape sequence functions.
@@ -520,6 +535,9 @@ function! s:escape.setup_scrolling_region(matchstr)"{{{
   let b:interactive.terminal.region_bottom = l:bottom
 endfunction"}}}
 function! s:escape.clear_line(matchstr)"{{{
+  " Clear previous highlight.
+  call s:clear_highlight_line(s:line)
+    
   let l:param = matchstr(a:matchstr, '\d\+')
   if l:param == '' || l:param == '0'
     " Clear right line.
@@ -530,6 +548,7 @@ function! s:escape.clear_line(matchstr)"{{{
     let s:col = 1
   elseif l:param == '2'
     " Clear whole line.
+    
     let s:lines[s:line] = ''
     let s:col = 1
   endif
@@ -541,6 +560,9 @@ function! s:escape.clear_screen(matchstr)"{{{
     let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
     for l:linenr in keys(s:lines)
       if l:linenr >= s:line
+        " Clear previous highlight.
+        call s:clear_highlight_line(s:line)
+
         " Clear line.
         let s:lines[l:linenr] = ''
       endif
@@ -549,6 +571,9 @@ function! s:escape.clear_screen(matchstr)"{{{
     let l:linenr = s:line
     let l:max_line = line('$')
     while l:linenr <= l:max_line
+      " Clear previous highlight.
+      call s:clear_highlight_line(s:line)
+      
       " Clear line.
       let s:lines[l:linenr] = ''
       let l:linenr += 1
@@ -559,6 +584,9 @@ function! s:escape.clear_screen(matchstr)"{{{
     " Clear screen from cursor up.
     for l:linenr in keys(s:lines)
       if l:linenr <= s:line
+        " Clear previous highlight.
+        call s:clear_highlight_line(s:line)
+
         " Clear line.
         let s:lines[l:linenr] = ''
       endif
@@ -567,6 +595,9 @@ function! s:escape.clear_screen(matchstr)"{{{
     let l:linenr = 1
     let l:max_line = s:line
     while l:linenr <= l:max_line
+      " Clear previous highlight.
+      call s:clear_highlight_line(s:line)
+
       " Clear line.
       let s:lines[l:linenr] = ''
       let l:linenr += 1
@@ -582,6 +613,8 @@ function! s:escape.clear_screen(matchstr)"{{{
     let s:lines = {}
     let s:line = 1
     let s:col = 1
+
+    call vimshell#terminal#clear_highlight()
   endif
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
