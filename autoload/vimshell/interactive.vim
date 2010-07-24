@@ -496,7 +496,7 @@ endfunction"}}}
 function! vimshell#interactive#check_insert_output()"{{{
   if exists('b:interactive') && line('.') == line('$')
     call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
-    if !empty(b:interactive.process) && b:interactive.process.is_valid
+    if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
       " Ignore key sequences.
       call feedkeys("\<C-r>\<ESC>", 'n')
     endif

@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-07-24
 - Fixed caching check.
 - Implemented asyncronous exe.
+- Fixed :VimShellInteractive, :VimshellTerminal, :VimShellExecute error.
 
 2010-07-23
 - Implemented g:vimshell_vcs_print_null option.

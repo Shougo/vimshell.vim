@@ -97,7 +97,7 @@ function! vimshell#commands#exe#define()
 endfunction
 
 function! s:init_process(commands, context, options)"{{{
-  if !empty(b:interactive.process) && b:interactive.process.is_valid
+  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif
