@@ -24,6 +24,8 @@
 " }}}
 "=============================================================================
 
+let s:update_time_save = &updatetime
+
 let s:command = {
       \ 'name' : 'iexe',
       \ 'kind' : 'execute',
@@ -159,8 +161,6 @@ endfunction"}}}
 function! vimshell#commands#iexe#define()
   return s:command
 endfunction
-
-let s:update_time_save = &updatetime
 
 " Set interactive options."{{{
 if vimshell#iswin()

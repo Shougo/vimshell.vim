@@ -173,7 +173,29 @@ function! s:execute_line(is_insert)"{{{
   let l:oldpos = getpos('.')
 
   $
+  
+  if !empty(b:vimshell.continuation)
+    try
+      let l:ret = vimshell#parser#execute_continuation()
 
+      if l:ret == 0
+        call vimshell#print_prompt(l:context)
+        call vimshell#start_insert(a:is_insert)
+      endif
+
+      return
+    catch
+      " Error.
+      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      call vimshell#print_prompt(l:context)
+      call vimshell#start_insert(a:is_insert)
+      return
+    endtry
+  endif
+
+  call s:execute_command_line(a:is_insert, l:oldpos)
+endfunction"}}}
+function! s:execute_command_line(is_insert, old_pos)"{{{
   " Get command line.
   let l:line = vimshell#get_prompt_command()
   let l:context = {
@@ -211,14 +233,14 @@ function! s:execute_line(is_insert)"{{{
   let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
 
   try
-    call vimshell#parser#eval_script(l:line, l:context)
+    let l:ret = vimshell#parser#eval_script(l:line, l:context)
   catch /^Error: File ".*" is not found./
     " Command not found.
     let l:oldline = l:line
     let l:line = vimshell#hook#call_filter('notfound', l:context, l:line)
     if l:line !=# l:oldline
       " Retry.
-      call setpos('.', l:oldpos)
+      call setpos('.', a:oldpos)
       call setline('.', l:line)
       call s:execute_line(a:is_insert)
     endif
@@ -241,7 +263,10 @@ function! s:execute_line(is_insert)"{{{
     call vimshell#history#append(l:line)
   endif
 
-  call vimshell#print_prompt(l:context)
+  if l:ret == 0
+    call vimshell#print_prompt(l:context)
+  endif
+  
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:previous_prompt()"{{{

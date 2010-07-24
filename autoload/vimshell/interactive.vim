@@ -547,6 +547,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
+  elseif l:type ==# 'execute'
+    call vimshell#parser#execute_continuation()
   else
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
@@ -575,7 +577,7 @@ function! s:cache_output(interactive)"{{{
   endif
   
   let l:outputed = 0
-  if a:interactive.type ==# 'background'
+  if a:interactive.type ==# 'background' || a:interactive.type ==# 'execute'
     " Background.
 
     if a:interactive.process.stdout.eof
@@ -586,7 +588,7 @@ function! s:cache_output(interactive)"{{{
       while l:read != ''
         let l:outputed = 1
 
-        let l:read .= a:interactive.process.stdout.read(-1, 40)
+        let l:read = a:interactive.process.stdout.read(-1, 40)
         let a:interactive.stdout_cache .= l:read
       endwhile
     endif
@@ -599,7 +601,7 @@ function! s:cache_output(interactive)"{{{
       while l:read != ''
         let l:outputed = 1
         
-        let l:read .= a:interactive.process.stderr.read(-1, 40)
+        let l:read = a:interactive.process.stderr.read(-1, 40)
         let a:interactive.stderr_cache .= l:read
       endwhile
     endif

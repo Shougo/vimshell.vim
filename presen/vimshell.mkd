@@ -294,14 +294,6 @@ vimshellのキーバインドは`vimshell#mappings#define_default_mappings()`に
 `setfiletype vimshell`
 を実行するので、ftplugin/vimshell.vimを作成すれば、簡単にカスタマイズできます。
 
-### VCSとの連携
-
-Ver.6.00より、zshのようなVCSとの連携機能が実装されました。
-まだgitにしか対応していませんが、プラグインを追加することで、さまざまなVCSに対応できます。
-`let g:vimshell_user_prompt = 'printf("%s  %50s", fnamemodify(getcwd(), ":~"), vimshell#vcs#info("(%s)-[%b]"))'`
-たとえば、このようにプロンプトを設定できます。
-フォーマットはzshのvcs\_infoに準拠しています。
-
 ### encodingの変換
 
 Ver.6.05より、exe, bg, iexe等のコマンドに対し、encodingを指定できるようになりました。

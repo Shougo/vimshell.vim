@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jul 2010
+" Last Modified: 24 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,6 +51,7 @@ endif
 if !exists('s:internal_commands')
   let s:internal_commands = {}
 endif
+let s:update_time_save = &updatetime
 
 " Disable bell.
 set vb t_vb=
@@ -91,6 +92,10 @@ function! s:default_settings()"{{{
   " Set autocommands.
   augroup vimshell
     autocmd BufWinEnter,WinEnter <buffer> call s:restore_current_dir()
+    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
+    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
+    autocmd InsertEnter <buffer>    call s:insert_enter()
+    autocmd InsertLeave <buffer>    call s:insert_leave()
   augroup end
 
   " Define mappings.
@@ -146,6 +151,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'preprompt' : [], 'preparse' : [], 'preexec' : [], 'emptycmd' : [], 
         \ 'chpwd' : [], 'notfound' : [],
         \}
+  let b:vimshell.continuation = {}
 
   " Set environment variables.
   let $TERM = g:vimshell_environment_term
@@ -731,13 +737,6 @@ function! vimshell#get_galias(name)"{{{
   return get(b:vimshell.galias_table, a:name, '')
 endfunction"}}}
 
-function! s:restore_current_dir()"{{{
-  if !exists('b:vimshell')
-    return
-  endif
-
-  lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
-endfunction"}}}
 function! s:init_internal_commands()"{{{
   " Initialize internal commands table.
   let s:internal_commands= {}
@@ -749,6 +748,26 @@ function! s:init_internal_commands()"{{{
       let s:internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
     endif
   endfor
+endfunction"}}}
+
+" Auto commands function.
+function! s:restore_current_dir()"{{{
+  if !exists('b:vimshell')
+    return
+  endif
+
+  lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
+endfunction"}}}
+function! s:insert_enter()"{{{
+  if &updatetime > g:vimshell_interactive_update_time
+    let s:update_time_save = &updatetime
+    let &updatetime = g:vimshell_interactive_update_time
+  endif
+endfunction"}}}
+function! s:insert_leave()"{{{
+  if &updatetime < s:update_time_save
+    let &updatetime = s:update_time_save
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -54,11 +54,15 @@ function! s:command.execute(commands, context)"{{{
     return
   endif
 
-  echo 'Running command.'
-  call append(line('$'), '')
-
   " Move line.
+  call append(line('$'), '')
   normal! j
+
+  if a:context.is_interactive
+    throw 'exe: Process started.'
+  endif
+  
+  echo 'Running command.'
   while b:interactive.process.is_valid
     call vimshell#interactive#execute_pipe_out()
 

@@ -34,34 +34,32 @@ function! vimshell#parser#check_script(script)"{{{
   return 0
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
-  let l:internal_commands = vimshell#available_commands()
-  
   " Split statements.
-  for l:statement in vimshell#parser#parse_statements(a:script)
-    let l:statement.statement = vimshell#parser#parse_alias(l:statement.statement)
+  let l:statements = vimshell#parser#parse_statements(a:script)
+  let l:max = len(l:statements)
+  let i = 0
+
+  while i < l:max
+    try
+      let l:ret =  s:execute_statement(l:statements[i].statement, a:context)
+    catch /^exe: Process started./
+      " Change continuation.
+      let b:vimshell.continuation = {
+            \ 'statements' : l:statements[i : ], 'context' : a:context
+            \ }
+      return 1
+    endtry
     
-    " Call preexec filter.
-    let l:statement.statement = vimshell#hook#call_filter('preexec', a:context, l:statement.statement)
-
-    let l:program = vimshell#parser#parse_program(l:statement.statement)
-
-    if has_key(l:internal_commands, l:program)
-          \ && l:internal_commands[l:program].kind ==# 'special'
-      " Special commands.
-      let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-      let l:commands = [ { 'args' : split(l:statement.statement), 'fd' : l:fd } ]
-    else
-      let l:commands = vimshell#parser#parse_pipe(l:statement.statement)
+    let l:condition = l:statements[i].condition
+    if (l:condition ==# 'true' && l:ret)
+          \ || (l:condition ==# 'false' && !l:ret)
+      break
     endif
-
-    let l:ret = vimshell#parser#execute_command(l:commands, a:context)
-    redraw
     
-    if (l:statement.condition ==# 'true' && l:ret)
-          \ || (l:statement.condition ==# 'false' && !l:ret)
-      return
-    endif
-  endfor
+    let i += 1
+  endwhile
+
+  return 0
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
   " Get program.
@@ -288,6 +286,83 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     endif
   endif"}}}
 
+endfunction
+"}}}
+function! vimshell#parser#execute_continuation()"{{{
+  if empty(b:vimshell.continuation)
+    return
+  endif
+  
+  " Execute pipe.
+  call vimshell#interactive#execute_pipe_out()
+
+  if b:interactive.process.is_valid
+    return 1
+  endif
+
+  let b:vimshell.system_variables['status'] = b:interactive.status
+  let ret = b:interactive.status
+
+  let l:statements = b:vimshell.continuation.statements
+  let l:condition = l:statements[0].condition
+  if (l:condition ==# 'true' && l:ret)
+        \ || (l:condition ==# 'false' && !l:ret)
+    " Exit.
+    let b:vimshell.continuation.statements = []
+  endif
+
+  " Execute rest commands.
+  let l:statements = l:statements[1:]
+  let l:max = len(l:statements)
+  let l:context = b:vimshell.continuation.context
+  
+  let i = 0
+
+  while i < l:max
+    try
+      let l:ret = s:execute_statement(l:statements[i].statement, l:context)
+    catch /^exe: Process started./
+      " Change continuation.
+      let b:vimshell.continuation = {
+            \ 'statements' : l:statements[i : ], 'context' : l:context
+            \ }
+      return 1
+    endtry
+    
+    let l:condition = l:statements[i].condition
+    if (l:condition ==# 'true' && l:ret)
+          \ || (l:condition ==# 'false' && !l:ret)
+      break
+    endif
+    
+    let i += 1
+  endwhile
+
+  let b:vimshell.continuation = {}
+  call vimshell#print_prompt(l:context)
+  call vimshell#start_insert(mode() ==# 'i')
+  return 0
+endfunction
+"}}}
+function! s:execute_statement(statement, context)"{{{
+  let l:statement = vimshell#parser#parse_alias(a:statement)
+
+  " Call preexec filter.
+  "let l:statement = vimshell#hook#call_filter('preexec', l:context, l:statement)
+
+  let l:program = vimshell#parser#parse_program(l:statement)
+
+  let l:internal_commands = vimshell#available_commands()
+  if has_key(l:internal_commands, l:program)
+        \ && l:internal_commands[l:program].kind ==# 'special'
+    " Special commands.
+    let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+    let l:commands = [ { 'args' : split(l:statement), 'fd' : l:fd } ]
+  else
+    let l:commands = vimshell#parser#parse_pipe(l:statement)
+  endif
+
+  return vimshell#parser#execute_command(l:commands, a:context)
 endfunction
 "}}}
 
