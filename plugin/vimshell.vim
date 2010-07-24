@@ -116,6 +116,9 @@ endif
 if !exists('g:vimshell_interactive_command_options')
   let g:vimshell_interactive_command_options = {}
 endif
+if !exists('g:vimshell_interactive_interpreter_commands')
+  let g:vimshell_interactive_interpreter_commands = {}
+endif
 if !exists('g:vimshell_interactive_encodings')
   let g:vimshell_interactive_encodings = {}
 endif
@@ -139,7 +142,7 @@ command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
+command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call s:vimshell_terminal(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellBang call s:bang(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellRead call s:read(<q-args>)
@@ -169,7 +172,20 @@ function! s:vimshell_execute(args)"{{{
         \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
-  call vimshell#execute_internal_command('iexe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
+  call vimshell#commands#iexe#init()
+  if a:args == ''
+    " Search interpreter.
+    if &filetype == '' || !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
+      echoerr 'Interpreter is not found.'
+      return
+    endif
+    
+    let l:args = g:vimshell_interactive_interpreter_commands[&filetype]
+  else
+    let l:args = a:args
+  endif
+  
+  call vimshell#execute_internal_command('iexe', vimshell#parser#split_args(l:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
         \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{

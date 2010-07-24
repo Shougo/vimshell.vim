@@ -162,6 +162,10 @@ function! vimshell#commands#iexe#define()
   return s:command
 endfunction
 
+" Dummy.
+function! vimshell#commands#iexe#init()
+endfunction
+
 " Set interactive options."{{{
 if vimshell#iswin()
   " Windows only options.
@@ -176,6 +180,15 @@ if vimshell#iswin()
   call vimshell#set_variables('g:vimshell_interactive_cygwin_commands', 'tail,zsh,ssh', 1)
 endif
 call vimshell#set_variables('g:vimshell_interactive_command_options', 'termtter', '--monochrome')
+
+" Set interpreter commands.
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'ruby', 'irb')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'python', 'python')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'perl6', 'perl6')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'zsh', 'zsh')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'bash', 'bash')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'erlang', 'erl')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'scheme', 'gosh')
 "}}}
 
 function! s:default_settings()"{{{

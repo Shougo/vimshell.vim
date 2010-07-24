@@ -135,10 +135,13 @@ COMMANDS 						*vimshell-commands*
 			ファイルをバックグラウンドで起動します。vimshellを
 			GNU screenのように使えます。
 
-:VimShellInteractive {command}				*:VimShellInteractive*
+:VimShellInteractive [{command}]			*:VimShellInteractive*
 			vimshellを起動せずに、{command}で指定された
 			インタプリタを起動します。EmacsのM-x 
-			{interpreter-name}のように使えます。
+			{interpreter-name}のように使えます。{command}
+			を省略すると、
+			|g:vimshell_interactive_interpreter_commands|の値が
+			使われます。
 
 :VimShellTerminal {command}				*:VimShellTerminal*
 			vimshellを起動せずに、{command}で指定された端末
@@ -340,6 +343,14 @@ g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options
 			プションを指定します。 Windows環境などで特殊なオプショ
 			ンを与えないと、うまく対話モードにならないコマンド
 			に使用します。
+			
+			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			してください。
+
+g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter_commands*
+			ファイルタイプをキーとするディクショナリ変数になっていて、
+			|:VimShellInteractive|の引数を省略した際のインタプリ
+			タ名を指定します。
 			
 			初期値は複雑なので、autoload/internal/iexe.vimを参照
 			してください。
