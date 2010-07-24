@@ -605,8 +605,6 @@ function! s:cache_output(interactive)"{{{
         let a:interactive.stderr_cache .= l:read
       endwhile
     endif
-
-    let a:interactive.stderr_cache = l:read
   elseif a:interactive.type ==# 'terminal'
         \ || (a:interactive.type ==# 'interactive'
         \      && (line('.') == a:interactive.echoback_linenr
