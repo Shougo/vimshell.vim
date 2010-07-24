@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -290,7 +290,7 @@ function! vimshell#interactive#execute_pipe_out()"{{{
 
   " Check cache.
   if b:interactive.stderr_cache != ''
-    call s:print_buffer(b:interactive.fd, b:interactive.stderr_cache)
+    call s:error_buffer(b:interactive.fd, b:interactive.stderr_cache)
     let b:interactive.stderr_cache = ''
   endif
   

@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-25
+- Fixed error print.
+
 2010-07-24
 - Fixed caching check.
 - Implemented asyncronous exe.
