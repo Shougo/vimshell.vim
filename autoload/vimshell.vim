@@ -101,7 +101,7 @@ function! s:default_settings()"{{{
   " Define mappings.
   call vimshell#mappings#define_default_mappings()
 endfunction"}}}
-function! vimshell#set_variables(variable, keys, value)"{{{
+function! vimshell#set_dictionary_helper(variable, keys, value)"{{{
   for key in split(a:keys, ',')
     if !has_key(a:variable, key) 
       let a:variable[key] = a:value

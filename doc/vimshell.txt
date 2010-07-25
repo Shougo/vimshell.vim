@@ -194,7 +194,7 @@ CHANGELOG						*vimshell-changelog*
 - Implemented <Plug>(vimshell_interrupt).
 - Fixed don't call preexec bug.
 - Improved vimshell#system().
-- Improved vimshell#set_variables().
+- Improved vimshell#set_dictionary_helper().
 
 2010-07-24
 - Fixed caching check.
