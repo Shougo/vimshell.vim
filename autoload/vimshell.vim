@@ -103,8 +103,8 @@ function! s:default_settings()"{{{
 endfunction"}}}
 function! vimshell#set_variables(variable, keys, value)"{{{
   for key in split(a:keys, ',')
-    if !has_key({a:variable}, key) 
-      let {a:variable}[key] = a:value
+    if !has_key(a:variable, key) 
+      let a:variable[key] = a:value
     endif
   endfor
 endfunction"}}}
