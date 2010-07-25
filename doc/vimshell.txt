@@ -192,6 +192,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved :VimShellInteractive, :VimshellTerminal, :VimShellExecute behavior.
 - Fixed get type.
 - Implemented <Plug>(vimshell_interrupt).
+- Fixed don't call preexec bug.
 
 2010-07-24
 - Fixed caching check.

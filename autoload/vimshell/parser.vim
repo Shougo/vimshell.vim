@@ -348,7 +348,7 @@ function! s:execute_statement(statement, context)"{{{
   let l:statement = vimshell#parser#parse_alias(a:statement)
 
   " Call preexec filter.
-  "let l:statement = vimshell#hook#call_filter('preexec', l:context, l:statement)
+  let l:statement = vimshell#hook#call_filter('preexec', a:context, l:statement)
 
   let l:program = vimshell#parser#parse_program(l:statement)
 
