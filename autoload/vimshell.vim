@@ -595,15 +595,24 @@ function! vimshell#set_execute_file(exts, program)"{{{
 endfunction"}}}
 function! vimshell#system(str, ...)"{{{
   let l:command = a:str
-  let l:input = join(a:000)
+  let l:input = a:0 >= 1 ? '' : a:1
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
   endif
-  let l:output = a:0 == 0 ? vimproc#system(l:command) : vimproc#system(l:command, l:input)
+  
+  if a:0 == 0
+    let l:output = vimproc#system(l:command)
+  elseif a:0 == 1
+    let l:output = vimproc#system(l:command, l:input)
+  else
+    let l:output = vimproc#system(l:command, l:input, a:2)
+  endif
+  
   if &termencoding != '' && &termencoding != &encoding
     let l:output = iconv(l:output, &termencoding, &encoding)
   endif
+  
   return l:output
 endfunction"}}}
 function! vimshell#open(filename)"{{{
