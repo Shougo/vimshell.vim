@@ -125,8 +125,10 @@ function! s:command.execute(commands, context)"{{{
         \}
   call vimshell#interactive#init()
 
-  if !has_key(a:context, 'is_split') || a:context.is_split
+  if !has_key(a:context, 'is_from_command') || !a:context.is_from_command
     wincmd p
+  elseif b:interactive.process.is_valid
+    startinsert
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
@@ -143,11 +145,14 @@ let s:update_time_save = &updatetime
 
 function! s:default_settings()"{{{
   " Set environment variables.
+  let $TERM = g:vimshell_environment_term
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
   let $VIMSHELL_TERM = 'terminal'
+  let $EDITOR = g:vimshell_cat_command
+  let $PAGER = g:vimshell_cat_command
 
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
@@ -164,10 +169,8 @@ function! s:init_bg(args, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  if !has_key(a:context, 'is_split') || a:context.is_split
-    " Split nicely.
-    call vimshell#split_nicely()
-  endif
+  " Split nicely.
+  call vimshell#split_nicely()
 
   edit `=fnamemodify(a:args[0], ':r').'$'.(bufnr('$')+1)`
   lcd `=l:cwd`
@@ -185,6 +188,9 @@ function! s:init_bg(args, context)"{{{
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
   augroup END
+
+  " Set send buffer.
+  call vimshell#interactive#set_send_buffer(bufnr('%'))
 endfunction"}}}
 
 function! s:insert_enter()"{{{

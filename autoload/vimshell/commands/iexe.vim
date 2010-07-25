@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -140,16 +140,10 @@ function! s:command.execute(commands, context)"{{{
 
   call vimshell#interactive#execute_pty_out(1)
 
-  if b:interactive.process.is_valid
-    startinsert!
-  endif
-
-  if !has_key(a:context, 'is_split') || a:context.is_split
+  if !has_key(a:context, 'is_from_command') || !a:context.is_from_command
     wincmd p
-    
-    if has_key(a:context, 'is_split') && a:context.is_split
-      stopinsert
-    endif
+  elseif b:interactive.process.is_valid
+    startinsert!
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
@@ -204,11 +198,15 @@ call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'java
 
 function! s:default_settings()"{{{
   " Set environment variables.
+  let $TERM = g:vimshell_environment_term
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
   let $VIMSHELL_TERM = 'interactive'
+  let $EDITOR = g:vimshell_cat_command
+  let $PAGER = g:vimshell_cat_command
+
 
   setlocal buftype=nofile
   setlocal noswapfile
@@ -252,6 +250,9 @@ function! s:init_bg(args, context)"{{{
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
   augroup END
+
+  " Set send buffer.
+  call vimshell#interactive#set_send_buffer(bufnr('%'))
 endfunction"}}}
 
 function! s:insert_enter()"{{{

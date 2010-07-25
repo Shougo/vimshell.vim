@@ -169,7 +169,7 @@ function! s:execute_completefunc(lead, cmd, pos)"{{{
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
   call vimshell#execute_internal_command('bg', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_split' : 1 })
+        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
@@ -187,11 +187,11 @@ function! s:vimshell_interactive(args)"{{{
   endif
   
   call vimshell#execute_internal_command('iexe', vimshell#parser#split_args(l:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_split' : 1 })
+        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
   call vimshell#execute_internal_command('texe', vimshell#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_split' : 1 })
+        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
 endfunction"}}}
 
 augroup vimshell

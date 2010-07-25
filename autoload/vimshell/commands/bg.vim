@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 25 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -94,10 +94,8 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  if !has_key(a:context, 'is_split') || a:context.is_split
-    " Split nicely.
-    call vimshell#split_nicely()
-  endif
+  " Split nicely.
+  call vimshell#split_nicely()
 
   let l:args = ''
   for l:command in a:commands
@@ -114,11 +112,14 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   let b:interactive = a:interactive
 
   " Set environment variables.
+  let $TERM = g:vimshell_environment_term
   let $TERMCAP = 'COLUMNS=' . winwidth(0)
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
   let $VIMSHELL_TERM = 'background'
+  let $EDITOR = g:vimshell_cat_command
+  let $PAGER = g:vimshell_cat_command
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
@@ -140,7 +141,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   
   call s:on_execute()
 
-  if !has_key(a:context, 'is_split') || a:context.is_split
+  if !has_key(a:context, 'is_from_command') || !a:context.is_from_command
     wincmd p
   endif
 endfunction"}}}

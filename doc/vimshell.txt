@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Added g:vimshell_interactive_interpreter_commands option.
 - Fixed texe filetype.
 - Improved interpreter commands.
+- Improved :VimShellInteractive, :VimshellTerminal, :VimShellExecute behavior.
 
 2010-07-24
 - Fixed caching check.
@@ -341,7 +342,7 @@ ChangeLog 7.0: {{{
 - Refactoringed interactive.
 - Improved update timing.
 - Fixed print error.
-- Improved <Plug>(vimshell_int_execute_line) behaivior.
+- Improved <Plug>(vimshell_int_execute_line) behavior.
 - Fixed print bug.
 - Merged hamaco's change.
 - Fixed dirs and bcd and clear error.
@@ -433,7 +434,7 @@ ChangeLog 7.0: {{{
 
 2010-06-13
 - Fixed vimsh error.
-- Improved print_prompt() behaivior.
+- Improved print_prompt() behavior.
 - Deleted hide internal command.
 - Improved error message.
 - Improved escape sequence.
@@ -528,7 +529,7 @@ ChangeLog 7.0: {{{
 
 2010-05-23
 - Fixed cd error.
-- Fixed <C-e> behaivior in iexe.
+- Fixed <C-e> behavior in iexe.
 - Improved interactive complete.
 - Improved alias parse.
 - Added :VimShellRead command.
@@ -595,7 +596,7 @@ ChangeLog 7.0: {{{
 
 2010-04-30
 * Improved interactive keymappings.
-* Improved interactive behaivior.
+* Improved interactive behavior.
 * Fixed bg bug.
 * Ignore escape sequences.
 * Improved highlight.
@@ -608,7 +609,7 @@ ChangeLog 7.0: {{{
 * Fixed bcd bugs.
 
 2010-04-26
-* Improved auto complete behaivior in iexe buffer.
+* Improved auto complete behavior in iexe buffer.
 
 2010-04-25
 * vimshell#execute returns exit status.
@@ -635,9 +636,9 @@ ChangeLog 6.50: {{{
     * Implemented include Vim Script syntax.
 
 2010-04-17
-    * Improved update behaivior on insert mode.
+    * Improved update behavior on insert mode.
     * Fixed g:vimshell_ignore_case default value.
-    * Improved g:vimshell_ignore_case behaivior.
+    * Improved g:vimshell_ignore_case behavior.
     * Detect head matches each prompt pattern.
     * Fixed searchpos() bug.
     * Improved prompt syntax highlight.
@@ -646,7 +647,7 @@ ChangeLog 6.50: {{{
     * Improved iexe update.
     * Add history when parse passed.
     * Improved vimshell exception and error mechanism.
-    * Improved auto update behaivior.
+    * Improved auto update behavior.
     * Improved directory completion.
     * Improved error catch.
 
@@ -757,7 +758,7 @@ ChangeLog 6.00-: {{{
     - Changed history completion keymappings.
     - Improved execute line in iexe.
     - Fixed <Plug>(vimshell_interactive_previous_prompt).
-    - Fixed no prompt behaivior bug in iexe.
+    - Fixed no prompt behavior bug in iexe.
     - Improved interactive in Windows.
     - Fixed interactive option bug in iexe.
     - Improved prompt in iexe.
@@ -906,7 +907,7 @@ ChangeLog 5.30-: {{{
      - Improved completion.
 
     5.35 :
-     - Improved open behaivior.
+     - Improved open behavior.
      - Fixed completion column bug.
      - Implemented <Plug>(vimshell_move_end_argument).
      - Fixed environment variables parse bug.
@@ -1120,9 +1121,9 @@ ChangeLog 5.10-5.29 {{{
      - Added gcd command.
      - Optimized parse in alias and let commands.
 
-     5.12 Changed command behaivior:
+     5.12 Changed command behavior:
      - Added g:VimShell_EnableInteractive option.
-     - Changed command behaivior.
+     - Changed command behavior.
      - Added exe command.
      - Convert encoding for system().
      - Fixed name conversion.

@@ -42,7 +42,7 @@ augroup vimshell
 augroup END
 
 command! -range -nargs=? VimShellSendString call s:send_region(<line1>, <line2>, <q-args>)
-command! -complete=buffer -nargs=1 VimShellSendBuffer call s:send_buffer(<q-args>)
+command! -complete=buffer -nargs=1 VimShellSendBuffer call vimshell#interactive#set_send_buffer(<q-args>)
 
 " Dummy.
 function! vimshell#interactive#init()"{{{
@@ -216,7 +216,7 @@ function! s:send_region(line1, line2, string)"{{{
     wincmd p
   endif
 endfunction"}}}
-function! s:send_buffer(bufname)"{{{
+function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let s:last_interactive_bufnr = bufnr(a:bufname)
   let l:winnr = bufwinnr(s:last_interactive_bufnr)
   if s:last_interactive_bufnr >= 0 && l:winnr <= 0
