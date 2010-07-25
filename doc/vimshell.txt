@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed error print.
 - Added g:vimshell_interactive_interpreter_commands option.
 - Fixed texe filetype.
+- Improved interpreter commands.
 
 2010-07-24
 - Fixed caching check.

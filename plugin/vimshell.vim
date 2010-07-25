@@ -172,8 +172,9 @@ function! s:vimshell_execute(args)"{{{
         \ { 'is_interactive' : 0, 'is_split' : 1 })
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
-  call vimshell#commands#iexe#init()
   if a:args == ''
+    call vimshell#commands#iexe#init()
+    
     " Search interpreter.
     if &filetype == '' || !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
       echoerr 'Interpreter is not found.'

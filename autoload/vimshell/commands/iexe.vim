@@ -184,11 +184,22 @@ call vimshell#set_variables('g:vimshell_interactive_command_options', 'termtter'
 " Set interpreter commands.
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'ruby', 'irb')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'python', 'python')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'perl', 'perlsh')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'perl6', 'perl6')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'sh', 'sh')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'zsh', 'zsh')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'bash', 'bash')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'erlang', 'erl')
 call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'scheme', 'gosh')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'clojure', 'clj')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'lisp', 'clisp')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'ps1', 'powershell')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'haskell', 'ghci')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'dosbatch', 'cmdproxy')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'scala', 'cmdproxy')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'ocaml', 'ocaml')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'sml', 'sml')
+call vimshell#set_variables('g:vimshell_interactive_interpreter_commands', 'javascript', 'js')
 "}}}
 
 function! s:default_settings()"{{{
