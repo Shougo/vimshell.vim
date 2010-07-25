@@ -373,7 +373,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
       try
         " 15 == SIGTERM
         call l:vimproc.process.kill(15)
-      catch /No such process/
+      catch
       endtry
     endif
     

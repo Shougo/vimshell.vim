@@ -37,6 +37,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
   nmap  <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
   nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
+  nnoremap <silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>
 
   inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
   inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
@@ -50,6 +51,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <expr> <Plug>(vimshell_delete_word)  <SID>delete_word()
   inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
   inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
+  inoremap <silent> <Plug>(vimshell_interrupt)       <ESC>:<C-u>call <SID>interrupt(1)<CR>
 
   inoremap <expr> <Plug>(vimshell_delete_backword_char)  <SID>delete_backword_char(0)
   inoremap <expr> <Plug>(vimshell_another_delete_backword_char)  <SID>delete_backword_char(1)
@@ -80,6 +82,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> dd <Plug>(vimshell_delete_line)
   " Insert head.
   nmap <buffer> I <Plug>(vimshell_insert_head)
+  " Interrupt.
+  nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
 
   " Insert mode key-mappings.
   " Execute command.
@@ -105,6 +109,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-s> <Plug>(vimshell_run_help)
   " Clear.
   imap <buffer> <C-l> <Plug>(vimshell_clear)
+  " Interrupt.
+  imap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Delete char.
   imap <buffer> <C-h>     <Plug>(vimshell_delete_backword_char)
   imap <buffer> <BS>     <Plug>(vimshell_delete_backword_char)
@@ -175,6 +181,12 @@ function! s:execute_line(is_insert)"{{{
   $
   
   if !empty(b:vimshell.continuation)
+    let l:context = {
+          \ 'has_head_spaces' : l:line =~ '^\s\+',
+          \ 'is_interactive' : 1, 
+          \ 'is_insert' : a:is_insert, 
+          \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+          \}
     try
       let l:ret = vimshell#parser#execute_continuation()
 
@@ -458,6 +470,27 @@ function! s:open_file(filename)"{{{
     " Edit file.
     call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
   endif
+endfunction"}}}
+function! s:interrupt(is_insert)"{{{
+  if empty(b:vimshell.continuation)
+    return
+  endif
+  
+  " Kill process.
+  call vimshell#interactive#hang_up(bufname('%'))
+  
+  " Clear continuation.
+  let b:vimshell.continuation = {}
+  
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 1, 
+        \ 'is_insert' : a:is_insert, 
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \}
+  
+  call vimshell#print_prompt(l:context)
+  call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 
 " vim: foldmethod=marker
