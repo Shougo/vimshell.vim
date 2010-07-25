@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed texe filetype.
 - Improved interpreter commands.
 - Improved :VimShellInteractive, :VimshellTerminal, :VimShellExecute behavior.
+- Fixed get type.
 
 2010-07-24
 - Fixed caching check.

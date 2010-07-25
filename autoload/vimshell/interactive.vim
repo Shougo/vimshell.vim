@@ -188,7 +188,7 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   
   " Check alternate buffer.
-  let l:type = b:interactive.type
+  let l:type = getbufvar(winbufnr(l:winnr), 'interactive').type
   if l:type ==# 'interactive' || l:type ==# 'terminal'
     if a:string != ''
       let l:string = a:string . "\<LF>"
