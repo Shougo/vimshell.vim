@@ -110,7 +110,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   setlocal nomodifiable
   let &filetype = a:filetype
   let b:interactive = a:interactive
-  if v:version >= 703
+  if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=n
   endif
