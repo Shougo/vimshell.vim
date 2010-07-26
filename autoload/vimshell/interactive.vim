@@ -50,11 +50,12 @@ endfunction"}}}
 
 function! vimshell#interactive#get_cur_text()"{{{
   " Get cursor text without prompt.
-  return s:chomp_prompt(s:get_cur_text(), line('.'))
+  return s:chomp_prompt(s:get_cur_text(), line('.'), b:interactive)
 endfunction"}}}
-function! vimshell#interactive#get_cur_line(line)"{{{
+function! vimshell#interactive#get_cur_line(line, ...)"{{{
   " Get cursor text without prompt.
-  return s:chomp_prompt(getline(a:line), a:line)
+  let l:interactive = a:0 > 0 ? a:1 : b:interactive
+  return s:chomp_prompt(getline(a:line), a:line, l:interactive)
 endfunction"}}}
 function! vimshell#interactive#get_prompt(...)"{{{
   let l:line = a:0? a:1 : line('.')
@@ -68,11 +69,11 @@ function! s:get_cur_text()"{{{
   
   return l:cur_text
 endfunction"}}}
-function! s:chomp_prompt(cur_text, line)"{{{
+function! s:chomp_prompt(cur_text, line, interactive)"{{{
   let l:cur_text = a:cur_text
   
-  if has_key(b:interactive.prompt_history, a:line)
-    let l:cur_text = a:cur_text[len(b:interactive.prompt_history[a:line]) : ]
+  if has_key(a:interactive.prompt_history, a:line)
+    let l:cur_text = a:cur_text[len(a:interactive.prompt_history[a:line]) : ]
   endif
 
   return l:cur_text
@@ -420,6 +421,7 @@ function! s:print_buffer(fd, string)"{{{
   call vimshell#terminal#print(l:string)
 
   if getline('$') =~ s:password_regex
+        \ && b:interactive.type == 'interactive'
     redraw
 
     " Password input.
@@ -609,7 +611,7 @@ function! s:cache_output(interactive)"{{{
         \ || (a:interactive.type ==# 'interactive'
         \      && (line('.') == a:interactive.echoback_linenr
         \         || !has_key(a:interactive.prompt_history, line('.'))
-        \         || vimshell#interactive#get_cur_line(line('.')) == ''))
+        \         || vimshell#interactive#get_cur_line(line('.'), a:interactive) == ''))
     " Terminal or interactive.
 
     if a:interactive.process.eof
