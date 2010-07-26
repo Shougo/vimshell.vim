@@ -110,6 +110,9 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   setlocal nomodifiable
   let &filetype = a:filetype
   let b:interactive = a:interactive
+  if v:version >= 703
+    setlocal conceallevel=3
+  endif
 
   " Set environment variables.
   let $TERM = g:vimshell_environment_term
@@ -123,9 +126,13 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
-  syn match   InteractiveErrorHidden            '!!!' contained
-  hi def link InteractiveError Error
-  hi def link InteractiveErrorHidden Ignore
+  if v:version >= 703
+    " Supported conceal features.
+    syn match   InteractiveErrorHidden            '!!!' contained conceal
+  else
+    syn match   InteractiveErrorHidden            '!!!' contained
+  endif
+  hi def link InteractiveErrorHidden Error
 
   augroup vimshell
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
