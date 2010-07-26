@@ -85,27 +85,23 @@ http://github.com/Shougo/vimproc
 
 Make方法
 
-* Mingw:
+* Mingw: >
+	$ make -f make_mingw.mak
 
-        $ make -f make_mingw.mak
+* Mac OS X: >
+	$ make -f make_mac.mak
 
-* Mac:
+* Linux BSD: >
+	$ make -f make_gcc.mak
 
-        $ make -f make_mac.mak
+* Visual Studio: >
+	$ make -f make_msvc.mak
 
-* Linux BSD:
-
-        $ make -f make_gcc.mak
-
-* Visual Studio:
-
-        $ make -f make_msvc.mak
-
-* Cygwin:
-
-        $ make -f make_cygwin.mak
+* Cygwin: >
+	$ make -f make_cygwin.mak
 
 コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクトリにコピーします。
+Cygwinでコンパイルしたproc.dllはCygwin上のVim専用です。WindowsのVimでは使えません。注意してください。
 
 ==============================================================================
 INTERFACE						*vimshell-interface*
