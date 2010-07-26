@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jul 2010
+" Last Modified: 26 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -595,7 +595,7 @@ function! vimshell#set_execute_file(exts, program)"{{{
 endfunction"}}}
 function! vimshell#system(str, ...)"{{{
   let l:command = a:str
-  let l:input = a:0 >= 1 ? '' : a:1
+  let l:input = a:0 >= 1 ? a:1 : ''
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)
     let l:input = iconv(l:input, &encoding, &termencoding)
