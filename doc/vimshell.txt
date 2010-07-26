@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-07-26
 - Fixed documentation.
+- Supported conceal feature in Vim 7.3.
 
 2010-07-25
 - Fixed error print.
