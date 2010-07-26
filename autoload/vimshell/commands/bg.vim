@@ -112,6 +112,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   let b:interactive = a:interactive
   if v:version >= 703
     setlocal conceallevel=3
+    setlocal concealcursor=n
   endif
 
   " Set environment variables.

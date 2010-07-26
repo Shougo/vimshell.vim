@@ -90,6 +90,7 @@ function! s:default_settings()"{{{
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   if v:version >= 703
     setlocal conceallevel=3
+    setlocal concealcursor=n
   endif
   
   " Set autocommands.
