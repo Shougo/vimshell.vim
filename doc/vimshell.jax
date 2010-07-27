@@ -289,7 +289,7 @@ g:vimshell_cat_command					*g:vimshell_cat_command*
 			vimshellは外部のページャやエディタをうまく扱えないの
 			で、$PAGERや$EDITORに|g:vimshell_cat_command|の値を
 			セットします。初期値は"cat"ですが、この変数の内容を
-			変更することで、 スタマイズできます。
+			変更することで、カスタマイズできます。
 			
 			初期値は"cat"です。
 
@@ -418,6 +418,27 @@ KEY MAPPINGS 						*vimshell-key-mappings*
 <Plug>(vimshell_create)					*<Plug>(vimshell_create)*
 			vimshellを起動します。すでにvimshellバッファ
 			が存在していても、新しくvimshellバッファを作成します。
+
+------------------------------------------------------------------------------
+BUFFER KEY MAPPINGS 					*vimshell-buffer-key-mappings*
+
+vimshellバッファで使えるキーマッピングについては、
+autoload/vimshell/mappings.vimのvimshell#mappings#define_default_mappings()
+を参照せよ。
+
+------------------------------------------------------------------------------
+INTERACTIVE KEY MAPPINGS 				*vimshell-interactive-key-mappings*
+
+interactiveバッファで使えるキーマッピングについては、
+autoload/vimshell/int_mappings.vimのvimshell#int_mappings#define_default_mappings()
+を参照せよ。
+
+------------------------------------------------------------------------------
+TERMINAL KEY MAPPINGS 					*vimshell-terminal-key-mappings*
+
+terminalバッファで使えるキーマッピングについては、
+autoload/vimshell/term_mappings.vimのvimshell#term_mappings#define_default_mappings()
+を参照せよ。
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*

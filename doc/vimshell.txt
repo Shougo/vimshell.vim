@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-27
+- Improved documentation.
+
 2010-07-26
 - Fixed documentation.
 - Supported conceal feature in Vim 7.3.
