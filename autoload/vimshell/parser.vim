@@ -288,7 +288,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
 
 endfunction
 "}}}
-function! vimshell#parser#execute_continuation()"{{{
+function! vimshell#parser#execute_continuation(is_insert)"{{{
   if empty(b:vimshell.continuation)
     return
   endif
@@ -340,7 +340,7 @@ function! vimshell#parser#execute_continuation()"{{{
 
   let b:vimshell.continuation = {}
   call vimshell#print_prompt(l:context)
-  call vimshell#start_insert(mode() ==# 'i')
+  call vimshell#start_insert(a:is_insert)
   return 0
 endfunction
 "}}}

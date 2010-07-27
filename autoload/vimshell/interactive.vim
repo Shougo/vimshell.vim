@@ -210,6 +210,7 @@ function! s:send_region(line1, line2, string)"{{{
     call vimshell#interactive#send_string(l:string)
     
     if l:type !=# 'terminal'
+          \ && b:interactive.process.is_valid
       call setline(l:prompt_nr, l:prompt . l:line)
     endif
 
@@ -550,7 +551,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
   elseif l:type ==# 'execute'
-    call vimshell#parser#execute_continuation()
+    call vimshell#parser#execute_continuation(mode() ==# 'i')
   else
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable

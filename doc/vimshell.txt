@@ -186,6 +186,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-07-27
 - Improved documentation.
+- Fixed s:send_region().
+- Fixed execute continuation.
 
 2010-07-26
 - Fixed documentation.

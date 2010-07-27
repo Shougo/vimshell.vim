@@ -181,28 +181,17 @@ function! s:execute_line(is_insert)"{{{
   $
   
   if !empty(b:vimshell.continuation)
-    let l:context = {
-          \ 'has_head_spaces' : l:line =~ '^\s\+',
-          \ 'is_interactive' : 1, 
-          \ 'is_insert' : a:is_insert, 
-          \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-          \}
     try
-      let l:ret = vimshell#parser#execute_continuation()
-
-      if l:ret == 0
-        call vimshell#print_prompt(l:context)
-        call vimshell#start_insert(a:is_insert)
-      endif
-
-      return
+      let l:ret = vimshell#parser#execute_continuation(a:is_insert)
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      let l:context = b:vimshell.continuation.context
       call vimshell#print_prompt(l:context)
       call vimshell#start_insert(a:is_insert)
-      return
     endtry
+
+    return
   endif
 
   call s:execute_command_line(a:is_insert, l:oldpos)
