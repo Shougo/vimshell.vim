@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2010
+" Last Modified: 28 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <silent> <Plug>(vimshell_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
   inoremap <expr> <Plug>(vimshell_delete_word)  <SID>delete_word()
   inoremap <silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
-  inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
+  inoremap <silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <silent> <Plug>(vimshell_interrupt)       <ESC>:<C-u>call <SID>interrupt(1)<CR>
 
   inoremap <expr> <Plug>(vimshell_delete_backword_char)  <SID>delete_backword_char(0)
