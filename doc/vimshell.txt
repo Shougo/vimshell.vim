@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-30
+- Set wrap.
+- Improved <Plug>(vimshell_clear).
+
 2010-07-27
 - Improved documentation.
 - Fixed s:send_region().

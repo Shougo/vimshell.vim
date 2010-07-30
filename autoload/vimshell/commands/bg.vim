@@ -105,7 +105,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   lcd `=l:cwd`
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal nowrap
+  setlocal wrap
   setlocal nolist
   setlocal nomodifiable
   let &filetype = a:filetype

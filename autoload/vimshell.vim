@@ -84,7 +84,7 @@ function! s:default_settings()"{{{
   setlocal bufhidden=hide
   setlocal noreadonly
   setlocal iskeyword+=-,+,.,\\,!,~
-  setlocal nowrap
+  setlocal wrap
   setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#auto_complete#omnifunc

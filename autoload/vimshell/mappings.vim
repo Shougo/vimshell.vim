@@ -388,11 +388,15 @@ function! s:delete_word()"{{{
 endfunction"}}}
 function! s:clear()"{{{
   " Clean up the screen.
-  let l:line = getline('.')
-  let l:pos = getpos('.')
+  let l:lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
   % delete _
+  
+  call vimshell#terminal#clear_highlight()
 
   call vimshell#print_prompt()
+  call vimshell#set_prompt_command(l:lines[0])
+  call append('$', map(l:lines[1:], string(vimshell#get_secondary_prompt()).'.v:val'))
+  $
   call vimshell#start_insert()
 endfunction"}}}
 function! s:expand_wildcard()"{{{

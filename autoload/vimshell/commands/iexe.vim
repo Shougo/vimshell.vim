@@ -210,7 +210,7 @@ function! s:default_settings()"{{{
 
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal nowrap
+  setlocal wrap
   setlocal nolist
   setlocal tabstop=8
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
