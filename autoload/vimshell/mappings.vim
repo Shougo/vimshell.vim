@@ -39,6 +39,9 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
   nnoremap <silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>
 
+  vnoremap <expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
+  vnoremap <expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
+
   inoremap <expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
   inoremap <expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
   inoremap <expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
@@ -84,6 +87,12 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> I <Plug>(vimshell_insert_head)
   " Interrupt.
   nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  
+  " Visual mode key-mappings.
+  " Move to previous prompt.
+  vmap <buffer> <C-p> <Plug>(vimshell_select_previous_prompt)
+  " Move to next prompt.
+  vmap <buffer> <C-n> <Plug>(vimshell_select_next_prompt)
 
   " Insert mode key-mappings.
   " Execute command.
@@ -275,6 +284,25 @@ function! s:previous_prompt()"{{{
 endfunction"}}}
 function! s:next_prompt()"{{{
   call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'We')
+endfunction"}}}
+function! s:select_previous_prompt()"{{{
+  let l:prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
+  let [l:linenr, l:col] = searchpos(l:prompt_pattern, 'bWen')
+  if l:linenr == 0
+    return ''
+  endif
+  
+  return (line('.') - l:linenr - 1) . 'k'
+endfunction"}}}
+function! s:select_next_prompt()"{{{
+  let l:prompt_pattern = vimshell#get_user_prompt() != '' ?
+        \ '^' . vimshell#escape_match(vimshell#get_prompt()) : '^\[%\] '
+  let [l:linenr, l:col] = searchpos(l:prompt_pattern, 'Wen')
+  if l:linenr == 0
+    return ''
+  endif
+  
+  return (l:linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output()"{{{
   let l:prompt = vimshell#escape_match(vimshell#get_prompt())

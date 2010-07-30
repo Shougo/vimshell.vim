@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Set wrap.
 - Improved <Plug>(vimshell_clear).
 - Fixed h internal command.
+- Implemented <Plug>(vimshell_select_previous_prompt) and <Plug>(vimshell_select_next_prompt) mappings.
 
 2010-07-27
 - Improved documentation.
