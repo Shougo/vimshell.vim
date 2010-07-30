@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: h.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 30 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -67,15 +67,16 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   endif
   call vimshell#set_prompt_command(l:hist)
 
+  let l:context = a:other_info
+  let l:context.is_interactive = 0
+  let l:context.fd = a:fd
   try
-    call vimshell#parser#eval_script(l:hist, a:other_info)
+    call vimshell#parser#eval_script(l:hist, l:context)
   catch /.*/
     call vimshell#error_line({}, v:exception)
-    let l:context = a:other_info
-    let l:context.fd = a:fd
     call vimshell#print_prompt(l:context)
 
-    if has_key(a:other_info, 'is_insert') && a:other_info.is_insert
+    if has_key(l:context, 'is_insert') && l:context.is_insert
       call vimshell#start_insert()
     endif
     return

@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-07-30
 - Set wrap.
 - Improved <Plug>(vimshell_clear).
+- Fixed h internal command.
 
 2010-07-27
 - Improved documentation.

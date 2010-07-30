@@ -84,6 +84,7 @@ function! s:default_settings()"{{{
   setlocal bufhidden=hide
   setlocal noreadonly
   setlocal iskeyword+=-,+,.,\\,!,~
+  setlocal nofoldenable
   setlocal wrap
   setlocal nolist
   setlocal tabstop=8
