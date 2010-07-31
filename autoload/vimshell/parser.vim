@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2010
+" Last Modified: 31 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -176,6 +176,8 @@ function! vimshell#parser#parse_statements(script)"{{{
         endif
         let i += 2
       else
+        let l:statement .= a:script[i]
+        
         let i += 1
       endif
     elseif a:script[i] == '|'
@@ -188,6 +190,8 @@ function! vimshell#parser#parse_statements(script)"{{{
         endif
         let i += 2
       else
+        let l:statement .= a:script[i]
+        
         let i += 1
       endif
     elseif a:script[i] == "'"
@@ -252,10 +256,20 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     let l:commands[0].args = l:args
     return l:internal_commands[l:program].execute(l:commands, l:context)
   elseif len(a:commands) > 1
-    " Execute external commands.
     let l:context = a:context
     let l:context.fd = l:fd
-    return l:internal_commands['exe'].execute(a:commands, l:context)
+    
+    if a:commands[-1].args[0] == 'less'
+      " Execute less(Syntax sugar).
+      let l:commands = a:commands[: -2]
+      if !empty(a:commands[-1].args[1:])
+        let l:commands[0].args = insert(l:commands[0].args, a:commands[-1].args[1:])
+      endif
+      return l:internal_commands['less'].execute(l:commands, l:context)
+    else
+      " Execute external commands.
+      return l:internal_commands['exe'].execute(a:commands, l:context)
+    endif
   else"{{{
     let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
     let l:command = vimshell#getfilename(program)

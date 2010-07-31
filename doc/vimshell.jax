@@ -505,10 +505,10 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		バックグラウンド実行は新たにバッファを開き、そこに{command}
 		の出力を書き出します。 bgの場合、ユーザーからの入力は一切受け
 		付けません。 バックグラウンドバッファ上で<C-c>を入力すると、
-		{command}の実行を強制的に終了させます。コマンド名の最後に&を
-		付けると、bg command...と同じ意味となります。iexe, exe, bgは
-		オプションを解釈し、それに基づいて挙動を変更します。詳しくは
-		|vimshell-execute-options|を参照してください。
+		{command}の実行を強制的に終了させます。
+		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
+		て挙動を変更します。詳しくは |vimshell-execute-options|を参
+		照してください。
 		ここでは、bgのみに存在するオプションを解説します。
 		
 		--filetype = {filetype-name}
@@ -544,8 +544,9 @@ eval {expression}					*vimshell-internal-eval*
 exe [{option}...] {command} 				*vimshell-internal-exe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。
-		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
-		詳しくは|vimshell-execute-options|を参照してください。
+		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
+		て挙動を変更します。詳しくは |vimshell-execute-options|を参
+		照してください。
 		
 							*vimshell-execute-options*
 		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
@@ -593,9 +594,21 @@ history [{search-string}]				*vimshell-internal-history*
 iexe [{options}...] {command}				*vimshell-internal-iexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。exeとは違い、対話コマンドを実行することに特化しています。
-		入出力を行なうために新しいバッファが生成されます。iexe, exe, bg
-		はオプションを解釈し、それに基づいて挙動を変更します。詳しくは
-		|vimshell-execute-options|を参照してください。
+		入出力を行なうために新しいバッファが生成されます。パイプを使
+		うとエラーになります。
+		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
+		て挙動を変更します。詳しくは |vimshell-execute-options|を参
+		照してください。
+
+less [{options}...] {command}				*vimshell-internal-iexe*
+		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
+		れます。vimshellがページャとなります。出力が多いコマンドを実行するときに有用です。
+		シンタックスシュガーとして、次の形式も有効です。
+		{command1} | {command2} | less
+		入出力を行なうために新しいバッファが生成されます。
+		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
+		て挙動を変更します。詳しくは |vimshell-execute-options|を参
+		照してください。
 
 ls [{argument}...]					*vimshell-internal-ls*
 		外部コマンドのlsを適切な引数を与えて実行します。
@@ -640,9 +653,11 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。exe, iexeとは違い、端末コマンドを実行することに特化
 		しています。入出力を行なうために新しいバッファが生成されます。
-		このコマンドは、まだ動作が不完全です。
-		iexe, exe, bgはオプションを解釈し、それに基づいて挙動を変更します。
-		詳しくは|vimshell-execute-options|を参照してください。
+		パイプを使うとエラーになります。このコマンドは、まだ動作が不
+		完全です。
+		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
+		て挙動を変更します。詳しくは |vimshell-execute-options|を参
+		照してください。
 
 vexe {expression}					*vimshell-internal-vexe*
 		{expression}をVim Scriptの文として実行し、出力をvimshellバッ

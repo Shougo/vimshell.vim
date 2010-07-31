@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 31 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -172,7 +172,7 @@ function! s:init_bg(args, context)"{{{
   " Split nicely.
   call vimshell#split_nicely()
 
-  edit `=fnamemodify(a:args[0], ':r').'$'.(bufnr('$')+1)`
+  edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
   
   call s:default_settings()

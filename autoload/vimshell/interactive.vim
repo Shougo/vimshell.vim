@@ -239,7 +239,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   " Check cache.
   if b:interactive.stdout_cache != ''
     let l:outputed = 1
-    call s:print_buffer(b:interactive.fd, b:interactive.stdout_cache)
+    call vimshell#interactive#print_buffer(b:interactive.fd, b:interactive.stdout_cache)
     let b:interactive.stdout_cache = ''
   endif
   
@@ -248,7 +248,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     while l:read != ''
       let l:outputed = 1
 
-      call s:print_buffer(b:interactive.fd, l:read)
+      call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
 
       let l:read = b:interactive.process.read(-1, 40)
     endwhile
@@ -277,14 +277,14 @@ function! vimshell#interactive#execute_pipe_out()"{{{
 
   " Check cache.
   if b:interactive.stdout_cache != ''
-    call s:print_buffer(b:interactive.fd, b:interactive.stdout_cache)
+    call vimshell#interactive#print_buffer(b:interactive.fd, b:interactive.stdout_cache)
     let b:interactive.stdout_cache = ''
   endif
   
   if !b:interactive.process.stdout.eof
     let l:read = b:interactive.process.stdout.read(-1, 40)
     while l:read != ''
-      call s:print_buffer(b:interactive.fd, l:read)
+      call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
 
       let l:read = b:interactive.process.stdout.read(-1, 40)
     endwhile
@@ -292,14 +292,14 @@ function! vimshell#interactive#execute_pipe_out()"{{{
 
   " Check cache.
   if b:interactive.stderr_cache != ''
-    call s:error_buffer(b:interactive.fd, b:interactive.stderr_cache)
+    call vimshell#interactive#error_buffer(b:interactive.fd, b:interactive.stderr_cache)
     let b:interactive.stderr_cache = ''
   endif
   
   if !b:interactive.process.stderr.eof
     let l:read = b:interactive.process.stderr.read(-1, 40)
     while l:read != ''
-      call s:error_buffer(b:interactive.fd, l:read)
+      call vimshell#interactive#error_buffer(b:interactive.fd, l:read)
 
       let l:read = b:interactive.process.stderr.read(-1, 40)
     endwhile
@@ -378,6 +378,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
       catch
       endtry
     endif
+    let l:vimproc.process.is_valid = 0
     
     if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') !=# 'vimshell'
       syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
@@ -395,7 +396,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
   endif
 endfunction"}}}
 
-function! s:print_buffer(fd, string)"{{{
+function! vimshell#interactive#print_buffer(fd, string)"{{{
   if a:string == ''
     return
   endif
@@ -442,7 +443,7 @@ function! s:print_buffer(fd, string)"{{{
   endif
 endfunction"}}}
 
-function! s:error_buffer(fd, string)"{{{
+function! vimshell#interactive#error_buffer(fd, string)"{{{
   if a:string == ''
     return
   endif
@@ -530,7 +531,7 @@ function! s:check_all_output()"{{{
 endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   " Output cache.
-  if !s:cache_output(a:interactive)
+  if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
     return
   endif
   
@@ -552,7 +553,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal nomodifiable
   elseif l:type ==# 'execute'
     call vimshell#parser#execute_continuation(mode() ==# 'i')
-  else
+  elseif l:type ==# 'interactive' || l:type ==# 'terminal'
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
     endif

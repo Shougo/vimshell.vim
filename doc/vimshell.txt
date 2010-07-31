@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-07-31
+- Fixed pipe parse bug.
+- Added less internal command.
+- Improved buffer name.
+
 2010-07-30
 - Set wrap.
 - Improved <Plug>(vimshell_clear).

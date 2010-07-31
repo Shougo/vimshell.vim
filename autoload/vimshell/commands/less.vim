@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: bg.vim
+" FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 31 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,9 +25,9 @@
 "=============================================================================
 
 let s:command = {
-      \ 'name' : 'bg',
+      \ 'name' : 'less',
       \ 'kind' : 'execute',
-      \ 'description' : 'bg [{option}...] {command}',
+      \ 'description' : 'less [{option}...] {command}',
       \}
 function! s:command.execute(commands, context)"{{{
   " Execute command in background.
@@ -39,7 +39,7 @@ function! s:command.execute(commands, context)"{{{
     let l:options['--encoding'] = &termencoding
   endif
   if !has_key(l:options, '--filetype')
-    let l:options['--filetype'] = 'vimshell-bg'
+    let l:options['--filetype'] = 'vimshell-less'
   endif
   
   if empty(l:commands[0].args)
@@ -60,18 +60,17 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Initialize.
-  let l:sub = vimproc#plineopen3(l:commands)
+  let l:sub = vimproc#plineopen2(l:commands)
 
   " Set variables.
   let l:interactive = {
-        \ 'type' : 'background', 
+        \ 'type' : 'less', 
         \ 'process' : l:sub, 
         \ 'fd' : a:context.fd, 
         \ 'encoding' : l:options['--encoding'], 
         \ 'is_pty' : 0, 
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
-        \ 'stderr_cache' : '',
         \}
 
   " Input from stdin.
@@ -80,17 +79,17 @@ function! s:command.execute(commands, context)"{{{
   endif
   call l:interactive.process.stdin.close()
 
-  return vimshell#commands#bg#init(a:commands, a:context, l:options['--filetype'], l:interactive)
+  return s:init(a:commands, a:context, l:options['--filetype'], l:interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! vimshell#commands#bg#define()
+function! vimshell#commands#less#define()
   return s:command
 endfunction
 
-function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{{
+function! s:init(commands, context, filetype, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -101,7 +100,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   for l:command in a:commands
     let l:args .= join(l:command.args)
   endfor
-  edit `='bg-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
   setlocal buftype=nofile
   setlocal noswapfile
@@ -139,13 +138,17 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
   
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)  :<C-u>call <SID>on_execute()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)       :<C-u>call <SID>next_line()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)       :<C-u>call <SID>next_screen()<CR>
   
-  nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
-  nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
-  nmap <buffer>q         <Plug>(vimshell_interactive_exit)
+  nmap <buffer><CR>      <Plug>(vimshell_less_execute_line)
+  nmap <buffer><C-c>     <Plug>(vimshell_less_interrupt)
+  nmap <buffer>q         <Plug>(vimshell_less_exit)
+  nmap <buffer>j         <Plug>(vimshell_less_next_line)
+  nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
   
   call s:on_execute()
 
@@ -155,15 +158,71 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
 endfunction"}}}
 
 function! s:on_execute()"{{{
-  setlocal modifiable
-  echo 'Running command.'
-  call vimshell#interactive#execute_pipe_out()
-  redraw
-  echo ''
-  setlocal nomodifiable
+  call s:print_output(winheight(0))
 endfunction"}}}
 function! s:on_exit()"{{{
   if !b:interactive.process.is_valid
     bdelete
   endif  
 endfunction "}}}
+function! s:next_line()"{{{
+  if line('.') == line('$')
+    call s:print_output(2)
+  endif
+  
+  normal! j
+endfunction "}}}
+function! s:next_screen()"{{{
+  if line('.') == line('$')
+    call s:print_output(winheight(0))
+  else
+    execute "normal! \<C-f>"
+  endif
+endfunction "}}}
+
+function! s:print_output(line_num)"{{{
+  $
+  setlocal modifiable
+  
+  if b:interactive.stdout_cache == ''
+    if b:interactive.process.stdout.eof
+      call vimshell#interactive#exit()
+    endif
+
+    if !b:interactive.process.is_valid
+      setlocal nomodifiable
+      return
+    endif
+  endif
+  
+  " Check cache.
+  let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
+  if !b:interactive.process.stdout.eof && l:count < a:line_num
+    echo 'Running command.'
+    
+    while l:count < a:line_num && !b:interactive.process.stdout.eof
+      " Get output.
+      let b:interactive.stdout_cache .= b:interactive.process.stdout.read(-1, 40)
+      let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
+    endwhile
+    
+    redraw
+    echo ''
+  endif
+  
+  if l:count > a:line_num
+    let l:count = a:line_num
+  endif
+
+  let l:match = match(b:interactive.stdout_cache, '\n', 0, l:count)
+  if l:match <= 0
+    let l:output = b:interactive.stdout_cache
+    let b:interactive.stdout_cache = ''
+  else
+    let l:output = b:interactive.stdout_cache[: l:match-1]
+    let b:interactive.stdout_cache = b:interactive.stdout_cache[l:match :]
+  endif
+
+  call vimshell#interactive#print_buffer(b:interactive.fd, l:output)
+  setlocal nomodifiable
+endfunction"}}}
