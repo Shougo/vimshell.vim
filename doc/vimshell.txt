@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Added less internal command.
 - Improved buffer name.
 - Implemented <Plug>(vimshell_less_next_half_screen).
+- Fixed tags error.
 
 2010-07-30
 - Set wrap.

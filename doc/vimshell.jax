@@ -600,7 +600,7 @@ iexe [{options}...] {command}				*vimshell-internal-iexe*
 		て挙動を変更します。詳しくは |vimshell-execute-options|を参
 		照してください。
 
-less [{options}...] {command}				*vimshell-internal-iexe*
+less [{options}...] {command}				*vimshell-internal-less*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。vimshellがページャとなります。出力が多いコマンドを実行するときに有用です。
 		シンタックスシュガーとして、次の形式も有効です。
