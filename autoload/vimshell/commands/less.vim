@@ -143,12 +143,14 @@ function! s:init(commands, context, filetype, interactive)"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call <SID>on_exit()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)       :<C-u>call <SID>next_line()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)       :<C-u>call <SID>next_screen()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_half_screen)       :<C-u>call <SID>next_half_screen()<CR>
   
   nmap <buffer><CR>      <Plug>(vimshell_less_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_less_interrupt)
   nmap <buffer>q         <Plug>(vimshell_less_exit)
   nmap <buffer>j         <Plug>(vimshell_less_next_line)
   nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
+  nmap <buffer><C-d>     <Plug>(vimshell_less_next_half_screen)
   
   call s:on_execute()
 
@@ -177,6 +179,13 @@ function! s:next_screen()"{{{
     call s:print_output(winheight(0))
   else
     execute "normal! \<C-f>"
+  endif
+endfunction "}}}
+function! s:next_half_screen()"{{{
+  if line('.') == line('$')
+    call s:print_output(winheight(0)/2)
+  else
+    execute "normal! \<C-d>"
   endif
 endfunction "}}}
 

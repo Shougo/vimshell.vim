@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed pipe parse bug.
 - Added less internal command.
 - Improved buffer name.
+- Implemented <Plug>(vimshell_less_next_half_screen).
 
 2010-07-30
 - Set wrap.
