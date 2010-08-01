@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-01
+- Deleted interactive command complete.
+
 2010-07-31
 - Fixed pipe parse bug.
 - Added less internal command.

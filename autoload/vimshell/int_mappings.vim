@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2010
+" Last Modified: 01 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,7 +70,6 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   " Insert mode key-mappings.
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
   imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
-  imap <buffer><expr> <TAB>   pumvisible() ? "\<C-n>" : vimshell#complete#interactive_command_complete#complete()
   imap <buffer> <C-a>     <Plug>(vimshell_int_move_head)
   imap <buffer> <C-u>     <Plug>(vimshell_int_delete_line)
   imap <buffer> <C-w>     <Plug>(vimshell_int_delete_word)
