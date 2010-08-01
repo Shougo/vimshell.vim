@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jul 2010
+" Last Modified: 01 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,65 +185,6 @@ function! vimshell#terminal#print(string)"{{{
   call setpos('.', l:oldpos)
 
   redraw
-endfunction"}}}
-function! vimshell#terminal#filter(string)"{{{
-  if a:string !~ '[[:cntrl:]]'
-    return a:string
-  endif
-  
-  let l:newstr = ''
-  let l:pos = 0
-  let l:max = len(a:string)
-  while l:pos < l:max
-    let l:matched = 0
-    
-    let l:char = a:string[l:pos]
-    if l:char !~ '[[:cntrl:]]'"{{{
-      let l:newstr .= l:char
-      let l:pos += 1
-
-      continue"}}}
-    elseif l:char == "\<ESC>""{{{
-      let l:checkstr = a:string[l:pos+1 :]
-      if l:checkstr == ''
-        break
-      endif
-      
-      " Check simple pattern.
-      let l:checkchar1 = l:checkstr[0]
-      if has_key(s:escape_sequence_simple_char1, l:checkchar1)"{{{
-        let l:pos += 2
-        continue
-      endif"}}}
-      let l:checkchar2 = l:checkstr[: 1]
-      if l:checkchar2 != '' && has_key(s:escape_sequence_simple_char2, l:checkchar2)"{{{
-        let l:pos += 3
-        continue
-      endif"}}}
-
-      let l:matched = 0
-      " Check match pattern.
-      for l:pattern in keys(s:escape_sequence_match)"{{{
-        if l:checkstr =~ l:pattern
-          let l:matched = 1
-          let l:pos += len(matchstr(l:checkstr, l:pattern)) + 1
-          break
-        endif
-      endfor"}}}
-      
-      if l:matched
-        continue
-      endif"}}}
-    elseif has_key(s:control_sequence, l:char)"{{{
-      let l:pos += 1
-      continue
-    endif"}}}
-    
-    let l:newstr .= a:string[l:pos]
-    let l:pos += 1
-  endwhile
-
-  return l:newstr
 endfunction"}}}
 function! vimshell#terminal#set_title()"{{{
   if !has_key(b:interactive, 'terminal')
