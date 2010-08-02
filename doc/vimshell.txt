@@ -184,6 +184,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-02
+- Implemanted interactive command completion.
+- Improved mappings.
+- Improved send string.
+- Fixed col.
+
 2010-08-01
 - Deleted interactive command complete.
 - Deleted terminal filter.

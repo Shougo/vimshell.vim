@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Aug 2010
+" Last Modified: 02 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! vimshell#terminal#print(string)"{{{
   let l:pos = 0
   let l:max = len(a:string)
   let s:line = line('.')
-  let s:col = col('.')
+  let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? col('.') - 1 : col('.'))
   let s:lines = {}
   let s:lines[s:line] = getline('.')
   
@@ -258,10 +258,10 @@ function! s:output_string(string)"{{{
     let s:lines[s:line] = ''
   endif
   let l:line = s:lines[s:line]
-  let l:left_line = l:line[: s:col - 2]
-  let l:right_line = vimshell#util#truncate_head(l:line[s:col-1 :], vimshell#util#wcswidth(l:string))
+  let l:left_line = s:col == 1 ? '' : l:line[: s:col - 2]
+  let l:right_line = vimshell#util#truncate_head(l:line[s:col - 1 :], vimshell#util#wcswidth(l:string))
 
-  let s:lines[s:line] = (s:col == 1)? l:string . l:right_line : l:left_line . l:string . l:right_line
+  let s:lines[s:line] = l:left_line . l:string . l:right_line
   
   let s:col += len(l:string)
 endfunction"}}}
@@ -482,10 +482,10 @@ function! s:escape.clear_line(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
   if l:param == '' || l:param == '0'
     " Clear right line.
-    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
+    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col - 2]
   elseif l:param == '1'
     " Clear left line.
-    let s:lines[s:line] = s:lines[s:line][s:col-1 :]
+    let s:lines[s:line] = s:lines[s:line][s:col - 1 :]
     let s:col = 1
   elseif l:param == '2'
     " Clear whole line.
@@ -498,7 +498,7 @@ function! s:escape.clear_screen(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
   if l:param == '' || l:param == '0'
     " Clear screen from cursor down.
-    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col-2]
+    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col - 2]
     for l:linenr in keys(s:lines)
       if l:linenr >= s:line
         " Clear previous highlight.
@@ -607,7 +607,7 @@ function! s:escape.move_right(matchstr)"{{{
     let l:line = s:lines[s:line]
   endif
 
-  let s:col += vimshell#util#truncate_len(l:line[s:col-1 :], n)
+  let s:col += vimshell#util#truncate_len(l:line[s:col - 1 :], n)
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')

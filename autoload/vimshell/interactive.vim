@@ -160,6 +160,9 @@ endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let l:input = input('Please input send string: ')
   call vimshell#imdisable()
+
+  let b:interactive.echoback_linenr = line('.')
+
   call vimshell#interactive#send_string(l:input)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
