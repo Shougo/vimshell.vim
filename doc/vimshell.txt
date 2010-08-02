@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-02
+- Fixed filename completion.
+
 2010-08-01
 - Deleted interactive command complete.
 - Deleted terminal filter.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2010
+" Last Modified: 02 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,9 +88,10 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   let l:list = []
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   let l:paths = map((a:0 == 1 ? split(&path, ',') : [ getcwd() ]), 'substitute(v:val, "\\\\", "/", "g")')
-  for word in l:files
+  let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
+  for l:word in l:files
     let l:dict = {
-          \'word' : word, 'menu' : 'file'
+          \'word' : l:word, 'menu' : 'file'
           \}
 
     if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
@@ -107,38 +108,33 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
       endfor
     endif
 
-    call add(l:list, l:dict)
-  endfor
-
-  let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-  for keyword in l:list
-    let l:abbr = keyword.word
-
-    if isdirectory(keyword.word)
+    let l:abbr = l:dict.word
+    if isdirectory(l:word)
       let l:abbr .= '/'
-      let keyword.menu = 'directory'
+      let l:dict.menu = 'directory'
     elseif vimshell#iswin()
-      if '.'.fnamemodify(keyword.word, ':e') =~ l:exts
+      if '.'.fnamemodify(l:word, ':e') =~ l:exts
         let l:abbr .= '*'
-        let keyword.menu = 'executable'
+        let l:dict.menu = 'executable'
       endif
-    elseif executable(keyword.word)
+    elseif executable(l:word)
       let l:abbr .= '*'
-      let keyword.menu = 'executable'
+      let l:dict.menu = 'executable'
     endif
-
-    let keyword.abbr = l:abbr
+    let l:dict.abbr = l:abbr
 
     " Escape word.
-    let keyword.orig = keyword.word
-    let keyword.word = escape(keyword.word, ' *?[]"={}')
+    let l:dict.orig = l:dict.word
+    let l:dict.word = escape(l:dict.word, ' *?[]"={}')
+
+    call add(l:list, l:dict)
   endfor
 
   return l:list
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
-  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
+  for l:keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
         \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
     let l:dict = l:keyword
     let l:dict.menu = 'directory'
