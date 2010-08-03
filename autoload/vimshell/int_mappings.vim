@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2010
+" Last Modified: 04 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -226,7 +226,9 @@ function! s:restart_command()"{{{
 endfunction"}}}
 function! s:command_complete()"{{{
   let b:interactive.echoback_linenr = line('.')
-  call vimshell#interactive#send_string(vimshell#interactive#get_cur_text() . "\<TAB>\<TAB>")
+  let l:command = b:interactive.command
+  call vimshell#interactive#send_string(vimshell#interactive#get_cur_text() .
+        \ (l:command ==# 'zsh' ? "\<TAB>" : "\<TAB>\<TAB>"))
 endfunction "}}}
 function! s:exit()"{{{
   if !b:interactive.process.is_valid

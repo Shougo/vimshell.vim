@@ -130,10 +130,6 @@ function! vimshell#interactive#send_string(string)"{{{
   
   let l:in = a:string
 
-  if l:in != '' && b:interactive.type !=# 'terminal'
-    call vimshell#history#interactive_append(l:in)
-  endif
-
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
     let l:in = iconv(l:in, &encoding, b:interactive.encoding)
@@ -148,6 +144,7 @@ function! vimshell#interactive#send_string(string)"{{{
       call vimshell#interactive#exit()
       return
     else
+      echomsg l:in
       call b:interactive.process.write(l:in)
     endif
   catch

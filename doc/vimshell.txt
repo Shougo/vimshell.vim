@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-04
+- Improved send_string().
+- Check interactive command.
+
 2010-08-03
 - Changed history mappings.
 - Improved mappings name.
