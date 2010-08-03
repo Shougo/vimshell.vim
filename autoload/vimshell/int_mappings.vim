@@ -39,7 +39,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_send_input)  <C-o>:call vimshell#interactive#send_input()<CR>
   inoremap <buffer><expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)  <C-o>:call <SID>command_complete()<CR>
-  inoremap <buffer> <Plug>(vimshell_int_delete_forward_line)  <ESC>lDa
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>

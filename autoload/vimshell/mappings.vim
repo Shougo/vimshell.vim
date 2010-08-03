@@ -58,7 +58,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
 
   inoremap <buffer><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_backward_char(1)
-  inoremap <buffer> <Plug>(vimshell_delete_forward_line)  <ESC>lDa
+  inoremap <buffer><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
   "}}}
   
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
