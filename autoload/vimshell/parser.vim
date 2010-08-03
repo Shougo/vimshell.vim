@@ -174,6 +174,7 @@ function! vimshell#parser#parse_statements(script)"{{{
                 \   'condition' : 'true',
                 \})
         endif
+        let l:statement = ''
         let i += 2
       else
         let l:statement .= a:script[i]
@@ -188,6 +189,7 @@ function! vimshell#parser#parse_statements(script)"{{{
                 \   'condition' : 'false',
                 \})
         endif
+        let l:statement = ''
         let i += 2
       else
         let l:statement .= a:script[i]
@@ -315,7 +317,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   endif
 
   let b:vimshell.system_variables['status'] = b:interactive.status
-  let ret = b:interactive.status
+  let l:ret = b:interactive.status
 
   let l:statements = b:vimshell.continuation.statements
   let l:condition = l:statements[0].condition

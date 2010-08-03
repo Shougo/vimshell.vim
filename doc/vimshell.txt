@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-03
 - Changed history mappings.
 - Improved mappings name.
+- Fixed conditional code bug.
 
 2010-08-02
 - Implemanted interactive command completion.
