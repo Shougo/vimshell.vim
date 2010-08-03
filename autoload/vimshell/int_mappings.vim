@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2010
+" Last Modified: 03 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,16 +29,17 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_delete_line)  <ESC>:<C-u>call <SID>delete_line()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_word)  <SID>delete_word()
+  inoremap <buffer><silent> <Plug>(vimshell_int_delete_backward_line)  <ESC>:<C-u>call <SID>delete_backward_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)  vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backword_char)  <SID>delete_backword_char(0)
-  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backword_char)  <SID>delete_backword_char(1)
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)  <SID>delete_backward_char(0)
+  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)  <SID>delete_backward_char(1)
   inoremap <buffer><expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
   inoremap <buffer><silent> <Plug>(vimshell_int_send_input)  <C-o>:call vimshell#interactive#send_input()<CR>
   inoremap <buffer><expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)  <C-o>:call <SID>command_complete()<CR>
+  inoremap <buffer> <Plug>(vimshell_int_delete_forward_line)  <ESC>lDa
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
@@ -69,22 +70,23 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
 
   " Insert mode key-mappings.
-  imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backword_char)
-  imap <buffer> <BS>     <Plug>(vimshell_int_delete_backword_char)
+  imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backward_char)
+  imap <buffer> <BS>     <Plug>(vimshell_int_delete_backward_char)
   imap <buffer> <C-a>     <Plug>(vimshell_int_move_head)
-  imap <buffer> <C-u>     <Plug>(vimshell_int_delete_line)
-  imap <buffer> <C-w>     <Plug>(vimshell_int_delete_word)
+  imap <buffer> <C-u>     <Plug>(vimshell_int_delete_backward_line)
+  imap <buffer> <C-w>     <Plug>(vimshell_int_delete_backward_word)
+  imap <buffer> <C-k>     <Plug>(vimshell_int_delete_forward_line)
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  imap <buffer> <C-k>  <Plug>(vimshell_int_history_complete)
+  imap <buffer> <C-r>  <Plug>(vimshell_int_history_complete)
   imap <buffer> <C-v>  <Plug>(vimshell_int_send_input)
   inoremap <buffer> <C-n>     <C-n>
   imap <buffer><expr> <TAB>  pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_int_command_complete)"
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
-function! s:delete_backword_char(is_auto_select)"{{{
+function! s:delete_backward_char(is_auto_select)"{{{
   if !pumvisible()
     let l:prefix = ''
   elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
@@ -149,7 +151,7 @@ function! s:move_head()"{{{
   
   startinsert
 endfunction"}}}
-function! s:delete_line()"{{{
+function! s:delete_backward_line()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
@@ -162,9 +164,6 @@ function! s:delete_line()"{{{
   if l:col == l:mcol-1
     startinsert!
   endif
-endfunction"}}}
-function! s:delete_word()"{{{
-  return vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
 endfunction"}}}
 function! s:execute_line(is_insert)"{{{
   if !a:is_insert

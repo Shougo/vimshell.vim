@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-03
+- Changed history mappings.
+- Improved mappings name.
+
 2010-08-02
 - Implemanted interactive command completion.
 - Improved mappings.
