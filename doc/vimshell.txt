@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-04
 - Improved send_string().
 - Check interactive command.
+- Implemanted print exit value.
 
 2010-08-03
 - Changed history mappings.

@@ -328,6 +328,7 @@ function! vimshell#interactive#exit()"{{{
   endif
 
   let b:interactive.status = eval(l:status)
+  let b:interactive.cond = l:cond
   if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
     hi def link InteractiveMessage WarningMsg
@@ -393,6 +394,47 @@ function! vimshell#interactive#hang_up(afile)"{{{
       stopinsert
       setlocal nomodifiable
     endif
+  endif
+endfunction"}}}
+function! vimshell#interactive#decode_signal(signal)"{{{
+  if a:signal == 2
+    return 'SIGINT'
+  elseif a:signal == 3
+    return 'SIGQUIT'
+  elseif a:signal == 4
+    return 'SIGILL'
+  elseif a:signal == 6
+    return 'SIGABRT'
+  elseif a:signal == 8
+    return 'SIGFPE'
+  elseif a:signal == 9
+    return 'SIGKILL'
+  elseif a:signal == 11
+    return 'SIGSEGV'
+  elseif a:signal == 13
+    return 'SIGPIPE'
+  elseif a:signal == 14
+    return 'SIGALRM'
+  elseif a:signal == 15
+    return 'SIGTERM'
+  elseif a:signal == 10
+    return 'SIGUSR1'
+  elseif a:signal == 12
+    return 'SIGUSR2'
+  elseif a:signal == 17
+    return 'SIGCHLD'
+  elseif a:signal == 18
+    return 'SIGCONT'
+  elseif a:signal == 19
+    return 'SIGSTOP'
+  elseif a:signal == 20
+    return 'SIGTSTP'
+  elseif a:signal == 21
+    return 'SIGTTIN'
+  elseif a:signal == 22
+    return 'SIGTTOU'
+  else
+    return 'UNKNOWN'
   endif
 endfunction"}}}
 

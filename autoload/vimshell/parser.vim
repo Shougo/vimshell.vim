@@ -327,6 +327,19 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
     let b:vimshell.continuation.statements = []
   endif
 
+  if l:ret != 0
+    " Print exit value.
+    let l:context = b:vimshell.continuation.context
+    if b:interactive.cond ==# 'signal'
+      let l:message = printf('vimshell: %s %d(%s) "%s"', b:interactive.cond, b:interactive.status,
+            \ vimshell#interactive#decode_signal(b:interactive.status), b:interactive.cmdline)
+    else
+      let l:message = printf('vimshell: %s %d "%s"', b:interactive.cond, b:interactive.status, b:interactive.cmdline)
+    endif
+    
+    call vimshell#error_line(l:context.fd, l:message)
+  endif
+
   " Execute rest commands.
   let l:statements = l:statements[1:]
   let l:max = len(l:statements)
