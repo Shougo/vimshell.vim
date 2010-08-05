@@ -177,7 +177,7 @@ function! s:default_settings()"{{{
   setlocal nonumber
   setlocal scrolloff=0
   setlocal sidescrolloff=0
-  setlocal sidescroll=0
+  setlocal sidescroll=1
   setfiletype vimshell-term
 endfunction"}}}
 
