@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2010
+" Last Modified: 04 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -122,6 +122,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
+        \ 'command' : fnamemodify(vimshell#iswin() ? l:args[1] : l:args[0], ':t:r'),
         \}
   call vimshell#interactive#init()
 
@@ -202,6 +203,10 @@ function! s:insert_enter()"{{{
   if exists(':NeoComplCacheDisable')
     " Lock neocomplcache.
     NeoComplCacheLock
+  endif
+
+  if !exists('b:interactive')
+    return
   endif
 
   if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height

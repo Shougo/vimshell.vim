@@ -174,6 +174,7 @@ function! vimshell#parser#parse_statements(script)"{{{
                 \   'condition' : 'true',
                 \})
         endif
+        let l:statement = ''
         let i += 2
       else
         let l:statement .= a:script[i]
@@ -188,6 +189,7 @@ function! vimshell#parser#parse_statements(script)"{{{
                 \   'condition' : 'false',
                 \})
         endif
+        let l:statement = ''
         let i += 2
       else
         let l:statement .= a:script[i]
@@ -315,7 +317,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   endif
 
   let b:vimshell.system_variables['status'] = b:interactive.status
-  let ret = b:interactive.status
+  let l:ret = b:interactive.status
 
   let l:statements = b:vimshell.continuation.statements
   let l:condition = l:statements[0].condition
@@ -323,6 +325,19 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
         \ || (l:condition ==# 'false' && !l:ret)
     " Exit.
     let b:vimshell.continuation.statements = []
+  endif
+
+  if l:ret != 0
+    " Print exit value.
+    let l:context = b:vimshell.continuation.context
+    if b:interactive.cond ==# 'signal'
+      let l:message = printf('vimshell: %s %d(%s) "%s"', b:interactive.cond, b:interactive.status,
+            \ vimshell#interactive#decode_signal(b:interactive.status), b:interactive.cmdline)
+    else
+      let l:message = printf('vimshell: %s %d "%s"', b:interactive.cond, b:interactive.status, b:interactive.cmdline)
+    endif
+    
+    call vimshell#error_line(l:context.fd, l:message)
   endif
 
   " Execute rest commands.

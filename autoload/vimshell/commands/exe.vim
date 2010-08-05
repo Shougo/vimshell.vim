@@ -111,6 +111,11 @@ function! s:init_process(commands, context, options)"{{{
 
   let l:sub = vimproc#plineopen3(a:commands)
 
+  let l:cmdline = []
+  for l:command in a:commands
+    call add(l:cmdline, join(l:command.args))
+  endfor
+
   " Set variables.
   let b:interactive = {
         \ 'type' : 'execute', 
@@ -121,6 +126,7 @@ function! s:init_process(commands, context, options)"{{{
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
+        \ 'cmdline' : join(l:cmdline, '|'), 
         \}
 
   " Input from stdin.
