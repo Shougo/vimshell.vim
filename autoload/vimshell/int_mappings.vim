@@ -231,7 +231,7 @@ function! s:command_complete()"{{{
   let l:cur_text = vimshell#interactive#get_cur_text()
   call setline(l:line, l:prompt)
   call vimshell#interactive#send_string(l:cur_text .
-        \ ((l:command ==# 'zsh' || l:command ==# 'ipython') ? "\<TAB>" : "\<TAB>\<TAB>"))
+        \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"))
   if getline(l:line) ==# l:prompt
     " Restore prompt.
     call setline(l:line, l:prompt . l:cur_text)

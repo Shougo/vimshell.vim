@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jul 2010
+" Last Modified: 05 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -438,14 +438,16 @@ function! vimshell#print_prompt(...)"{{{
     " Insert user prompt line.
     if s:right_prompt != ''
       let l:right_prompt = eval(s:right_prompt)
-      let l:user_prompt_last = (s:user_prompt != '')? getline('$') : '[%] '
-      let l:winwidth = winwidth(0) - 10
-      let l:padding_len = (len(l:user_prompt_last)+len(s:right_prompt)+1 > l:winwidth)? 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
-      let l:secondary = printf('%s%s%s', l:user_prompt_last, repeat(' ', l:padding_len), l:right_prompt)
-      if s:user_prompt != ''
-        call setline('$', l:secondary)
-      else
-        call append('$', l:secondary)
+      if l:right_prompt != ''
+        let l:user_prompt_last = (s:user_prompt != '')? getline('$') : '[%] '
+        let l:winwidth = winwidth(0) - 10
+        let l:padding_len = (len(l:user_prompt_last)+len(s:right_prompt)+1 > l:winwidth)? 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
+        let l:secondary = printf('%s%s%s', l:user_prompt_last, repeat(' ', l:padding_len), l:right_prompt)
+        if s:user_prompt != ''
+          call setline('$', l:secondary)
+        else
+          call append('$', l:secondary)
+        endif
       endif
     endif
   endif

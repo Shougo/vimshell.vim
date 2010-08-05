@@ -174,7 +174,12 @@ function! s:execute_line(is_insert)"{{{
       call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
       " Search cursor file.
-      let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+      let l:filename = expand('<cfile>')
+      if has('conceal') && l:filename == '%'
+        let l:filename = matchstr(getline('.'), '\f\+', 0, 2)
+      endif
+      let l:filename = substitute(substitute(l:filename, ' ', '\\ ', 'g'), '\\', '/', 'g')
+      echomsg expand('<cfile>')
       call s:open_file(l:filename)
     endif
   elseif line('.') != line('$')

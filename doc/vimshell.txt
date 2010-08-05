@@ -186,6 +186,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-08-05
 - Improved iexe completion.
+- Improved right prompt.
+- Improved cursor word check.
 
 2010-08-04
 - Improved send_string().
