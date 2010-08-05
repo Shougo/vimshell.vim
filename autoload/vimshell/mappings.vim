@@ -50,7 +50,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)  <ESC>:<C-u>call <SID>insert_last_word()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_run_help)  <ESC>:<C-u>call <SID>run_help()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_delete_backward_line)  <ESC>:<C-u>call <SID>delete_backward_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
@@ -467,6 +467,17 @@ function! s:delete_backward_char(is_auto_select)"{{{
   else
     return l:prefix
   endif
+endfunction"}}}
+function! s:delete_backward_line()"{{{
+  if !pumvisible()
+    let l:prefix = ''
+  elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
+    let l:prefix = "\<C-e>"
+  else
+    let l:prefix = "\<C-y>"
+  endif
+  
+  return l:prefix . repeat("\<BS>", len(vimshell#get_cur_text()))
 endfunction"}}}
 function! s:open_file(filename)"{{{
   " Execute cursor file.
