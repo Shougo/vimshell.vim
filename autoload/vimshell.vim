@@ -79,20 +79,25 @@ endif"}}}
 
 " User utility functions.
 function! s:default_settings()"{{{
+  " Common.
+  setlocal nocompatible
+  setlocal nolist
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal bufhidden=hide
-  setlocal noreadonly
-  setlocal iskeyword+=-,+,.,\\,!,~
-  setlocal nofoldenable
-  setlocal wrap
-  setlocal nolist
   setlocal tabstop=8
-  setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
+  setlocal foldcolumn=0
+  setlocal foldmethod=manual
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=n
   endif
+  
+  " For vimshell.
+  setlocal bufhidden=hide
+  setlocal noreadonly
+  setlocal iskeyword+=-,+,.,\\,!,~
+  setlocal wrap
+  setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
   
   " Set autocommands.
   augroup vimshell

@@ -208,12 +208,21 @@ function! s:default_settings()"{{{
   let $EDITOR = g:vimshell_cat_command
   let $PAGER = g:vimshell_cat_command
 
-
+  " Common.
+  setlocal nocompatible
+  setlocal nolist
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal wrap
-  setlocal nolist
   setlocal tabstop=8
+  setlocal foldcolumn=0
+  setlocal foldmethod=manual
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=n
+  endif
+
+  " For interactive.
+  setlocal wrap
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
   " Set syntax.

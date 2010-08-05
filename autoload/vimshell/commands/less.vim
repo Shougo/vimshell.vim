@@ -102,17 +102,26 @@ function! s:init(commands, context, filetype, interactive)"{{{
   endfor
   edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
+  
+  " Common.
+  setlocal nocompatible
+  setlocal nolist
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal wrap
-  setlocal nolist
-  setlocal nomodifiable
-  let &filetype = a:filetype
-  let b:interactive = a:interactive
+  setlocal tabstop=8
+  setlocal foldcolumn=0
+  setlocal foldmethod=manual
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=n
   endif
+  
+  " For less.
+  setlocal wrap
+  setlocal nomodifiable
+  
+  let &filetype = a:filetype
+  let b:interactive = a:interactive
 
   " Set environment variables.
   let $TERM = g:vimshell_environment_term

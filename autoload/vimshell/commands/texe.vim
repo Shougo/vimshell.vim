@@ -158,11 +158,26 @@ function! s:default_settings()"{{{
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
   
+  " Common.
+  setlocal nocompatible
+  setlocal nolist
   setlocal buftype=nofile
   setlocal noswapfile
-  setlocal nowrap
-  setlocal nolist
   setlocal tabstop=8
+  setlocal foldcolumn=0
+  setlocal foldmethod=manual
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=n
+  endif
+  
+  " For Terminal
+  setlocal nowrap
+  setlocal nopaste
+  setlocal nonumber
+  setlocal scrolloff=0
+  setlocal sidescrolloff=0
+  setlocal sidescroll=0
   setfiletype vimshell-term
 endfunction"}}}
 
