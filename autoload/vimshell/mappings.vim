@@ -34,7 +34,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
-  nnoremap <buffer><expr> <Plug>(vimshell_change_line) printf('0%dlc$', strlen(vimshell#get_prompt()))
+  nnoremap <buffer><expr> <Plug>(vimshell_change_line) vimshell#check_prompt() ? printf('0%dlc$', vimshell#util#strchars(vimshell#get_prompt())) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>

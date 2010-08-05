@@ -134,6 +134,10 @@ function! vimshell#util#wcswidth(str)"{{{
   return width
 endfunction"}}}
 
+function! vimshell#util#strchars(str)"{{{
+  return len(substitute(a:str, '.', 'x', 'g'))
+endfunction"}}}
+
 function! s:wcwidth(ucs)"{{{
   let ucs = a:ucs
   if (ucs >= 0x1100
