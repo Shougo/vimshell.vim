@@ -164,7 +164,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let $VIMSHELL = 1
   let $COLUMNS = winwidth(0)-5
   let $LINES = winheight(0)
-  let $SHELL = 'vimshell'
   let $EDITOR = g:vimshell_cat_command
   let $PAGER = g:vimshell_cat_command
 
