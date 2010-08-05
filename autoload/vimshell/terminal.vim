@@ -30,7 +30,7 @@ function! vimshell#terminal#print(string)"{{{
   "echomsg a:string
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && col('.') == col('$')
     " Optimized print.
-    let l:lines = split(a:string, '\n', 1)
+    let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\n', 1)
     if line('.') != b:interactive.echoback_linenr
       call setline('.', getline('.') . l:lines[0])
     endif

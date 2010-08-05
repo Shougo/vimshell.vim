@@ -1,11 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-<<<<<<< HEAD
-" Last Modified: 02 Aug 2010
-=======
 " Last Modified: 03 Aug 2010
->>>>>>> 3e1cade607c484b308f2f49fbe1ee89ceadae4bc
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the

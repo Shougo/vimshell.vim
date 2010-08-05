@@ -144,7 +144,6 @@ function! vimshell#interactive#send_string(string)"{{{
       call vimshell#interactive#exit()
       return
     else
-      echomsg l:in
       call b:interactive.process.write(l:in)
     endif
   catch
