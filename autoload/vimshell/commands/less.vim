@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2010
+" Last Modified: 05 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -140,7 +140,7 @@ function! s:init(commands, context, filetype, interactive)"{{{
   
   nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)  :<C-u>call <SID>on_execute()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)       :<C-u>call <SID>next_line()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)       :<C-u>call <SID>next_screen()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_half_screen)       :<C-u>call <SID>next_half_screen()<CR>
@@ -162,11 +162,6 @@ endfunction"}}}
 function! s:on_execute()"{{{
   call s:print_output(winheight(0))
 endfunction"}}}
-function! s:on_exit()"{{{
-  if !b:interactive.process.is_valid
-    bdelete
-  endif  
-endfunction "}}}
 function! s:next_line()"{{{
   if line('.') == line('$')
     call s:print_output(2)

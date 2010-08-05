@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: term_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2010
+" Last Modified: 05 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,7 +27,7 @@
 function! vimshell#term_mappings#define_default_mappings()"{{{
   " Plugin key-mappings."{{{
   nnoremap <buffer><silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_term_exit)       :<C-u>call <SID>exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_term_execute_line)       :<C-u>call <SID>execute_line()<CR>
   inoremap <buffer><silent><expr> <Plug>(vimshell_term_send_escape) vimshell#term_mappings#send_key("\<ESC>")
@@ -99,11 +99,6 @@ function! vimshell#term_mappings#send_keys(keys)"{{{
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
-function! s:exit()"{{{
-  if !b:interactive.process.is_valid
-    bdelete
-  endif  
-endfunction "}}}
 function! s:start_insert()"{{{
   setlocal modifiable
   startinsert

@@ -309,6 +309,13 @@ function! vimshell#interactive#execute_pipe_out()"{{{
   endif
 endfunction"}}}
 
+function! vimshell#interactive#quit_buffer()"{{{
+  if !b:interactive.process.is_valid
+    bdelete
+  else
+    call vimshell#echo_error('Process is running. Press <C-c> to kill process.')
+  endif  
+endfunction"}}}
 function! vimshell#interactive#exit()"{{{
   if !b:interactive.process.is_valid
     return

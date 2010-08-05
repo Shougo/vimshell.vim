@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 05 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -141,7 +141,7 @@ function! vimshell#commands#bg#init(commands, context, filetype, interactive)"{{
   
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call <SID>on_exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)

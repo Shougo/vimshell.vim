@@ -190,6 +190,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved cursor word check.
 - Fixed delete line bug.
 - Improved change line.
+- Improved process exists check.
 
 2010-08-04
 - Improved send_string().

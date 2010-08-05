@@ -46,7 +46,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call <SID>execute_line(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call <SID>exit()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call <SID>restart_command()<CR>
   nnoremap <buffer><expr> <Plug>(vimshell_int_change_line) vimshell#interactive#get_prompt() == '' ? 'ddO' : printf('0%dlc$', vimshell#util#strchars(vimshell#interactive#get_prompt()))
   nmap <buffer>  <Plug>(vimshell_int_delete_line) <Plug>(vimshell_int_change_line)<ESC>
@@ -236,11 +236,6 @@ function! s:command_complete()"{{{
     " Restore prompt.
     call setline(l:line, l:prompt . l:cur_text)
   endif
-endfunction "}}}
-function! s:exit()"{{{
-  if !b:interactive.process.is_valid
-    bdelete
-  endif  
 endfunction "}}}
 
 " vim: foldmethod=marker
