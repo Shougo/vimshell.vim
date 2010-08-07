@@ -55,6 +55,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:<C-u>call <SID>interrupt(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
   inoremap <buffer><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_backward_char(1)
@@ -126,6 +127,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)
   " Delete line.
   imap <buffer> <C-k>     <Plug>(vimshell_delete_forward_line)
+  " Move to previous window.
+  imap <buffer> <C-x>     <Plug>(vimshell_move_previous_window)
 endfunction"}}}
 
 " VimShell key-mappings functions.

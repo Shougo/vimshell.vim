@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-07
+- Improved vimshell#switch_shell().
+- Implemented <Plug>(vimshell_move_previous_window).
+
 2010-08-05
 - Improved iexe completion.
 - Improved right prompt.
@@ -197,7 +201,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-04
 - Improved send_string().
 - Check interactive command.
-- Implemanted print exit value.
+- Implemented print exit value.
 
 2010-08-03
 - Changed history mappings.
@@ -206,7 +210,7 @@ CHANGELOG						*vimshell-changelog*
 - Ignore ** pattern when completion.
 
 2010-08-02
-- Implemanted interactive command completion.
+- Implemented interactive command completion.
 - Improved mappings.
 - Improved send string.
 - Fixed col.

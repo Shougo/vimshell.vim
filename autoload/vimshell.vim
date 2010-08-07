@@ -219,20 +219,13 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
   
-  if &filetype == 'vimshell'
+  if &filetype ==# 'vimshell'
     if winnr('$') != 1
       close
     else
       buffer #
     endif
-
-    if a:directory != ''
-      " Change current directory.
-      lcd `=fnamemodify(a:directory, ':p')`
-
-      call vimshell#print_prompt(l:context)
-    endif
-    call vimshell#start_insert()
+    
     return
   endif
 
