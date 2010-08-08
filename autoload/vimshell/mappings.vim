@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2010
+" Last Modified: 08 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -178,8 +178,8 @@ function! s:execute_line(is_insert)"{{{
     else
       " Search cursor file.
       let l:filename = expand('<cfile>')
-      if has('conceal') && l:filename == '%'
-        let l:filename = matchstr(getline('.'), '\f\+', 0, 2)
+      if has('conceal') && l:filename =~ '\[\%[%\]]'
+        let l:filename = matchstr(getline('.'), '\f\+', 3)
       endif
       let l:filename = substitute(substitute(l:filename, ' ', '\\ ', 'g'), '\\', '/', 'g')
       call s:open_file(l:filename)

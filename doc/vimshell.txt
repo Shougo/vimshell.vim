@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-08-08
 - Improved redirection.
+- Fixed conceal parse.
 
 2010-08-07
 - Improved vimshell#switch_shell().
