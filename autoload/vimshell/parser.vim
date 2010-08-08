@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2010
+" Last Modified: 08 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -959,18 +959,33 @@ function! s:parse_redirection(script)"{{{
       " Input redirection.
       let l:fd.stdin = matchstr(a:script, '<\s*\zs\f*', i)
       let i = matchend(a:script, '<\s*\zs\f*', i)
+    elseif a:script[i] =~ '^[12]' && a:script[i :] =~ '^[12]>' 
+      " Output redirection.
+      let i += 2
+      if a:script[i-2] == 1
+        let l:fd.stdout = matchstr(a:script, '^\s*\zs\f*', i)
+      else
+        let l:fd.stderr = matchstr(a:script, '^\s*\zs\f*', i)
+      endif
+
+      let i = matchend(a:script, '^\s*\zs\f*', i)
     elseif a:script[i] == '>'
       " Output redirection.
       if a:script[i :] =~ '^>&'
-        let l:fd.stderr = matchstr(a:script, '>&\s*\zs\f*', i)
-        let i = matchend(a:script, '>&\s*\zs\f*', i)
+        " Output stderr.
+        let i += 2
+        let l:fd.stderr = matchstr(a:script, '^\s*\zs\f*', i)
       elseif a:script[i :] =~ '^>>'
-        let l:fd.stdout = '>' . matchstr(a:script, '>>\s*\zs\f*', i)
-        let i = matchend(a:script, '>>\s*\zs\f*', i)
+        " Append stdout.
+        let i += 2
+        let l:fd.stdout = '>' . matchstr(a:script, '^\s*\zs\f*', i)
       else
-        let l:fd.stdout = matchstr(a:script, '>\s*\zs\f*', i)
-        let i = matchend(a:script, '>\s*\zs\f*', i)
+        " Output stdout.
+        let i += 1
+        let l:fd.stdout = matchstr(a:script, '^\s*\zs\f*', i)
       endif
+
+      let i = matchend(a:script, '^\s*\zs\f*', i)
     else
       let [l:script, i] = s:skip_else(l:script, a:script, i)
     endif

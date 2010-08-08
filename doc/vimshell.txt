@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-08
+- Improved redirection.
+
 2010-08-07
 - Improved vimshell#switch_shell().
 - Implemented <Plug>(vimshell_move_previous_window).
