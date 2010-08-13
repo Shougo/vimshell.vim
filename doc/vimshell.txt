@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed less parse.
 - Improved terminal highlight.
 - Implemented user syntax.
+- Fixed :VimShellBang and :VimShellRead error.
 
 2010-08-08
 - Improved redirection.

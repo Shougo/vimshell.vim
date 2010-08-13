@@ -156,12 +156,10 @@ nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '
 
 " Command functions:
 function! s:bang(cmdline)"{{{
-  let [l:program, l:script] = vimshell#parser#parse_alias(a:cmdline)
-  echo vimshell#system(l:program . ' ' . l:script)
+  echo vimshell#system(a:cmdline)
 endfunction"}}}
 function! s:read(cmdline)"{{{
-  let [l:program, l:script] = vimshell#parser#parse_alias(a:cmdline)
-  call append('.', split(vimshell#system(l:program . ' ' . l:script), '\n'))
+  call append('.', split(vimshell#system(a:cmdline), '\n'))
 endfunction"}}}
 function! s:execute_completefunc(lead, cmd, pos)"{{{
   silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
