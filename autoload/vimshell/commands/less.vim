@@ -65,6 +65,7 @@ function! s:command.execute(commands, context)"{{{
   " Set variables.
   let l:interactive = {
         \ 'type' : 'less', 
+        \ 'syntax' : &syntax,
         \ 'process' : l:sub, 
         \ 'fd' : a:context.fd, 
         \ 'encoding' : l:options['--encoding'], 

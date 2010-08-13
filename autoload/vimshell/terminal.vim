@@ -428,8 +428,7 @@ function! s:escape.highlight(matchstr)"{{{
   endfor
   
   if l:highlight != '' && !g:vimshell_disable_escape_highlight
-        \ && !(b:interactive.type ==# 'background' && &syntax !=# 'vimshell-bg')
-        \ && !(b:interactive.type ==# 'less' && &syntax !=# 'vimshell-less')
+        \ && b:interactive.syntax ==# &filetype
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
     endif

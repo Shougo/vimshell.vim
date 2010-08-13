@@ -367,6 +367,16 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
     let i += 1
   endwhile
 
+  if b:interactive.syntax !=# &filetype
+    " Set highlight.
+    let l:start = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bWen')[0]
+    if l:start > 0
+      call s:highlight_with(l:start + 1, line('$'), b:interactive.syntax)
+    endif
+
+    let b:interactive.syntax = &filetype
+  endif
+
   let b:vimshell.continuation = {}
   call vimshell#print_prompt(l:context)
   call vimshell#start_insert(a:is_insert)
@@ -1150,6 +1160,22 @@ function! s:recursive_expand_alias(string)"{{{
   endwhile
 
   return l:alias
+endfunction"}}}
+
+function! s:highlight_with(start, end, syntax)"{{{
+  let l:cnt = get(b:, 'highlight_count', 0)
+  if globpath(&runtimepath, 'syntax/' . a:syntax . '.vim') == ''
+    return
+  endif
+  unlet! b:current_syntax
+  let l:save_isk= &l:iskeyword  " For scheme.
+  execute printf('syntax include @highlightWith%d syntax/%s.vim',
+        \              l:cnt, a:syntax)
+  let &l:iskeyword = l:save_isk
+  execute printf('syntax region highlightWith%d start=/\%%%dl/ end=/\%%%dl$/ '
+        \            . 'contains=@highlightWith%d,VimShellError',
+        \             l:cnt, a:start, a:end, l:cnt)
+  let b:highlight_count = l:cnt + 1
 endfunction"}}}
 
 " vim: foldmethod=marker

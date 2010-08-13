@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2010
+" Last Modified: 13 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -119,6 +119,7 @@ function! s:init_process(commands, context, options)"{{{
   " Set variables.
   let b:interactive = {
         \ 'type' : 'execute', 
+        \ 'syntax' : b:interactive.syntax,
         \ 'process' : l:sub, 
         \ 'fd' : a:context.fd, 
         \ 'encoding' : a:options['--encoding'], 

@@ -186,6 +186,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Set interactive variables.
   let b:interactive = {
         \ 'type' : 'vimshell', 
+        \ 'syntax' : &syntax, 
         \ 'process' : {}, 
         \ 'fd' : l:context.fd, 
         \ 'encoding' : &encoding, 
@@ -750,6 +751,9 @@ function! vimshell#set_galias(name, value)"{{{
 endfunction"}}}
 function! vimshell#get_galias(name)"{{{
   return get(b:vimshell.galias_table, a:name, '')
+endfunction"}}}
+function! vimshell#set_syntax(syntax_name)"{{{
+  let b:interactive.syntax = a:syntax_name
 endfunction"}}}
 
 function! s:init_internal_commands()"{{{
