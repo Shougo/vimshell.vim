@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-13
+- Supported set syntax in bg and less command.
+
 2010-08-08
 - Improved redirection.
 - Fixed conceal parse.

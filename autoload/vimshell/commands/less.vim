@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2010
+" Last Modified: 13 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,8 +38,8 @@ function! s:command.execute(commands, context)"{{{
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
   endif
-  if !has_key(l:options, '--filetype')
-    let l:options['--filetype'] = 'vimshell-less'
+  if !has_key(l:options, '--syntax')
+    let l:options['--syntax'] = 'vimshell-less'
   endif
   
   if empty(l:commands[0].args)
@@ -79,7 +79,7 @@ function! s:command.execute(commands, context)"{{{
   endif
   call l:interactive.process.stdin.close()
 
-  return s:init(a:commands, a:context, l:options['--filetype'], l:interactive)
+  return s:init(a:commands, a:context, l:options['--syntax'], l:interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
@@ -89,7 +89,7 @@ function! vimshell#commands#less#define()
   return s:command
 endfunction
 
-function! s:init(commands, context, filetype, interactive)"{{{
+function! s:init(commands, context, syntax, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -120,7 +120,8 @@ function! s:init(commands, context, filetype, interactive)"{{{
   setlocal wrap
   setlocal nomodifiable
   
-  let &filetype = a:filetype
+  setlocal filetype=vimshell-less
+  let &syntax = a:syntax
   let b:interactive = a:interactive
 
   " Set environment variables.
