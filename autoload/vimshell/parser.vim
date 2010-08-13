@@ -265,7 +265,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       " Execute less(Syntax sugar).
       let l:commands = a:commands[: -2]
       if !empty(a:commands[-1].args[1:])
-        let l:commands[0].args = insert(l:commands[0].args, a:commands[-1].args[1:])
+        let l:commands[0].args = a:commands[-1].args[1:] + l:commands[0].args
       endif
       return l:internal_commands['less'].execute(l:commands, l:context)
     else

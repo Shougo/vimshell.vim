@@ -186,6 +186,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-08-13
 - Supported set syntax in bg and less command.
+- Fixed less parse.
+- Improved terminal highlight.
 
 2010-08-08
 - Improved redirection.

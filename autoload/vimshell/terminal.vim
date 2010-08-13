@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2010
+" Last Modified: 13 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -428,6 +428,8 @@ function! s:escape.highlight(matchstr)"{{{
   endfor
   
   if l:highlight != '' && !g:vimshell_disable_escape_highlight
+        \ && !(b:interactive.type ==# 'background' && &syntax !=# 'vimshell-bg')
+        \ && !(b:interactive.type ==# 'less' && &syntax !=# 'vimshell-less')
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
     endif

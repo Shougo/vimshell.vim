@@ -33,7 +33,7 @@ function! s:command.execute(commands, context)"{{{
   " Execute command in background.
   let l:commands = a:commands
   let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
-        \{ 'arg=' : ['--encoding', '--filetype']
+        \{ 'arg=' : ['--encoding', '--syntax']
         \})
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
