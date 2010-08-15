@@ -436,7 +436,7 @@ function! s:clear()"{{{
 endfunction"}}}
 function! s:expand_wildcard()"{{{
   " Wildcard.
-  if vimshell#get_current_args() <= 0
+  if empty(vimshell#get_current_args())
     return ''
   endif
   let l:wildcard = vimshell#get_current_args()[-1]

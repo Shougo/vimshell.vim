@@ -689,7 +689,7 @@ endfunction"}}}
 function! vimshell#parser#expand_wildcard(wildcard)"{{{
   " Exclude wildcard.
   let l:wildcard = a:wildcard
-  let l:exclude = matchstr(l:wildcard, '\~.*$')
+  let l:exclude = matchstr(l:wildcard, '\~\zs.*$')
   if l:exclude != ''
     " Trunk l:wildcard.
     let l:wildcard = l:wildcard[: len(l:wildcard)-len(l:exclude)-1]
@@ -697,7 +697,7 @@ function! vimshell#parser#expand_wildcard(wildcard)"{{{
 
   " Expand wildcard.
   let l:expanded = split(escape(substitute(glob(l:wildcard), '\\', '/', 'g'), ' '), '\n')
-  let l:exclude_wilde = split(escape(substitute(glob(l:exclude[1:]), '\\', '/', 'g'), ' '), '\n')
+  let l:exclude_wilde = split(escape(substitute(glob(l:exclude), '\\', '/', 'g'), ' '), '\n')
   if !empty(l:exclude_wilde)
     let l:candidates = l:expanded
     let l:expanded = []
@@ -705,16 +705,21 @@ function! vimshell#parser#expand_wildcard(wildcard)"{{{
       let l:found = 0
 
       for ex in l:exclude_wilde
-        if candidate == ex
+        if candidate ==# ex
           let l:found = 1
           break
         endif
       endfor
 
-      if l:found == 0
+      if !l:found
         call add(l:expanded, candidate)
       endif
     endfor
+  endif
+
+  if a:wildcard !~ '[*?]' && empty(l:expanded)
+    " Keep original string.
+    let l:expanded = [ a:wildcard ]
   endif
 
   return filter(l:expanded, 'v:val != "." && v:val != ".."')
@@ -938,23 +943,9 @@ function! s:parse_variables(script)"{{{
 endfunction"}}}
 function! s:parse_wildcard(script)"{{{
   let l:script = ''
-
-  let i = 0
-  let l:max = len(a:script)
-  while i < l:max
-    if a:script[i] == '[' || a:script[i] == '*' || a:script[i] == '?' || a:script[i :] =~ '^\\[()|]'
-      " Wildcard.
-      let l:head = matchstr(a:script[: i-1], '[^[:blank:]]*$')
-      let l:wildcard = l:head . matchstr(a:script, '^[^[:blank:]]*', i)
-      " Trunk l:script.
-      let l:script = l:script[: -len(l:wildcard)]
-
-      let l:script .= join(vimshell#parser#expand_wildcard(l:wildcard))
-      let i = matchend(a:script, '^[^[:blank:]]*', i)
-    else
-      let [l:script, i] = s:skip_else(l:script, a:script, i)
-    endif
-  endwhile
+  for l:arg in vimshell#parser#split_args_through(a:script)
+    let l:script .= join(vimshell#parser#expand_wildcard(l:arg)) . ' '
+  endfor
 
   return l:script
 endfunction"}}}

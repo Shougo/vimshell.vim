@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-08-15
 * Ver.7.2 development is started.
+- Improved wildcard.
 
 ChangeLog 7.1: {{{
 2010-08-15
