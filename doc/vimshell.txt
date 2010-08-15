@@ -187,6 +187,8 @@ CHANGELOG						*vimshell-changelog*
 2010-08-15
 * Ver.7.2 development is started.
 - Improved wildcard.
+- Fixed wildcard parse.
+- Implemented file modifier.
 
 ChangeLog 7.1: {{{
 2010-08-15
@@ -860,7 +862,7 @@ ChangeLog 6.00-: {{{
     
     6.04 :
     - Fixed history_complete bug.
-    - Trunk many candidates in history_complete.
+    - Truncate many candidates in history_complete.
     - Changed g:vimshell_split_height default value.
     - Optimized complete file.
     - Improved autocmd.

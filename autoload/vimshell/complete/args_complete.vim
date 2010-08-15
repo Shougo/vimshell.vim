@@ -81,7 +81,7 @@ function! vimshell#complete#args_complete#omnifunc(findstart, base)"{{{
   " Restore option.
   let &ignorecase = l:ignorecase_save
 
-  " Trunk many items.
+  " Truncate many items.
   let l:complete_words = l:complete_words[: g:vimshell_max_list-1]
 
   if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'

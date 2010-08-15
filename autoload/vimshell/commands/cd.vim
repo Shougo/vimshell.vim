@@ -86,7 +86,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     " Push current directory and filtering.
     call insert(filter(b:vimshell.directory_stack, 'v:val != ' . string(l:cwd)), l:cwd)
 
-    " Trunk.
+    " Truncate.
     let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
   endif
   

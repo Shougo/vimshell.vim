@@ -687,18 +687,46 @@ function! vimshell#parser#check_wildcard()"{{{
   return !empty(l:args) && l:args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
 function! vimshell#parser#expand_wildcard(wildcard)"{{{
-  " Exclude wildcard.
+  " Check wildcard.
+  let i = 0
+  let l:max = len(a:wildcard)
+  let l:script = ''
+  let l:found = 0
+  while i < l:max
+    if a:wildcard[i] == '*' || a:wildcard[i] == '?' || a:wildcard[i] == '['
+      let l:found = 1
+      break
+    else
+      let [l:script, i] = s:skip_else(l:script, a:wildcard, i)
+    endif
+  endwhile
+
+  if !l:found
+    return [ a:wildcard ]
+  endif
+
   let l:wildcard = a:wildcard
-  let l:exclude = matchstr(l:wildcard, '\~\zs.*$')
+  
+  " Exclude wildcard.
+  let l:exclude = matchstr(l:wildcard, '\\\@<!\~\zs.\+$')
+  let l:exclude_wilde = []
   if l:exclude != ''
-    " Trunk l:wildcard.
-    let l:wildcard = l:wildcard[: len(l:wildcard)-len(l:exclude)-1]
+    " Truncate wildcard.
+    let l:wildcard = l:wildcard[: len(l:wildcard)-len(l:exclude)-2]
+    let l:exclude_wilde = vimshell#parser#expand_wildcard(l:exclude)
+  endif
+  
+  " Modifier.
+  let l:modifier = matchstr(l:wildcard, '\\\@<!(\zs.\+\ze)$')
+  if l:modifier != ''
+    " Truncate wildcard.
+    let l:wildcard = l:wildcard[: len(l:wildcard)-len(l:modifier)-3]
   endif
 
   " Expand wildcard.
   let l:expanded = split(escape(substitute(glob(l:wildcard), '\\', '/', 'g'), ' '), '\n')
-  let l:exclude_wilde = split(escape(substitute(glob(l:exclude), '\\', '/', 'g'), ' '), '\n')
   if !empty(l:exclude_wilde)
+    " Check exclude wildcard.
     let l:candidates = l:expanded
     let l:expanded = []
     for candidate in l:candidates
@@ -717,9 +745,53 @@ function! vimshell#parser#expand_wildcard(wildcard)"{{{
     endfor
   endif
 
-  if a:wildcard !~ '[*?]' && empty(l:expanded)
-    " Keep original string.
-    let l:expanded = [ a:wildcard ]
+  if l:modifier != ''
+    " Check file modifier.
+    let i = 0
+    let l:max = len(l:modifier)
+    while i < l:max
+      if l:modifier[i] ==# '/'
+        " Directory.
+        let l:expr = 'getftype(v:val) ==# "dir"'
+      elseif l:modifier[i] ==# '.'
+        " Normal.
+        let l:expr = 'getftype(v:val) ==# "file"'
+      elseif l:modifier[i] ==# '@'
+        " Link.
+        let l:expr = 'getftype(v:val) ==# "link"'
+      elseif l:modifier[i] ==# '='
+        " Socket.
+        let l:expr = 'getftype(v:val) ==# "socket"'
+      elseif l:modifier[i] ==# 'p'
+        " FIFO Pipe.
+        let l:expr = 'getftype(v:val) ==# "pipe"'
+      elseif l:modifier[i] ==# '*'
+        " Executable.
+        let l:expr = 'getftype(v:val) ==# "pipe"'
+      elseif l:modifier[i] ==# '%'
+        " Device.
+        
+        if l:modifier[i:] =~# '^%[bc]'
+          if l:modifier[i] ==# 'b'
+            " Block device.
+            let l:expr = 'getftype(v:val) ==# "bdev"'
+          else
+            " Character device.
+            let l:expr = 'getftype(v:val) ==# "cdev"'
+          endif
+
+          let i += 1
+        else
+          let l:expr = 'getftype(v:val) ==# "bdev" || getftype(v:val) ==# "cdev"'
+        endif
+      else
+        " Unknown.
+        return []
+      endif
+
+      call filter(l:expanded, l:expr)
+      let i += 1
+    endwhile
   endif
 
   return filter(l:expanded, 'v:val != "." && v:val != ".."')
@@ -833,7 +905,7 @@ function! s:parse_block(script)"{{{
     if a:script[i] == '{'
       " Block.
       let l:head = matchstr(a:script[: i-1], '[^[:blank:]]*$')
-      " Trunk l:script.
+      " Truncate l:script.
       let l:script = l:script[: -len(l:head)-1]
       let l:block = matchstr(a:script, '{\zs.*[^\\]\ze}', i)
       if l:block == ''

@@ -41,7 +41,7 @@ function! vimshell#history#append(command)"{{{
   " Filtering.
   call insert(filter(g:vimshell#hist_buffer, 'v:val !=# ' . string(a:command)), l:command)
 
-  " Trunk.
+  " Truncate.
   let g:vimshell#hist_buffer = g:vimshell#hist_buffer[: g:vimshell_max_command_history-1]
 
   " Save history file.
@@ -100,7 +100,7 @@ function! vimshell#history#interactive_append(command)"{{{
   " Filtering.
   call insert(filter(b:interactive.command_history, 'v:val !=# '.string(substitute(l:command, "'", "''", 'g'))), l:command)
 
-  " Trunk.
+  " Truncate.
   let b:interactive.command_history = b:interactive.command_history[: g:vimshell_max_command_history-1]
 
   " Save history file.
