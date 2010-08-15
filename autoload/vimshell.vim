@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2010
+" Last Modified: 15 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,10 +32,14 @@ endfunction"}}}
 try
   let s:exists_vimproc_version = vimproc#version()
 catch
+  echoerr v:throwpoint
+  echoerr v:exception
+  echoerr 'Error occured while loading vimproc.'
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endtry
 if s:exists_vimproc_version < 401
+  echoerr 'Your vimproc is too old.'
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endif"}}}

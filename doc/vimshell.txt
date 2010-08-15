@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-15
+- Improved error detection.
+
 2010-08-13
 - Supported set syntax in bg and less command.
 - Fixed less parse.
