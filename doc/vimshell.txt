@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 7.1
+Version: 7.2
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -185,6 +185,10 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-08-15
+* Ver.7.2 development is started.
+
+ChangeLog 7.1: {{{
+2010-08-15
 - Improved error detection.
 
 2010-08-13
@@ -361,7 +365,7 @@ CHANGELOG						*vimshell-changelog*
 * Ver.7.1 development is started.
 - Fixed documentation.
 - Using dictionary.
-
+}}}
 ChangeLog 7.0: {{{
 2010-07-07
 - Fixed auto completion bug.
