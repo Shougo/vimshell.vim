@@ -691,6 +691,9 @@ vimsh [{filename}]					*vimshell-internal-vimsh*
 which {command}					*vimshell-internal-which*
 		{command}のフルパスを出力します。aliasも認識されます。
 
+whrereis {command}				*vimshell-internal-whereis*
+		{command}のフルパスをすべて出力します。
+
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
 special commandはinternal commandとは違い、vimshellが最小限の解釈しかせずに、

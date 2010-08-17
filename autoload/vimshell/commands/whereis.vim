@@ -33,6 +33,11 @@ function! s:command.execute(command, args, fd, other_info)"{{{
   if empty(a:args)
     return
   endif
+
+  let l:name = a:args[0]
+  for l:arg in vimproc#get_command_name(a:args[0], $PATH, -1)
+    call vimshell#print_line(a:fd, l:arg)
+  endfor
 endfunction"}}}
 
 function! vimshell#commands#whereis#define()

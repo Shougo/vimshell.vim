@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-08-17
 - Implemented which internal command.
+- Implemented wherereis internal command.
 
 2010-08-15
 * Ver.7.2 development is started.
