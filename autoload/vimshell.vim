@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Aug 2010
+" Last Modified: 17 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,9 +38,9 @@ catch
   echoerr 'Please install vimproc Ver.4.1 or above.'
   finish
 endtry
-if s:exists_vimproc_version < 401
+if s:exists_vimproc_version < 403
   echoerr 'Your vimproc is too old.'
-  echoerr 'Please install vimproc Ver.4.1 or above.'
+  echoerr 'Please install vimproc Ver.4.3 or above.'
   finish
 endif"}}}
 
@@ -470,29 +470,14 @@ function! vimshell#print_secondary_prompt()"{{{
   $
   let &modified = 0
 endfunction"}}}
-function! vimshell#getfilename(program)"{{{
+function! vimshell#get_command_path(program)"{{{
   " Command search.
-  if vimshell#iswin()
-    let l:path = substitute($PATH, '\\\?;', ',', 'g')
-    let l:files = ''
-    for ext in ['', '.bat', '.cmd', '.exe']
-      let l:files = globpath(l:path, a:program.ext)
-      if !empty(l:files)
-        break
-      endif
-    endfor
-
-    let l:namelist = filter(split(l:files, '\n'), 'executable(v:val)')
-  else
-    let l:path = substitute($PATH, '/\?:', ',', 'g')
-    let l:namelist = filter(split(globpath(l:path, a:program), '\n'), 'executable(v:val)')
-  endif
-
-  if empty(l:namelist)
+  try
+    return vimproc#get_command_name(a:program)
+  catch /File ".*" is not found./
+    " Not found.
     return ''
-  else
-    return l:namelist[0]
-  endif
+  endtry
 endfunction"}}}
 function! vimshell#start_insert(...)"{{{
   if &filetype !=# 'vimshell'

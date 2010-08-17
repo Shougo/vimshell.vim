@@ -274,7 +274,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     endif
   else"{{{
     let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
-    let l:command = vimshell#getfilename(program)
+    let l:command = vimshell#get_command_path(program)
     let l:ext = fnamemodify(l:program, ':e')
     
     " Check internal commands.
@@ -970,7 +970,7 @@ function! s:parse_equal(script)"{{{
       if l:prog == ''
         let [l:script, i] = s:skip_else(l:script, a:script, i)
       else
-        let l:filename = vimshell#getfilename(l:prog)
+        let l:filename = vimshell#get_command_path(l:prog)
         if l:filename == ''
           throw printf('Error: File "%s" is not found.', l:prog)
         else

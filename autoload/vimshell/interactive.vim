@@ -333,7 +333,7 @@ function! vimshell#interactive#exit()"{{{
     endtry
   endif
 
-  let b:interactive.status = eval(l:status)
+  let b:interactive.status = str2nr(l:status)
   let b:interactive.cond = l:cond
   if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'

@@ -688,6 +688,9 @@ vimsh [{filename}]					*vimshell-internal-vimsh*
 		せん。{filename}を省略すると、新しいvimshellバッファを開きま
 		す。
 
+which {command}					*vimshell-internal-which*
+		{command}のフルパスを出力します。aliasも認識されます。
+
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
 special commandはinternal commandとは違い、vimshellが最小限の解釈しかせずに、
