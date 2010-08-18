@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-18
+- Fixed initialization error check.
+
 2010-08-17
 - Implemented which internal command.
 - Implemented wherereis internal command.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -85,26 +85,21 @@ function! s:command.execute(commands, context)"{{{
     " Delete zombee process.
     call vimshell#interactive#force_exit()
   endif
-
-  " Initialize.
-  if vimshell#iswin()
-    if g:vimshell_interactive_cygwin_home != ''
-      " Set $HOME.
-      let l:home_save = $HOME
-      let $HOME = g:vimshell_interactive_cygwin_home
-    endif
+  
+  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+    " Set $HOME.
+    let l:home_save = $HOME
+    let $HOME = g:vimshell_interactive_cygwin_home
   endif
-  
-  call s:init_bg(l:args, a:context)
-  
+
   let l:sub = vimproc#ptyopen(l:args)
 
-  if vimshell#iswin()
-    if g:vimshell_interactive_cygwin_home != ''
-      " Restore $HOME.
-      let $HOME = l:home_save
-    endif
+  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+    " Restore $HOME.
+    let $HOME = l:home_save
   endif
+
+  call s:init_bg(l:args, a:context)
 
   " Set variables.
   let b:interactive = {
