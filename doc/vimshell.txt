@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-18
 - Fixed initialization error check.
 - Fixed environment variables.
+- Fixed output bug.
 
 2010-08-17
 - Implemented which internal command.

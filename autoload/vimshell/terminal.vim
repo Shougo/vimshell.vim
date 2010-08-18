@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,12 +27,16 @@
 function! vimshell#terminal#print(string)"{{{
   setlocal modifiable
   
+  let l:pos = mode() ==# 'i' ? 1 : 0
+  let l:current_line = getline('.')
+  let l:cur_text = matchstr(l:current_line, '^.*\%'.(col('.') - l:pos).'c.')
+  
   "echomsg a:string
-  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && col('.') == col('$')
+  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
     " Optimized print.
     let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\n', 1)
     if line('.') != b:interactive.echoback_linenr
-      call setline('.', getline('.') . l:lines[0])
+      call setline('.', l:current_line . l:lines[0])
     endif
     call append('.', l:lines[1:])
     execute 'normal!' (len(l:lines)-1).'j$'
@@ -48,9 +52,10 @@ function! vimshell#terminal#print(string)"{{{
   let l:pos = 0
   let l:max = len(a:string)
   let s:line = line('.')
-  let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? col('.') - 1 : col('.'))
+  let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
+        \ matchend(l:current_line, '\%'.(col('.') - l:pos).'c.') : col('.'))
   let s:lines = {}
-  let s:lines[s:line] = getline('.')
+  let s:lines[s:line] = l:current_line
   
   while l:pos < l:max
     let l:char = a:string[l:pos]

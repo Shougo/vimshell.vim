@@ -181,7 +181,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Set interactive variables.
   let b:interactive = {
         \ 'type' : 'vimshell', 
-        \ 'syntax' : &syntax, 
+        \ 'syntax' : 'vimshell', 
         \ 'process' : {}, 
         \ 'fd' : l:context.fd, 
         \ 'encoding' : &encoding, 
