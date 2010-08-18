@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,9 +58,24 @@ function! s:command.execute(commands, context)"{{{
       call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
     endfor
   endif
+  
+  " Set environment variables.
+  call vimshell#set_environments({
+        \ '$TERM' : g:vimshell_environment_term, 
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
+        \ '$VIMSHELL' : 1, 
+        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$LINES' : winheight(0),
+        \ '$VIMSHELL_TERM' : 'less',
+        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$PAGER' : g:vimshell_cat_command,
+        \})
 
   " Initialize.
   let l:sub = vimproc#plineopen2(l:commands)
+  
+  " Restore environment variables.
+  call vimshell#restore_environments()
 
   " Set variables.
   let l:interactive = {
@@ -124,16 +139,6 @@ function! s:init(commands, context, syntax, interactive)"{{{
   setlocal filetype=vimshell-less
   let &syntax = a:syntax
   let b:interactive = a:interactive
-
-  " Set environment variables.
-  let $TERM = g:vimshell_environment_term
-  let $TERMCAP = 'COLUMNS=' . winwidth(0)
-  let $VIMSHELL = 1
-  let $COLUMNS = winwidth(0)-5
-  let $LINES = winheight(0)
-  let $VIMSHELL_TERM = 'background'
-  let $EDITOR = g:vimshell_cat_command
-  let $PAGER = g:vimshell_cat_command
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline

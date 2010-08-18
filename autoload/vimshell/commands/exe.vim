@@ -103,13 +103,22 @@ function! s:init_process(commands, context, options)"{{{
   endif
   
   " Set environment variables.
-  let $TERMCAP = 'COLUMNS=' . winwidth(0)
-  let $VIMSHELL = 1
-  let $COLUMNS = winwidth(0)-5
-  let $LINES = winheight(0)
-  let $VIMSHELL_TERM = 'execute'
+  call vimshell#set_environments({
+        \ '$TERM' : g:vimshell_environment_term, 
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
+        \ '$VIMSHELL' : 1, 
+        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$LINES' : winheight(0),
+        \ '$VIMSHELL_TERM' : 'execute',
+        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$PAGER' : g:vimshell_cat_command,
+        \})
 
+  " Initialize.
   let l:sub = vimproc#plineopen3(a:commands)
+  
+  " Restore environment variables.
+  call vimshell#restore_environments()
 
   let l:cmdline = []
   for l:command in a:commands

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Aug 2010
+" Last Modified: 18 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -166,15 +166,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'chpwd' : [], 'notfound' : [],
         \}
   let b:vimshell.continuation = {}
-
-  " Set environment variables.
-  let $TERM = g:vimshell_environment_term
-  let $TERMCAP = 'COLUMNS=' . winwidth(0)
-  let $VIMSHELL = 1
-  let $COLUMNS = winwidth(0)-5
-  let $LINES = winheight(0)
-  let $EDITOR = g:vimshell_cat_command
-  let $PAGER = g:vimshell_cat_command
 
   " Default settings.
   call s:default_settings()
@@ -683,6 +674,20 @@ function! vimshell#imdisable()"{{{
   elseif exists('&iminsert')
     let &l:iminsert = 0
   endif
+endfunction"}}}
+function! vimshell#set_environments(environments)"{{{
+  let s:environments_save = {}
+  for [key, value] in items(a:environments)
+    let l:save_value = exists(key) ? eval(key) : ''
+
+    let s:environments_save[key] = l:save_value
+    execute 'let' key '= value'
+  endfor
+endfunction"}}}
+function! vimshell#restore_environments()"{{{
+  for [key, value] in items(s:environments_save)
+    execute 'let' key '= value'
+  endfor
 endfunction"}}}
 "}}}
 

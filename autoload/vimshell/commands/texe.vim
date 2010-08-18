@@ -92,7 +92,23 @@ function! s:command.execute(commands, context)"{{{
     let $HOME = g:vimshell_interactive_cygwin_home
   endif
 
+  " Set environment variables.
+  call vimshell#set_environments({
+        \ '$TERM' : g:vimshell_environment_term, 
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
+        \ '$VIMSHELL' : 1, 
+        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$LINES' : winheight(0),
+        \ '$VIMSHELL_TERM' : 'terminal',
+        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$PAGER' : g:vimshell_cat_command,
+        \})
+
+  " Initialize.
   let l:sub = vimproc#ptyopen(l:args)
+  
+  " Restore environment variables.
+  call vimshell#restore_environments()
 
   if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
@@ -141,16 +157,6 @@ endfunction
 let s:update_time_save = &updatetime
 
 function! s:default_settings()"{{{
-  " Set environment variables.
-  let $TERM = g:vimshell_environment_term
-  let $TERMCAP = 'COLUMNS=' . winwidth(0)
-  let $VIMSHELL = 1
-  let $COLUMNS = winwidth(0)-5
-  let $LINES = winheight(0)
-  let $VIMSHELL_TERM = 'terminal'
-  let $EDITOR = g:vimshell_cat_command
-  let $PAGER = g:vimshell_cat_command
-
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
   
