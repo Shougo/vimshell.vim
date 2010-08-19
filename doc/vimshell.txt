@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-19
 - Improved column.
 - Fixed update.
+- Improved interactive completion.
 
 2010-08-18
 - Fixed initialization error check.

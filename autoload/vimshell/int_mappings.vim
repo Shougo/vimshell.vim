@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2010
+" Last Modified: 19 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -225,17 +225,20 @@ function! s:restart_command()"{{{
   startinsert!
 endfunction"}}}
 function! s:command_complete()"{{{
-  let l:line = line('.')
+  let l:linenr = line('.')
   let l:prompt = vimshell#interactive#get_prompt()
   let l:command = b:interactive.command
   let l:cur_text = vimshell#interactive#get_cur_text()
-  call setline(l:line, l:prompt)
+  call setline(l:linenr, l:prompt)
   call vimshell#interactive#send_string(l:cur_text .
         \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"))
-  if getline(l:line) ==# l:prompt
+  if !vimshell#head_match(getline('$'), l:prompt)
     " Restore prompt.
-    call setline(l:line, l:prompt . l:cur_text)
+    call setline('$', l:prompt . l:cur_text . getline('$'))
+    startinsert!
   endif
+  
+  let b:interactive.prompt_history[line('$')] = getline('$')
 endfunction "}}}
 
 " vim: foldmethod=marker
