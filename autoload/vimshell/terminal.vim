@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2010
+" Last Modified: 19 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ function! vimshell#terminal#print(string)"{{{
   
   let l:pos = mode() ==# 'i' ? 1 : 0
   let l:current_line = getline('.')
-  let l:cur_text = matchstr(l:current_line, '^.*\%'.(col('.') - l:pos).'c.')
+  let l:cur_text = col('.') < l:pos ? '' : matchstr(l:current_line, '.*')[: col('.') - l:pos]
   
   "echomsg a:string
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
@@ -53,7 +53,7 @@ function! vimshell#terminal#print(string)"{{{
   let l:max = len(a:string)
   let s:line = line('.')
   let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
-        \ matchend(l:current_line, '\%'.(col('.') - l:pos).'c.') : col('.'))
+        \ (col('.') < l:pos ? 1 : col('.') - l:pos) : col('.'))
   let s:lines = {}
   let s:lines[s:line] = l:current_line
   
