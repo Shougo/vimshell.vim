@@ -208,6 +208,7 @@ call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands,
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'ocaml', 'ocaml')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'sml', 'sml')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'javascript', 'js')
+call vimshell#set_dictionary_helper(g:vimshell_interactive_prompts, 'termtter', '> ')
 "}}}
 
 function! s:default_settings()"{{{

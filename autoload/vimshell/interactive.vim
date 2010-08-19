@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2010
+" Last Modified: 19 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -602,6 +602,25 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   elseif l:type ==# 'execute'
     call vimshell#parser#execute_continuation(mode() ==# 'i')
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
+    if l:type ==# 'interactive' && (
+          \ line('.') != a:interactive.echoback_linenr
+          \ && has_key(a:interactive.prompt_history, line('.'))
+          \ && (vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
+          \      || (mode() ==# 'i' && has_key(g:vimshell_interactive_prompts, a:interactive.command)
+          \      && getline('.') =~# g:vimshell_interactive_prompts[a:interactive.command]))
+          \ )
+      " Skip.
+      
+      if mode() !=# 'i'
+        call setpos('.', l:intbuffer_pos)
+      endif
+
+      if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+        execute bufwinnr(a:bufnr_save) . 'wincmd w'
+      endif
+      return
+    endif
+    
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
     endif
@@ -657,11 +676,7 @@ function! s:cache_output(interactive)"{{{
         let a:interactive.stderr_cache .= l:read
       endwhile
     endif
-  elseif a:interactive.type ==# 'terminal'
-        \ || (a:interactive.type ==# 'interactive'
-        \      && (line('.') == a:interactive.echoback_linenr
-        \         || !has_key(a:interactive.prompt_history, line('.'))
-        \         || vimshell#interactive#get_cur_line(line('.'), a:interactive) == ''))
+  elseif a:interactive.type ==# 'terminal' || a:interactive.type ==# 'interactive'
     " Terminal or interactive.
 
     if a:interactive.process.eof
