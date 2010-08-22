@@ -479,7 +479,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  if has_key(b:interactive, 'prompt_history') && getline('$') != '' 
+  if has_key(b:interactive, 'prompt_history') && line('$') != b:interactive.echoback_linenr && getline('$') != '' 
     let b:interactive.prompt_history[line('$')] = getline('$')
   endif
 endfunction"}}}
