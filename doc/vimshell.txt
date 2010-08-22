@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-22
 - Improved iexe mappings.
 - Improved vimshell mappings.
+- Improved get_cur_text.
 
 2010-08-20
 - Stop insert when execute exit.
