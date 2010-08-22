@@ -146,16 +146,7 @@ function! s:next_prompt()"{{{
   endif
 endfunction"}}}
 function! s:move_head()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    return
-  endif
-  
-  call search(vimshell#escape_match(b:interactive.prompt_history[line('.')]), 'be', line('.'))
-  if col('.') != col('$')-1
-    normal! l
-  endif
-  
-  startinsert
+  call s:insert_head()
 endfunction"}}}
 function! s:delete_backward_line()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
@@ -250,50 +241,33 @@ function! s:insert_enter()"{{{
     return
   endif
   
-  if vimshell#get_cur_text() == ''
+  if vimshell#interactive#get_cur_line(line('.')) == ''
     startinsert!
     return
   endif
   
-  if col('.') < len(vimshell#get_prompt())
+  if col('.') < len(vimshell#interactive#get_prompt())
     let l:pos = getpos('.')
-    let l:pos[2] = len(vimshell#get_prompt()) + 1
+    let l:pos[2] = len(vimshell#interactive#get_prompt()) + 1
     call setpos('.', l:pos)
   endif
 
   startinsert
 endfunction"}}}
 function! s:insert_head()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    $
-    startinsert!
-    return
-  endif
-  
   normal! 0
   call s:insert_enter()
 endfunction"}}}
 function! s:append_enter()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    $
-    startinsert!
-    return
-  endif
-  
-  if col('.') == col('$')
-    startinsert!
+  if col('.')+1 == col('$')
+    call s:append_end()
   else
     normal! l
     call s:insert_enter()
   endif
 endfunction"}}}
 function! s:append_end()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    $
-    startinsert!
-    return
-  endif
-  
+  call s:insert_enter()
   startinsert!
 endfunction"}}}
 

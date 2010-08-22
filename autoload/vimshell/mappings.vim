@@ -38,6 +38,10 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
 
   vnoremap <buffer><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
   vnoremap <buffer><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
@@ -85,8 +89,11 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> cc <Plug>(vimshell_change_line)
   " Delete line.
   nmap <buffer> dd <Plug>(vimshell_delete_line)
-  " Insert head.
-  nmap <buffer> I <Plug>(vimshell_insert_head)
+  " Start insert.
+  nmap <buffer> I         <Plug>(vimshell_insert_head)
+  nmap <buffer> A         <Plug>(vimshell_append_end)
+  nmap <buffer> i         <Plug>(vimshell_insert_enter)
+  nmap <buffer> a         <Plug>(vimshell_append_enter)
   " Interrupt.
   nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
   
@@ -402,11 +409,7 @@ function! s:paste_prompt()"{{{
   $
 endfunction"}}}
 function! s:move_head()"{{{
-  call search(vimshell#escape_match(vimshell#get_prompt()), 'be', line('.'))
-  if col('.') != col('$')-1
-    normal! l
-  endif
-  startinsert
+  call s:insert_head()
 endfunction"}}}
 function! s:move_end_argument()"{{{
   normal! 0
@@ -530,6 +533,42 @@ function! s:interrupt(is_insert)"{{{
   
   call vimshell#print_prompt(l:context)
   call vimshell#start_insert(a:is_insert)
+endfunction"}}}
+function! s:insert_enter()"{{{
+  if !vimshell#head_match(getline('.'), vimshell#get_prompt())
+    $
+    startinsert!
+    return
+  endif
+  
+  if vimshell#get_prompt_command() == ''
+    startinsert!
+    return
+  endif
+  
+  if col('.') < len(vimshell#get_prompt())
+    let l:pos = getpos('.')
+    let l:pos[2] = len(vimshell#get_prompt()) + 1
+    call setpos('.', l:pos)
+  endif
+
+  startinsert
+endfunction"}}}
+function! s:insert_head()"{{{
+  normal! 0
+  call s:insert_enter()
+endfunction"}}}
+function! s:append_enter()"{{{
+  if col('.')+1 == col('$')
+    call s:append_end()
+  else
+    normal! l
+    call s:insert_enter()
+  endif
+endfunction"}}}
+function! s:append_end()"{{{
+  call s:insert_enter()
+  startinsert!
 endfunction"}}}
 
 " vim: foldmethod=marker
