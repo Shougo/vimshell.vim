@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2010
+" Last Modified: 22 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,6 +40,10 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)  <C-o>:call <SID>command_complete()<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
+  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_head)  :<C-u>call <SID>insert_head()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_append_enter)  :<C-u>call <SID>append_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_append_end)  :<C-u>call <SID>append_end()<CR>
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
@@ -66,8 +70,10 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nmap <buffer> q         <Plug>(vimshell_int_exit)
   nmap <buffer> cc         <Plug>(vimshell_int_change_line)
   nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
-  nmap <buffer> I         <Plug>(vimshell_insert_head)
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
+  nmap <buffer> I         <Plug>(vimshell_int_insert_head)
+  nmap <buffer> A         <Plug>(vimshell_int_append_end)
+  nmap <buffer> i         <Plug>(vimshell_int_insert_enter)
+  nmap <buffer> a         <Plug>(vimshell_int_append_enter)
 
   " Insert mode key-mappings.
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backward_char)
@@ -237,5 +243,58 @@ function! s:command_complete()"{{{
     call setline(l:line, l:prompt . l:cur_text)
   endif
 endfunction "}}}
+function! s:insert_enter()"{{{
+  if !has_key(b:interactive.prompt_history, line('.'))
+    $
+    startinsert!
+    return
+  endif
+  
+  if vimshell#get_cur_text() == ''
+    startinsert!
+    return
+  endif
+  
+  if col('.') < len(vimshell#get_prompt())
+    let l:pos = getpos('.')
+    let l:pos[2] = len(vimshell#get_prompt()) + 1
+    call setpos('.', l:pos)
+  endif
+
+  startinsert
+endfunction"}}}
+function! s:insert_head()"{{{
+  if !has_key(b:interactive.prompt_history, line('.'))
+    $
+    startinsert!
+    return
+  endif
+  
+  normal! 0
+  call s:insert_enter()
+endfunction"}}}
+function! s:append_enter()"{{{
+  if !has_key(b:interactive.prompt_history, line('.'))
+    $
+    startinsert!
+    return
+  endif
+  
+  if col('.') == col('$')
+    startinsert!
+  else
+    normal! l
+    call s:insert_enter()
+  endif
+endfunction"}}}
+function! s:append_end()"{{{
+  if !has_key(b:interactive.prompt_history, line('.'))
+    $
+    startinsert!
+    return
+  endif
+  
+  startinsert!
+endfunction"}}}
 
 " vim: foldmethod=marker
