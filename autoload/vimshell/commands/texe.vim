@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2010
+" Last Modified: 23 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,7 +86,7 @@ function! s:command.execute(commands, context)"{{{
     call vimshell#interactive#force_exit()
   endif
   
-  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
     let l:home_save = $HOME
     let $HOME = g:vimshell_interactive_cygwin_home
@@ -110,7 +110,7 @@ function! s:command.execute(commands, context)"{{{
   " Restore environment variables.
   call vimshell#restore_environments()
 
-  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
     let $HOME = l:home_save
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Aug 2010
+" Last Modified: 23 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,20 +62,25 @@ function! vimshell#parser#eval_script(script, context)"{{{
   return 0
 endfunction"}}}
 function! vimshell#parser#parse_alias(statement)"{{{
-  " Get program.
-  let l:program = matchstr(s:parse_galias(a:statement), vimshell#get_program_pattern())
-  if l:program  == ''
-    throw 'Error: Invalid command name.'
-  endif
+  let l:pipes = []
   
-  let l:statement = a:statement
+  for l:statement in vimshell#parser#split_pipe(a:statement)
+    " Get program.
+    let l:statement = s:parse_galias(l:statement)
+    let l:program = matchstr(l:statement, vimshell#get_program_pattern())
+    if l:program  == ''
+      throw 'Error: Invalid command name.'
+    endif
 
-  if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
-    " Expand alias.
-    let l:statement = join(vimshell#parser#split_args(s:recursive_expand_alias(l:program))) . a:statement[len(l:program) :]
-  endif
+    if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
+      " Expand alias.
+      let l:statement = join(vimshell#parser#split_args(s:recursive_expand_alias(l:program))) . l:statement[matchend(l:statement, vimshell#get_program_pattern()) :]
+    endif
+    
+    call add(l:pipes, l:statement)
+  endfor
   
-  return l:statement
+  return join(l:pipes, '|')
 endfunction"}}}
 function! vimshell#parser#parse_program(statement)"{{{
   " Get program.

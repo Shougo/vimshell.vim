@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Aug 2010
+" Last Modified: 22 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ endfunction"}}}
 
 function! vimshell#interactive#get_cur_text()"{{{
   " Get cursor text without prompt.
-  return s:chomp_prompt(s:get_cur_text(), line('.'), b:interactive)
+  return s:chomp_prompt(vimshell#get_cur_line(), line('.'), b:interactive)
 endfunction"}}}
 function! vimshell#interactive#get_cur_line(line, ...)"{{{
   " Get cursor text without prompt.
@@ -61,13 +61,6 @@ function! vimshell#interactive#get_prompt(...)"{{{
   let l:line = a:0? a:1 : line('.')
   " Get prompt line.
   return !has_key(b:interactive.prompt_history, l:line) ? '' : b:interactive.prompt_history[l:line]
-endfunction"}}}
-function! s:get_cur_text()"{{{
-  let l:pos = mode() ==# 'i' ? 2 : 1
-
-  let l:cur_text = col('.') < l:pos ? '' : matchstr(getline('.'), '.*')[: col('.') - l:pos]
-  
-  return l:cur_text
 endfunction"}}}
 function! s:chomp_prompt(cur_text, line, interactive)"{{{
   let l:cur_text = a:cur_text
@@ -486,7 +479,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  if has_key(b:interactive, 'prompt_history') && getline('$') != '' 
+  if has_key(b:interactive, 'prompt_history') && line('$') != b:interactive.echoback_linenr && getline('$') != '' 
     let b:interactive.prompt_history[line('$')] = getline('$')
   endif
 endfunction"}}}

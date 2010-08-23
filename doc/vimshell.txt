@@ -184,6 +184,19 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-23
+- Fixed alias parse.
+- Fixed texe error.
+
+2010-08-22
+- Improved iexe mappings.
+- Improved vimshell mappings.
+- Improved get_cur_text.
+- Fixed prompt bug.
+
+2010-08-20
+- Stop insert when execute exit.
+
 2010-08-19
 - Improved column.
 - Fixed update.
