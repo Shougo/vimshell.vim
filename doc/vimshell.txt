@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-08-23
 - Fixed alias parse.
 - Fixed texe error.
+- Improved save variables.
 
 2010-08-22
 - Improved iexe mappings.

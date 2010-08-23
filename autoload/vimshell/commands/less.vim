@@ -60,7 +60,7 @@ function! s:command.execute(commands, context)"{{{
   endif
   
   " Set environment variables.
-  call vimshell#set_environments({
+  let l:environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term, 
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
         \ '$VIMSHELL' : 1, 
@@ -75,7 +75,7 @@ function! s:command.execute(commands, context)"{{{
   let l:sub = vimproc#plineopen2(l:commands)
   
   " Restore environment variables.
-  call vimshell#restore_environments()
+  call vimshell#restore_variables(l:environments_save)
 
   " Set variables.
   let l:interactive = {

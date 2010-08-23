@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2010
+" Last Modified: 23 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Set environment variables.
-  call vimshell#set_environments({
+  let l:environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term, 
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
         \ '$VIMSHELL' : 1, 
@@ -75,7 +75,7 @@ function! s:command.execute(commands, context)"{{{
   let l:sub = vimproc#plineopen3(l:commands)
   
   " Restore environment variables.
-  call vimshell#restore_environments()
+  call vimshell#restore_variables(l:environments_save)
 
   " Set variables.
   let l:interactive = {

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2010
+" Last Modified: 23 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,12 +106,13 @@ function! s:command.execute(commands, context)"{{{
   " Initialize.
   if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
-    let l:home_save = $HOME
-    let $HOME = g:vimshell_interactive_cygwin_home
+    let l:home_save = vimshell#set_variables({
+          \ '$HOME' : g:vimshell_interactive_cygwin_home, 
+          \})
   endif
 
   " Set environment variables.
-  call vimshell#set_environments({
+  let l:environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term, 
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
         \ '$VIMSHELL' : 1, 
@@ -126,11 +127,11 @@ function! s:command.execute(commands, context)"{{{
   let l:sub = vimproc#ptyopen(l:args)
   
   " Restore environment variables.
-  call vimshell#restore_environments()
+  call vimshell#restore_variables(l:environments_save)
 
   if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
-    let $HOME = l:home_save
+    call vimshell#restore_variables(l:home_save)
   endif
   
   call s:init_bg(l:args, a:context)

@@ -672,17 +672,19 @@ function! vimshell#imdisable()"{{{
     let &l:iminsert = 0
   endif
 endfunction"}}}
-function! vimshell#set_environments(environments)"{{{
-  let s:environments_save = {}
-  for [key, value] in items(a:environments)
+function! vimshell#set_variables(variables)"{{{
+  let l:variables_save = {}
+  for [key, value] in items(a:variables)
     let l:save_value = exists(key) ? eval(key) : ''
 
-    let s:environments_save[key] = l:save_value
+    let l:variables_save[key] = l:save_value
     execute 'let' key '= value'
   endfor
+  
+  return l:variables_save
 endfunction"}}}
-function! vimshell#restore_environments()"{{{
-  for [key, value] in items(s:environments_save)
+function! vimshell#restore_variables(variables)"{{{
+  for [key, value] in items(a:variables)
     execute 'let' key '= value'
   endfor
 endfunction"}}}

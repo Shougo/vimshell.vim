@@ -88,12 +88,13 @@ function! s:command.execute(commands, context)"{{{
   
   if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
-    let l:home_save = $HOME
-    let $HOME = g:vimshell_interactive_cygwin_home
+    let l:home_save = vimshell#set_variables({
+          \ '$HOME' : g:vimshell_interactive_cygwin_home, 
+          \})
   endif
 
   " Set environment variables.
-  call vimshell#set_environments({
+  let l:environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term, 
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
         \ '$VIMSHELL' : 1, 
@@ -108,11 +109,11 @@ function! s:command.execute(commands, context)"{{{
   let l:sub = vimproc#ptyopen(l:args)
   
   " Restore environment variables.
-  call vimshell#restore_environments()
+  call vimshell#restore_variables(l:environments_save)
 
   if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
-    let $HOME = l:home_save
+    call vimshell#restore_variables(l:home_save)
   endif
 
   call s:init_bg(l:args, a:context)
