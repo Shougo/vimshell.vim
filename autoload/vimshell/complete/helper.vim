@@ -33,7 +33,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 
   " Not Filename pattern.
   if a:cur_keyword_str =~ 
-        \'\*\*\|\*$\|\.\.\+$\|[/\\][/\\]\f*$\|[^[:print:]]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+        \'\*\*\|\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
     return []
   endif
 

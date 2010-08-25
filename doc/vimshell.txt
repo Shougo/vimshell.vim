@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-25
+- Fixed filename completion.
+
 2010-08-23
 - Fixed alias parse.
 - Fixed texe error.
