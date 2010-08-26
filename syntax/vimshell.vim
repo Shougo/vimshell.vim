@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jul 2010
+" Last Modified: 26 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,6 +62,7 @@ else
     syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 syn region   VimShellHistory  start=+^\s*\d\+:\s[^[:space:]]+ end=+.*+ oneline
+syn region   VimShellGrep  start=+^\f\+:+ end=+.*+ oneline
 
 if has('conceal')
   " Supported conceal features.
@@ -95,6 +96,7 @@ hi def link VimShellSpecial PreProc
 hi def link VimShellVariable Comment
 hi def link VimShellComment Identifier
 hi def link VimShellHistory Comment
+hi def link VimShellGrep Comment
 hi def link VimShellNormal Normal
 
 hi def link VimShellExe Statement
