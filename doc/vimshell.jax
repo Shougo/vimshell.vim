@@ -667,16 +667,18 @@ vexe {expression}					*vimshell-internal-vexe*
 		{expression}をVim Scriptの文として実行し、出力をvimshellバッ
 		ファに書き出します。
 
-view {filename}						*vimshell-internal-view*
+view {filename} [{pattern}]				*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開きます。ファイルの行
 		数がウインドウサイズよりも少ない場合、 別バッファを開かず、
 		catのように動作します。ファイルの中身をちょっと見てみたいと
 		きに便利です。
+		{pattern}を指定すると、その{pattern}を検索して現在位置とします。
 
-vim [{filename}]					*vimshell-internal-vim*
+vim [{filename} [{pattern}]]				*vimshell-internal-vim*
 		{filename}を別バッファに開きます。カレントディレクトリにある
 		ファイルを手軽に編集したいときに便利です。
 		{filename}を省略すると、無名バッファを開きます。
+		{pattern}を指定すると、その{pattern}を検索して現在位置とします。
 
 vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
 		{filename1}と{filename2}を|:vimdiff|で比較します。vimshellか

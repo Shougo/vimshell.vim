@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-08-26
+- Supported grep pattern.
+
 2010-08-25
 - Fixed filename completion.
 

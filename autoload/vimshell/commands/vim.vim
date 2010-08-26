@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vim.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 26 Aug 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,7 +54,11 @@ function! s:command.execute(program, args, fd, other_info)"{{{
     call vimshell#split_nicely()
 
     try
-      edit `=l:filename`
+      if len(a:args) > 1
+        execute 'edit' '+'.a:args[1] l:filename
+      else
+        edit `=l:filename`
+      endif
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry

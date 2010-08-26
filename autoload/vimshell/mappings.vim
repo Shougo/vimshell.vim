@@ -183,13 +183,22 @@ function! s:execute_line(is_insert)"{{{
       " History output execution.
       call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
-      " Search cursor file.
-      let l:filename = expand('<cfile>')
-      if has('conceal') && l:filename =~ '\[\%[%\]]'
-        let l:filename = matchstr(getline('.'), '\f\+', 3)
+      if getline('.') =~ '^\f\+:'
+        " Grep pattern.
+        let l:line = split(getline('.'), ':')
+        let l:filename = l:line[0]
+        let l:pattern = l:line[1]
+      else
+        " Search cursor file.
+        let l:filename = expand('<cfile>')
+        if has('conceal') && l:filename =~ '\[\%[%\]]'
+          let l:filename = matchstr(getline('.'), '\f\+', 3)
+        endif
+        let l:pattern = ''
       endif
+      
       let l:filename = substitute(substitute(l:filename, ' ', '\\ ', 'g'), '\\', '/', 'g')
-      call s:open_file(l:filename)
+      call s:open_file(l:filename, l:pattern)
     endif
   elseif line('.') != line('$')
     " History execution.
@@ -485,7 +494,7 @@ function! s:delete_backward_line()"{{{
   
   return l:prefix . repeat("\<BS>", len(vimshell#get_cur_text()))
 endfunction"}}}
-function! s:open_file(filename)"{{{
+function! s:open_file(filename, pattern)"{{{
   " Execute cursor file.
   if a:filename == ''
     return
@@ -510,7 +519,7 @@ function! s:open_file(filename)"{{{
     call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
   else
     " Edit file.
-    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename . (a:pattern != '' ? ' '.a:pattern : ''))
   endif
 endfunction"}}}
 function! s:interrupt(is_insert)"{{{
