@@ -62,7 +62,7 @@ else
     syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 syn region   VimShellHistory  start=+^\s*\d\+:\s[^[:space:]]+ end=+.*+ oneline
-syn region   VimShellGrep  start=+^\f\+:+ end=+.*+ oneline
+syn region   VimShellGrep  start=+^[^!]\f\+:+ end=+.*+ oneline
 
 if has('conceal')
   " Supported conceal features.
