@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-01
+- Improved insert enter.
+- Improved output.
+
 2010-08-29
 - Improved syntax.
 

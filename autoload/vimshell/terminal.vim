@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Aug 2010
+" Last Modified: 01 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -263,8 +263,8 @@ function! s:output_string(string)"{{{
     let s:lines[s:line] = ''
   endif
   let l:line = s:lines[s:line]
-  let l:left_line = s:col == 1 ? '' : l:line[: s:col - 2]
-  let l:right_line = vimshell#util#truncate_head(l:line[s:col - 1 :], vimshell#util#wcswidth(l:string))
+  let l:left_line = matchstr(l:line, '^.*\%' . s:col . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let l:right_line = l:line[len(l:left_line) :]
 
   let s:lines[s:line] = l:left_line . l:string . l:right_line
   

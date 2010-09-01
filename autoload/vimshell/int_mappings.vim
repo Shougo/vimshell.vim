@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2010
+" Last Modified: 01 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,11 +240,6 @@ endfunction "}}}
 function! s:insert_enter()"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     $
-    startinsert!
-    return
-  endif
-  
-  if vimshell#interactive#get_cur_line(line('.')) == ''
     startinsert!
     return
   endif
