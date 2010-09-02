@@ -28,7 +28,7 @@ function! vimshell#terminal#print(string)"{{{
   setlocal modifiable
   
   let l:current_line = getline('.')
-  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
   
   "echomsg a:string
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
@@ -51,8 +51,9 @@ function! vimshell#terminal#print(string)"{{{
   let l:pos = 0
   let l:max = len(a:string)
   let s:line = line('.')
-  let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
-        \ (col('.') < l:pos ? 1 : col('.') - l:pos) : col('.'))
+  "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
+        "\ (col('.') < l:pos ? 1 : col('.') - l:pos) : col('.'))
+  let s:col = col('.')
   let s:lines = {}
   let s:lines[s:line] = l:current_line
   
@@ -249,7 +250,7 @@ function! s:output_string(string)"{{{
   
   let l:string = a:string
 
-  if b:interactive.terminal.current_character_set =~# 'Line Drawing'
+  if b:interactive.terminal.current_character_set ==# 'Line Drawing'
     " Convert characters.
     let l:string = ''
     for c in split(a:string, '\zs')
@@ -261,9 +262,8 @@ function! s:output_string(string)"{{{
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
-  let l:line = s:lines[s:line]
-  let l:left_line = matchstr(l:line, '^.*\%' . s:col . 'c' . (mode() ==# 'i' ? '' : '.'))
-  let l:right_line = l:line[len(l:left_line) :]
+  let l:left_line = matchstr(s:lines[s:line], '^.*\%' . s:col . 'c')
+  let l:right_line = s:lines[s:line][len(l:left_line) :]
 
   let s:lines[s:line] = l:left_line . l:string . l:right_line
   

@@ -537,7 +537,7 @@ function! vimshell#set_prompt_command(string)"{{{
   call setline(l:lnum, vimshell#get_prompt() . a:string)
 endfunction"}}}
 function! vimshell#get_cur_line()"{{{
-  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
   return l:cur_text
 endfunction"}}}
 function! vimshell#get_current_args()"{{{
