@@ -52,7 +52,7 @@ function! vimshell#terminal#print(string)"{{{
   let l:max = len(a:string)
   let s:line = line('.')
   "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
-        "\ (col('.') < l:pos ? 1 : col('.') - l:pos) : col('.'))
+        "\ (col('.') < 1 ? 1 : col('.') - 1) : col('.'))
   let s:col = col('.')
   let s:lines = {}
   let s:lines[s:line] = l:current_line
@@ -596,7 +596,7 @@ function! s:escape.move_down(matchstr)"{{{
     let s:line += n
 
     if !has_key(s:lines, s:line)
-      let s:lines[s:line] = repeat(' ', s:col)
+      let s:lines[s:line] = repeat(' ', s:col-1)
     endif
   endif
 endfunction"}}}
