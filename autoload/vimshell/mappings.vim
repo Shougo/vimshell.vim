@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2010
+" Last Modified: 02 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -550,10 +550,15 @@ function! s:insert_enter()"{{{
     return
   endif
   
-  if col('.') < len(vimshell#get_prompt())
-    let l:pos = getpos('.')
-    let l:pos[2] = len(vimshell#get_prompt()) + 1
-    call setpos('.', l:pos)
+  if col('.') <= len(vimshell#get_prompt())
+    if len(vimshell#get_prompt()) + 1 <= col('$')
+      startinsert!
+      return
+    else
+      let l:pos = getpos('.')
+      let l:pos[2] = len(vimshell#get_prompt()) + 1
+      call setpos('.', l:pos)
+    endif
   endif
 
   startinsert
