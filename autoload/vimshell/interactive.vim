@@ -598,9 +598,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     if l:type ==# 'interactive' && (
           \ line('.') != a:interactive.echoback_linenr
           \ && has_key(a:interactive.prompt_history, line('.'))
-          \ && (vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
-          \      || (mode() ==# 'i' && has_key(g:vimshell_interactive_prompts, a:interactive.command)
-          \      && getline('.') =~# g:vimshell_interactive_prompts[a:interactive.command]))
+          \ && line('$') == line('.') && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
           \ )
       " Skip.
       

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2010
+" Last Modified: 02 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,9 +27,8 @@
 function! vimshell#terminal#print(string)"{{{
   setlocal modifiable
   
-  let l:pos = mode() ==# 'i' ? 1 : 0
   let l:current_line = getline('.')
-  let l:cur_text = col('.') < l:pos ? '' : matchstr(l:current_line, '.*')[: col('.') - l:pos]
+  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   
   "echomsg a:string
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
