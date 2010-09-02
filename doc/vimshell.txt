@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-09-02
 - Improved insert enter.
+- Improved interactive.
 
 2010-09-01
 - Improved insert enter.

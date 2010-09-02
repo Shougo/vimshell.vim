@@ -244,7 +244,7 @@ function! s:insert_enter()"{{{
     return
   endif
   
-  if col('.') < len(vimshell#interactive#get_prompt())
+  if col('.') <= len(vimshell#interactive#get_prompt())
     if len(vimshell#interactive#get_prompt()) + 1 <= col('$')
       startinsert!
       return
