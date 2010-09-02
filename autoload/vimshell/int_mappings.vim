@@ -238,7 +238,7 @@ function! s:command_complete()"{{{
   let b:interactive.prompt_history[line('$')] = getline('$')
 endfunction "}}}
 function! s:insert_enter()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
+  if !has_key(b:interactive.prompt_history, line('.')) && line('.') != line('$')
     $
     startinsert!
     return
