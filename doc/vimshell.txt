@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-03
+- Fixed cursor.
+
 2010-09-02
 - Improved insert enter.
 - Improved interactive cursor.

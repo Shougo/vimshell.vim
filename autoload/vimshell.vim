@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Sep 2010
+" Last Modified: 03 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -537,7 +537,7 @@ function! vimshell#set_prompt_command(string)"{{{
   call setline(l:lnum, vimshell#get_prompt() . a:string)
 endfunction"}}}
 function! vimshell#get_cur_line()"{{{
-  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
+  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   return l:cur_text
 endfunction"}}}
 function! vimshell#get_current_args()"{{{
