@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-04
+- Deleted VimShellBang and VimShellRead commands.
+
 2010-09-03
 - Fixed cursor.
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 04 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -147,8 +147,6 @@ command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-arg
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
 command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call s:vimshell_terminal(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellBang call s:bang(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellRead call s:read(<q-args>)
 
 " Plugin keymappings"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
@@ -158,12 +156,6 @@ nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '
 "}}}
 
 " Command functions:
-function! s:bang(cmdline)"{{{
-  echo vimshell#system(a:cmdline)
-endfunction"}}}
-function! s:read(cmdline)"{{{
-  call append('.', split(vimshell#system(a:cmdline), '\n'))
-endfunction"}}}
 function! s:execute_completefunc(lead, cmd, pos)"{{{
   silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
   return keys 
