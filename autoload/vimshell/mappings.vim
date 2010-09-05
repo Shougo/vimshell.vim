@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Sep 2010
+" Last Modified: 05 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,7 +109,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR> <C-]><Plug>(vimshell_enter)
   " History completion.
-  imap <buffer> <C-r>  <Plug>(vimshell_history_complete_whole)
+  imap <buffer> <C-s>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
@@ -124,7 +124,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Insert last word.
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Run help.
-  imap <buffer> <C-s> <Plug>(vimshell_run_help)
+  imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
   " Clear.
   imap <buffer> <C-l> <Plug>(vimshell_clear)
   " Interrupt.

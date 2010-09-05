@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-09-05
 - Ver.8.0 development is started.
 - Use vimproc Ver.5.
+- Changed completion keymappings.
 
 ChangeLog 7.2{{{
 2010-09-04
