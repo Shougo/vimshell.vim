@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2010
+" Last Modified: 05 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -181,7 +181,7 @@ if vimshell#iswin()
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'bash,bc,gosh,python,zsh', '-i')
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'irb', '--inf-ruby-mode')
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'powershell', '-Command -')
-  call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'scala', '--Xnojline')
+  call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'scala', '-Xnojline')
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'nyaos', '-t')
   
   call vimshell#set_dictionary_helper(g:vimshell_interactive_encodings, 'gosh,fakecygpty', 'utf8')
@@ -205,7 +205,7 @@ call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands,
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'ps1', 'powershell')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'haskell', 'ghci')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'dosbatch', 'cmdproxy')
-call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'scala', 'cmdproxy')
+call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'scala', vimshell#iswin() ? 'scala.bat' : 'scala')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'ocaml', 'ocaml')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'sml', 'sml')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'javascript', 'js')

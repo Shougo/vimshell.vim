@@ -34,19 +34,26 @@ function! vimshell#terminal#print(string)"{{{
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
     " Optimized print.
     let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\n', 1)
-    if line('.') != b:interactive.echoback_linenr
-      call setline('.', l:current_line . l:lines[0])
+    if !b:interactive.is_pty && &filetype =~#
+          \'^\%(int-gosh\|int-scala\)$'
+      " Note: MinGW gosh and scala is no echoback. Why?
+      call append('.', l:lines)
+    else
+      if line('.') != b:interactive.echoback_linenr
+        call setline('.', l:current_line . l:lines[0])
+      endif
+
+      call append('.', l:lines[1:])
     endif
-    call append('.', l:lines[1:])
     execute 'normal!' (len(l:lines)-1).'j$'
-    
+
     return
   endif
 
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
-  
+
   let l:newstr = ''
   let l:pos = 0
   let l:max = len(a:string)
@@ -234,8 +241,10 @@ function! s:init_terminal()"{{{
 endfunction"}}}
 function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
-    if !b:interactive.is_pty && &filetype ==# 'int-gosh'
-      " Note: MinGW gosh is no echoback. Why?
+    if !b:interactive.is_pty
+          \ && &filetype =~#
+          \'^\%(int-gosh\|int-scala\)$'
+      " Note: MinGW gosh and scala is no echoback. Why?
       let s:line += 1
       let s:lines[s:line] = a:string
       let s:col = len(a:string)

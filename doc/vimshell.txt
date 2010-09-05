@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Ver.8.0 development is started.
 - Use vimproc Ver.5.
 - Changed completion keymappings.
+- Fixed for scala.
 
 ChangeLog 7.2{{{
 2010-09-04
