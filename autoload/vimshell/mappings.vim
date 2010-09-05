@@ -452,7 +452,7 @@ function! s:expand_wildcard()"{{{
     return ''
   endif
   let l:wildcard = vimshell#get_current_args()[-1]
-  let l:expanded = vimshell#parser#expand_wildcard(l:wildcard)
+  let l:expanded = vimproc#parser#expand_wildcard(l:wildcard)
 
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)

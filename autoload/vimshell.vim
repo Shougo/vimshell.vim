@@ -25,7 +25,7 @@
 "=============================================================================
 
 function! vimshell#version()"{{{
-  return '701'
+  return '800'
 endfunction"}}}
 
 " Check vimproc."{{{
@@ -35,12 +35,12 @@ catch
   echoerr v:throwpoint
   echoerr v:exception
   echoerr 'Error occured while loading vimproc.'
-  echoerr 'Please install vimproc Ver.4.1 or above.'
+  echoerr 'Please install vimproc Ver.5.0 or above.'
   finish
 endtry
-if s:exists_vimproc_version < 403
+if s:exists_vimproc_version < 500
   echoerr 'Your vimproc is too old.'
-  echoerr 'Please install vimproc Ver.4.3 or above.'
+  echoerr 'Please install vimproc Ver.5.0 or above.'
   finish
 endif"}}}
 
@@ -541,17 +541,17 @@ function! vimshell#get_cur_line()"{{{
   return l:cur_text
 endfunction"}}}
 function! vimshell#get_current_args()"{{{
-  let l:statements = vimshell#parser#split_statements(vimshell#get_cur_text())
+  let l:statements = vimproc#parser#split_statements(vimshell#get_cur_text())
   if empty(l:statements)
     return []
   endif
   
-  let l:commands = vimshell#parser#split_commands(l:statements[-1])
+  let l:commands = vimproc#parser#split_commands(l:statements[-1])
   if empty(l:commands)
     return []
   endif
   
-  let l:args = vimshell#parser#split_args_through(l:commands[-1])
+  let l:args = vimproc#parser#split_args_through(l:commands[-1])
   if vimshell#get_cur_text() =~ '\\\@!\s\+$'
     " Add blank argument.
     call add(l:args, '')

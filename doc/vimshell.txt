@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 7.2
+Version: 8.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -184,6 +184,11 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-05
+- Ver.8.0 development is started.
+- Use vimproc Ver.5.
+
+ChangeLog 7.2{{{
 2010-09-04
 - Deleted VimShellBang and VimShellRead commands.
 
@@ -242,7 +247,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved wildcard.
 - Fixed wildcard parse.
 - Implemented file modifier.
-
+"}}}
 ChangeLog 7.1: {{{
 2010-08-15
 - Improved error detection.

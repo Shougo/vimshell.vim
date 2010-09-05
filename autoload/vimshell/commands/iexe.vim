@@ -76,7 +76,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   if !l:use_cygpty && has_key(g:vimshell_interactive_command_options, l:cmdname)
-    for l:arg in vimshell#parser#split_args(g:vimshell_interactive_command_options[l:cmdname])
+    for l:arg in vimproc#parser#split_args(g:vimshell_interactive_command_options[l:cmdname])
       call add(l:args, l:arg)
     endfor
   endif

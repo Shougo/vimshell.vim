@@ -28,7 +28,7 @@ function! vimshell#complete#vimshell_execute_complete#completefunc(arglead, cmdl
   " Get complete words.
   let l:complete_words = {}
   " Get command name.
-  let l:args = vimshell#parser#split_args(a:cmdline)
+  let l:args = vimproc#parser#split_args(a:cmdline)
   if a:cmdline =~ '\s\+$'
     " Add blank argument.
     call add(l:args, '')

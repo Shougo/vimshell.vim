@@ -39,7 +39,7 @@ function! s:command.execute(program, args, fd, other_info)"{{{
     let l:max = a:args[0]
     let l:i = 0
     while l:i < l:max
-      let l:commands = vimshell#parser#parse_pipe(a:args)
+      let l:commands = vimproc#parser#parse_pipe(a:args)
       call vimshell#parser#execute_command(l:commands, a:context)
       
       let l:i += 1
