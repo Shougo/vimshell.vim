@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2010
+" Last Modified: 08 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,6 +54,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nnoremap <silent><buffer> <Plug>(vimshell_int_insert_head)  :<C-u>call <SID>insert_head()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_int_append_enter)  :<C-u>call <SID>append_enter()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_int_append_end)  :<C-u>call <SID>append_end()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_clear)  :<C-u>call <SID>clear()<CR>
   "}}}
 
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
@@ -74,6 +75,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nmap <buffer> A         <Plug>(vimshell_int_append_end)
   nmap <buffer> i         <Plug>(vimshell_int_insert_enter)
   nmap <buffer> a         <Plug>(vimshell_int_append_enter)
+  nmap <buffer> <C-l>     <Plug>(vimshell_int_clear)
 
   " Insert mode key-mappings.
   imap <buffer> <C-h>     <Plug>(vimshell_int_delete_backward_char)
@@ -271,6 +273,16 @@ function! s:append_enter()"{{{
 endfunction"}}}
 function! s:append_end()"{{{
   call s:insert_enter()
+  startinsert!
+endfunction"}}}
+function! s:clear()"{{{
+  set modifiable
+  " Clean up the screen.
+  % delete _
+  call vimshell#terminal#clear_highlight()
+
+  call vimshell#interactive#execute_pty_out(1)
+
   startinsert!
 endfunction"}}}
 

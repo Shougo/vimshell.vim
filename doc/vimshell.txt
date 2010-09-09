@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-09
+- Implemented <Plug>(vimshell_int_clear).
+
 2010-09-05
 - Ver.8.0 development is started.
 - Use vimproc Ver.5.
