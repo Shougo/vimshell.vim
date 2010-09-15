@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-15
+- Fixed japanese documentation.
+
 2010-09-09
 - Implemented <Plug>(vimshell_int_clear).
 
