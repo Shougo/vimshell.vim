@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'history [{search-string}]',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   let l:arguments = join(a:args, ' ')
   if l:arguments =~ '^\d\+$'
     let l:search = ''

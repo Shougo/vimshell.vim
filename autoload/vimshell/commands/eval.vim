@@ -29,14 +29,14 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'eval {expression}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   " Evaluate arguments.
 
   let l:line = join(a:args)
   let l:context = {
         \ 'has_head_spaces' : l:line =~ '^\s\+',
-        \ 'is_interactive' : a:other_info.is_interactive, 
-        \ 'is_insert' : a:other_info.is_insert, 
+        \ 'is_interactive' : a:context.is_interactive, 
+        \ 'is_insert' : a:context.is_insert, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
 

@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gexe {command}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   let l:command = join(a:args)
   if &termencoding != '' && &termencoding != &encoding
     let l:command = iconv(l:command, &encoding, &termencoding)

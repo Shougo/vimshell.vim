@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2010
+" Last Modified: 16 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -139,9 +139,14 @@ function! s:command.execute(commands, context)"{{{
         \}
   call vimshell#interactive#init()
 
-  if !has_key(a:context, 'is_from_command') || !a:context.is_from_command
+  wincmd p
+
+  if has_key(a:context, 'is_single_command') && a:context.is_single_command
+    call vimshell#print_prompt(a:context)
     wincmd p
-  elseif b:interactive.process.is_valid
+  endif
+  
+  if b:interactive.process.is_valid
     startinsert
   endif
 endfunction"}}}

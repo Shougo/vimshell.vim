@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'alias {alias-name} = {command}',
       \}
-function! s:command.execute(program, args, fd, other_info)"{{{
+function! s:command.execute(program, args, fd, context)"{{{
   let l:args = join(a:args)
   
   if empty(a:args)

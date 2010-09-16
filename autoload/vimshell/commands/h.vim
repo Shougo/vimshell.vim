@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'h [{pattern}]',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   " Execute from history.
 
   if empty(a:args) || a:args[0] =~ '^\d\+'
@@ -62,12 +62,12 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     endif
   endif
 
-  if a:other_info.has_head_spaces
+  if a:context.has_head_spaces
     let l:hist = ' ' . l:hist
   endif
   call vimshell#set_prompt_command(l:hist)
 
-  let l:context = a:other_info
+  let l:context = a:context
   let l:context.is_interactive = 0
   let l:context.fd = a:fd
   try

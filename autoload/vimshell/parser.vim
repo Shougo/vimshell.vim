@@ -37,8 +37,11 @@ function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
   let l:statements = vimproc#parser#parse_statements(a:script)
   let l:max = len(l:statements)
+  
+  let l:context = a:context
+  let l:context.is_single_command = (l:context.is_interactive && l:max == 1)
+  
   let i = 0
-
   while i < l:max
     try
       let l:ret =  s:execute_statement(l:statements[i].statement, a:context)

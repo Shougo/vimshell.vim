@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'sexe {command}',
       \}
-function! s:command.execute(program, args, fd, other_info)"{{{
+function! s:command.execute(program, args, fd, context)"{{{
   let [l:args, l:options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})

@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-16
+- Improved command split behavior.
+
 2010-09-15
 - Fixed japanese documentation.
 

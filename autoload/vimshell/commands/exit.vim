@@ -29,9 +29,9 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'exit',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   " Exit vimshell.
-  if a:other_info.is_interactive
+  if a:context.is_interactive
     let vimsh_buf = bufnr('%')
     " Switch buffer.
     if winnr('$') != 1

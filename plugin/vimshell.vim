@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2010
+" Last Modified: 16 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,7 +162,7 @@ function! s:execute_completefunc(lead, cmd, pos)"{{{
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
   call vimshell#execute_internal_command('bg', vimproc#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
+        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
@@ -180,11 +180,11 @@ function! s:vimshell_interactive(args)"{{{
   endif
   
   call vimshell#execute_internal_command('iexe', vimproc#parser#split_args(l:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
+        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
   call vimshell#execute_internal_command('texe', vimproc#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_from_command' : 1 })
+        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
 endfunction"}}}
 
 augroup vimshell

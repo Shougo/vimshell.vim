@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'ls [{argument}...]',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   let l:arguments = a:args
 
   if a:fd.stdout == ''
@@ -42,7 +42,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
     call insert(l:arguments, 'ls')
   endif
 
-  call vimshell#execute_internal_command('exe', l:arguments, a:fd, a:other_info)
+  call vimshell#execute_internal_command('exe', l:arguments, a:fd, a:context)
 endfunction"}}}
 
 function! vimshell#commands#ls#define()

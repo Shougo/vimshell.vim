@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'shell',
       \}
-function! s:command.execute(program, args, fd, other_info)"{{{
+function! s:command.execute(program, args, fd, context)"{{{
   " Starts shell.
   if vimshell#iswin() && g:vimshell_use_ckw && has('gui_running')
     " Use ckw.

@@ -29,10 +29,10 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'vexe {expression}',
       \}
-function! s:command.execute(program, args, fd, other_info)"{{{
+function! s:command.execute(program, args, fd, context)"{{{
   " Execute vim command.
 
-  let l:context = a:other_info
+  let l:context = a:context
   let l:context.fd = a:fd
   call vimshell#set_context(l:context)
   

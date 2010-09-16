@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'bcd {buffer-name}',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   " Change working directory with buffer directory.
 
   if empty(a:args)
@@ -46,7 +46,7 @@ function! s:command.execute(command, args, fd, other_info)"{{{
 
   if l:bufnumber >= 0
     let l:bufdir = fnamemodify(bufname(l:bufnumber), ':p:h')
-    return vimshell#execute_internal_command('cd', [ l:bufdir ], a:fd, a:other_info)
+    return vimshell#execute_internal_command('cd', [ l:bufdir ], a:fd, a:context)
   else
     call vimshell#error_line(a:fd, printf('bcd: Buffer "%s" is not found.', l:arguments))
   endif

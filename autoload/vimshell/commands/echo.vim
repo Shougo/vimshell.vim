@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'echo [{argument}...]',
       \}
-function! s:command.execute(command, args, fd, other_info)"{{{
+function! s:command.execute(command, args, fd, context)"{{{
   let l:string = join(a:args)
   if a:fd.stdout == '' && l:string != ''
     call append('.', '')

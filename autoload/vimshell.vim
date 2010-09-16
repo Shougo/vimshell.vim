@@ -273,7 +273,7 @@ endfunction"}}}
 function! vimshell#available_commands()"{{{
   return s:internal_commands
 endfunction"}}}
-function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
+function! vimshell#execute_internal_command(command, args, fd, context)"{{{
   if empty(s:internal_commands)
     call s:init_internal_commands()
   endif
@@ -286,10 +286,10 @@ function! vimshell#execute_internal_command(command, args, fd, other_info)"{{{
   
   let l:commands = [ { 'args' : insert(a:args, a:command), 'fd' : l:fd } ]
 
-  if empty(a:other_info)
+  if empty(a:context)
     let l:context = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
   else
-    let l:context = a:other_info
+    let l:context = a:context
   endif
 
   return vimshell#parser#execute_command(l:commands, l:context)

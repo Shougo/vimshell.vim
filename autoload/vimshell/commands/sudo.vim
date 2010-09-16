@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'sudo {command}',
       \}
-function! s:command.execute(program, args, fd, other_info)"{{{
+function! s:command.execute(program, args, fd, context)"{{{
   " Execute GUI program.
   if empty(a:args)
     call vimshell#error_line(a:fd, 'sudo: Arguments required.')
@@ -37,9 +37,9 @@ function! s:command.execute(program, args, fd, other_info)"{{{
   elseif a:args[0] == 'vim'
     let l:args = a:args[1:]
     let l:args[0] = 'sudo:' . l:args[0]
-    call vimshell#execute_internal_command('vim', l:args, a:fd, a:other_info)
+    call vimshell#execute_internal_command('vim', l:args, a:fd, a:context)
   else
-    call vimshell#execute_internal_command('iexe', insert(a:args, 'sudo'), a:fd, a:other_info)
+    call vimshell#execute_internal_command('iexe', insert(a:args, 'sudo'), a:fd, a:context)
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{

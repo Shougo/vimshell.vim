@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'nop',
       \}
-function! s:command.execute(program, args, fd, other_info)
+function! s:command.execute(program, args, fd, context)
   " No operation.
 endfunction
 
