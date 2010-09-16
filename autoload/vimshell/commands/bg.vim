@@ -170,6 +170,7 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
     wincmd p
+    stopinsert
   endif
 endfunction"}}}
 
