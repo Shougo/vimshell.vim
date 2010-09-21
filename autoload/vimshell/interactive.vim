@@ -106,7 +106,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
-  if !b:interactive.process.eof
+  if exists('b:interactive') && !b:interactive.process.eof
     if a:is_insert
       startinsert!
     else
@@ -329,16 +329,20 @@ function! vimshell#interactive#exit()"{{{
   let b:interactive.status = str2nr(l:status)
   let b:interactive.cond = l:cond
   if &filetype !=# 'vimshell'
-    syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
-    hi def link InteractiveMessage WarningMsg
-    
-    call append(line('$'), '*Exit*')
-    
-    $
-    normal! $
+    if exists("b:interactive.close_immediately") && b:interactive.close_immediately
+      close
+    else
+      syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
+      hi def link InteractiveMessage WarningMsg
 
-    stopinsert
-    setlocal nomodifiable
+      call append(line('$'), '*Exit*')
+
+      $
+      normal! $
+
+      stopinsert
+      setlocal nomodifiable
+    endif
   endif
 endfunction"}}}
 function! vimshell#interactive#force_exit()"{{{
