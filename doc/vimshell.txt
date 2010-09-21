@@ -185,7 +185,7 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-09-21
-- Supported b:interactive.close_immediately for iexe buffers.
+- Supported b:interactive.is_close_immediately for iexe buffers.
 - Fixed typo.
 - Merged from ujihisa.
 
