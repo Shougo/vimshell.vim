@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2010
+" Last Modified: 21 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,7 +106,8 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
-  if exists('b:interactive') && !b:interactive.process.eof
+  if exists('b:interactive') && has_key(b:interactive.process, 'eof')
+        \ && !b:interactive.process.eof
     if a:is_insert
       startinsert!
     else
@@ -329,8 +330,11 @@ function! vimshell#interactive#exit()"{{{
   let b:interactive.status = str2nr(l:status)
   let b:interactive.cond = l:cond
   if &filetype !=# 'vimshell'
-    if exists("b:interactive.close_immediately") && b:interactive.close_immediately
-      close
+    stopinsert
+
+    if exists("b:interactive.is_close_immediately") && b:interactive.is_close_immediately
+      " Close buffer immediately.
+      bdelete
     else
       syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
       hi def link InteractiveMessage WarningMsg
@@ -340,7 +344,6 @@ function! vimshell#interactive#exit()"{{{
       $
       normal! $
 
-      stopinsert
       setlocal nomodifiable
     endif
   endif

@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-09-21
 - Supported b:interactive.close_immediately for iexe buffers.
 - Fixed typo.
+- Merged from ujihisa.
 
 2010-09-16
 - Improved command split behavior.
