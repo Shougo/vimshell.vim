@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2010
+" Last Modified: 21 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,6 +42,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <silent><buffer> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_clear)  :<C-u>call <SID>clear()<CR>
 
   vnoremap <buffer><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
   vnoremap <buffer><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
@@ -56,7 +57,6 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
   inoremap <buffer><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:<C-u>call <SID>clear()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:<C-u>call <SID>interrupt(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
@@ -96,6 +96,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> a         <Plug>(vimshell_append_enter)
   " Interrupt.
   nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  " Clear.
+  nmap <buffer> <C-l> <Plug>(vimshell_clear)
   
   " Visual mode key-mappings.
   " Move to previous prompt.
@@ -109,7 +111,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR> <C-]><Plug>(vimshell_enter)
   " History completion.
-  imap <buffer> <C-s>  <Plug>(vimshell_history_complete_whole)
+  imap <buffer> <C-l>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
@@ -125,8 +127,6 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Run help.
   imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
-  " Clear.
-  imap <buffer> <C-l> <Plug>(vimshell_clear)
   " Interrupt.
   imap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Delete char.
@@ -444,7 +444,6 @@ function! s:clear()"{{{
   call vimshell#set_prompt_command(l:lines[0])
   call append('$', map(l:lines[1:], string(vimshell#get_secondary_prompt()).'.v:val'))
   $
-  call vimshell#start_insert()
 endfunction"}}}
 function! s:expand_wildcard()"{{{
   " Wildcard.
