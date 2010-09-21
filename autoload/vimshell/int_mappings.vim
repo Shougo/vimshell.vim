@@ -197,7 +197,7 @@ function! s:paste_prompt()"{{{
 endfunction"}}}
 function! s:restart_command()"{{{
   if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
-    " Delete zombee process.
+    " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
   

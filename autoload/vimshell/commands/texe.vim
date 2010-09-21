@@ -82,7 +82,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
-    " Delete zombee process.
+    " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
   
