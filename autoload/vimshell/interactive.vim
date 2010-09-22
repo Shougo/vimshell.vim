@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -91,8 +91,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
     
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
-      let b:interactive.skip_echoback = l:in[:-2]
+      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-d>" : "\<C-z>"))
       call vimshell#interactive#execute_pty_out(a:is_insert)
 
       call vimshell#interactive#exit()
@@ -123,7 +122,7 @@ function! vimshell#interactive#send_string(string)"{{{
   setlocal modifiable
   
   let l:in = a:string
-
+  
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
     let l:in = iconv(l:in, &encoding, b:interactive.encoding)
@@ -132,7 +131,7 @@ function! vimshell#interactive#send_string(string)"{{{
   try
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-z>" : "\<C-d>"))
+      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-d>" : "\<C-z>"))
       call vimshell#interactive#execute_pty_out(1)
 
       call vimshell#interactive#exit()
@@ -148,11 +147,11 @@ function! vimshell#interactive#send_string(string)"{{{
   call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
-  let l:input = input('Please input send string: ')
+  let l:input = input('Please input send string: ', vimshell#interactive#get_cur_line(line('.')))
   call vimshell#imdisable()
+  call setline('.', vimshell#interactive#get_prompt())
 
-  let b:interactive.echoback_linenr = line('.')
-
+  normal! $
   call vimshell#interactive#send_string(l:input)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{

@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-23
+- Fixed send_string().
+
 2010-09-21
 - Supported b:interactive.is_close_immediately for iexe buffers.
 - Fixed typo.
