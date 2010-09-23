@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,25 +32,35 @@ function! vimshell#complete#command_complete#complete()"{{{
     return ''
   endif
 
-  if len(vimshell#get_current_args()) > 1
-    " Args completion.
-
-    return vimshell#complete#args_complete#complete()
-  endif
-
   " Command completion.
-
-  if exists(':NeoComplCacheDisable')
-    return neocomplcache#sources#completefunc_complete#call_completefunc('vimshell#complete#command_complete#omnifunc')
-  else
-    " Set complete function.
-    let &l:omnifunc = 'vimshell#complete#command_complete#omnifunc'
-
-    return "\<C-x>\<C-o>\<C-p>"
-  endif
+  return vimshell#complete#helper#call_omnifunc('vimshell#complete#command_complete#omnifunc')
 endfunction"}}}
 
 function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
+  if !vimshell#check_prompt()
+    " Ignore.
+    return -1
+  endif
+
+  try
+    let l:args = vimshell#get_current_args()
+  catch /^Exception: Quote/
+    return []
+  endtry
+
+  if len(l:args) <= 1
+    return s:complete_commands(a:findstart, a:base)
+  else
+    if vimshell#get_cur_text() =~ '\s\+$'
+      " Add blank argument.
+      call add(l:args, '')
+    endif
+
+    return s:complete_args(a:findstart, a:base, l:args)
+  endif
+endfunction"}}}
+
+function! s:complete_commands(findstart, base)"{{{
   if a:findstart
     return len(vimshell#get_prompt())
   endif
@@ -69,9 +79,6 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
 
   " Restore option.
   let &ignorecase = l:ignorecase_save
-  if &l:omnifunc != 'vimshell#complete#auto_complete#omnifunc'
-    let &l:omnifunc = 'vimshell#complete#auto_complete#omnifunc'
-  endif
 
   return l:complete_words
 endfunction"}}}
@@ -99,6 +106,56 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
   endif
 
   return l:ret
+endfunction"}}}
+
+function! s:complete_args(findstart, base, args)"{{{
+  if a:findstart
+    " Get cursor word.
+    return col('.')-len(a:args[-1])-1
+  endif
+
+  " Get command name.
+  let l:command = fnamemodify(a:args[0], ':t:r')
+
+  " Save option.
+  let l:ignorecase_save = &ignorecase
+
+  " Complete.
+  if g:vimshell_smart_case && a:base =~ '\u'
+    let &ignorecase = 0
+  else
+    let &ignorecase = g:vimshell_ignore_case
+  endif
+
+  " Get complete words.
+  let l:complete_words = vimshell#complete#args_complete#get_complete_words(l:command, a:args[1:])
+
+  " Restore option.
+  let &ignorecase = l:ignorecase_save
+
+  " Truncate many items.
+  let l:complete_words = l:complete_words[: g:vimshell_max_list-1]
+
+  return l:complete_words
+endfunction"}}}
+
+function! s:get_complete_args(command, args)"{{{
+  let l:commands = vimshell#available_commands()
+
+  " Get complete words.
+  let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
+        \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
+
+  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$'
+    " Complete file.
+    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=')
+    for keyword in vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
+      let keyword.word = l:prefix . keyword.word
+      call add(l:complete_words, keyword)
+    endfor
+  endif
+
+  return l:complete_words
 endfunction"}}}
 
 " vim: foldmethod=marker

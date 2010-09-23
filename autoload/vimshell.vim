@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Sep 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,7 +101,7 @@ function! s:default_settings()"{{{
   setlocal noreadonly
   setlocal iskeyword+=-,+,.,\\,!,~
   setlocal wrap
-  setlocal omnifunc=vimshell#complete#auto_complete#omnifunc
+  setlocal omnifunc=vimshell#complete#command_complete#omnifunc
   
   " Set autocommands.
   augroup vimshell

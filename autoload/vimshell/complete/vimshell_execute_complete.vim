@@ -26,14 +26,6 @@
 
 function! vimshell#complete#vimshell_execute_complete#completefunc(arglead, cmdline, cursorpos)"{{{
   " Get complete words.
-  
-  " Get command name.
-  let l:args = vimproc#parser#split_args(a:cmdline)
-  if a:cmdline =~ '\s\+$'
-    " Add blank argument.
-    call add(l:args, '')
-  endif
-
-  return map(vimshell#complete#helper#executables(l:args[-1]), 'v:val.word')
+  return map(vimshell#complete#command_complete#omnifunc(l:args[-1]), 'v:val.word')
 endfunction"}}}
 " vim: foldmethod=marker

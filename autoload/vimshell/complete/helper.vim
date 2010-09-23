@@ -261,6 +261,21 @@ function! vimshell#complete#helper#command_args(args)"{{{
   endif
 endfunction"}}}
 
+function! vimshell#complete#helper#call_omnifunc(omnifunc)"{{{
+  if exists(':NeoComplCacheDisable')
+    return neocomplcache#sources#completefunc_complete#call_completefunc(a:omnifunc)
+  else
+    " Set complete function.
+    let &l:omnifunc = a:omnifunc
+
+    return "\<C-x>\<C-o>\<C-p>"
+  endif
+endfunction"}}}
+function! vimshell#complete#helper#restore_omnifunc(omnifunc)"{{{
+  if &l:omnifunc !=# a:omnifunc
+    let &l:omnifunc = a:omnifunc
+  endif
+endfunction"}}}
 function! vimshell#complete#helper#compare_rank(i1, i2)"{{{
   return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
 endfunction"}}}

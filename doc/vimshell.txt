@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed send_string().
 - Fixed completion error.
 - Fixed eof.
+- Refactoringed vimshell completion.
 
 2010-09-21
 - Supported b:interactive.is_close_immediately for iexe buffers.
