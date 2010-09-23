@@ -91,10 +91,9 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
     
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-d>" : "\<C-z>"))
-      call vimshell#interactive#execute_pty_out(a:is_insert)
+      let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
 
-      call vimshell#interactive#exit()
+      call b:interactive.process.write(l:in[:-2] . l:eof)
       return
     else
       call b:interactive.process.write(l:in . "\<LF>")
@@ -131,11 +130,9 @@ function! vimshell#interactive#send_string(string)"{{{
   try
     if l:in =~ "\<C-d>$"
       " EOF.
-      call b:interactive.process.write(l:in[:-2] . (b:interactive.is_pty ? "\<C-d>" : "\<C-z>"))
-      call vimshell#interactive#execute_pty_out(1)
-
-      call vimshell#interactive#exit()
-      return
+      let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
+      
+      call b:interactive.process.write(l:in[:-2] . l:eof)
     else
       call b:interactive.process.write(l:in)
     endif
@@ -149,9 +146,9 @@ endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let l:input = input('Please input send string: ', vimshell#interactive#get_cur_line(line('.')))
   call vimshell#imdisable()
-  call setline('.', vimshell#interactive#get_prompt())
+  call setline('.', vimshell#interactive#get_prompt() . ' ')
 
-  normal! $
+  normal! $h
   call vimshell#interactive#send_string(l:input)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
