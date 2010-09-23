@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2010
+" Last Modified: 23 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -250,6 +250,24 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
 
   return l:ret
 endfunction"}}}
+function! vimshell#complete#helper#args(command, args)"{{{
+  let l:commands = vimshell#available_commands()
+
+  " Get complete words.
+  let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
+        \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
+
+  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$'
+    " Complete file.
+    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=')
+    for keyword in vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
+      let keyword.word = l:prefix . keyword.word
+      call add(l:complete_words, keyword)
+    endfor
+  endif
+
+  return l:complete_words
+endfunction"}}}
 function! vimshell#complete#helper#command_args(args)"{{{
   " command args...
   if len(a:args) == 1
@@ -257,7 +275,7 @@ function! vimshell#complete#helper#command_args(args)"{{{
     return vimshell#complete#helper#executables(a:args[0])
   else
     " Args.
-    return vimshell#complete#args_complete#get_complete_words(a:args[0], a:args[1:])
+    return vimshell#complete#helper#args(a:args[0], a:args[1:])
   endif
 endfunction"}}}
 

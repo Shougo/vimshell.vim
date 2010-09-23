@@ -128,32 +128,13 @@ function! s:complete_args(findstart, base, args)"{{{
   endif
 
   " Get complete words.
-  let l:complete_words = vimshell#complete#args_complete#get_complete_words(l:command, a:args[1:])
+  let l:complete_words = vimshell#complete#helper#args(l:command, a:args[1:])
 
   " Restore option.
   let &ignorecase = l:ignorecase_save
 
   " Truncate many items.
   let l:complete_words = l:complete_words[: g:vimshell_max_list-1]
-
-  return l:complete_words
-endfunction"}}}
-
-function! s:get_complete_args(command, args)"{{{
-  let l:commands = vimshell#available_commands()
-
-  " Get complete words.
-  let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
-        \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
-
-  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$'
-    " Complete file.
-    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=')
-    for keyword in vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
-      let keyword.word = l:prefix . keyword.word
-      call add(l:complete_words, keyword)
-    endfor
-  endif
 
   return l:complete_words
 endfunction"}}}
