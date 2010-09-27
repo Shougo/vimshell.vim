@@ -133,7 +133,16 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     call add(l:list, l:dict)
   endfor
 
-  return vimshell#complete#helper#keyword_filter(l:list, a:cur_keyword_str)
+  if a:0 == 1
+    let l:ret = []
+    for l:path in split(a:1, ',')
+      let l:ret += vimshell#complete#helper#keyword_filter(l:list, l:path . '/' . a:cur_keyword_str)
+    endfor
+    
+    return l:ret
+  else
+    return vimshell#complete#helper#keyword_filter(l:list, a:cur_keyword_str)
+  endif
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
