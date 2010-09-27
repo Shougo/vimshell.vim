@@ -84,9 +84,24 @@ function! s:complete_commands(findstart, base)"{{{
 endfunction"}}}
 
 function! s:get_complete_commands(cur_keyword_str)"{{{
+  " Save option.
+  let l:ignorecase_save = &ignorecase
+
+  " Complete.
+  if g:vimshell_smart_case && a:base =~ '\u'
+    let &ignorecase = 0
+  else
+    let &ignorecase = g:vimshell_ignore_case
+  endif
+
   if a:cur_keyword_str =~ '/'
     " Filename completion.
-    return vimshell#complete#helper#files(a:cur_keyword_str)
+    let l:ret = vimshell#complete#helper#files(a:cur_keyword_str)
+    
+    " Restore option.
+    let &ignorecase = l:ignorecase_save
+
+    return l:ret
   endif
 
   let l:directories = vimshell#complete#helper#directories(a:cur_keyword_str)
@@ -104,6 +119,9 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
   if len(a:cur_keyword_str) >= 1
     let l:ret += vimshell#complete#helper#executables(a:cur_keyword_str)
   endif
+
+  " Restore option.
+  let &ignorecase = l:ignorecase_save
 
   return l:ret
 endfunction"}}}

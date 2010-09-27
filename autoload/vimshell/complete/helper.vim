@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 27 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,6 +62,9 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
       let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
     endif
   endif
+
+  " Glob by directory name.
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '/\?\zs[^/]*$', '', '')
   
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
@@ -130,7 +133,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     call add(l:list, l:dict)
   endfor
 
-  return l:list
+  return vimshell#complete#helper#keyword_filter(l:list, a:cur_keyword_str)
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
@@ -299,17 +302,23 @@ function! vimshell#complete#helper#compare_rank(i1, i2)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
+  if &ignorecase
+    let l:expr = printf('stridx(tolower(v:val.word), %s) == 0', string(tolower(l:cur_keyword)))
+  else
+    let l:expr = printf('stridx(v:val.word, %s) == 0', string(l:cur_keyword))
+  endif
 
-  return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
+  return filter(a:list, l:expr)
 endfunction"}}}
 function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str)"{{{
-  if a:cur_keyword_str == ''
-    return a:list
-  endif
-  
   let l:cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
+  if &ignorecase
+    let l:expr = printf('stridx(tolower(v:val), %s) == 0', string(tolower(l:cur_keyword)))
+  else
+    let l:expr = printf('stridx(v:val, %s) == 0', string(l:cur_keyword))
+  endif
 
-  return filter(a:list, printf("v:val[: %d] == %s", len(l:cur_keyword) - 1, string(l:cur_keyword)))
+  return filter(a:list, l:expr)
 endfunction"}}}
 
 " vim: foldmethod=marker
