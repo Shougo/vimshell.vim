@@ -45,7 +45,7 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
   try
     let l:args = vimshell#get_current_args()
   catch /^Exception: Quote/
-    return []
+    return a:findstart ? -1 : []
   endtry
 
   if len(l:args) <= 1
