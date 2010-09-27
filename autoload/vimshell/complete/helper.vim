@@ -64,7 +64,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   endif
 
   " Glob by directory name.
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '/\?\zs[^/]*$', '', '')
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(/\.\?\)\?\zs[^/]*$', '', '')
   
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
