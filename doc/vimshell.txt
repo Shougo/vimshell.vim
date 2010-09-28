@@ -189,6 +189,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed glob().
 - Fixed conceal cursor.
 - Fixed glob().
+- Implemented insert / (experimental).
 
 2010-09-27
 - Improved filename completion.

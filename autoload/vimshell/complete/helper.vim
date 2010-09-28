@@ -111,6 +111,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let l:abbr = l:dict.word
     if isdirectory(l:word)
       let l:abbr .= '/'
+      let l:dict.word .= '/'
       let l:dict.menu = 'directory'
     elseif vimshell#iswin()
       if '.'.fnamemodify(l:word, ':e') =~ l:exts
