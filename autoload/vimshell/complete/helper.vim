@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2010
+" Last Modified: 28 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -64,7 +64,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   endif
 
   " Glob by directory name.
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\%(/\.\?\)\?\zs[^/]*$', '', '')
+  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\%(/\.\?\)\?\zs[^/]*$', '', '')
   
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
