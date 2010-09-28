@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Sep 2010
+" Last Modified: 29 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -490,7 +490,7 @@ endfunction"}}}
 function! s:delete_backward_line()"{{{
   if !pumvisible()
     let l:prefix = ''
-  elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
+  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
     let l:prefix = "\<C-e>"
   else
     let l:prefix = "\<C-y>"
