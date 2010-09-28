@@ -63,9 +63,6 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     endif
   endif
 
-  " Glob by directory name.
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\%(/\.\?\)\?\zs[^/]*$', '', '')
-  
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
     let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
@@ -133,16 +130,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     call add(l:list, l:dict)
   endfor
 
-  if a:0 == 1
-    let l:ret = []
-    for l:path in split(a:1, ',')
-      let l:ret += vimshell#complete#helper#keyword_filter(l:list, l:path . '/' . a:cur_keyword_str)
-    endfor
-    
-    return l:ret
-  else
-    return vimshell#complete#helper#keyword_filter(l:list, a:cur_keyword_str)
-  endif
+  return l:list
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []

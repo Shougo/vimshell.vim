@@ -188,6 +188,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed <Plug>(vimshell_delete_backward_line) error.
 - Fixed glob().
 - Fixed conceal cursor.
+- Fixed glob().
 
 2010-09-27
 - Improved filename completion.
