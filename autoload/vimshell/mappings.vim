@@ -192,7 +192,7 @@ function! s:execute_line(is_insert)"{{{
       else
         " Search cursor file.
         let l:filename = expand('<cfile>')
-        if has('conceal') && l:filename =~ '\[\%[%\]]'
+        if has('conceal') && l:filename =~ '\[\%[%\]]\|^%$'
           let l:filename = matchstr(getline('.'), '\f\+', 3)
         endif
         let l:pattern = ''
