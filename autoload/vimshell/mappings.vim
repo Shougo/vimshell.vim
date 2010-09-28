@@ -65,8 +65,6 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_backward_char(1)
   inoremap <buffer><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:call <SID>clear(1)<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_insert_candidate)  
-        \ (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select) ? "\<C-e>" : "\<C-y>"
   "}}}
   
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
@@ -112,7 +110,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Execute command.
   inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
-  imap <buffer><expr> <CR> pumvisible() ? "\<Plug>(vimshell_insert_candidate)" : "\<C-]>\<Plug>(vimshell_enter)"
+  imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
   " History completion.
   imap <buffer> <C-l>  <Plug>(vimshell_history_complete_whole)
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
