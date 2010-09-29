@@ -230,7 +230,7 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
     let l:dict.menu = 'command'
     if a:cur_keyword_str !~ '[/\\]'
       let l:dict.word = fnamemodify(l:keyword.word, ':t')
-      let l:dict.abbr = fnamemodify(l:keyword.abbr, ':t') . (vimshell#iswin() ? '*' : '')
+      let l:dict.abbr = fnamemodify(l:keyword.abbr, ':t')
     endif
 
     call add(l:ret, l:dict)
