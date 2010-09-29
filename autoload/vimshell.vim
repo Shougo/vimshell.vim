@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 29 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -149,9 +149,9 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell = {}
 
   " Change current directory.
-  let b:vimshell.save_dir = getcwd()
-  let l:current = (a:directory != '')? a:directory : getcwd()
-  lcd `=fnamemodify(l:current, ':p')`
+  let l:current = (a:directory != '')? fnamemodify(a:directory, ':p') : getcwd()
+  let b:vimshell.save_dir = l:current
+  lcd `=l:current`
 
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
@@ -234,7 +234,10 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
 
       if a:directory != ''
         " Change current directory.
-        lcd `=fnamemodify(a:directory, ':p')`
+        let l:current = fnamemodify(a:directory, ':p')
+        let b:vimshell.save_dir = l:current
+        lcd `=l:current`
+        
         call vimshell#print_prompt(l:context)
       endif
       call vimshell#start_insert()
@@ -256,7 +259,10 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
 
       if a:directory != ''
         " Change current directory.
-        lcd `=fnamemodify(a:directory, ':p')`
+        let l:current = fnamemodify(a:directory, ':p')
+        let b:vimshell.save_dir = l:current
+        lcd `=l:current`
+        
         call vimshell#print_prompt(l:context)
       endif
       call vimshell#start_insert()
