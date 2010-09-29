@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-09-29
 - Added g:vimshell_enable_auto_slash.
 - Fixed vimshell switch bug.
+- Improved <Plug>(vimshell_switch).
 
 2010-09-28
 - Fixed <Plug>(vimshell_delete_backward_line) error.
