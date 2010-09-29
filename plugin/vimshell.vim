@@ -128,6 +128,9 @@ endif
 if !exists('g:vimshell_terminal_cursor')
   let g:vimshell_terminal_cursor = 'i:block-Cursor/lCursor'
 endif
+if !exists('g:vimshell_enable_auto_slash')
+  let g:vimshell_enable_auto_slash = 0
+endif
 
 " For Cygwin commands.
 if !exists('g:vimshell_interactive_cygwin_commands')

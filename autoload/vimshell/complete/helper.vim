@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2010
+" Last Modified: 29 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -111,7 +111,9 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let l:abbr = l:dict.word
     if isdirectory(l:word)
       let l:abbr .= '/'
-      let l:dict.word .= '/'
+      if g:vimshell_enable_auto_slash
+        let l:dict.word .= '/'
+      endif
       let l:dict.menu = 'directory'
     elseif vimshell#iswin()
       if '.'.fnamemodify(l:word, ':e') =~ l:exts

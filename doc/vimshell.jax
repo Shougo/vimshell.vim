@@ -382,6 +382,11 @@ g:vimshell_vcs_print_null				*g:vimshell_vcs_print_null*
 			
 			初期値は0です。
 
+g:vimshell_enable_auto_slash				*g:vimshell_enable_auto_slash*
+			これが0以外のとき、ディレクトリの補完時に/を補います。
+			
+			初期値は0です。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
