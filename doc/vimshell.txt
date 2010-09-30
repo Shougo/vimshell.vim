@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-09-30
+- Improved clear.
+
 2010-09-29
 - Added g:vimshell_enable_auto_slash.
 - Fixed vimshell switch bug.

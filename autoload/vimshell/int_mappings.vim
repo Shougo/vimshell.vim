@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 30 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -276,8 +276,14 @@ function! s:append_end()"{{{
 endfunction"}}}
 function! s:clear()"{{{
   set modifiable
+  
   " Clean up the screen.
-  % delete _
+  if line('$') != 1
+    1,$-1 delete _
+  else
+    % delete _
+  endif
+  
   call vimshell#terminal#clear_highlight()
 
   call vimshell#interactive#execute_pty_out(1)
