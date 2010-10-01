@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-02
+- Fixed typo.
+
 2010-10-01
 - Deleted completion imdisable().
 - Improved iskeyword.

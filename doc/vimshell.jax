@@ -99,9 +99,9 @@ Make方法
 * Cygwin: >
 	$ make -f make_cygwin.mak
 
-コンパイルが通ったら、autoloadにあるproc.vimとproc.soを.vimのautoloadディレクト
-リにコピーします。Cygwinでコンパイルしたproc.dllはCygwin上のVim専用です。
-WindowsのVimでは使えません。注意してください。
+コンパイルが通ったら、autoloadにあるvimproc.vim, vimproc/parser.vimとproc.soを
+.vimのautoloadディレクトリにコピーします。Cygwinでコンパイルしたproc.dllは
+Cygwin上のVim専用です。WindowsのVimでは使えません。注意してください。
 
 ==============================================================================
 INTERFACE						*vimshell-interface*
