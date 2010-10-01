@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Sep 2010
+" Last Modified: 30 Sep 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -101,7 +101,7 @@ function! s:default_settings()"{{{
   " For vimshell.
   setlocal bufhidden=hide
   setlocal noreadonly
-  setlocal iskeyword+=-,+,.,\\,!,~
+  setlocal iskeyword+=-,+,\\,!,~
   setlocal wrap
   setlocal omnifunc=vimshell#complete#command_complete#omnifunc
   
