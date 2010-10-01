@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-10-01
 - Deleted completion imdisable().
 - Improved iskeyword.
+- Fixed clear bug.
 
 2010-09-30
 - Improved clear.

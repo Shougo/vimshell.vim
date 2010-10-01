@@ -279,10 +279,26 @@ function! s:clear()"{{{
   
   " Clean up the screen.
   if line('$') != 1
+    if has_key(b:interactive.prompt_history, line('$'))
+      let l:current_history = b:interactive.prompt_history[line('$')]
+
+      let b:interactive.prompt_history = {}
+
+      " Restore history.
+      let b:interactive.prompt_history[1] = l:current_history
+    else
+      let b:interactive.prompt_history = {}
+    endif
+
     1,$-1 delete _
   else
+    " Clear prompt history.
+    let b:interactive.prompt_history = {}
+    
     % delete _
   endif
+  
+  let b:interactive.echoback_linenr = 0
   
   call vimshell#terminal#clear_highlight()
 
