@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Sep 2010
+" Last Modified: 02 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ let s:update_time_save = &updatetime
 " Disable bell.
 set vb t_vb=
 
-let s:last_vimfiler_bufnr = -1
+let s:last_vimshell_bufnr = -1
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
@@ -228,16 +228,16 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
     return
   endif
 
-  " Search VimShell buffer.
-  if buflisted(s:last_vimfiler_bufnr)
-        \ && getbufvar(s:last_vimfiler_bufnr, '&filetype') == 'vimshell'
-    call s:switch_vimshell(s:last_vimfiler_bufnr, a:split_flag, a:directory)
+  " Search vimshell buffer.
+  if buflisted(s:last_vimshell_bufnr)
+        \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
+    call s:switch_vimshell(s:last_vimshell_bufnr, a:split_flag, a:directory)
     return
   endif
   
   let l:cnt = 1
   while l:cnt <= bufnr('$')
-    if getbufvar(l:cnt, '&filetype') == 'vimshell'
+    if getbufvar(l:cnt, '&filetype') ==# 'vimshell'
       call s:switch_vimshell(l:cnt, a:split_flag, a:directory)
       return
     endif
@@ -770,7 +770,7 @@ function! s:restore_current_dir()"{{{
   lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
-  let s:last_vimfiler_bufnr = bufnr('%')
+  let s:last_vimshell_bufnr = bufnr('%')
 endfunction"}}}
 function! s:insert_enter()"{{{
   if &updatetime > g:vimshell_interactive_update_time

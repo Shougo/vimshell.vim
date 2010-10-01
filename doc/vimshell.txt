@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-10-02
 - Fixed typo.
+- Fixed variables name.
 
 2010-10-01
 - Deleted completion imdisable().
