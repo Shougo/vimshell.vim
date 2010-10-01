@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-01
+- Deleted imdisable().
+
 2010-09-30
 - Improved clear.
 

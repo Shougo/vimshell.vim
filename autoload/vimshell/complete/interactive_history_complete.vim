@@ -25,8 +25,6 @@
 "=============================================================================
 
 function! vimshell#complete#interactive_history_complete#complete()"{{{
-  call vimshell#imdisable()
-
   return vimshell#complete#helper#call_omnifunc('vimshell#complete#interactive_history_complete#omnifunc')
 endfunction"}}}
 

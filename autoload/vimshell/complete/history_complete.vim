@@ -25,8 +25,6 @@
 "=============================================================================
 
 function! vimshell#complete#history_complete#whole()"{{{
-  call vimshell#imdisable()
-
   if !vimshell#check_prompt()
     " Ignore.
     return ''
@@ -35,8 +33,6 @@ function! vimshell#complete#history_complete#whole()"{{{
   return vimshell#complete#helper#call_omnifunc('vimshell#complete#history_complete#omnifunc_whole')
 endfunction"}}}
 function! vimshell#complete#history_complete#insert()"{{{
-  call vimshell#imdisable()
-
   if !vimshell#check_prompt()
     " Ignore.
     return ''

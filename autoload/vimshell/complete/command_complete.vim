@@ -25,8 +25,6 @@
 "=============================================================================
 
 function! vimshell#complete#command_complete#complete()"{{{
-  call vimshell#imdisable()
-
   if !vimshell#check_prompt()
     " Ignore.
     return ''
