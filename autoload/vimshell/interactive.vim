@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 05 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -335,6 +335,7 @@ function! vimshell#interactive#exit()"{{{
       syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
       hi def link InteractiveMessage WarningMsg
 
+      setlocal modifiable
       call append(line('$'), '*Exit*')
 
       $

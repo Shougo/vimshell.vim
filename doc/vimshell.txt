@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-05
+- Fixed modifiable error.
+
 2010-10-02
 - Fixed typo.
 - Fixed variables name.
