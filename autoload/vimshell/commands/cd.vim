@@ -73,7 +73,9 @@ function! s:command.execute(command, args, fd, context)"{{{
       return
     endif
 
-    let l:dir = vimshell#resolve(l:dirs[0])
+    if vimshell#iswin()
+      let l:dir = vimshell#resolve(l:dir)
+    endif
 
     if isdirectory(l:dirs[0])
       let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
