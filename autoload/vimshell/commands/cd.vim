@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Jul 2010
+" Last Modified: 07 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,9 @@ function! s:command.execute(command, args, fd, context)"{{{
     let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  let l:dir = vimshell#resolve(l:dir)
+  if vimshell#iswin()
+    let l:dir = vimshell#resolve(l:dir)
+  endif
 
   let l:cwd = getcwd()
   if isdirectory(l:dir)
