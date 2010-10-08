@@ -33,17 +33,17 @@ let s:command = {
       \}
 function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
-  
+
   if len(a:commands) > 1
     call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
     return
   endif
-  
+
   let l:commands = a:commands
   let [l:args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding']
         \})
-  
+
   if empty(l:args)
     return
   endif
@@ -59,7 +59,7 @@ function! s:command.execute(commands, context)"{{{
       call vimshell#error_line(a:context.fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
-    
+
     " Get program path from g:vimshell_interactive_cygwin_path.
     if len(l:args) < 2
       call vimshell#error_line(a:context.fd, 'iexe: command is required.')
@@ -90,7 +90,7 @@ function! s:command.execute(commands, context)"{{{
 
     let l:args[0] = 'cmdproxy.exe'
   endif
-  
+
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
     for l:command in l:commands
@@ -125,7 +125,7 @@ function! s:command.execute(commands, context)"{{{
 
   " Initialize.
   let l:sub = vimproc#ptyopen(l:args)
-  
+
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
 
@@ -133,7 +133,9 @@ function! s:command.execute(commands, context)"{{{
     " Restore $HOME.
     call vimshell#restore_variables(l:home_save)
   endif
-  
+
+  let l:save_winnr = winnr()
+
   call s:init_bg(l:args, a:context)
 
   " Set variables.
@@ -157,13 +159,14 @@ function! s:command.execute(commands, context)"{{{
 
   call vimshell#interactive#execute_pty_out(1)
 
-  wincmd p
+  let l:last_winnr = winnr()
+  execute l:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
-    wincmd p
+    execute l:last_winnr.'wincmd w'
   endif
-  
+
   if b:interactive.process.is_valid
     startinsert!
   endif

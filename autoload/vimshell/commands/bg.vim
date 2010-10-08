@@ -110,6 +110,8 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
+  let l:save_winnr = winnr()
+
   " Split nicely.
   call vimshell#split_nicely()
 
@@ -119,7 +121,7 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
   endfor
   edit `='bg-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
-  
+
   " Common.
   setlocal nocompatible
   setlocal nolist
@@ -138,7 +140,7 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
   setlocal nomodifiable
   setlocal filetype=vimshell-bg
   let &syntax = a:syntax
-  
+
   let b:interactive = a:interactive
 
   " Set syntax.
@@ -154,22 +156,23 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
   augroup vimshell
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
-  
+
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
-  
+
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)
   nmap <buffer>q         <Plug>(vimshell_interactive_exit)
-  
+
   call s:on_execute()
 
-  wincmd p
+  let l:last_winnr = winnr()
+  execute l:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
-    wincmd p
+    execute l:last_winnr.'wincmd w'
     stopinsert
   endif
 endfunction"}}}

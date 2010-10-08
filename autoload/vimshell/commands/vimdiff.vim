@@ -38,10 +38,10 @@ function! s:command.execute(program, args, fd, context)"{{{
     return
   endif
 
-  let l:winnr = winnr()
-  
   " Save current directiory.
   let l:cwd = getcwd()
+
+  let l:save_winnr = winnr()
 
   " Split nicely.
   call vimshell#split_nicely()
@@ -56,7 +56,7 @@ function! s:command.execute(program, args, fd, context)"{{{
 
   vertical diffsplit `=a:args[1]`
 
-  execute l:winnr.'wincmd w'
+  execute l:save_winnr.'wincmd w'
 endfunction"}}}
 
 function! vimshell#commands#vimdiff#define()

@@ -37,7 +37,7 @@ function! s:command.execute(program, args, fd, context)"{{{
       vimshell#error_line(a:fd, 'view: Filename required.')
       return
     endif
-    
+
     " Read from stdin.
     let l:filename = a:fd.stdin
   else
@@ -55,9 +55,11 @@ function! s:command.execute(program, args, fd, context)"{{{
       return
     endif
   endif
-  
+
   " Save current directiory.
   let l:cwd = getcwd()
+
+  let l:save_winnr = winnr()
 
   " Split nicely.
   call vimshell#split_nicely()
@@ -71,18 +73,19 @@ function! s:command.execute(program, args, fd, context)"{{{
   catch
     echohl Error | echomsg v:errmsg | echohl None
   endtry
-  
+
   " Call explorer.
   doautocmd BufEnter
 
   lcd `=l:cwd`
   setlocal nomodifiable
 
-  wincmd p
+  let l:last_winnr = winnr()
+  execute l:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
-    wincmd p
+    execute l:last_winnr.'wincmd w'
     stopinsert
   endif
 endfunction"}}}

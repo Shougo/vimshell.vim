@@ -109,6 +109,8 @@ function! s:init(commands, context, syntax, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
+  let l:save_winnr = winnr()
+
   " Split nicely.
   call vimshell#split_nicely()
 
@@ -118,7 +120,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
   endfor
   edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   lcd `=l:cwd`
-  
+
   " Common.
   setlocal nocompatible
   setlocal nolist
@@ -131,11 +133,11 @@ function! s:init(commands, context, syntax, interactive)"{{{
     setlocal conceallevel=3
     setlocal concealcursor=n
   endif
-  
+
   " For less.
   setlocal wrap
   setlocal nomodifiable
-  
+
   setlocal filetype=vimshell-less
   let &syntax = a:syntax
   let b:interactive = a:interactive
@@ -153,28 +155,29 @@ function! s:init(commands, context, syntax, interactive)"{{{
   augroup vimshell
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
-  
+
   nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)  :<C-u>call <SID>on_execute()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)       :<C-u>call <SID>next_line()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)       :<C-u>call <SID>next_screen()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_less_next_half_screen)       :<C-u>call <SID>next_half_screen()<CR>
-  
+
   nmap <buffer><CR>      <Plug>(vimshell_less_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_less_interrupt)
   nmap <buffer>q         <Plug>(vimshell_less_exit)
   nmap <buffer>j         <Plug>(vimshell_less_next_line)
   nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
   nmap <buffer><C-d>     <Plug>(vimshell_less_next_half_screen)
-  
+
   call s:on_execute()
-  
-  wincmd p
+
+  let l:last_winnr = winnr()
+  execute l:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(l:context)
-    wincmd p
+    call vimshell#print_prompt(a:context)
+    execute l:last_winnr.'wincmd w'
     stopinsert
   endif
 endfunction"}}}

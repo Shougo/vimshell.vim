@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-08
+- Improved window move.
+
 2010-10-07
 - Don't resolve link.
 

@@ -42,6 +42,8 @@ function! s:command.execute(program, args, fd, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
+  let l:save_winnr = winnr()
+
   if l:filename == ''
     " Split nicely.
     if winwidth(0) > 2 * &winwidth
@@ -63,17 +65,18 @@ function! s:command.execute(program, args, fd, context)"{{{
       echohl Error | echomsg v:errmsg | echohl None
     endtry
   endif
-  
+
   " Call explorer.
   doautocmd BufEnter
 
   lcd `=l:cwd`
 
-  wincmd p
+  let l:last_winnr = winnr()
+  execute l:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
-    wincmd p
+    execute l:last_winnr.'wincmd w'
     stopinsert
   endif
 endfunction"}}}

@@ -176,7 +176,7 @@ function! s:send_region(line1, line2, string)"{{{
   if l:winnr <= 0
     return
   endif
-  
+
   " Check alternate buffer.
   let l:type = getbufvar(winbufnr(l:winnr), 'interactive').type
   if l:type ==# 'interactive' || l:type ==# 'terminal'
@@ -186,25 +186,26 @@ function! s:send_region(line1, line2, string)"{{{
       let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
     endif
     let l:line = split(l:string, "\<LF>")[0]
-    
-    execute winnr('#') 'wincmd w'
+
+    let l:save_winnr = winnr()
+    execute l:winnr 'wincmd w'
 
     if l:type !=# 'terminal'
       " Save prompt.
       let l:prompt = vimshell#interactive#get_prompt(line('$'))
       let l:prompt_nr = line('$')
     endif
-    
+
     " Send string.
     call vimshell#interactive#send_string(l:string)
-    
+
     if l:type !=# 'terminal'
           \ && b:interactive.process.is_valid
       call setline(l:prompt_nr, l:prompt . l:line)
     endif
 
     stopinsert
-    wincmd p
+    execute l:save_winnr 'wincmd w'
   endif
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
