@@ -217,14 +217,9 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
         \ 'is_insert' : 1, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
-  
+
   if &filetype ==# 'vimshell'
-    if winnr('$') != 1
-      close
-    else
-      buffer #
-    endif
-    
+    call s:switch_vimshell(winnr(), a:split_flag, a:directory)
     return
   endif
 
@@ -234,7 +229,7 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
     call s:switch_vimshell(s:last_vimshell_bufnr, a:split_flag, a:directory)
     return
   endif
-  
+
   let l:cnt = 1
   while l:cnt <= bufnr('$')
     if getbufvar(l:cnt, '&filetype') ==# 'vimshell'
@@ -756,7 +751,7 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
     let b:vimshell.save_dir = l:current
     lcd `=l:current`
 
-    call vimshell#print_prompt(l:context)
+    call vimshell#print_prompt()
   endif
   call vimshell#start_insert()
 endfunction"}}}

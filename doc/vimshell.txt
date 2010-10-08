@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-10-08
 - Improved window move.
+- Improved vimshell switch.
 
 2010-10-07
 - Don't resolve link.
