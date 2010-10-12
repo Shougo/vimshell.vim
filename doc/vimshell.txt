@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-12
+- Fixed switch directory bug.
+
 2010-10-08
 - Improved window move.
 - Improved vimshell switch.

@@ -220,7 +220,7 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
 
   " Search vimshell buffer.
   if &filetype ==# 'vimshell'
-    call s:switch_vimshell(winnr(), a:split_flag, a:directory)
+    call s:switch_vimshell(bufnr('%'), a:split_flag, a:directory)
     return
   elseif buflisted(s:last_vimshell_bufnr)
         \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
