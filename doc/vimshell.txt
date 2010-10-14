@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-10-14
 - Improved execute line.
 - Fixed delete backward line.
+- Stopinsert in vimdiff.
 
 2010-10-12
 - Fixed switch directory bug.
