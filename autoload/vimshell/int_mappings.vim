@@ -29,7 +29,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_delete_backward_line)  <ESC>:<C-u>call <SID>delete_backward_line()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)  vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
@@ -60,7 +60,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
     return
   endif
-  
+
   " Normal mode key-mappings.
   nmap <buffer> <C-p>     <Plug>(vimshell_int_previous_prompt)
   nmap <buffer> <C-n>     <Plug>(vimshell_int_next_prompt)
@@ -102,9 +102,10 @@ function! s:delete_backward_char(is_auto_select)"{{{
   else
     let l:prefix = "\<C-y>"
   endif
-  
+
   " Prevent backspace over prompt
-  if !has_key(b:interactive.prompt_history, line('.')) || getline('.')[: col('.')-2] !=# b:interactive.prompt_history[line('.')]
+  let l:cur_text = vimshell#get_cur_line()
+  if !has_key(b:interactive.prompt_history, line('.')) || l:cur_text !=# b:interactive.prompt_history[line('.')]
     return l:prefix . "\<BS>"
   else
     return l:prefix
@@ -151,23 +152,23 @@ function! s:move_head()"{{{
   call s:insert_head()
 endfunction"}}}
 function! s:delete_backward_line()"{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    return
+  if !pumvisible()
+    let l:prefix = ''
+  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
+    let l:prefix = "\<C-e>"
+  else
+    let l:prefix = "\<C-y>"
   endif
 
-  let l:col = col('.')
-  let l:mcol = col('$')
-  call setline(line('.'), b:interactive.prompt_history[line('.')] . getline('.')[l:col :])
-  call s:move_head()
+  let l:len = !has_key(b:interactive.prompt_history, line('.')) ?
+        \ len(getline('.')) : len(substitute(vimshell#interactive#get_cur_text(), '.', 'x', 'g'))
 
-  if l:col == l:mcol-1
-    startinsert!
-  endif
+  return l:prefix . repeat("\<BS>", l:len)
 endfunction"}}}
 function! s:execute_line(is_insert)"{{{
   if !a:is_insert
     " Search cursor file.
-    let l:filename = matchstr(substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g'), '\h\w*://\f\+')
+    let l:filename = matchstr(substitute(substitute(expand('<cfile>'), '\\', '/', 'g'), ' ', '\\ ', 'g'), '\h\w*://\f\+')
 
     if &termencoding != '' && &encoding != &termencoding
       " Convert encoding.

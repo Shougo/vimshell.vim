@@ -197,8 +197,8 @@ function! s:execute_line(is_insert)"{{{
         endif
         let l:pattern = ''
       endif
-      
-      let l:filename = substitute(substitute(l:filename, ' ', '\\ ', 'g'), '\\', '/', 'g')
+
+      let l:filename = substitute(substitute(expand('<cfile>'), '\\', '/', 'g'), ' ', '\\ ', 'g')
       call s:open_file(l:filename, l:pattern)
     endif
   elseif line('.') != line('$')
@@ -215,7 +215,7 @@ function! s:execute_line(is_insert)"{{{
   let l:oldpos = getpos('.')
 
   $
-  
+
   if !empty(b:vimshell.continuation)
     try
       let l:ret = vimshell#parser#execute_continuation(a:is_insert)
@@ -479,9 +479,10 @@ function! s:delete_backward_char(is_auto_select)"{{{
   else
     let l:prefix = "\<C-y>"
   endif
-  
+
   " Prevent backspace over prompt
-  if getline('.')[: col('.') - 2] !=# vimshell#get_prompt()
+  let l:cur_text = vimshell#get_cur_line()
+  if l:cur_text !=# vimshell#get_prompt()
     return l:prefix . "\<BS>"
   else
     return l:prefix
@@ -495,8 +496,10 @@ function! s:delete_backward_line()"{{{
   else
     let l:prefix = "\<C-y>"
   endif
-  
-  return l:prefix . repeat("\<BS>", len(vimshell#get_cur_text()))
+
+  let l:len = len(substitute(vimshell#get_cur_text(), '.', 'x', 'g'))
+
+  return l:prefix . repeat("\<BS>", l:len)
 endfunction"}}}
 function! s:open_file(filename, pattern)"{{{
   " Execute cursor file.
