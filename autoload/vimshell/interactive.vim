@@ -603,7 +603,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     if l:type ==# 'interactive' && (
           \ line('.') != a:interactive.echoback_linenr
           \ && has_key(a:interactive.prompt_history, line('.'))
-          \ && line('$') == line('.') && vimshell#interactive#get_cur_line(line('.'), a:interactive) == ''
+          \ && line('$') == line('.')
+          \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
           \ )
       " Skip.
 
