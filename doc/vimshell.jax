@@ -322,7 +322,7 @@ g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options
 			ンを与えないと、うまく対話モードにならないコマンド
 			に使用します。
 			
-			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			してください。
 
 g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter_commands*
@@ -330,7 +330,7 @@ g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter
 			|:VimShellInteractive|の引数を省略した際のインタプリ
 			タ名を指定します。
 			
-			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			してください。
 
 g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
@@ -338,7 +338,7 @@ g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
 			|vimshell-internal-iexe|で起動するコマンドのエンコー
 			ディングを指定します。
 			
-			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			してください。
 
 g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
@@ -348,6 +348,13 @@ g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
 			
 			初期値は'i:block-Cursor/lCursor'です。
 
+g:vimshell_terminal_commands				*g:vimshell_terminal_commands*
+			コマンド名をキーとするディクショナリ変数となっている。
+			値が真であるコマンドを実行する際には、自動的に|vimshell-internal-texe|が使用される。
+			
+			初期値は複雑なので、plugin/vimshell.vimを参照
+			してください。
+
 g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			fakecygpty経由で起動するコマンドを指定します。sshな
@@ -356,7 +363,7 @@ g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands
 			fakecygptyについては、|vimshell-tips-fakecygpty|を
 			参照してください。
 			
-			初期値は複雑なので、autoload/internal/iexe.vimを参照
+			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			してください。
 
 g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*

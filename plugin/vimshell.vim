@@ -128,6 +128,12 @@ endif
 if !exists('g:vimshell_terminal_cursor')
   let g:vimshell_terminal_cursor = 'i:block-Cursor/lCursor'
 endif
+if !exists('g:vimshell_terminal_commands')
+  let g:vimshell_terminal_ommands = {
+        \ 'man' : 1, 'more' : 1, 'screen' : 1, 'tmux' : 1,
+        \ 'vi' : 1, 'emacs' : 1, 'sl' : 1,
+        \}
+endif
 if !exists('g:vimshell_enable_auto_slash')
   let g:vimshell_enable_auto_slash = 0
 endif
