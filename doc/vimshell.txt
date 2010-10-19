@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-19
+- Improved interactive update.
+
 2010-10-14
 - Improved execute line.
 - Fixed delete backward line.

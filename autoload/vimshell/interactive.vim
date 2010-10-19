@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2010
+" Last Modified: 19 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -580,14 +580,14 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
     return
   endif
-  
+
   if a:bufnr != a:bufnr_save
     execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
 
   if mode() !=# 'i'
     let l:intbuffer_pos = getpos('.')
-    
+
     $
     normal! $
   endif
@@ -603,10 +603,10 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     if l:type ==# 'interactive' && (
           \ line('.') != a:interactive.echoback_linenr
           \ && has_key(a:interactive.prompt_history, line('.'))
-          \ && line('$') == line('.') && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
+          \ && line('$') == line('.') && vimshell#interactive#get_cur_line(line('.'), a:interactive) == ''
           \ )
       " Skip.
-      
+
       if mode() !=# 'i'
         call setpos('.', l:intbuffer_pos)
       endif
@@ -616,7 +616,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
       endif
       return
     endif
-    
+
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
     endif
