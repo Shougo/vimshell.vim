@@ -191,7 +191,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-10-19
 - Improved interactive update.
-- Added g:vimshell_terminal_ommands option.
+- Added g:vimshell_terminal_commands option.
 
 2010-10-14
 - Improved execute line.
