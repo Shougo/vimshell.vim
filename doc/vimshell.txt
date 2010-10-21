@@ -187,6 +187,7 @@ CHANGELOG						*vimshell-changelog*
 2010-10-21
 - Fixed escape bug.
 - Fixed filename execution.
+- Check t:unite_buffer_dictionary.
 
 2010-10-19
 - Improved interactive update.

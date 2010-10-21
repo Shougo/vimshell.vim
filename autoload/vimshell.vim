@@ -222,14 +222,18 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   if &filetype ==# 'vimshell'
     call s:switch_vimshell(bufnr('%'), a:split_flag, a:directory)
     return
-  elseif buflisted(s:last_vimshell_bufnr)
+  endif
+
+  if buflisted(s:last_vimshell_bufnr)
         \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
+        \ && (!exists('t:unite_buffer_dictionary') || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
     call s:switch_vimshell(s:last_vimshell_bufnr, a:split_flag, a:directory)
     return
   else
     let l:cnt = 1
     while l:cnt <= bufnr('$')
       if getbufvar(l:cnt, '&filetype') ==# 'vimshell'
+        \ && (!exists('t:unite_buffer_dictionary') || has_key(t:unite_buffer_dictionary, l:cnt))
         call s:switch_vimshell(l:cnt, a:split_flag, a:directory)
         return
       endif
