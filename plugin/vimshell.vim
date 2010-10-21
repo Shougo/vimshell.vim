@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2010
+" Last Modified: 21 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -153,6 +153,7 @@ endif
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
+command! -nargs=? -complete=dir VimShellTab tabnew | call vimshell#create_shell(0, <q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
 command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call s:vimshell_terminal(<q-args>)

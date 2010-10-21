@@ -117,11 +117,14 @@ COMMANDS 						*vimshell-commands*
 			クトリは変更されません。
 
 :VimShellCreate {path}					*:VimShellCreate*
-			|:VimShell:|と同じですが、他のvimshellが起動している
+			|:VimShell|と同じですが、他のvimshellが起動している
 			場合でも、新しいvimshellバッファを作成します。
 
+:VimShellTab {path}					*:VimShellCreate*
+			|:VimShellCreate|と同じですが、新しいタブを生成します。
+
 :VimShellPop {path}					*:VimShellPop*
-			|:VimShell:|と同じですが、こちらは小さいウインドウを
+			|:VimShell|と同じですが、こちらは小さいウインドウを
 			ポップアップします。ちょっとだけvimshellの機能を使
 			いたいときに便利です。ウインドウを分割する高さは
 			|g:vimshell_split_height|で決定されます。
