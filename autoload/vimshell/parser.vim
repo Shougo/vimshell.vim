@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Sep 2010
+" Last Modified: 21 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -292,7 +292,7 @@ function! s:parse_galias(script)"{{{
         throw 'Exception: Join to next line (\).'
       endif
 
-      let l:arg .= l:script[i]
+      let l:arg .= '\' .  l:script[i]
       let i += 1
     elseif l:script[i] != ' '
       let l:arg .= l:script[i]
