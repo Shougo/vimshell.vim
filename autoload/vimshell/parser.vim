@@ -122,8 +122,8 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       let l:commands = [ { 'args' : l:args, 'fd' : l:fd } ]
       return vimshell#parser#execute_command(l:commands, a:context)
     elseif l:command != '' || executable(l:program)
-      if has_key(g:vimshell_terminal_ommands, l:program)
-            \ && g:vimshell_terminal_ommands[l:program]
+      if has_key(g:vimshell_terminal_commands, l:program)
+            \ && g:vimshell_terminal_commands[l:program]
         " Execute terminal commands.
         return vimshell#execute_internal_command('texe', insert(l:args, l:program), l:fd, a:context)
       else

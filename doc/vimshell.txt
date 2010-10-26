@@ -184,6 +184,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-26
+- Fixed typo.
+- Improved change current directory.
+
 2010-10-21
 - Fixed escape bug.
 - Fixed filename execution.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Oct 2010
+" Last Modified: 26 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -747,7 +747,7 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
     execute 'buffer' a:bufnr
   endif
 
-  if a:directory != ''
+  if a:directory != '' && isdirectory(a:directory)
     " Change current directory.
     let l:current = fnamemodify(a:directory, ':p')
     let b:vimshell.save_dir = l:current
@@ -760,7 +760,8 @@ endfunction"}}}
 
 " Auto commands function.
 function! s:restore_current_dir()"{{{
-  if !exists('b:vimshell')
+  if !exists('b:vimshell') ||
+        \ !isdirectory(b:vimshell.save_dir)
     return
   endif
 
