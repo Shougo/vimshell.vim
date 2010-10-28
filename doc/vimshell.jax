@@ -120,7 +120,7 @@ COMMANDS 						*vimshell-commands*
 			|:VimShell|と同じですが、他のvimshellが起動している
 			場合でも、新しいvimshellバッファを作成します。
 
-:VimShellTab {path}					*:VimShellCreate*
+:VimShellTab {path}					*:VimShellTab*
 			|:VimShellCreate|と同じですが、新しいタブを生成します。
 
 :VimShellPop {path}					*:VimShellPop*

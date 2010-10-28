@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-10-28
+- Fixed doc tags.
+
 2010-10-26
 - Fixed typo.
 - Improved change current directory.
