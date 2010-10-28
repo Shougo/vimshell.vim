@@ -186,6 +186,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-10-28
 - Fixed doc tags.
+- Fixed terminal bug.
+- Improved util.vim.
 
 2010-10-26
 - Fixed typo.
