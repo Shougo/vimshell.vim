@@ -125,6 +125,13 @@ endif
 if !exists('g:vimshell_interactive_prompts')
   let g:vimshell_interactive_prompts = {}
 endif
+if !exists('g:vimshell_interactive_no_echoback_commands')
+  " Note: MinGW gosh and scala is no echoback. Why?
+  let g:vimshell_interactive_no_echoback_commands = 
+        \ has('win32') || has('win64') ? {
+        \ 'gosh' : 1, 'python' : 1, 'scala' : 1,
+        \} : {}
+endif
 if !exists('g:vimshell_terminal_cursor')
   let g:vimshell_terminal_cursor = 'i:block-Cursor/lCursor'
 endif

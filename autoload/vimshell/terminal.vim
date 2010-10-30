@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2010
+" Last Modified: 30 Oct 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,9 +34,11 @@ function! vimshell#terminal#print(string)"{{{
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
     " Optimized print.
     let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\n', 1)
-    if !b:interactive.is_pty && &filetype =~#
-          \'^\%(int-gosh\|int-scala\)$'
-      " Note: MinGW gosh and scala is no echoback. Why?
+    if !b:interactive.is_pty
+          \ && has_key(b:interactive, 'command')
+          \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
+          \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
+      echomsg 'hoge'
       call append('.', l:lines)
     else
       if line('.') != b:interactive.echoback_linenr
@@ -242,9 +244,9 @@ endfunction"}}}
 function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
     if !b:interactive.is_pty
-          \ && &filetype =~#
-          \'^\%(int-gosh\|int-scala\)$'
-      " Note: MinGW gosh and scala is no echoback. Why?
+          \ && has_key(b:interactive, 'command')
+          \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
+          \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
       let s:line += 1
       let s:lines[s:line] = a:string
       let s:col = len(a:string)

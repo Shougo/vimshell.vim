@@ -344,6 +344,15 @@ g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			してください。
 
+g:vimshell_interactive_no_echoback_commands		*g:vimshell_interactive_no_echoback_commands*
+			インタプリタ名をキーとするディクショナリ変数になってい
+			て、|vimshell-internal-iexe|実行時にエコーバックするか
+			どうかを指定します。1ならiexe側でエコーバック処理をしま
+			す。Windowsでのみ有効。
+			
+			初期値は複雑なので、plugin/vimshell.vimを参照
+			してください。
+
 g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
 			|vimshell-internal-texe|で使用するカーソル形状を指定
 			します。'guicursor'を一時的に変更するので、GVim環境
