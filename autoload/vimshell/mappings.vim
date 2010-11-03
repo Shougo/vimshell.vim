@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2010
+" Last Modified: 03 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,11 +66,11 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:call <SID>clear(1)<CR>
   "}}}
-  
+
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
     return
   endif
-  
+
   " Normal mode key-mappings.
   " Execute command.
   nmap <buffer> <CR> <Plug>(vimshell_enter)
@@ -81,7 +81,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Move to next prompt.
   nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
   " Remove this output.
-  nmap <buffer> <C-d> <Plug>(vimshell_delete_previous_output)
+  nmap <buffer> <C-k> <Plug>(vimshell_delete_previous_output)
   " Paste this prompt.
   nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
   " Search end argument.
@@ -99,7 +99,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Clear.
   nmap <buffer> <C-l> <Plug>(vimshell_clear)
-  
+
   " Visual mode key-mappings.
   " Move to previous prompt.
   vmap <buffer> <C-p> <Plug>(vimshell_select_previous_prompt)
