@@ -52,7 +52,7 @@ function! s:command.execute(program, args, fd, context)"{{{
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
-  lcd `=l:cwd`
+  call vimshell#cd(l:cwd)
 
   vertical diffsplit `=a:args[1]`
 

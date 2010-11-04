@@ -119,7 +119,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
     let l:args .= join(l:command.args)
   endfor
   edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
-  lcd `=l:cwd`
+  call vimshell#cd(l:cwd)
 
   " Common.
   setlocal nocompatible

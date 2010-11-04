@@ -77,7 +77,7 @@ function! s:command.execute(program, args, fd, context)"{{{
   " Call explorer.
   doautocmd BufEnter
 
-  lcd `=l:cwd`
+  call vimshell#cd(l:cwd)
   setlocal nomodifiable
 
   let l:last_winnr = winnr()

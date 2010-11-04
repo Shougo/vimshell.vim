@@ -199,7 +199,7 @@ function! s:init_bg(args, context)"{{{
   call vimshell#split_nicely()
 
   edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
-  lcd `=l:cwd`
+  call vimshell#cd(l:cwd)
   
   call s:default_settings()
   

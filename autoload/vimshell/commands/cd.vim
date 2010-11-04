@@ -54,7 +54,7 @@ function! s:command.execute(command, args, fd, context)"{{{
   if isdirectory(l:dir)
     " Move to directory.
     let b:vimshell.save_dir = fnamemodify(l:dir, ':p')
-    lcd `=b:vimshell.save_dir`
+    call vimshell#cd(b:vimshell.save_dir)
   elseif l:dir =~ '^-\d*$'
     " Popd.
     return vimshell#execute_internal_command('popd', [ l:dir[1:] ], 
@@ -63,7 +63,7 @@ function! s:command.execute(command, args, fd, context)"{{{
   elseif filereadable(l:dir)
     " Move to parent directory.
     let b:vimshell.save_dir = fnamemodify(l:dir, ':p:h')
-    lcd `=b:vimshell.save_dir`
+    call vimshell#cd(b:vimshell.save_dir)
   else
     " Check cd path.
     let l:dirs = split(globpath(&cdpath, l:dir), '\n')
@@ -79,7 +79,7 @@ function! s:command.execute(command, args, fd, context)"{{{
 
     if isdirectory(l:dirs[0])
       let b:vimshell.save_dir = fnamemodify(l:dirs[0], ':p')
-      lcd `=b:vimshell.save_dir`
+      call vimshell#cd(b:vimshell.save_dir)
     else
       call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', l:dir))
       return

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2010
+" Last Modified: 04 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,6 +100,9 @@ if !exists('g:vimshell_environment_term')
 endif
 if !exists('g:vimshell_split_command')
   let g:vimshell_split_command = ''
+endif
+if !exists('g:vimshell_cd_command')
+  let g:vimshell_cd_command = 'lcd'
 endif
 if !exists('g:vimshell_external_history_path')
   let g:vimshell_external_history_path = ''

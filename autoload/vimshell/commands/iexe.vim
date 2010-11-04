@@ -260,10 +260,10 @@ function! s:init_bg(args, context)"{{{
   endif
 
   edit `='iexe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
-  lcd `=l:cwd`
-  
+  call vimshell#cd(l:cwd)
+
   call s:default_settings()
-  
+
   let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 

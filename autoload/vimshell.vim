@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2010
+" Last Modified: 04 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -154,7 +154,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Change current directory.
   let l:current = (a:directory != '')? fnamemodify(a:directory, ':p') : getcwd()
   let b:vimshell.save_dir = l:current
-  lcd `=l:current`
+  call vimshell#cd(l:current)
 
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
@@ -607,6 +607,9 @@ function! vimshell#split_nicely()"{{{
     split
   endif
 endfunction"}}}
+function! vimshell#cd(directory)"{{{
+  execute g:vimshell_cd_command '`=a:directory`'
+endfunction"}}}
 function! vimshell#compare_number(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction"}}}
@@ -751,7 +754,7 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
     " Change current directory.
     let l:current = fnamemodify(a:directory, ':p')
     let b:vimshell.save_dir = l:current
-    lcd `=l:current`
+    call vimshell#cd(l:current)
 
     call vimshell#print_prompt()
   endif
@@ -765,7 +768,7 @@ function! s:restore_current_dir()"{{{
     return
   endif
 
-  lcd `=fnamemodify(b:vimshell.save_dir, ':p')`
+  call vimshell#cd(fnamemodify(b:vimshell.save_dir, ':p'))
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')

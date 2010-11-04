@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-11-04
+- Added g:vimshell_cd_command option.
+
 2010-10-30
 - Added g:vimshell_interactive_no_echoback_commands option.
 - Fixed echoback.

@@ -290,6 +290,12 @@ g:vimshell_split_command				*g:vimshell_split_command*
 			
 			初期値は""です。
 
+g:vimshell_cd_command					*g:vimshell_cd_command*
+			vimshellがカレントディレクトリを変更するときに用いるEx
+			コマンドです。
+			
+			初期値は"lcd"です。
+
 g:vimshell_external_history_path			*g:vimshell_external_history_path*
 			vimshellが履歴検索に使用する外部シェルの履歴ファイル
 			へのパスです。これを空にすると無視されます。zshの拡
