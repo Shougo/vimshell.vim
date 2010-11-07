@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-11-07
+- Improved modeline.
+
 2010-11-04
 - Added g:vimshell_cd_command option.
 
@@ -287,7 +290,8 @@ CHANGELOG						*vimshell-changelog*
 - Changed completion keymappings.
 - Fixed for scala.
 
-ChangeLog 7.2{{{
+------------------------------------------------------------------------------
+ChangeLog 7.2
 2010-09-04
 - Deleted VimShellBang and VimShellRead commands.
 
@@ -346,8 +350,9 @@ ChangeLog 7.2{{{
 - Improved wildcard.
 - Fixed wildcard parse.
 - Implemented file modifier.
-"}}}
-ChangeLog 7.1: {{{
+
+------------------------------------------------------------------------------
+ChangeLog 7.1:
 2010-08-15
 - Improved error detection.
 
@@ -525,8 +530,9 @@ ChangeLog 7.1: {{{
 * Ver.7.1 development is started.
 - Fixed documentation.
 - Using dictionary.
-}}}
-ChangeLog 7.0: {{{
+
+------------------------------------------------------------------------------
+ChangeLog 7.0:
 2010-07-07
 - Fixed auto completion bug.
 - Improved :VimShellInteractive and :VimShellExecute and :VimShellTerminal commands.
@@ -866,8 +872,9 @@ ChangeLog 7.0: {{{
 2010-04-20
 * Ver.7 development is started.
 * Supported vimproc Ver.4.
-}}}
-ChangeLog 6.50: {{{
+
+------------------------------------------------------------------------------
+ChangeLog 6.50:
 2010-04-20
     * Marked as ver.6.50.
     * Implemented .vimshrc quote.
@@ -966,8 +973,8 @@ ChangeLog 6.50: {{{
     * Fixed interactive_command_complete error.
     * Fixed vimshell#interactive#get_cur_text().
 
-     }}}
-ChangeLog 6.00-: {{{
+------------------------------------------------------------------------------
+ChangeLog 6.00-:
 2010-02-26
     * Print lines if one screen in view.
     * Fixed nomodifiable error in view.
@@ -1107,8 +1114,8 @@ ChangeLog 6.00-: {{{
      - Implemented expand wildcard.
      - Improved get prompt.
 
-     }}}
-ChangeLog 5.30-: {{{
+------------------------------------------------------------------------------
+ChangeLog 5.30-:
     5.38 :
      - Fixed stdout flush bug.
      - Append last line when interactive error.
@@ -1211,8 +1218,9 @@ ChangeLog 5.30-: {{{
      - Close window in exit.
      - Implemented delete line.
      - Implemented delete line and move head in iexe.
-     }}}
-ChangeLog 5.10-5.29 {{{
+
+------------------------------------------------------------------------------
+ChangeLog 5.10-5.29
      5.29 :
      - Implemented filename expantion.
      - Supported neocomplcache omni completion.
@@ -1377,8 +1385,10 @@ ChangeLog 5.10-5.29 {{{
      - Implemented iexe.
      - Improved bg.
      - Improved print_prompt().
-     - Use neocomplcache#manual_filename_complete()./*}}}*/
-ChangeLog 5.9-4.0{{{
+     - Use neocomplcache#manual_filename_complete().
+
+------------------------------------------------------------------------------
+ChangeLog 5.9-4.0
      5.9:
      - Fixed background execution.
      - Fixed auto_cd bug.
@@ -1477,8 +1487,10 @@ ChangeLog 5.9-4.0{{{
 
      4.0:
      - Implemented shell background execution.
-     - Added g:VimShell_UseCkw option.}}}
-ChangeLog 3.9-1.0{{{
+     - Added g:VimShell_UseCkw option.
+
+------------------------------------------------------------------------------
+ChangeLog 3.9-1.0
      3.9:
      - Implemented background execution on Linux.
      - Improved print prompt.
@@ -1571,7 +1583,7 @@ ChangeLog 3.9-1.0{{{
      - Implemented syntax highlight.
 
      1.0:
-     - Initial version.}}}
+     - Initial version.
 
 ==============================================================================
-vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:fdm=marker:isk+=-:
+vim:tw=78:ts=8:ft=help:norl:noet:fen:fdl=0:isk+=-:
