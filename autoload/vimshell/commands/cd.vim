@@ -93,7 +93,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     " Truncate.
     let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
   endif
-  
+
   if a:context.is_interactive
     " Call chpwd hook.
     let l:context = a:context

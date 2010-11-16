@@ -609,6 +609,11 @@ function! vimshell#split_nicely()"{{{
 endfunction"}}}
 function! vimshell#cd(directory)"{{{
   execute g:vimshell_cd_command '`=a:directory`'
+
+  if exists('*unite#sources#directory_mru#_append')
+    " Append directory.
+    call unite#sources#directory_mru#_append()
+  endif
 endfunction"}}}
 function! vimshell#compare_number(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
