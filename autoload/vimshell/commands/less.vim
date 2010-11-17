@@ -171,9 +171,13 @@ function! s:init(commands, context, syntax, interactive)"{{{
   nmap <buffer><C-c>     <Plug>(vimshell_less_interrupt)
   nmap <buffer>q         <Plug>(vimshell_less_exit)
   nmap <buffer>j         <Plug>(vimshell_less_next_line)
+  nmap <buffer>f         <Plug>(vimshell_less_next_screen)
   nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
+  nmap <buffer>d         <Plug>(vimshell_less_next_half_screen)
   nmap <buffer><C-d>     <Plug>(vimshell_less_next_half_screen)
   nmap <buffer><Space>   <Plug>(vimshell_less_next_screen)
+  nnoremap <buffer>b     <C-b>
+  nnoremap <buffer>u     <C-u>
 
   call s:on_execute()
 
