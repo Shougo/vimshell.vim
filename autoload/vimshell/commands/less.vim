@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2010
+" Last Modified: 17 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -169,6 +169,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
   nmap <buffer>j         <Plug>(vimshell_less_next_line)
   nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
   nmap <buffer><C-d>     <Plug>(vimshell_less_next_half_screen)
+  nmap <buffer><Space>   <Plug>(vimshell_less_next_screen)
 
   call s:on_execute()
 
