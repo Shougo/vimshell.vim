@@ -32,7 +32,7 @@ let s:command = {
 function! s:command.execute(commands, context)"{{{
   " Execute command in background.
   let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args,
         \{ 'arg=' : ['--encoding', '--syntax']
         \})
   if !has_key(l:options, '--encoding')
@@ -41,9 +41,13 @@ function! s:command.execute(commands, context)"{{{
   if !has_key(l:options, '--syntax')
     let l:options['--syntax'] = 'vimshell-less'
   endif
-  
+
   if empty(l:commands[0].args)
     return
+  endif
+
+  if !executable(l:commands[0].args[0])
+    return vimshell#execute_internal_command('view', l:commands[0].args, a:context.fd, a:context)
   endif
 
   " Background execute.
@@ -51,19 +55,19 @@ function! s:command.execute(commands, context)"{{{
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
-  
+
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
     for l:command in l:commands
       call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
     endfor
   endif
-  
+
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
-        \ '$TERM' : g:vimshell_environment_term, 
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
-        \ '$VIMSHELL' : 1, 
+        \ '$TERM' : g:vimshell_environment_term,
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
+        \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'less',
@@ -73,18 +77,18 @@ function! s:command.execute(commands, context)"{{{
 
   " Initialize.
   let l:sub = vimproc#plineopen2(l:commands)
-  
+
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
 
   " Set variables.
   let l:interactive = {
-        \ 'type' : 'less', 
+        \ 'type' : 'less',
         \ 'syntax' : &syntax,
-        \ 'process' : l:sub, 
-        \ 'fd' : a:context.fd, 
-        \ 'encoding' : l:options['--encoding'], 
-        \ 'is_pty' : 0, 
+        \ 'process' : l:sub,
+        \ 'fd' : a:context.fd,
+        \ 'encoding' : l:options['--encoding'],
+        \ 'is_pty' : 0,
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \}
@@ -190,7 +194,7 @@ function! s:next_line()"{{{
   if line('.') == line('$')
     call s:print_output(2)
   endif
-  
+
   normal! j
 endfunction "}}}
 function! s:next_screen()"{{{
@@ -211,7 +215,7 @@ endfunction "}}}
 function! s:print_output(line_num)"{{{
   $
   setlocal modifiable
-  
+
   if b:interactive.stdout_cache == ''
     if b:interactive.process.stdout.eof
       call vimshell#interactive#exit()
@@ -222,22 +226,22 @@ function! s:print_output(line_num)"{{{
       return
     endif
   endif
-  
+
   " Check cache.
   let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
   if !b:interactive.process.stdout.eof && l:count < a:line_num
     echo 'Running command.'
-    
+
     while l:count < a:line_num && !b:interactive.process.stdout.eof
       " Get output.
       let b:interactive.stdout_cache .= b:interactive.process.stdout.read(-1, 40)
       let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
     endwhile
-    
+
     redraw
     echo ''
   endif
-  
+
   if l:count > a:line_num
     let l:count = a:line_num
   endif

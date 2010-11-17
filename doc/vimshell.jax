@@ -622,6 +622,8 @@ less [{options}...] {command}				*vimshell-internal-less*
 		シンタックスシュガーとして、次の形式も有効です。
 		{command1} | {command2} | less
 		入出力を行なうために新しいバッファが生成されます。
+		{command}が実行コマンドでない場合、|vimshell-internal-view|を実
+		行します。
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
 		て挙動を変更します。詳しくは |vimshell-execute-options|を参
 		照してください。

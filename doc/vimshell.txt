@@ -186,6 +186,8 @@ CHANGELOG						*vimshell-changelog*
 
 2010-11-17
 - Improved less keymappings.
+- Improved view internal command.
+- Improved less internal command.
 
 2010-11-16
 - Supported directory_mru.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2010
+" Last Modified: 17 Nov 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,9 +66,9 @@ function! s:command.execute(program, args, fd, context)"{{{
 
   try
     if len(a:args) > 1
-      execute 'edit' '+'.a:args[1] l:filename
+      execute 'edit +setlocal\ readonly' '+'.a:args[1] l:filename
     else
-      edit `=l:filename`
+      edit +setlocal\ readonly `=l:filename`
     endif
   catch
     echohl Error | echomsg v:errmsg | echohl None
@@ -78,7 +78,6 @@ function! s:command.execute(program, args, fd, context)"{{{
   doautocmd BufEnter
 
   call vimshell#cd(l:cwd)
-  setlocal nomodifiable
 
   let l:last_winnr = winnr()
   execute l:save_winnr.'wincmd w'
