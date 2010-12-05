@@ -480,7 +480,7 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('ll', 'ls -l')
 	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
 	\| call vimshell#hook#set('emptycmd', ['g:my_emptycmd'])
-	\| call vimshell#hook#set('preprompt', ['g:my_preprompt('])
+	\| call vimshell#hook#set('preprompt', ['g:my_preprompt'])
 	\| call vimshell#hook#set('preexec', ['g:my_preexec'])
 
 	function! g:my_chpwd(args, context)
