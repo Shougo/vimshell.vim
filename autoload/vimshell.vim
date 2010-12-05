@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2010
+" Last Modified: 05 Dec 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -608,7 +608,7 @@ function! vimshell#split_nicely()"{{{
   endif
 endfunction"}}}
 function! vimshell#cd(directory)"{{{
-  execute g:vimshell_cd_command '`=a:directory`'
+  execute g:vimshell_cd_command a:directory
 
   if exists('*unite#sources#directory_mru#_append')
     " Append directory.

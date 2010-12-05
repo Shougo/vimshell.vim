@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-12-05
+- Fixed cd command.
+
 2010-11-17
 - Improved less keymappings.
 - Improved view internal command.
