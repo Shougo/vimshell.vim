@@ -608,7 +608,7 @@ function! vimshell#split_nicely()"{{{
   endif
 endfunction"}}}
 function! vimshell#cd(directory)"{{{
-  execute g:vimshell_cd_command a:directory
+  execute g:vimshell_cd_command escape(expand(a:directory), " \t\n*?[{`$\\%#'\"|!<")
 
   if exists('*unite#sources#directory_mru#_append')
     " Append directory.
