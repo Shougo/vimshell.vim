@@ -41,7 +41,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     endif
     execute 'bdelete!'. vimsh_buf
   endif
-  
+
   stopinsert
 endfunction"}}}
 

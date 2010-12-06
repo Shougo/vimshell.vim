@@ -38,32 +38,32 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_clear)  :<C-u>call <SID>clear(0)<CR>
 
-  vnoremap <buffer><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
-  vnoremap <buffer><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
+  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
+  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
 
-  inoremap <buffer><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
-  inoremap <buffer><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
-  inoremap <buffer><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
+  inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
         \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)  <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)  <ESC>:call <SID>insert_last_word()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_run_help)  <ESC>:call <SID>run_help()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:call <SID>move_head()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
-  inoremap <buffer><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:call <SID>interrupt(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
-  inoremap <buffer><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char(0)
-  inoremap <buffer><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_backward_char(1)
-  inoremap <buffer><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_another_backward_char()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:call <SID>clear(1)<CR>
   "}}}
 
@@ -471,10 +471,10 @@ function! s:exit()"{{{
   endif
   execute 'bdelete!'. l:vimsh_buf
 endfunction"}}}
-function! s:delete_backward_char(is_auto_select)"{{{
+function! s:delete_backward_char()"{{{
   if !pumvisible()
     let l:prefix = ''
-  elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
+  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
     let l:prefix = "\<C-e>"
   else
     let l:prefix = "\<C-y>"
@@ -487,6 +487,13 @@ function! s:delete_backward_char(is_auto_select)"{{{
   else
     return l:prefix
   endif
+endfunction"}}}
+function! s:delete_another_backward_char()"{{{
+  return vimshell#get_cur_text() != '' ?
+        \ s:delete_backward_char() :
+        \ winnr('$') != 1 ?
+        \ "\<ESC>:close\<CR>" :
+        \ "\<ESC>:buffer #\<CR>"
 endfunction"}}}
 function! s:delete_backward_line()"{{{
   if !pumvisible()
