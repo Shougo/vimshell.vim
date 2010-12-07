@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2010
+" Last Modified: 07 Dec 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -84,7 +84,7 @@ function! s:command.execute(commands, context)"{{{
   " Set variables.
   let l:interactive = {
         \ 'type' : 'less',
-        \ 'syntax' : &syntax,
+        \ 'syntax' : l:options['--syntax'],
         \ 'process' : l:sub,
         \ 'fd' : a:context.fd,
         \ 'encoding' : l:options['--encoding'],
