@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-12-07
 - Fixed less highlight.
+- Improved delete highlight.
 
 2010-12-06
 - Changed <Plug>(vimshell_another_delete_backward_char) mapping.
