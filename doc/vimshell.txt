@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-12-08
+- Restored cd behavior.
+
 2010-12-07
 - Fixed less highlight.
 - Improved delete highlight.
