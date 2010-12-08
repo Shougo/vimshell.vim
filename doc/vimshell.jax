@@ -292,7 +292,7 @@ g:vimshell_split_command				*g:vimshell_split_command*
 
 g:vimshell_cd_command					*g:vimshell_cd_command*
 			vimshellがカレントディレクトリを変更するときに用いるEx
-			コマンドです。
+			コマンドです。|`=|を解釈しなければなりません。
 			
 			初期値は"lcd"です。
 
