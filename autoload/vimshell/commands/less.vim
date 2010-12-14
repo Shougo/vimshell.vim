@@ -221,6 +221,11 @@ endfunction "}}}
 function! s:print_output(line_num)"{{{
   setlocal modifiable
 
+  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
+    " Set new window size.
+    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
+  endif
+
   $
 
   if b:interactive.stdout_cache == ''
