@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Sep 2010
+" Last Modified: 14 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -151,6 +151,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
         \ 'args' : l:args,
         \ 'echoback_linenr' : 0,
+        \ 'width' : winwidth(0),
+        \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'command' : fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r'),
         \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
@@ -284,6 +286,11 @@ function! s:insert_enter()"{{{
   if &updatetime > g:vimshell_interactive_update_time
     let s:update_time_save = &updatetime
     let &updatetime = g:vimshell_interactive_update_time
+  endif
+
+  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
+    " Set new window size.
+    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
   endif
 endfunction"}}}
 function! s:insert_leave()"{{{

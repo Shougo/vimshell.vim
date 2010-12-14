@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Dec 2010
+" Last Modified: 14 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -90,6 +90,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'encoding' : l:options['--encoding'],
         \ 'is_pty' : 0,
         \ 'echoback_linenr' : 0,
+        \ 'width' : winwidth(0),
+        \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \}
 
@@ -217,6 +219,11 @@ function! s:next_half_screen()"{{{
 endfunction "}}}
 
 function! s:print_output(line_num)"{{{
+  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
+    " Set new window size.
+    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
+  endif
+
   $
   setlocal modifiable
 
