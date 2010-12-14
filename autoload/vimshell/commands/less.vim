@@ -71,8 +71,6 @@ function! s:command.execute(commands, context)"{{{
         \ 'encoding' : l:options['--encoding'],
         \ 'is_pty' : 0,
         \ 'echoback_linenr' : 0,
-        \ 'width' : winwidth(0),
-        \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \}
 
@@ -118,6 +116,9 @@ function! s:init(commands, context, syntax, interactive)"{{{
     call a:interactive.process.stdin.write(vimshell#read(a:context.fd))
   endif
   call a:interactive.process.stdin.close()
+
+  let a:interactive.width = winwidth(0)
+  let a:interactive.height = winheight(0)
 
   let l:args = ''
   for l:command in a:commands
