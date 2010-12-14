@@ -63,29 +63,10 @@ function! s:command.execute(commands, context)"{{{
     endfor
   endif
 
-  " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
-        \ '$TERM' : g:vimshell_environment_term,
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
-        \ '$VIMSHELL' : 1,
-        \ '$COLUMNS' : winwidth(0)-5,
-        \ '$LINES' : winheight(0),
-        \ '$VIMSHELL_TERM' : 'less',
-        \ '$EDITOR' : g:vimshell_cat_command,
-        \ '$PAGER' : g:vimshell_cat_command,
-        \})
-
-  " Initialize.
-  let l:sub = vimproc#plineopen2(l:commands)
-
-  " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
-
   " Set variables.
   let l:interactive = {
         \ 'type' : 'less',
         \ 'syntax' : l:options['--syntax'],
-        \ 'process' : l:sub,
         \ 'fd' : a:context.fd,
         \ 'encoding' : l:options['--encoding'],
         \ 'is_pty' : 0,
@@ -94,12 +75,6 @@ function! s:command.execute(commands, context)"{{{
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \}
-
-  " Input from stdin.
-  if l:interactive.fd.stdin != ''
-    call l:interactive.process.stdin.write(vimshell#read(a:context.fd))
-  endif
-  call l:interactive.process.stdin.close()
 
   return s:init(a:commands, a:context, l:options['--syntax'], l:interactive)
 endfunction"}}}
@@ -119,6 +94,30 @@ function! s:init(commands, context, syntax, interactive)"{{{
 
   " Split nicely.
   call vimshell#split_nicely()
+
+  " Set environment variables.
+  let l:environments_save = vimshell#set_variables({
+        \ '$TERM' : g:vimshell_environment_term,
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
+        \ '$VIMSHELL' : 1,
+        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$LINES' : winheight(0),
+        \ '$VIMSHELL_TERM' : 'less',
+        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$PAGER' : g:vimshell_cat_command,
+        \})
+
+  " Initialize.
+  let a:interactive.process = vimproc#plineopen2(a:commands)
+
+  " Restore environment variables.
+  call vimshell#restore_variables(l:environments_save)
+
+  " Input from stdin.
+  if a:interactive.fd.stdin != ''
+    call a:interactive.process.stdin.write(vimshell#read(a:context.fd))
+  endif
+  call a:interactive.process.stdin.close()
 
   let l:args = ''
   for l:command in a:commands
@@ -220,11 +219,6 @@ endfunction "}}}
 
 function! s:print_output(line_num)"{{{
   setlocal modifiable
-
-  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
-    " Set new window size.
-    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
-  endif
 
   $
 

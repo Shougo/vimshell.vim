@@ -185,7 +185,7 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2010-12-14
-- Supported set winsize behavior.
+- Restored set winsize behavior.
 
 2010-12-08
 - Restored cd behavior.
