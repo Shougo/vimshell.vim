@@ -39,19 +39,32 @@ function! s:doc_dict.search(cur_text)"{{{
   let l:command = fnamemodify(l:args[0], ':t:r')
 
   let l:commands = vimshell#available_commands()
-  if l:command == '' || !has_key(l:commands, l:command)
-        \ || !has_key(l:commands[l:command], 'description')
+  if l:command == ''
     return []
+  elseif !has_key(l:commands, l:command)
+    if !has_key(s:cached_doc, l:command)
+      return []
+    endif
+
+    let l:description = s:cached_doc[l:command]
+  else
+    let l:description = l:commands[l:command].description
   endif
 
-  if l:commands[l:command].description =~# l:command.'\s*'
+  if l:description =~? '^usage:\s*'
     return [
-          \ { 'text' : l:command, 'highlight' : 'Identifier' },
-          \ { 'text' : l:commands[l:command].description[len(l:command) :] },
+          \ { 'text' : 'Usage: ', 'highlight' : 'Identifier' },
+          \ { 'text' : l:command, 'highlight' : 'Statement' },
+          \ { 'text' : ' ' . join(split(l:description)[2:]) },
+          \ ]
+  elseif l:description =~# l:command.'\s*'
+    return [
+          \ { 'text' : l:command, 'highlight' : 'Statement' },
+          \ { 'text' : l:description[len(l:command) :] },
           \ ]
   else
     return [
-          \ { 'text' : l:commands[l:command].description },
+          \ { 'text' : l:description },
           \ ]
   endif
 endfunction"}}}
@@ -61,6 +74,26 @@ function! vimshell#help#init()"{{{
   if exists('g:loaded_echodoc') && g:loaded_echodoc
     call echodoc#register('vimshell', s:doc_dict)
   endif
+
+  call vimshell#help#recache()
+endfunction"}}}
+function! vimshell#help#recache()"{{{
+  let s:cached_doc = {}
+  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  if !filereadable(l:doc_path)
+    call writefile([], l:doc_path)
+  endif
+  for args in map(readfile(l:doc_path), 'split(v:val, "!!!")')
+    let s:cached_doc[args[0]] = join(args[1:], '!!!')
+  endfor
+endfunction"}}}
+function! vimshell#help#get_cached_doc()"{{{
+  return s:cached_doc
+endfunction"}}}
+function! vimshell#help#set_cached_doc(cache)"{{{
+  let s:cached_doc = a:cache
+  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), l:doc_path)
 endfunction"}}}
 
 " vim: foldmethod=marker

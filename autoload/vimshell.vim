@@ -744,9 +744,15 @@ function! s:init_internal_commands()"{{{
 
   " Search autoload.
   for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
-    let l:command = fnamemodify(list, ':t:r')
-    if !has_key(s:internal_commands, l:command)
-      let s:internal_commands[l:command] = call('vimshell#commands#'.l:command.'#define', [])
+    let l:command_name = fnamemodify(list, ':t:r')
+    if !has_key(s:internal_commands, l:command_name)
+      let l:command = {'vimshell#commands#'.l:command_name.'#define'}()
+
+      if !has_key(l:command, 'description')
+        let l:command.description = ''
+      endif
+
+      let s:internal_commands[l:command_name] = l:command
     endif
   endfor
 endfunction"}}}

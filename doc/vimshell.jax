@@ -582,7 +582,13 @@ gcd [{directory-path}]					*vimshell-internal-gcd*
 		{directory-path}を省略すると、vimshellのカレントディレクトリ
 		に移動します。
 
-gexe {command} 						*vimshell-internal-gexe*
+gendoc {command} {args}					*vimshell-internal-gexe*
+		{command}に引数{args}を与えて実行し、結果を
+		g:vimshell_temporary_directory/cached-docに格納する。キャッ
+		シュした説明文は|echodoc|により表示できる。説明文としてキャッ
+		シュされるのは、コマンドの実行結果の一行目だけである。
+
+gexe {command}						*vimshell-internal-gexe*
 		{command}に引数を与えて実行します。必ず外部コマンドが実行さ
 		れます。exeとは違い、GUIコマンドを実行することに特化していま
 		す。

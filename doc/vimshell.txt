@@ -186,6 +186,7 @@ CHANGELOG						*vimshell-changelog*
 
 2010-12-23
 - Supported echodoc.
+- Added gendoc command.
 
 2010-12-14
 - Implemented set winsize behavior.
