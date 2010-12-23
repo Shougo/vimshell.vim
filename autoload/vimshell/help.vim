@@ -75,17 +75,7 @@ function! vimshell#help#init()"{{{
     call echodoc#register('vimshell', s:doc_dict)
   endif
 
-  call vimshell#help#recache()
-endfunction"}}}
-function! vimshell#help#recache()"{{{
-  let s:cached_doc = {}
-  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
-  if !filereadable(l:doc_path)
-    call writefile([], l:doc_path)
-  endif
-  for args in map(readfile(l:doc_path), 'split(v:val, "!!!")')
-    let s:cached_doc[args[0]] = join(args[1:], '!!!')
-  endfor
+  call s:load_cached_doc()
 endfunction"}}}
 function! vimshell#help#get_cached_doc()"{{{
   return s:cached_doc
@@ -94,6 +84,17 @@ function! vimshell#help#set_cached_doc(cache)"{{{
   let s:cached_doc = a:cache
   let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
   call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), l:doc_path)
+endfunction"}}}
+
+function! s:load_cached_doc()"{{{
+  let s:cached_doc = {}
+  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  if !filereadable(l:doc_path)
+    call writefile([], l:doc_path)
+  endif
+  for args in map(readfile(l:doc_path), 'split(v:val, "!!!")')
+    let s:cached_doc[args[0]] = join(args[1:], '!!!')
+  endfor
 endfunction"}}}
 
 " vim: foldmethod=marker
