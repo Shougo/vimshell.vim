@@ -203,6 +203,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
 
   setfiletype vimshell
 
+  call vimshell#help#init()
+
   call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
