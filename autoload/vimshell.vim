@@ -518,8 +518,9 @@ function! vimshell#get_cur_line()"{{{
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   return l:cur_text
 endfunction"}}}
-function! vimshell#get_current_args()"{{{
-  let l:statements = vimproc#parser#split_statements(vimshell#get_cur_text())
+function! vimshell#get_current_args(...)"{{{
+  let l:cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
+  let l:statements = vimproc#parser#split_statements(l:cur_text)
   if empty(l:statements)
     return []
   endif
