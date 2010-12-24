@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: help.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2010.
+" Last Modified: 24 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,22 +51,18 @@ function! s:doc_dict.search(cur_text)"{{{
     let l:description = l:commands[l:command].description
   endif
 
+  let l:usage = [{ 'text' : 'Usage: ', 'highlight' : 'Identifier' }]
   if l:description =~? '^usage:\s*'
-    return [
-          \ { 'text' : 'Usage: ', 'highlight' : 'Identifier' },
-          \ { 'text' : l:command, 'highlight' : 'Statement' },
-          \ { 'text' : ' ' . join(split(l:description)[2:]) },
-          \ ]
+    call add(l:usage, { 'text' : l:command, 'highlight' : 'Statement' })
+    call add(l:usage, { 'text' : ' ' . join(split(l:description)[2:]) })
   elseif l:description =~# l:command.'\s*'
-    return [
-          \ { 'text' : l:command, 'highlight' : 'Statement' },
-          \ { 'text' : l:description[len(l:command) :] },
-          \ ]
+    call add(l:usage, { 'text' : l:command, 'highlight' : 'Statement' })
+    call add(l:usage, { 'text' : l:description[len(l:command) :] })
   else
-    return [
-          \ { 'text' : l:description },
-          \ ]
+    call add(l:usage, { 'text' : l:description })
   endif
+
+  return l:usage
 endfunction"}}}
 "}}}
 
