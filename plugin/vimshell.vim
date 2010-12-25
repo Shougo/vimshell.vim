@@ -178,7 +178,7 @@ nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '
 " Command functions:
 function! s:execute_completefunc(lead, cmd, pos)"{{{
   silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
-  return keys 
+  return keys
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
   call vimshell#execute_internal_command('bg', vimproc#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
