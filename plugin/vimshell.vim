@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Nov 2010
+" Last Modified: 25 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -130,9 +130,9 @@ if !exists('g:vimshell_interactive_prompts')
 endif
 if !exists('g:vimshell_interactive_no_echoback_commands')
   " Note: MinGW gosh and scala is no echoback. Why?
-  let g:vimshell_interactive_no_echoback_commands = 
+  let g:vimshell_interactive_no_echoback_commands =
         \ has('win32') || has('win64') ? {
-        \ 'gosh' : 1, 'python' : 1, 'scala' : 1,
+        \ 'gosh' : 1, 'python' : 1, 'scala' : 1, 'maxima' : 1,
         \} : {}
 endif
 if !exists('g:vimshell_terminal_cursor')
