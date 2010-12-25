@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Oct 2010
+" Last Modified: 25 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -128,6 +128,8 @@ function! vimshell#interactive#send_string(string)"{{{
   endif
 
   try
+    let b:interactive.echoback_linenr = line('$')
+
     if l:in =~ "\<C-d>$"
       " EOF.
       let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")

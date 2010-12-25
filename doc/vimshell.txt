@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-12-25
+- Fixed :VimShellSendString.
+
 2010-12-23
 - Supported echodoc.
 - Added gendoc command.
