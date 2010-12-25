@@ -582,7 +582,7 @@ gcd [{directory-path}]					*vimshell-internal-gcd*
 		{directory-path}を省略すると、vimshellのカレントディレクトリ
 		に移動します。
 
-gendoc {command} {args}					*vimshell-internal-gexe*
+gendoc {command} {args}					*vimshell-internal-gendoc*
 		{command}に引数{args}を与えて実行し、結果を
 		g:vimshell_temporary_directory/cached-docに格納する。キャッ
 		シュした説明文は|echodoc|により表示できる。説明文としてキャッ
