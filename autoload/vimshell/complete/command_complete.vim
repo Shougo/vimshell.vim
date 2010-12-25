@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Sep 2010
+" Last Modified: 24 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,8 +40,13 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
     return -1
   endif
 
+  return vimshell#complete#command_complete#get_candidates(
+        \ vimshell#get_cur_text(), a:findstart, a:base)
+endfunction"}}}
+
+function! vimshell#complete#command_complete#get_candidates(cur_text, findstart, base)"{{{
   try
-    let l:args = vimshell#get_current_args()
+    let l:args = vimshell#get_current_args(a:cur_text)
   catch /^Exception: Quote/
     return a:findstart ? -1 : []
   endtry
@@ -49,7 +54,7 @@ function! vimshell#complete#command_complete#omnifunc(findstart, base)"{{{
   if len(l:args) <= 1
     return s:complete_commands(a:findstart, a:base)
   else
-    if vimshell#get_cur_text() =~ '\s\+$'
+    if a:cur_text =~ '\s\+$'
       " Add blank argument.
       call add(l:args, '')
     endif

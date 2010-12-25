@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_execute_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2010
+" Last Modified: 24 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,6 +26,6 @@
 
 function! vimshell#complete#vimshell_execute_complete#completefunc(arglead, cmdline, cursorpos)"{{{
   " Get complete words.
-  return map(vimshell#complete#command_complete#omnifunc(l:args[-1]), 'v:val.word')
+  return map(vimshell#complete#command_complete#get_candidates(a:cmdline, 0, a:arglead), 'v:val.word')
 endfunction"}}}
 " vim: foldmethod=marker
