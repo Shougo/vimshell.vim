@@ -467,10 +467,6 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     return
   endif
 
-  if has_key(b:interactive, 'output_pos')
-    call setpos('.', b:interactive.output_pos)
-  endif
-
   " Convert encoding.
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
@@ -518,10 +514,6 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     endif
 
     return
-  endif
-
-  if has_key(b:interactive, 'output_pos')
-    call setpos('.', b:interactive.output_pos)
   endif
 
   " Convert encoding.
@@ -605,6 +597,10 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   if mode() !=# 'i'
     let l:intbuffer_pos = getpos('.')
+  endif
+
+  if has_key(a:interactive, 'output_pos')
+    call setpos('.', a:interactive.output_pos)
   endif
 
   let l:type = a:interactive.type

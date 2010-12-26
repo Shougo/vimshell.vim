@@ -58,10 +58,12 @@ function! s:command.execute(commands, context)"{{{
   call append(line('.'), '')
   normal! j
 
+  let b:interactive.output_pos = getpos('.')
+
   if a:context.is_interactive
     throw 'exe: Process started.'
   endif
-
+  
   echo 'Running command.'
   while b:interactive.process.is_valid
     call vimshell#interactive#execute_pipe_out()
