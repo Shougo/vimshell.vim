@@ -61,7 +61,7 @@ function! s:command.execute(commands, context)"{{{
   if a:context.is_interactive
     throw 'exe: Process started.'
   endif
-  
+
   echo 'Running command.'
   while b:interactive.process.is_valid
     call vimshell#interactive#execute_pipe_out()
@@ -127,16 +127,16 @@ function! s:init_process(commands, context, options)"{{{
 
   " Set variables.
   let b:interactive = {
-        \ 'type' : 'execute', 
+        \ 'type' : 'execute',
         \ 'syntax' : b:interactive.syntax,
-        \ 'process' : l:sub, 
-        \ 'fd' : a:context.fd, 
-        \ 'encoding' : a:options['--encoding'], 
-        \ 'is_pty' : !vimshell#iswin(), 
+        \ 'process' : l:sub,
+        \ 'fd' : a:context.fd,
+        \ 'encoding' : a:options['--encoding'],
+        \ 'is_pty' : !vimshell#iswin(),
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'cmdline' : join(l:cmdline, '|'), 
+        \ 'cmdline' : join(l:cmdline, '|'),
         \}
 
   " Input from stdin.

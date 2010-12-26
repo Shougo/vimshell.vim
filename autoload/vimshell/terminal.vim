@@ -30,22 +30,37 @@ function! vimshell#terminal#print(string)"{{{
   let l:current_line = getline('.')
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
-  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]'
-    " Optimized print.
-    let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\r\n\|\n', 1)
-    if !b:interactive.is_pty
-          \ && has_key(b:interactive, 'command')
-          \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
-          \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
-      call append('.', l:lines)
-    else
-      if line('.') != b:interactive.echoback_linenr
-        call setline('.', l:current_line . l:lines[0])
-      endif
+  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
+    " Strip <CR>.
+    let l:string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
 
-      call append('.', l:lines[1:])
+    if l:string =~ '\r'
+      for l:line in split(getline('.') . l:string, '\n', 1)
+        call append('.', '')
+        normal! j
+
+        for l:l in split(l:line, '\r', 1)
+          call setline('.', l:l)
+          redraw
+        endfor
+      endfor
+    else
+      " Optimized print.
+      let l:lines = split(l:string, '\n', 1)
+      if !b:interactive.is_pty
+            \ && has_key(b:interactive, 'command')
+            \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
+            \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
+        call append('.', l:lines)
+      else
+        if line('.') != b:interactive.echoback_linenr
+          call setline('.', l:current_line . l:lines[0])
+        endif
+
+        call append('.', l:lines[1:])
+      endif
+      execute 'normal!' (len(l:lines)-1).'j$'
     endif
-    execute 'normal!' (len(l:lines)-1).'j$'
 
     return
   endif
