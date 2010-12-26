@@ -112,7 +112,9 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
       normal! $
     endif
 
-    let b:interactive.output_pos = getpos('.')
+    if has_key(b:interactive, 'output_pos')
+      let b:interactive.output_pos = getpos('.')
+    endif
   endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
@@ -257,7 +259,9 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
       endif
     endif
 
-    let b:interactive.output_pos = getpos('.')
+    if has_key(b:interactive, 'output_pos')
+      let b:interactive.output_pos = getpos('.')
+    endif
   endif
 
   if b:interactive.process.eof
@@ -489,7 +493,9 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  let b:interactive.output_pos = getpos('.')
+  if has_key(b:interactive, 'output_pos')
+    let b:interactive.output_pos = getpos('.')
+  endif
 
   if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != '' 
     let b:interactive.prompt_history[line('.')] = getline('.')
@@ -547,7 +553,9 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     execute 'normal!' len(l:lines).'j'
   endif
 
-  let b:interactive.output_pos = getpos('.')
+  if has_key(b:interactive, 'output_pos')
+    let b:interactive.output_pos = getpos('.')
+  endif
 
   redraw
 endfunction"}}}
