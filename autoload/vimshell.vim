@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Dec 2010
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -332,13 +332,12 @@ function! vimshell#print_line(fd, string)"{{{
     endif
 
     return
-  elseif line('$') == 1 && getline('$') == ''
-    call setline('$', a:string)
+  elseif line('.') == 1 && getline('.') == ''
+    call setline('.', a:string)
   else
-    call append('$', a:string)
+    call append('.', a:string)
+    normal! j
   endif
-
-  $
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
   if !empty(a:fd) && a:fd.stderr != ''
@@ -361,19 +360,18 @@ function! vimshell#error_line(fd, string)"{{{
 
   let l:string = '!!!' . a:string . '!!!'
 
-  if line('$') == 1 && getline('$') == ''
-    call setline('$', l:string)
+  if line('.') == 1 && getline('.') == ''
+    call setline('.', l:string)
   else
-    call append('$', l:string)
+    call append('.', l:string)
+    normal! j
   endif
-
-  $
 endfunction"}}}
 function! vimshell#echo_error(string)"{{{
   echohl Error | echo a:string | echohl None
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
-  if &filetype !=# 'vimshell'
+  if &filetype !=# 'vimshell' || line('.') != line('$')
     return
   endif
 
@@ -381,8 +379,6 @@ function! vimshell#print_prompt(...)"{{{
   let b:vimshell.prompt_current_dir[vimshell#get_prompt_linenr()] = getcwd()
 
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
-
-  $
 
   " Call preprompt hook.
   call vimshell#hook#call('preprompt', l:context)
@@ -434,6 +430,10 @@ function! vimshell#print_prompt(...)"{{{
   let &modified = 0
 endfunction"}}}
 function! vimshell#print_secondary_prompt()"{{{
+  if &filetype !=# 'vimshell' || line('.') != line('$')
+    return
+  endif
+
   " Insert secondary prompt line.
   call append('$', vimshell#get_secondary_prompt())
   $

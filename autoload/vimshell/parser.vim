@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2010
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,10 +37,10 @@ function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
   let l:statements = vimproc#parser#parse_statements(a:script)
   let l:max = len(l:statements)
-  
+
   let l:context = a:context
   let l:context.is_single_command = (l:context.is_interactive && l:max == 1)
-  
+
   let i = 0
   while i < l:max
     try
@@ -52,13 +52,13 @@ function! vimshell#parser#eval_script(script, context)"{{{
             \ }
       return 1
     endtry
-    
+
     let l:condition = l:statements[i].condition
     if (l:condition ==# 'true' && l:ret)
           \ || (l:condition ==# 'false' && !l:ret)
       break
     endif
-    
+
     let i += 1
   endwhile
 
@@ -140,7 +140,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   if empty(b:vimshell.continuation)
     return
   endif
-  
+
   " Execute pipe.
   call vimshell#interactive#execute_pipe_out()
 
@@ -168,7 +168,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
     else
       let l:message = printf('vimshell: %s %d "%s"', b:interactive.cond, b:interactive.status, b:interactive.cmdline)
     endif
-    
+
     call vimshell#error_line(l:context.fd, l:message)
   endif
 
@@ -176,7 +176,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   let l:statements = l:statements[1:]
   let l:max = len(l:statements)
   let l:context = b:vimshell.continuation.context
-  
+
   let i = 0
 
   while i < l:max
@@ -189,13 +189,13 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
             \ }
       return 1
     endtry
-    
+
     let l:condition = l:statements[i].condition
     if (l:condition ==# 'true' && l:ret)
           \ || (l:condition ==# 'false' && !l:ret)
       break
     endif
-    
+
     let i += 1
   endwhile
 
@@ -210,9 +210,13 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   endif
 
   let b:vimshell.continuation = {}
-  call vimshell#print_prompt(l:context)
-  call vimshell#start_insert(a:is_insert)
-  return 0
+  if line('.') == line('$')
+    call vimshell#print_prompt(l:context)
+    call vimshell#start_insert(a:is_insert)
+  else
+    call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'We')
+    stopinsert
+  endif
 endfunction
 "}}}
 function! s:execute_statement(statement, context)"{{{

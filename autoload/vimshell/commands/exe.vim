@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2010
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Move line.
-  call append(line('$'), '')
+  call append(line('.'), '')
   normal! j
 
   if a:context.is_interactive

@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2010-12-26
+- Improved history output(Experimental).
+
 2010-12-25
 - Fixed :VimShellSendString.
 - Supported maxima in Windows.

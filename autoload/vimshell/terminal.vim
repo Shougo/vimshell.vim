@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2010.
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,9 +30,9 @@ function! vimshell#terminal#print(string)"{{{
   let l:current_line = getline('.')
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
-  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]' && l:current_line ==# l:cur_text
+  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\r\b]'
     " Optimized print.
-    let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\n', 1)
+    let l:lines = split(substitute(a:string, "\<C-g>", '', 'g'), '\r\n\|\n', 1)
     if !b:interactive.is_pty
           \ && has_key(b:interactive, 'command')
           \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)

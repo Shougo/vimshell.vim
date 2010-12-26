@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2010.
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -111,6 +111,8 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
     else
       normal! $
     endif
+
+    let b:interactive.output_pos = getpos('.')
   endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
@@ -247,7 +249,6 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   if l:outputed && b:interactive.type !=# 'terminal'
-    $
     if !b:interactive.process.eof
       if a:is_insert
         startinsert!
@@ -255,6 +256,8 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
         normal! $
       endif
     endif
+
+    let b:interactive.output_pos = getpos('.')
   endif
 
   if b:interactive.process.eof
@@ -339,7 +342,7 @@ function! vimshell#interactive#exit()"{{{
       hi def link InteractiveMessage WarningMsg
 
       setlocal modifiable
-      call append(line('$'), '*Exit*')
+      call append('$', '*Exit*')
 
       $
       normal! $
@@ -366,7 +369,7 @@ function! vimshell#interactive#force_exit()"{{{
 
     setlocal modifiable
 
-    call append(line('$'), '*Killed*')
+    call append('$', '*Killed*')
     $
     normal! $
 
@@ -393,7 +396,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
 
       setlocal modifiable
 
-      call append(line('$'), '*Killed*')
+      call append('$', '*Killed*')
       $
       normal! $
 
@@ -464,13 +467,17 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     return
   endif
 
+  if has_key(b:interactive, 'output_pos')
+    call setpos('.', b:interactive.output_pos)
+  endif
+
   " Convert encoding.
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   call vimshell#terminal#print(l:string)
 
-  if getline('$') =~ s:password_regex
+  if getline('.') =~ s:password_regex
         \ && b:interactive.type == 'interactive'
     redraw
 
@@ -486,8 +493,10 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  if has_key(b:interactive, 'prompt_history') && line('$') != b:interactive.echoback_linenr && getline('$') != '' 
-    let b:interactive.prompt_history[line('$')] = getline('$')
+  let b:interactive.output_pos = getpos('.')
+
+  if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != '' 
+    let b:interactive.prompt_history[line('.')] = getline('.')
   endif
 endfunction"}}}
 
@@ -511,6 +520,10 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     return
   endif
 
+  if has_key(b:interactive, 'output_pos')
+    call setpos('.', b:interactive.output_pos)
+  endif
+
   " Convert encoding.
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
@@ -520,10 +533,12 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   " Strip <CR>.
   let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
   if l:string =~ '\r'
-    for l:line in split(getline('$') . l:string, '\n', 1)
-      call append('$', '')
+    for l:line in split(getline('.') . l:string, '\n', 1)
+      call append('.', '')
+      normal! j
+
       for l:l in split(l:line, '\r', 1)
-        call setline('$', '!!!' . l:l . '!!!')
+        call setline('.', '!!!' . l:l . '!!!')
         redraw
       endfor
     endfor
@@ -531,15 +546,16 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     let l:lines = split(l:string, '\n', 1)
 
     if l:lines[0] != ''
-      let l:line = getline('$') =~ '!!!$' ?
-            \ getline('$')[: -4] . l:lines[0] . '!!!' : getline('$') . '!!!' . l:lines[0] . '!!!'
-      call setline('$', l:line)
+      let l:line = getline('.') =~ '!!!$' ?
+            \ getline('.')[: -4] . l:lines[0] . '!!!' : getline('.') . '!!!' . l:lines[0] . '!!!'
+      call setline('.', l:line)
     endif
-    call append('$', map(l:lines[1:], 'v:val != "" ? "!!!" . v:val . "!!!" : v:val'))
+    call append('.', map(l:lines[1:], 'v:val != "" ? "!!!" . v:val . "!!!" : v:val'))
+
+    execute 'normal!' len(l:lines).'j'
   endif
 
-  " Set cursor.
-  $
+  let b:interactive.output_pos = getpos('.')
 
   redraw
 endfunction"}}}
@@ -589,9 +605,6 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   if mode() !=# 'i'
     let l:intbuffer_pos = getpos('.')
-
-    $
-    normal! $
   endif
 
   let l:type = a:interactive.type
@@ -603,13 +616,13 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     call vimshell#parser#execute_continuation(mode() ==# 'i')
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
     if l:type ==# 'interactive' && (
-          \ line('$') != a:interactive.echoback_linenr
-          \ && has_key(a:interactive.prompt_history, line('$'))
-          \ && vimshell#interactive#get_cur_line(line('$'), a:interactive) != ''
+          \ line('.') != a:interactive.echoback_linenr
+          \ && has_key(a:interactive.prompt_history, line('.'))
+          \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
           \ )
       " Skip.
 
-      if mode() !=# 'i'
+      if mode() !=# 'i' && a:bufnr != a:bufnr_save
         call setpos('.', l:intbuffer_pos)
       endif
 
@@ -632,7 +645,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     endif
   endif
 
-  if mode() !=# 'i'
+  if mode() !=# 'i' && a:bufnr != a:bufnr_save
     call setpos('.', l:intbuffer_pos)
   endif
 

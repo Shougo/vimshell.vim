@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Dec 2010
+" Last Modified: 26 Dec 2010.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -203,18 +203,27 @@ function! s:execute_line(is_insert)"{{{
     endif
   elseif line('.') != line('$')
     " History execution.
-    if !vimshell#check_prompt('$')
-      " Insert prompt line.
-      call append('$', getline('.'))
+
+    " Search next prompt.
+    let l:prompt = vimshell#escape_match(vimshell#get_prompt())
+    if vimshell#get_user_prompt() != ''
+      let l:nprompt = '^\[%\] '
     else
-      " Set prompt line.
-      call setline('$', getline('.'))
+      let l:nprompt = '^' . l:prompt
+    endif
+
+    let [l:next_line, l:next_col] = searchpos(l:nprompt, 'Wn')
+
+    if l:next_line > 0 && l:next_line - line('.') > 1
+      execute printf('%s,%sdelete', line('.')+1, l:next_line-1)
+
+      call vimshell#terminal#clear_highlight()
+      normal! k
     endif
   endif
 
   let l:oldpos = getpos('.')
-
-  $
+  let b:interactive.output_pos = getpos('.')
 
   if !empty(b:vimshell.continuation)
     try
@@ -232,7 +241,7 @@ function! s:execute_line(is_insert)"{{{
 
   call s:execute_command_line(a:is_insert, l:oldpos)
 endfunction"}}}
-function! s:execute_command_line(is_insert, old_pos)"{{{
+function! s:execute_command_line(is_insert, oldpos)"{{{
   " Get command line.
   let l:line = vimshell#get_prompt_command()
   let l:context = {
@@ -256,7 +265,7 @@ function! s:execute_command_line(is_insert, old_pos)"{{{
     call vimshell#start_insert(a:is_insert)
     return
   endif
-  
+
   try
     call vimshell#parser#check_script(l:line)
   catch /^Exception: Quote/
@@ -281,7 +290,7 @@ function! s:execute_command_line(is_insert, old_pos)"{{{
       call setline('.', l:line)
       call s:execute_line(a:is_insert)
     endif
-    
+
     " Error.
     call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
     call vimshell#print_prompt(l:context)
@@ -303,7 +312,7 @@ function! s:execute_command_line(is_insert, old_pos)"{{{
   if l:ret == 0
     call vimshell#print_prompt(l:context)
   endif
-  
+
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:previous_prompt()"{{{
