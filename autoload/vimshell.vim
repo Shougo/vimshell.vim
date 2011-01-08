@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2010.
+" Last Modified: 08 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,8 +32,6 @@ endfunction"}}}
 try
   let s:exists_vimproc_version = vimproc#version()
 catch
-  echoerr v:throwpoint
-  echoerr v:exception
   echoerr 'Error occured while loading vimproc.'
   echoerr 'Please install vimproc Ver.5.0 or above.'
   finish
