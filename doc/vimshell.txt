@@ -184,6 +184,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-11
+- Fixed for Vim 7.0 bug.
+
 2011-01-08
 - Improved vimproc error message.
 
