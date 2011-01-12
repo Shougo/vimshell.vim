@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-12
+- Fixed English help.
+
 2011-01-11
 - Fixed for Vim 7.0 bug.
 
