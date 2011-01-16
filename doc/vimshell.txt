@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-16
+- Fixed vimshell#get_current_args() error.
+
 2011-01-12
 - Fixed English help.
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jan 2011.
+" Last Modified: 16 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -518,21 +518,28 @@ function! vimshell#get_cur_line()"{{{
 endfunction"}}}
 function! vimshell#get_current_args(...)"{{{
   let l:cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
-  let l:statements = vimproc#parser#split_statements(l:cur_text)
-  if empty(l:statements)
-    return []
-  endif
+  try
+    let l:statements = vimproc#parser#split_statements(l:cur_text)
+    if empty(l:statements)
+      return []
+    endif
 
-  let l:commands = vimproc#parser#split_commands(l:statements[-1])
-  if empty(l:commands)
-    return []
-  endif
+    let l:commands = vimproc#parser#split_commands(l:statements[-1])
+    if empty(l:commands)
+      return []
+    endif
 
-  let l:args = vimproc#parser#split_args_through(l:commands[-1])
-  if vimshell#get_cur_text() =~ '\\\@!\s\+$'
-    " Add blank argument.
-    call add(l:args, '')
-  endif
+    let l:args = vimproc#parser#split_args_through(l:commands[-1])
+    if vimshell#get_cur_text() =~ '\\\@!\s\+$'
+      " Add blank argument.
+      call add(l:args, '')
+    endif
+  catch
+    let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+    echohl WarningMsg | echomsg l:message | echohl None
+    return []
+  endtry
+
   return l:args
 endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
