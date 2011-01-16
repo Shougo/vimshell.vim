@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2010.
+" Last Modified: 16 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -201,6 +201,8 @@ function! s:execute_line(is_insert)"{{{
       let l:filename = substitute(substitute(l:filename, '\\', '/', 'g'), ' ', '\\ ', 'g')
       call s:open_file(l:filename, l:pattern)
     endif
+
+    $
   elseif line('.') != line('$')
     " History execution.
 

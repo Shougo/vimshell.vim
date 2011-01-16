@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-01-16
 - Fixed vimshell#get_current_args() error.
+- Fixed search cursor file.
 
 2011-01-12
 - Fixed English help.
