@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-17
+- Fixed error message position.
+
 2011-01-16
 - Fixed vimshell#get_current_args() error.
 - Fixed search cursor file.
