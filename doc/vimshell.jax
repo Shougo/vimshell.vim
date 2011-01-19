@@ -795,13 +795,14 @@ vimshellには関数がまだありませんが、決められたフック地点
 <
 vimshellでは次のようなフック地点が用意されています。 フック地点の名前は、
 bashやzshに存在するフック関数名と似せてあります。 フック関数はargsという引数
-を表すディクショナリ変数と、contextというコンテキスト情報を引数に取ります。
+を表すリスト変数と、contextというコンテキスト情報を引数に取ります。
 フィルターとして動作する、一部のフック関数はcmdlineを第一引数に取ります。
 |vimshell#hook#set()|の第二引数は関数名のリストとなっていて、ここで指定され
 た順番で関数が呼び出されます。
 
 chpwd							*vimshell-hook-chpwd*
 		vimshellのカレントディレクトリが変更されるときに呼びだされます。
+		第一引数は新しいカレントディレクトリです。
 
 preparse						*vimshell-hook-preparse*
 		エイリアスのパース前に呼びだされます。第一引数はcmdlineとい
@@ -825,6 +826,13 @@ notfound						*vimshell-hook-notfound*
 
 preprompt						*vimshell-hook-preprompt*
 		コマンド実行後、プロンプト表示前に呼びだされます。
+
+cmdlineを簡易的に解析するなら、|vimproc#parser#split_args()|か、
+|vimproc#parser#split_args_through()|を使用します。この関数は引数に分割するコマ
+ンドライン文字列を取ります。|vimproc#parser#split_args()|はクォート文字列を評価
+しますが、|vimproc#parser#split_args_through()|はクォート文字列をそのまま残しま
+す。この関数は;や&&, ||で表される複合文やパイプ、リダイレクト記号をうまく解析で
+きないことに注意してください。
 
 ==============================================================================
 TIPS							*vimshell-tips*

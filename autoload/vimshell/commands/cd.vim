@@ -98,7 +98,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     " Call chpwd hook.
     let l:context = a:context
     let l:context.fd = a:fd
-    call vimshell#hook#call('chpwd', l:context)
+    call vimshell#hook#call('chpwd', l:context, getcwd())
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{

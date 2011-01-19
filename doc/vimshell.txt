@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-01-19
 - Fixed move head bug.
+- Improved hooks.
 
 2011-01-17
 - Fixed error message position.
