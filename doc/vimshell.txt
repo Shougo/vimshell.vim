@@ -216,6 +216,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed move head bug.
 - Improved hooks.
 - Fixed history execution bug.
+- Catch hook error.
 
 2011-01-17
 - Fixed error message position.

@@ -36,9 +36,14 @@ function! vimshell#hook#call(hook_point, context, ...)"{{{
   let l:args = (a:0 == 0)? {} : a:1
 
   " Call hook function.
-  for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
-    call call(l:func_name, [l:args, l:context])
-  endfor
+  try
+    for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
+      call call(l:func_name, [l:args, l:context])
+    endfor
+  catch
+    " Error.
+    call vimshell#error_line(a:context.fd, v:exception . ' ' . v:throwpoint)
+  endtry
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
   if !a:context.is_interactive
@@ -51,9 +56,15 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
 
   " Call hook function.
   let l:args = a:args
-  for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
-    let l:args = call(l:func_name, [l:args, l:context])
-  endfor
+  try
+    for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
+      let l:args = call(l:func_name, [l:args, l:context])
+    endfor
+  catch
+    " Error.
+    call vimshell#error_line(a:context.fd, v:exception . ' ' . v:throwpoint)
+    return l:args
+  endtry
 
   return l:args
 endfunction"}}}
