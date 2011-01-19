@@ -30,13 +30,8 @@ let s:command = {
       \ 'description' : 'echo [{argument}...]',
       \}
 function! s:command.execute(command, args, fd, context)"{{{
-  let l:string = join(a:args)
-  if a:fd.stdout == '' && l:string != ''
-    call append('.', '')
-    normal! j0
-  endif
   " Echo arguments.
-  call vimshell#print(a:fd, l:string)
+  call vimshell#print(a:fd, "\n" . join(a:args))
 endfunction"}}}
 
 function! vimshell#commands#echo#define()
