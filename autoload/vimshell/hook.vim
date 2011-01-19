@@ -37,8 +37,8 @@ function! vimshell#hook#call(hook_point, context, ...)"{{{
 
   " Call hook function.
   try
-    for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
-      call call(l:func_name, [l:args, l:context])
+    for Func in b:vimshell.hook_functions_table[a:hook_point]
+      call call(Func, [l:args, l:context], {})
     endfor
   catch
     " Error.
@@ -57,8 +57,8 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
   " Call hook function.
   let l:args = a:args
   try
-    for l:func_name in b:vimshell.hook_functions_table[a:hook_point]
-      let l:args = call(l:func_name, [l:args, l:context])
+    for Func in b:vimshell.hook_functions_table[a:hook_point]
+      let l:args = call(Func, [l:args, l:context], {})
     endfor
   catch
     " Error.
