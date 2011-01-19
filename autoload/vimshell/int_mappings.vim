@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Sep 2010
+" Last Modified: 19 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -245,9 +245,9 @@ function! s:insert_enter()"{{{
     startinsert!
     return
   endif
-  
+
   if col('.') <= len(vimshell#interactive#get_prompt())
-    if len(vimshell#interactive#get_prompt()) + 1 <= col('$')
+    if len(vimshell#interactive#get_prompt()) + 1 >= col('$')
       startinsert!
       return
     else

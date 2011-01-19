@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-19
+- Fixed move head bug.
+
 2011-01-17
 - Fixed error message position.
 
