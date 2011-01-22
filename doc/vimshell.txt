@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-22
+- Fixed vimshell#print_line() error.
+
 2011-01-19
 - Fixed move head bug.
 - Improved hooks.
