@@ -816,7 +816,7 @@ preexec							*vimshell-hook-preexec*
 		引数はcmdlineというコマンドライン文字列で、戻り値は変更後の
 		コマンドライン文字列です。
 
-postexec						*vimshell-hook-preexec*
+postexec						*vimshell-hook-postexec*
 		コマンドの実行後に呼びだされます。第一引数はcmdlineという実行し
 		たコマンドライン文字列です。
 
