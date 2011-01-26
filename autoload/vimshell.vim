@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jan 2011.
+" Last Modified: 26 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -163,8 +163,10 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.directory_stack = []
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.hook_functions_table = {
-        \ 'preprompt' : [], 'preparse' : [], 'preexec' : [], 'emptycmd' : [],
-        \ 'chpwd' : [], 'notfound' : [],
+        \ 'preprompt' : [], 'preparse' : [],
+        \ 'preexec' : [], 'postexec' : [],
+        \ 'emptycmd' : [], 'notfound' : [],
+        \ 'chpwd' : [],
         \}
   let b:vimshell.continuation = {}
 

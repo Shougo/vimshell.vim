@@ -496,9 +496,11 @@ EXAMPLES						*vimshell-examples*
 	function! g:my_preexec(cmdline, context)
 	  call vimshell#execute('echo "preexec"')
 	
-	  if a:cmdline =~# '^\s*diff\>'
+	  let l:args = vimproc#parser#split_args(a:cmdline)
+	  if len(l:args) > 0 && l:args[0] ==# 'diff'
 	    call vimshell#set_syntax('diff')
 	  endif
+	
 	  return a:cmdline
 	endfunction
 <
@@ -813,6 +815,10 @@ preexec							*vimshell-hook-preexec*
 		エイリアスのパース後、コマンドの実行前に呼びだされます。第一
 		引数はcmdlineというコマンドライン文字列で、戻り値は変更後の
 		コマンドライン文字列です。
+
+postexec						*vimshell-hook-preexec*
+		コマンドの実行後に呼びだされます。第一引数はcmdlineという実行し
+		たコマンドライン文字列です。
 
 emptycmd						*vimshell-hook-emptycmd*
 		コマンド名が空のときに呼びだされます。第一引数はcmdlineとい

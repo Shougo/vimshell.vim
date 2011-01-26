@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Jan 2011.
+" Last Modified: 26 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,8 +30,6 @@ function! vimshell#parser#check_script(script)"{{{
   for l:statement in vimproc#parser#split_statements(a:script)
     let l:args = vimproc#parser#split_args(l:statement)
   endfor
-
-  return 0
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
@@ -48,7 +46,8 @@ function! vimshell#parser#eval_script(script, context)"{{{
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation = {
-            \ 'statements' : l:statements[i : ], 'context' : a:context
+            \ 'statements' : l:statements[i : ], 'context' : a:context,
+            \ 'script' : a:script,
             \ }
       return 1
     endtry
@@ -61,6 +60,9 @@ function! vimshell#parser#eval_script(script, context)"{{{
 
     let i += 1
   endwhile
+
+  " Call postexec hook.
+  call vimshell#hook#call('postexec', l:context, a:script)
 
   return 0
 endfunction"}}}
@@ -184,9 +186,8 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
       let l:ret = s:execute_statement(l:statements[i].statement, l:context)
     catch /^exe: Process started./
       " Change continuation.
-      let b:vimshell.continuation = {
-            \ 'statements' : l:statements[i : ], 'context' : l:context
-            \ }
+      let b:vimshell.continuation.statements = l:statements[i : ]
+      let b:vimshell.continuation.context = l:context
       return 1
     endtry
 
@@ -208,6 +209,9 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
 
     let b:interactive.syntax = &filetype
   endif
+
+  " Call postexec hook.
+  call vimshell#hook#call('postexec', l:context, b:vimshell.continuation.script)
 
   let b:vimshell.continuation = {}
   if line('.') == line('$')

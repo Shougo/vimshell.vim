@@ -49,10 +49,10 @@ function! s:command.execute(program, args, fd, context)"{{{
       let i = 0
       let l:lines = readfile(l:filename)
       let l:max = len(l:lines)
-      
+
       while i < l:max
         let l:script = l:lines[i]
-        
+
         " Parse check.
         while i+1 < l:max
           try
@@ -64,7 +64,7 @@ function! s:command.execute(program, args, fd, context)"{{{
             let i += 1
           endtry
         endwhile
-        
+
         try
           call vimshell#parser#eval_script(l:script, l:context)
         catch
