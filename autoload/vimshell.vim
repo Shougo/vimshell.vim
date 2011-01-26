@@ -388,7 +388,7 @@ function! vimshell#print_prompt(...)"{{{
   let l:context = a:0 >= 1? a:1 : vimshell#get_context()
 
   " Call preprompt hook.
-  call vimshell#hook#call('preprompt', l:context)
+  call vimshell#hook#call('preprompt', l:context, [])
 
   " Search prompt
   if empty(b:vimshell.commandline_stack)
