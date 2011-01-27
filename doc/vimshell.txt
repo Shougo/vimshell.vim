@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-01-27
+- Fixed hook error.
+
 2011-01-26
 - Implemented postexec hook.
 

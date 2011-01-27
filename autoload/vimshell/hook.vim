@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jan 2011.
+" Last Modified: 27 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 "=============================================================================
 
 function! vimshell#hook#call(hook_point, context, args)"{{{
-  if !a:context.is_interactive
+  if !a:context.is_interactive || &filetype !=# 'vimshell'
     return
   endif
 
@@ -46,7 +46,7 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   endtry
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
-  if !a:context.is_interactive
+  if !a:context.is_interactive || &filetype !=# 'vimshell'
     return a:args
   endif
 
