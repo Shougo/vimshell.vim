@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2011.
+" Last Modified: 28 Jan 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,12 +33,10 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   let l:context.is_interactive = 0
   call vimshell#set_context(l:context)
 
-  let l:args = (a:0 == 0)? {} : a:1
-
   " Call hook function.
   try
     for Func in b:vimshell.hook_functions_table[a:hook_point]
-      call call(Func, [l:args, l:context], {})
+      call call(Func, [a:args, l:context], {})
     endfor
   catch
     " Error.
