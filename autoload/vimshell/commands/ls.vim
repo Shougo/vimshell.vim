@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jul 2010
+" Last Modified: 10 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,6 +30,12 @@ let s:command = {
       \ 'description' : 'ls [{argument}...]',
       \}
 function! s:command.execute(command, args, fd, context)"{{{
+  " Check ls command.
+  if !executable('ls')
+    call vimshell#error_line(a:fd, 'ls: external command ls is not installed.')
+    return 1
+  endif
+
   let l:arguments = a:args
 
   if a:fd.stdout == ''
