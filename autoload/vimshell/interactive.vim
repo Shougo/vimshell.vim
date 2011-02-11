@@ -221,7 +221,7 @@ function! vimshell#interactive#set_send_buffer(bufname)"{{{
     " Open buffer.
     call vimshell#split_nicely()
 
-    execute edit a:bufname
+    edit `=a:bufname`
   endif
 endfunction"}}}
 

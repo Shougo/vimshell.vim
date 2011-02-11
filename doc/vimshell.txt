@@ -213,7 +213,6 @@ BUGS							*vimshell-bugs*
 CHANGELOG						*vimshell-changelog*
 
 2011-02-11
-- Fixed read_pipes.
 - Improved timeout.
 
 2011-02-10
