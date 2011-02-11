@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2010.
+" Last Modified: 11 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -240,13 +240,13 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
   endif
 
   if !b:interactive.process.eof
-    let l:read = b:interactive.process.read(-1, 40)
+    let l:read = b:interactive.process.read(1000, 40)
     while l:read != ''
       let l:outputed = 1
 
       call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
 
-      let l:read = b:interactive.process.read(-1, 40)
+      let l:read = b:interactive.process.read(1000, 40)
     endwhile
   endif
 
@@ -281,11 +281,11 @@ function! vimshell#interactive#execute_pipe_out()"{{{
   endif
 
   if !b:interactive.process.stdout.eof
-    let l:read = b:interactive.process.stdout.read(-1, 40)
+    let l:read = b:interactive.process.stdout.read(1000, 40)
     while l:read != ''
       call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
 
-      let l:read = b:interactive.process.stdout.read(-1, 40)
+      let l:read = b:interactive.process.stdout.read(1000, 40)
     endwhile
   endif
 
@@ -296,11 +296,11 @@ function! vimshell#interactive#execute_pipe_out()"{{{
   endif
 
   if !b:interactive.process.stderr.eof
-    let l:read = b:interactive.process.stderr.read(-1, 40)
+    let l:read = b:interactive.process.stderr.read(1000, 40)
     while l:read != ''
       call vimshell#interactive#error_buffer(b:interactive.fd, l:read)
 
-      let l:read = b:interactive.process.stderr.read(-1, 40)
+      let l:read = b:interactive.process.stderr.read(1000, 40)
     endwhile
   endif
 
@@ -669,12 +669,12 @@ function! s:cache_output(interactive)"{{{
     if a:interactive.process.stdout.eof
       let l:outputed = 1
     else
-      let l:read = a:interactive.process.stdout.read(-1, 40)
+      let l:read = a:interactive.process.stdout.read(1000, 40)
       let a:interactive.stdout_cache = l:read
       while l:read != ''
         let l:outputed = 1
 
-        let l:read = a:interactive.process.stdout.read(-1, 40)
+        let l:read = a:interactive.process.stdout.read(1000, 40)
         let a:interactive.stdout_cache .= l:read
       endwhile
     endif
@@ -682,12 +682,12 @@ function! s:cache_output(interactive)"{{{
     if a:interactive.process.stderr.eof
       let l:outputed = 1
     else
-      let l:read = a:interactive.process.stderr.read(-1, 40)
+      let l:read = a:interactive.process.stderr.read(1000, 40)
       let a:interactive.stderr_cache = l:read
       while l:read != ''
         let l:outputed = 1
 
-        let l:read = a:interactive.process.stderr.read(-1, 40)
+        let l:read = a:interactive.process.stderr.read(1000, 40)
         let a:interactive.stderr_cache .= l:read
       endwhile
     endif
@@ -697,12 +697,12 @@ function! s:cache_output(interactive)"{{{
     if a:interactive.process.eof
       let l:outputed = 1
     else
-      let l:read = a:interactive.process.read(-1, 40)
+      let l:read = a:interactive.process.read(1000, 40)
       let a:interactive.stdout_cache = l:read
       while l:read != ''
         let l:outputed = 1
 
-        let l:read = a:interactive.process.read(-1, 40)
+        let l:read = a:interactive.process.read(1000, 40)
         let a:interactive.stdout_cache .= l:read
       endwhile
     endif

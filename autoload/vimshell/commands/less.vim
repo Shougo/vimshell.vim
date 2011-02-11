@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2010.
+" Last Modified: 11 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -181,7 +181,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
   nnoremap <buffer>b     <C-b>
   nnoremap <buffer>u     <C-u>
 
-  call s:on_execute()
+  call s:print_output(2)
 
   let l:last_winnr = winnr()
   execute l:save_winnr.'wincmd w'
@@ -193,9 +193,6 @@ function! s:init(commands, context, syntax, interactive)"{{{
   endif
 endfunction"}}}
 
-function! s:on_execute()"{{{
-  call s:print_output(winheight(0))
-endfunction"}}}
 function! s:next_line()"{{{
   if line('.') == line('$')
     call s:print_output(2)
@@ -245,8 +242,7 @@ function! s:print_output(line_num)"{{{
     echo 'Running command.'
 
     while l:count < a:line_num && !b:interactive.process.stdout.eof
-      " Get output.
-      let b:interactive.stdout_cache .= b:interactive.process.stdout.read(-1, 40)
+      let b:interactive.stdout_cache .= b:interactive.process.stdout.read(100, 40)
       let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
     endwhile
 
