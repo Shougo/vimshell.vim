@@ -185,34 +185,37 @@ function! s:send_region(line1, line2, string)"{{{
 
   " Check alternate buffer.
   let l:type = getbufvar(winbufnr(l:winnr), 'interactive').type
-  if l:type ==# 'interactive' || l:type ==# 'terminal'
-    if a:string != ''
-      let l:string = a:string . "\<LF>"
-    else
-      let l:string = join(getline(a:line1, a:line2), "\<LF>") . "\<LF>"
-    endif
-    let l:line = split(l:string, "\<LF>")[0]
-
-    let l:save_winnr = winnr()
-    execute l:winnr 'wincmd w'
-
-    if l:type !=# 'terminal'
-      " Save prompt.
-      let l:prompt = vimshell#interactive#get_prompt(line('$'))
-      let l:prompt_nr = line('$')
-    endif
-
-    " Send string.
-    call vimshell#interactive#send_string(l:string)
-
-    if l:type !=# 'terminal'
-          \ && b:interactive.process.is_valid
-      call setline(l:prompt_nr, l:prompt . l:line)
-    endif
-
-    stopinsert
-    execute l:save_winnr 'wincmd w'
+  if l:type !=# 'interactive' && l:type !=# 'terminal'
+    return
   endif
+
+  let l:string = a:string
+  if l:string == ''
+    let l:string = join(getline(a:line1, a:line2), "\<LF>")
+  endif
+  let l:string .= "\<LF>"
+
+  let l:line = split(l:string, "\<LF>")[0]
+
+  let l:save_winnr = winnr()
+  execute l:winnr 'wincmd w'
+
+  if l:type !=# 'terminal'
+    " Save prompt.
+    let l:prompt = vimshell#interactive#get_prompt(line('$'))
+    let l:prompt_nr = line('$')
+  endif
+
+  " Send string.
+  call vimshell#interactive#send_string(l:string)
+
+  if l:type !=# 'terminal'
+        \ && b:interactive.process.is_valid
+    call setline(l:prompt_nr, l:prompt . l:line)
+  endif
+
+  stopinsert
+  execute l:save_winnr 'wincmd w'
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let s:last_interactive_bufnr = bufnr(a:bufname)

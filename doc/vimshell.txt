@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-12
+- Improved documentation.
+
 2011-02-11
 - Improved timeout.
 
