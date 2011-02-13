@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2011.
+" Last Modified: 13 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -181,7 +181,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
   nnoremap <buffer>b     <C-b>
   nnoremap <buffer>u     <C-u>
 
-  call s:print_output(2)
+  call s:print_output(winheight(0))
 
   let l:last_winnr = winnr()
   execute l:save_winnr.'wincmd w'
