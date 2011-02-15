@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-15
+- Fixed kill.
+
 2011-02-13
 - Fixed less initialization.
 

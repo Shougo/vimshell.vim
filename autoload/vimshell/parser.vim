@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2011.
+" Last Modified: 15 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -248,7 +248,7 @@ endfunction
 " Parse helper.
 function! vimshell#parser#parse_alias(statement)"{{{
   let l:pipes = []
-  
+
   for l:statement in vimproc#parser#split_pipe(a:statement)
     " Get program.
     let l:statement = s:parse_galias(l:statement)
@@ -261,10 +261,10 @@ function! vimshell#parser#parse_alias(statement)"{{{
       " Expand alias.
       let l:statement = join(vimproc#parser#split_args(s:recursive_expand_alias(l:program))) . l:statement[matchend(l:statement, vimshell#get_program_pattern()) :]
     endif
-    
+
     call add(l:pipes, l:statement)
   endfor
-  
+
   return join(l:pipes, '|')
 endfunction"}}}
 function! vimshell#parser#parse_program(statement)"{{{

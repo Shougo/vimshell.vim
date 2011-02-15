@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2011.
+" Last Modified: 15 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -317,7 +317,7 @@ function! vimshell#interactive#quit_buffer()"{{{
     bdelete
   else
     call vimshell#echo_error('Process is running. Press <C-c> to kill process.')
-  endif  
+  endif
 endfunction"}}}
 function! vimshell#interactive#exit()"{{{
   if !b:interactive.process.is_valid
@@ -331,6 +331,7 @@ function! vimshell#interactive#exit()"{{{
       " Kill process.
       " 15 == SIGTERM
       call sub.kill(15)
+      call sub.waitpid()
     catch
       " Ignore error.
     endtry
@@ -367,6 +368,7 @@ function! vimshell#interactive#force_exit()"{{{
   try
     " 15 == SIGTERM
     call b:interactive.process.kill(15)
+    call b:interactive.process.waitpid()
   catch
   endtry
 
@@ -392,6 +394,7 @@ function! vimshell#interactive#hang_up(afile)"{{{
       try
         " 15 == SIGTERM
         call l:vimproc.process.kill(15)
+        call l:vimproc.process.waitpid()
       catch
       endtry
     endif
