@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2010
+" Last Modified: 17 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,10 +34,10 @@ syn region   TermtterInputLine  start='^\s*> ' end='\n' oneline contains=Termtte
 
 syn match   TermtterURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
 syn match   TermtterString      '.*' contained contains=TermtterReply,TermtterRemark
-syn match   TermtterCommand     '[[:alnum:]_][[:alnum:]_-]*' contained
+syn match   TermtterCommand     '\w\+' contained
 syn match   TermtterPrompt      '^\s*> ' contained
-syn match   TermtterReply       '@[[:alnum:]_+-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
-syn match   TermtterName        '\s[[:alnum:]_+-]\+:\s'
+syn match   TermtterReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syn match   TermtterName        '\s[[:alnum:]_-]\+:\s'
 syn match   TermtterConstants   '[+-]\?\<\d\+\>'
 syn match   TermtterConstants   '[+-]\?\<0x\x\+\>'
 syn match   TermtterConstants   '[+-]\?\<0\o\+\>'

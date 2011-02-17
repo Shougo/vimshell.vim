@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-16
+- Improved termtter syntax.
+
 2011-02-15
 - Fixed kill.
 
