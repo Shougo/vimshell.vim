@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2011.
+" Last Modified: 22 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -627,7 +627,6 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
     if l:type ==# 'interactive' && (
           \ line('.') != a:interactive.echoback_linenr
-          \ && has_key(a:interactive.prompt_history, line('.'))
           \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
           \ )
       " Skip.
