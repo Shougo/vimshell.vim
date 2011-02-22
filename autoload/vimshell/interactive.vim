@@ -646,7 +646,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     endif
   endif
 
-  if mode() !=# 'i' && a:bufnr != a:bufnr_save
+  if mode() !=# 'i'
     call setpos('.', l:intbuffer_pos)
   endif
 

@@ -212,9 +212,12 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-23
+- Fixed output position bug.
+- Improved position restore.
+
 2011-02-22
 - Improved interactive buffer update.
-- Fixed output position bug.
 
 2011-02-16
 - Improved termtter syntax.
