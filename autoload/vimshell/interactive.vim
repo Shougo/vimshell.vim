@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Feb 2011.
+" Last Modified: 23 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,9 +112,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
       normal! $
     endif
 
-    if has_key(b:interactive, 'output_pos')
-      let b:interactive.output_pos = getpos('.')
-    endif
+    let b:interactive.output_pos = getpos('.')
   endif
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
@@ -262,9 +260,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
       endif
     endif
 
-    if has_key(b:interactive, 'output_pos')
-      let b:interactive.output_pos = getpos('.')
-    endif
+    let b:interactive.output_pos = getpos('.')
   endif
 
   if b:interactive.process.eof
@@ -499,9 +495,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.write(l:in . "\<NL>")
   endif
 
-  if has_key(b:interactive, 'output_pos')
-    let b:interactive.output_pos = getpos('.')
-  endif
+  let b:interactive.output_pos = getpos('.')
 
   if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != '' 
     let b:interactive.prompt_history[line('.')] = getline('.')
@@ -559,9 +553,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     execute 'normal!' len(l:lines).'j'
   endif
 
-  if has_key(b:interactive, 'output_pos')
-    let b:interactive.output_pos = getpos('.')
-  endif
+  let b:interactive.output_pos = getpos('.')
 
   redraw
 endfunction"}}}
