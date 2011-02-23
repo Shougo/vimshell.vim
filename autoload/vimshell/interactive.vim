@@ -601,7 +601,9 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
 
-  if a:interactive.type ==# 'interactive' && (
+  let l:type = a:interactive.type
+
+  if l:type ==# 'interactive' && (
         \ line('.') != a:interactive.echoback_linenr
         \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
         \ )
@@ -612,7 +614,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     return
   endif
 
-  if mode() !=# 'i'
+  if mode() !=# 'i' && l:type !=# 'execute'
     let l:intbuffer_pos = getpos('.')
   endif
 
@@ -620,7 +622,6 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     call setpos('.', a:interactive.output_pos)
   endif
 
-  let l:type = a:interactive.type
   if l:type ==# 'background'
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
@@ -641,7 +642,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     endif
   endif
 
-  if mode() !=# 'i'
+  if mode() !=# 'i' && l:type !=# 'execute'
     call setpos('.', l:intbuffer_pos)
   endif
 
