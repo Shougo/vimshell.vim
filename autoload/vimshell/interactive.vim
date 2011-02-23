@@ -497,7 +497,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
 
   let b:interactive.output_pos = getpos('.')
 
-  if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != '' 
+  if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != ''
     let b:interactive.prompt_history[line('.')] = getline('.')
   endif
 endfunction"}}}
@@ -601,6 +601,17 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     execute bufwinnr(a:bufnr) . 'wincmd w'
   endif
 
+  if a:interactive.type ==# 'interactive' && (
+        \ line('.') != a:interactive.echoback_linenr
+        \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
+        \ )
+    if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
+      execute bufwinnr(a:bufnr_save) . 'wincmd w'
+    endif
+
+    return
+  endif
+
   if mode() !=# 'i'
     let l:intbuffer_pos = getpos('.')
   endif
@@ -617,22 +628,6 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   elseif l:type ==# 'execute'
     call vimshell#parser#execute_continuation(mode() ==# 'i')
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
-    if l:type ==# 'interactive' && (
-          \ line('.') != a:interactive.echoback_linenr
-          \ && vimshell#interactive#get_cur_line(line('.'), a:interactive) != ''
-          \ )
-      " Skip.
-
-      if mode() !=# 'i' && a:bufnr != a:bufnr_save
-        call setpos('.', l:intbuffer_pos)
-      endif
-
-      if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
-        execute bufwinnr(a:bufnr_save) . 'wincmd w'
-      endif
-      return
-    endif
-
     if l:type ==# 'terminal' && mode() !=# 'i'
       setlocal modifiable
     endif
