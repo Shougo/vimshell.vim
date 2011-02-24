@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jan 2011.
+" Last Modified: 24 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -313,7 +313,7 @@ function! vimshell#print(fd, string)"{{{
     return
   endif
 
-  call vimshell#terminal#print(a:string)
+  call vimshell#terminal#print(a:string, 0)
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
   if !empty(a:fd) && a:fd.stdout != ''

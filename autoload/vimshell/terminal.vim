@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2010.
+" Last Modified: 24 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,13 +24,13 @@
 " }}}
 "=============================================================================
 
-function! vimshell#terminal#print(string)"{{{
+function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
 
   let l:current_line = getline('.')
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
-  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
+  if !a:is_error && b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
     " Strip <CR>.
     let l:string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
 
@@ -191,7 +191,8 @@ function! vimshell#terminal#print(string)"{{{
 
   " Set lines.
   for l:linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
-    call setline(l:linenr, s:lines[l:linenr])
+    call setline(l:linenr, a:is_error ?
+          \ '!!!'.s:lines[l:linenr].'!!!' : s:lines[l:linenr])
   endfor
   let s:lines = {}
 

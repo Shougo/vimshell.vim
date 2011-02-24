@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Feb 2011.
+" Last Modified: 24 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -477,7 +477,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
-  call vimshell#terminal#print(l:string)
+  call vimshell#terminal#print(l:string, 0)
 
   if getline('.') =~ s:password_regex
         \ && b:interactive.type == 'interactive'
@@ -527,31 +527,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   " Print buffer.
-
-  " Strip <CR>.
-  let l:string = substitute(l:string, '\r\+\n', '\n', 'g')
-  if l:string =~ '\r'
-    for l:line in split(getline('.') . l:string, '\n', 1)
-      call append('.', '')
-      normal! j
-
-      for l:l in split(l:line, '\r', 1)
-        call setline('.', '!!!' . l:l . '!!!')
-        redraw
-      endfor
-    endfor
-  else
-    let l:lines = split(l:string, '\n', 1)
-
-    if l:lines[0] != ''
-      let l:line = getline('.') =~ '!!!$' ?
-            \ getline('.')[: -4] . l:lines[0] . '!!!' : getline('.') . '!!!' . l:lines[0] . '!!!'
-      call setline('.', l:line)
-    endif
-    call append('.', map(l:lines[1:], 'v:val != "" ? "!!!" . v:val . "!!!" : v:val'))
-
-    execute 'normal!' len(l:lines).'j'
-  endif
+  call vimshell#terminal#print(l:string, 1)
 
   let b:interactive.output_pos = getpos('.')
 

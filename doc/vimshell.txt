@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-24
+- Improved error output.
+
 2011-02-23
 - Fixed output position bug.
 - Improved position restore.
