@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2011.
+" Last Modified: 25 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -123,6 +123,9 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       let l:args = extend(split(g:vimshell_execute_file_list[l:ext]), a:commands[0].args)
       let l:commands = [ { 'args' : l:args, 'fd' : l:fd } ]
       return vimshell#parser#execute_command(l:commands, a:context)
+    elseif l:program =~ '^:'
+      " Execute Vim commands.
+      return vimshell#execute_internal_command('vexe', insert(l:args, l:program[1:]), l:fd, a:context)
     elseif l:command != '' || executable(l:program)
       if has_key(g:vimshell_terminal_commands, l:program)
             \ && g:vimshell_terminal_commands[l:program]

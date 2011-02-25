@@ -679,6 +679,12 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 vexe {expression}					*vimshell-internal-vexe*
 		{expression}をVim Scriptの文として実行し、出力をvimshellバッフ
 		ァに書き出す。
+		vexeを直接使わなくても、:をプレフィクスとして実行しても同じ
+		意味となる。
+		例：
+>
+		:ls
+<
 
 view {filename} [{pattern}]				*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開く。ファイルの行数がウ
