@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-26
+- Fixed error_line() and print_line().
+
 2011-02-25
 - Implemented Vim command execution(example :ls).
 

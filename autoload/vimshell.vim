@@ -336,8 +336,6 @@ function! vimshell#print_line(fd, string)"{{{
 
   if line('.') == 1 && getline('.') == ''
     call setline('.', a:string)
-  elseif line('.') != line('$')
-    call append(line('.') - 1, a:string)
   else
     call append('.', a:string)
     normal! j
@@ -367,8 +365,6 @@ function! vimshell#error_line(fd, string)"{{{
   let l:linenr = line('.')
   if l:linenr == 1 && getline('.') == ''
     call setline('.', l:string)
-  elseif l:linenr != line('$')
-    call append(l:linenr - 1, l:string)
   else
     call append('.', l:string)
     normal! j
