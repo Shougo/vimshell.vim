@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Feb 2011.
+" Last Modified: 27 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -337,7 +337,7 @@ function! vimshell#print_line(fd, string)"{{{
   if line('.') == 1 && getline('.') == ''
     call setline('.', a:string)
   elseif line('.') != line('$')
-    call append(line('.') - 1, l:string)
+    call append(line('.') - 1, a:string)
   else
     call append('.', a:string)
     normal! j
