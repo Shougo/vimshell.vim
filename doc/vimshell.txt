@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-02-26
 - Fixed error_line() and print_line().
+- Fixed : parse.
 
 2011-02-25
 - Implemented Vim command execution(example :ls).

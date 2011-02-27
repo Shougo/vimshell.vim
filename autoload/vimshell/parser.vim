@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Feb 2011.
+" Last Modified: 27 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -123,9 +123,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       let l:args = extend(split(g:vimshell_execute_file_list[l:ext]), a:commands[0].args)
       let l:commands = [ { 'args' : l:args, 'fd' : l:fd } ]
       return vimshell#parser#execute_command(l:commands, a:context)
-    elseif l:program =~ '^:'
-      " Execute Vim commands.
-      return vimshell#execute_internal_command('vexe', insert(l:args, l:program[1:]), l:fd, a:context)
     elseif l:command != '' || executable(l:program)
       if has_key(g:vimshell_terminal_commands, l:program)
             \ && g:vimshell_terminal_commands[l:program]
@@ -235,7 +232,11 @@ function! s:execute_statement(statement, context)"{{{
   let l:program = vimshell#parser#parse_program(l:statement)
 
   let l:internal_commands = vimshell#available_commands()
-  if has_key(l:internal_commands, l:program)
+  if l:program =~ '^:'
+    " Convert to vexe special command.
+    let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+    let l:commands = [ { 'args' : split(substitute(l:statement, '^:', 'vexe ', '')), 'fd' : l:fd } ]
+  elseif has_key(l:internal_commands, l:program)
         \ && l:internal_commands[l:program].kind ==# 'special'
     " Special commands.
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
