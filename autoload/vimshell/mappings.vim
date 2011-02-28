@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jan 2011.
+" Last Modified: 27 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,6 +33,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_hide) :<C-u>call <SID>hide()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
   nnoremap <buffer><expr> <Plug>(vimshell_change_line) vimshell#check_prompt() ? printf('0%dlc$', vimshell#util#strchars(vimshell#get_prompt())) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
@@ -74,8 +75,10 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Normal mode key-mappings.
   " Execute command.
   nmap <buffer> <CR> <Plug>(vimshell_enter)
+  " Hide vimshell.
+  nmap <buffer> q <Plug>(vimshell_hide)
   " Exit vimshell.
-  nmap <buffer> q <Plug>(vimshell_exit)
+  nmap <buffer> Q <Plug>(vimshell_exit)
   " Move to previous prompt.
   nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
   " Move to next prompt.
@@ -474,7 +477,7 @@ function! s:expand_wildcard()"{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
 endfunction"}}}
-function! s:exit()"{{{
+function! s:hide()"{{{
   let l:vimsh_buf = bufnr('%')
   " Switch buffer.
   if winnr('$') != 1
@@ -482,6 +485,9 @@ function! s:exit()"{{{
   else
     call vimshell#alternate_buffer()
   endif
+endfunction"}}}
+function! s:exit()"{{{
+  call s:hide()
   execute 'bdelete!'. l:vimsh_buf
 endfunction"}}}
 function! s:delete_backward_char()"{{{

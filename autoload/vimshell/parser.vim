@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2011.
+" Last Modified: 27 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -232,7 +232,11 @@ function! s:execute_statement(statement, context)"{{{
   let l:program = vimshell#parser#parse_program(l:statement)
 
   let l:internal_commands = vimshell#available_commands()
-  if has_key(l:internal_commands, l:program)
+  if l:program =~ '^:'
+    " Convert to vexe special command.
+    let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+    let l:commands = [ { 'args' : split(substitute(l:statement, '^:', 'vexe ', '')), 'fd' : l:fd } ]
+  elseif has_key(l:internal_commands, l:program)
         \ && l:internal_commands[l:program].kind ==# 'special'
     " Special commands.
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }

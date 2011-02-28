@@ -212,6 +212,14 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-02-26
+- Fixed error_line() and print_line().
+- Fixed : parse.
+- Changed q keymapping behavior.
+
+2011-02-25
+- Implemented Vim command execution(example :ls).
+
 2011-02-24
 - Improved error output.
 

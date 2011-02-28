@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Aug 2010
+" Last Modified: 27 Feb 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -67,10 +67,10 @@ syn region   VimShellGrep  start=+^[^!]\f\+:+ end=+.*+ oneline
 if has('conceal')
   " Supported conceal features.
   syn match   VimShellErrorHidden            '!!!' contained conceal
-  syn match   VimShellUserPromptHidden       '\[%\] ' contained conceal
+  syn match   VimShellUserPromptHidden       '^\[%\] ' contained conceal
 else
   syn match   VimShellErrorHidden            '!!!' contained
-  syn match   VimShellUserPromptHidden       '\[%\] ' contained
+  syn match   VimShellUserPromptHidden       '^\[%\] ' contained
 endif
 
 execute "syn region   VimShellExe start=".string('^'.vimshell#escape_match(vimshell#get_prompt())) "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=VimShellPrompt,VimShellSpecial,VimShellConstants,VimShellArguments,VimShellString,VimShellComment"
