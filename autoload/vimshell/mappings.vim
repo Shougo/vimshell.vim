@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Mar 2011.
+" Last Modified: 03 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -283,6 +283,9 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   " Call preparse filter.
   let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
 
+  " Save cmdline.
+  let b:vimshell.cmdline = l:line
+
   try
     let l:ret = vimshell#parser#eval_script(l:line, l:context)
   catch /File ".*" is not found./
@@ -313,9 +316,6 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   if l:line !~ '^\s'
     call vimshell#history#append(l:line)
   endif
-
-  " Save cmdline.
-  let b:vimshell.cmdline = l:line
 
   if l:ret == 0
     call vimshell#print_prompt(l:context)
