@@ -676,16 +676,6 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		て挙動を変更する。詳しくは |vimshell-execute-options|を参
 		照せよ。
 
-vexe {expression}					*vimshell-internal-vexe*
-		{expression}をVim Scriptの文として実行し、出力をvimshellバッフ
-		ァに書き出す。
-		vexeを直接使わなくても、:をプレフィクスとして実行しても同じ
-		意味となる。
-		例：
->
-		:ls
-<
-
 view {filename} [{pattern}]				*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開く。ファイルの行数がウ
 		インドウサイズよりも少ない場合、別バッファを開かず、catのように
@@ -715,9 +705,9 @@ whrereis {command}				*vimshell-internal-whereis*
 
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
-special commandはinternal commandとは違い、vimshellが最小限の解釈しかせずに、コ
-マンドに制御が渡る。それだけ柔軟な解釈ができますが、引数をパースするのはそれぞ
-れのコマンドの責任となる。
+special commandはinternal commandとは違い、vimshellが最小限の解釈しかせずに、
+コマンドに制御が渡る。それだけ柔軟な解釈ができるが、引数をパースするのはそれ
+ぞれのコマンドの責任となる。
 
 alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshellにaliasを定義する。vimshellは{alias-name}がコマンド名と
@@ -754,6 +744,19 @@ sexe {command}						*vimshell-special-sexe*
 		{command}を'shell'上で実行する。 vimshellでの起動に不具合がある
 		ときに使用する。 'shell'が適切に設定されていないと動作がおかし
 		くなる。Windows環境では一瞬DOS窓が表示されてしまう。
+
+vexe {expression}					*vimshell-special-vexe*
+		{expression}をVim Scriptの文として実行し、出力をvimshellバッ
+		ファに書き出す。コマンドの実行後はvimshellバッファへと戻って
+		こなければならない。もしこの規則が守られない場合、vimshellの
+		状態は保証されない。
+		vexeを直接使わなくても、:をプレフィクスとして実行しても同じ
+		意味となる。ただし、:をプレフィクスとして実行すると、
+		vimshellはメタ文字の解釈を一切行わない。
+		例：
+>
+		:ls
+<
 
 ==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
