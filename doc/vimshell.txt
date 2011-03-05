@@ -216,6 +216,9 @@ CHANGELOG						*vimshell-changelog*
 - Fixed : parse.
 - Improved vexe description.
 
+2011-03-03
+- Fixed cmdline error.
+
 2011-03-02
 - Save last executed command line.
 
