@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Feb 2011.
+" Last Modified: 05 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,11 @@ function! vimshell#parser#check_script(script)"{{{
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
-  let l:statements = vimproc#parser#parse_statements(a:script)
+  if a:script =~ '^\s*:'
+    let l:statements = [ { 'statement' : a:script, 'condition' : 'always' } ]
+  else
+    let l:statements = vimproc#parser#parse_statements(a:script)
+  endif
   let l:max = len(l:statements)
 
   let l:context = a:context
@@ -232,7 +236,7 @@ function! s:execute_statement(statement, context)"{{{
   let l:program = vimshell#parser#parse_program(l:statement)
 
   let l:internal_commands = vimshell#available_commands()
-  if l:program =~ '^:'
+  if l:program =~ '^\s*:'
     " Convert to vexe special command.
     let l:fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
     let l:commands = [ { 'args' : split(substitute(l:statement, '^:', 'vexe ', '')), 'fd' : l:fd } ]
