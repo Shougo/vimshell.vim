@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-06
+- Use conceal when possible.
+
 2011-03-05
 - Fixed : parse.
 - Improved vexe description.

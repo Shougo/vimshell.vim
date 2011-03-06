@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Feb 2011.
+" Last Modified: 06 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -234,11 +234,20 @@ function! vimshell#terminal#clear_highlight()"{{{
   endif
 
   for l:syntax_names in values(b:interactive.terminal.syntax_names)
-    for l:syntax_name in values(l:syntax_names)
-      execute 'highlight clear' l:syntax_name
-      execute 'syntax clear' l:syntax_name
-    endfor
+    if s:use_conceal()
+      execute 'highlight clear' l:syntax_names
+      execute 'syntax clear' l:syntax_names
+    else
+      for l:syntax_name in values(l:syntax_names)
+        execute 'highlight clear' l:syntax_name
+        execute 'syntax clear' l:syntax_name
+      endfor
+    endif
   endfor
+
+  if s:use_conceal()
+    setlocal wrap
+  endif
 endfunction"}}}
 
 function! s:init_terminal()"{{{
@@ -253,7 +262,11 @@ function! s:init_terminal()"{{{
         \ 'alternate_character_set' : 'United States',
         \ 'current_character_set' : 'United States',
         \}
-  return
+
+  if s:use_conceal()
+    syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
+    syntax match vimshellEscapeSequenceConceal2 conceal    '\e\[0m'
+  endif
 endfunction"}}}
 function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
@@ -336,12 +349,19 @@ function! s:scroll_down(number)"{{{
   endwhile
 endfunction"}}}
 function! s:clear_highlight_line(linenr)"{{{
+  if s:use_conceal()
+    return
+  endif
+
   if has_key(b:interactive.terminal.syntax_names, a:linenr)
     for [l:col, l:prev_syntax] in items(b:interactive.terminal.syntax_names[a:linenr])
       execute 'highlight clear' l:prev_syntax
       execute 'syntax clear' l:prev_syntax
     endfor
   endif
+endfunction"}}}
+function! s:use_conceal()"{{{
+  return has('conceal') && b:interactive.type !=# 'terminal'
 endfunction"}}}
 
 " Escape sequence functions.
@@ -376,10 +396,6 @@ let s:highlight_table = {
       \ 49 : ' ctermbg=NONE guibg=NONE', 
       \}"}}}
 function! s:escape.highlight(matchstr)"{{{
-  let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-
-  let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
-
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
   let l:cnt = 0
@@ -456,8 +472,33 @@ function! s:escape.highlight(matchstr)"{{{
     let l:cnt += 1
   endfor
 
-  if l:highlight != '' && !g:vimshell_disable_escape_highlight
-        \ && b:interactive.syntax ==# &filetype
+  if l:highlight == '' || g:vimshell_disable_escape_highlight
+    return
+  endif
+
+  if s:use_conceal()
+    call s:output_string("\<ESC>" . a:matchstr)
+
+    " Check cached highlight.
+    if a:matchstr =~ '^\[0m$'
+          \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
+      return
+    endif
+
+    let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+    let l:syntax_command = printf('start=+\e\%s+ end=+\e\[+me=e-2 ' .
+          \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
+
+    execute 'syntax region' l:syntax_name l:syntax_command
+    execute 'highlight' l:syntax_name l:highlight
+
+    let b:interactive.terminal.syntax_names[a:matchstr] = l:syntax_name
+
+    setlocal nowrap
+  else
+    let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+    let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
+
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
     endif

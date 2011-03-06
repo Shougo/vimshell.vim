@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Feb 2011.
+" Last Modified: 06 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -95,7 +95,7 @@ function! s:default_settings()"{{{
   setlocal foldmethod=manual
   if has('conceal')
     setlocal conceallevel=3
-    setlocal concealcursor=n
+    setlocal concealcursor=nvi
   endif
 
   " For vimshell.
