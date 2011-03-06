@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-03-06
 - Use conceal when possible.
+- Fixed output error.
 
 2011-03-05
 - Fixed : parse.

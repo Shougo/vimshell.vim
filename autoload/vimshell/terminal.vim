@@ -30,12 +30,19 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let l:current_line = getline('.')
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
-  if !a:is_error && b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
+  if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
     " Strip <CR>.
     let l:string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
 
+    let l:lines = l:string =~ '\r' ?
+          \ split(l:string, '\n', 1) : split(l:string, '\n', 1)
+
+    if a:is_error
+      call map(l:lines, '"!!!".v:val."!!!"')
+    endif
+
     if l:string =~ '\r'
-      for l:line in split(getline('.') . l:string, '\n', 1)
+      for l:line in l:lines
         call append('.', '')
         normal! j
 
@@ -46,7 +53,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
       endfor
     else
       " Optimized print.
-      let l:lines = split(l:string, '\n', 1)
+
       if !b:interactive.is_pty
             \ && has_key(b:interactive, 'command')
             \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
@@ -68,6 +75,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   if !has_key(b:interactive, 'terminal')
     call s:init_terminal()
   endif
+  let b:interactive.terminal.is_error = a:is_error
 
   let l:newstr = ''
   let l:pos = 0
@@ -191,8 +199,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
   " Set lines.
   for l:linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
-    call setline(l:linenr, a:is_error ?
-          \ '!!!'.s:lines[l:linenr].'!!!' : s:lines[l:linenr])
+    call setline(l:linenr, s:lines[l:linenr])
   endfor
   let s:lines = {}
 
@@ -257,6 +264,7 @@ function! s:init_terminal()"{{{
         \ 'standard_character_set' : 'United States',
         \ 'alternate_character_set' : 'United States',
         \ 'current_character_set' : 'United States',
+        \ 'is_error' : 0,
         \}
 
   if s:use_conceal()
@@ -282,7 +290,8 @@ function! s:output_string(string)"{{{
     return
   endif
 
-  let l:string = a:string
+  let l:string = b:interactive.terminal.is_error ?
+        \ '!!!' . a:string . '!!!' : a:string
 
   if b:interactive.terminal.current_character_set ==# 'Line Drawing'
     " Convert characters.
@@ -764,6 +773,12 @@ function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
   let s:col = 1
+
+  if b:interactive.type !=# 'terminal'
+    " New line.
+    call append(s:line, '')
+  endif
+
   call s:escape.move_down(1)
 endfunction"}}}
 function! s:control.delete_backword_char()"{{{
