@@ -265,7 +265,7 @@ function! s:init_terminal()"{{{
 
   if s:use_conceal()
     syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
-    syntax match vimshellEscapeSequenceConceal2 conceal    '\e\[0m'
+    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m'
   endif
 endfunction"}}}
 function! s:output_string(string)"{{{
