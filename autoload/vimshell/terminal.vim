@@ -244,10 +244,6 @@ function! vimshell#terminal#clear_highlight()"{{{
       endfor
     endif
   endfor
-
-  if s:use_conceal()
-    setlocal wrap
-  endif
 endfunction"}}}
 
 function! s:init_terminal()"{{{
@@ -494,7 +490,8 @@ function! s:escape.highlight(matchstr)"{{{
 
     let b:interactive.terminal.syntax_names[a:matchstr] = l:syntax_name
 
-    setlocal nowrap
+    " Note: When use concealed text, wrapped text is wrong...
+    " setlocal nowrap
   else
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
     let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
