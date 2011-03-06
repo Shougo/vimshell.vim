@@ -392,6 +392,16 @@ let s:highlight_table = {
       \ 49 : ' ctermbg=NONE guibg=NONE', 
       \}"}}}
 function! s:escape.highlight(matchstr)"{{{
+  if s:use_conceal()
+    call s:output_string("\<ESC>" . a:matchstr)
+
+    " Check cached highlight.
+    if a:matchstr =~ '^\[0m$'
+          \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
+      return
+    endif
+  endif
+
   let l:highlight = ''
   let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
   let l:cnt = 0
@@ -473,14 +483,6 @@ function! s:escape.highlight(matchstr)"{{{
   endif
 
   if s:use_conceal()
-    call s:output_string("\<ESC>" . a:matchstr)
-
-    " Check cached highlight.
-    if a:matchstr =~ '^\[0m$'
-          \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
-      return
-    endif
-
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
     let l:syntax_command = printf('start=+\e\%s+ end=+\e\[+me=e-2 ' .
           \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
