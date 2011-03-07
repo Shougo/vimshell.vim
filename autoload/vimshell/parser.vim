@@ -357,7 +357,7 @@ function! s:recursive_expand_alias(alias_name, args)"{{{
 
   let i = 0
   let l:max = len(l:alias)
-  let l:args = insert(a:args, a:alias_name)
+  let l:args = insert(copy(a:args), a:alias_name)
   try
     while i < l:max
       let l:matchlist = matchlist(l:alias,
@@ -384,7 +384,7 @@ function! s:recursive_expand_alias(alias_name, args)"{{{
   endtry
 
   if l:script ==# l:alias
-    let l:script .= ' ' . a:args
+    let l:script .= ' ' . join(a:args)
   endif
 
   return l:script
