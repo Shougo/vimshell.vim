@@ -700,7 +700,7 @@ vimsh [{filename}]					*vimshell-internal-vimsh*
 which {command}					*vimshell-internal-which*
 		{command}のフルパスを出力する。aliasも認識される。
 
-whrereis {command}				*vimshell-internal-whereis*
+whereis {command}				*vimshell-internal-whereis*
 		{command}のフルパスをすべて出力する。
 
 ==============================================================================
