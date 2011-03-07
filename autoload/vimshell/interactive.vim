@@ -459,7 +459,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   endif
 
   if a:fd.stdout != ''
-    return vimshell#interactive#print_file(a:fd.stdout, a:string)
+    return vimproc#parser#print(a:fd.stdout, a:string)
   endif
 
   " Convert encoding.
@@ -496,7 +496,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   endif
 
   if a:fd.stderr != ''
-    return vimshell#interactive#print_file(a:fd.stderr, a:string)
+    return vimproc#parser#print(a:fd.stderr, a:string)
   endif
 
   " Convert encoding.
@@ -509,26 +509,6 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   let b:interactive.output_pos = getpos('.')
 
   redraw
-endfunction"}}}
-function! vimshell#interactive#print_file(filename, string)"{{{
-  if a:string == ''
-    return
-  endif
-
-  if a:filename != ''
-    if a:filename ==# '/dev/null'
-      " Nothing.
-    elseif a:filename ==# '/dev/clip'
-      " Write to clipboard.
-      let @+ .= a:string
-    else
-      " Write file.
-      let l:file = extend(readfile(a:filename), split(a:string, '\r\n\|\n'))
-      call writefile(l:file, a:filename)
-    endif
-
-    return
-  endif
 endfunction"}}}
 
 " Autocmd functions.
