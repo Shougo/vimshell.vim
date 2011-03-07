@@ -57,7 +57,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     let l:len_env = len(l:env_ev)
   else
     let l:len_env = 0
-    
+
     if a:cur_keyword_str =~ '^\~\h\w*'
       let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
     endif
@@ -66,7 +66,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   try
     let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
     let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
-    
+
     if empty(l:files)
       " Add '*' to a delimiter.
       let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
@@ -77,7 +77,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     call vimshell#echo_error(v:exception)
     return []
   endtry
-  
+
   if empty(l:files)
     return []
   elseif len(l:files) > g:vimshell_max_list

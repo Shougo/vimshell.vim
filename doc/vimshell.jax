@@ -713,6 +713,14 @@ alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshellにaliasを定義する。vimshellは{alias-name}がコマンド名と
 		して使用されると、自動的に{command}に置き換える。普通のシェルと
 		は違い、 = の前後に空白があっても動作する。
+		
+		aliasは引数を取ることができる。引数は$$args変数により参照す
+		る。
+>
+		vimshell% alias echo=':echo "$$args"'
+		vimshell% alias echo2=':echo "$$args[1]"'
+		vimshell% alias echo3=':echo "$$args[2:]"'
+<
 
 galias {global-alias-name} = {command}			*vimshell-internal-galias*
 		vimshellにグローバルなaliasを定義する。vimshellは

@@ -31,7 +31,7 @@ let s:command = {
       \}
 function! s:command.execute(program, args, fd, context)"{{{
   let l:args = join(a:args)
-  
+
   if empty(a:args)
     " View all aliases.
     for alias in keys(b:vimshell.alias_table)
@@ -52,7 +52,8 @@ function! s:command.execute(program, args, fd, context)"{{{
     endif
 
     " Skip =.
-    let l:expression = l:args[matchend(l:args, '\s*=\s*') :]
+    let l:expression = substitute(l:args[matchend(l:args, '\s*=\s*') :],
+          \ '^[''"]\|[''"]$', '', 'g')
 
     call vimshell#set_alias(l:alias_name, l:expression)
   endif

@@ -33,11 +33,7 @@ function! vimshell#parser#check_script(script)"{{{
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
-  if a:script =~ '^\s*:'
-    let l:statements = [ { 'statement' : a:script, 'condition' : 'always' } ]
-  else
-    let l:statements = vimproc#parser#parse_statements(a:script)
-  endif
+  let l:statements = vimproc#parser#parse_statements(a:script)
   let l:max = len(l:statements)
 
   let l:context = a:context
@@ -267,7 +263,8 @@ function! vimshell#parser#parse_alias(statement)"{{{
 
     if exists('b:vimshell') && has_key(b:vimshell.alias_table, l:program) && !empty(b:vimshell.alias_table[l:program])
       " Expand alias.
-      let l:statement = join(vimproc#parser#split_args(s:recursive_expand_alias(l:program))) . l:statement[matchend(l:statement, vimshell#get_program_pattern()) :]
+      let l:args = vimproc#parser#split_args_through(l:statement[matchend(l:statement, vimshell#get_program_pattern()) :])
+      let l:statement = s:recursive_expand_alias(l:program, l:args)
     endif
 
     call add(l:pipes, l:statement)
@@ -293,7 +290,7 @@ function! s:parse_galias(script)"{{{
   if !exists('b:vimshell')
     return a:script
   endif
-  
+
   let l:script = a:script
   let l:max = len(l:script)
   let l:args = []
@@ -341,9 +338,9 @@ function! s:parse_galias(script)"{{{
 
   return join(l:args)
 endfunction"}}}
-function! s:recursive_expand_alias(string)"{{{
+function! s:recursive_expand_alias(alias_name, args)"{{{
   " Recursive expand alias.
-  let l:alias = b:vimshell.alias_table[a:string]
+  let l:alias = b:vimshell.alias_table[a:alias_name]
   let l:expanded = {}
   while 1
     let l:key = vimproc#parser#split_args(l:alias)[-1]
@@ -355,7 +352,42 @@ function! s:recursive_expand_alias(string)"{{{
     let l:alias = b:vimshell.alias_table[l:alias]
   endwhile
 
-  return l:alias
+  " Expand variables.
+  let l:script = ''
+
+  let i = 0
+  let l:max = len(l:alias)
+  let l:args = insert(a:args, a:alias_name)
+  try
+    while i < l:max
+      let l:matchlist = matchlist(l:alias,
+            \'^$$args\(\[\d\+\%(:\%(\d\+\)\?\)\?\]\)\?', i)
+      if empty(l:matchlist)
+        let l:script .= l:alias[i]
+        let i += 1
+      else
+        let l:index = l:matchlist[1]
+
+        if l:index == ''
+          " All args.
+          let l:script .= join(l:args[1:])
+        elseif l:index =~ '^\[\d\+\]$'
+          let l:script .= get(l:args, l:index[1: -2], '')
+        else
+          " Some args.
+          let l:script .= join(eval('l:args' . l:index))
+        endif
+
+        let i += len(l:matchlist[0])
+      endif
+    endwhile
+  endtry
+
+  if l:script ==# l:alias
+    let l:script .= ' ' . a:args
+  endif
+
+  return l:script
 endfunction"}}}
 
 " Misc.
