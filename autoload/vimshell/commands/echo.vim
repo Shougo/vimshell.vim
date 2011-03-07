@@ -31,7 +31,7 @@ let s:command = {
       \}
 function! s:command.execute(command, args, fd, context)"{{{
   " Echo arguments.
-  call vimshell#print(a:fd, "\n" . join(a:args))
+  call vimshell#print(a:fd, join(a:args) . "\n")
 endfunction"}}}
 
 function! vimshell#commands#echo#define()

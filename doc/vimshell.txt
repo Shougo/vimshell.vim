@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-07
+- Improved print.
+
 2011-03-06
 - Use conceal when possible.
 - Fixed output error.

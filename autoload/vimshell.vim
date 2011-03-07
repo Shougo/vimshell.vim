@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2011.
+" Last Modified: 07 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -296,81 +296,13 @@ function! vimshell#read(fd)"{{{
   endif
 endfunction"}}}
 function! vimshell#print(fd, string)"{{{
-  if a:string == ''
-    return
-  endif
-
-  if !empty(a:fd) && a:fd.stdout != ''
-    if a:fd.stdout == '/dev/null'
-      " Nothing.
-    elseif a:fd.stdout == '/dev/clip'
-      " Write to clipboard.
-      let @+ .= a:string
-    else
-      " Write file.
-      let l:file = extend(readfile(a:fd.stdout), split(a:string, '\r\n\|\n'))
-      call writefile(l:file, a:fd.stdout)
-    endif
-
-    return
-  endif
-
-  call vimshell#terminal#print(a:string, 0)
+  return vimshell#interactive#print_buffer(a:fd, "\n" . a:string)
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
-  if !empty(a:fd) && a:fd.stdout != ''
-    if a:fd.stdout == '/dev/null'
-      " Nothing.
-    elseif a:fd.stdout == '/dev/clip'
-      " Write to clipboard.
-      let @+ .= a:string
-    else
-      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
-            \ iconv(a:string, &encoding, &termencoding) : a:string
-
-      " Write file.
-      let l:file = add(readfile(a:fd.stdout), a:string)
-      call writefile(l:file, a:fd.stdout)
-    endif
-
-    return
-  endif
-
-  if line('.') == 1 && getline('.') == ''
-    call setline('.', a:string)
-  else
-    call append('.', a:string)
-    normal! j
-  endif
+  return vimshell#interactive#print_buffer(a:fd, "\n" . a:string)
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
-  if !empty(a:fd) && a:fd.stderr != ''
-    if a:fd.stderr == '/dev/null'
-      " Nothing.
-    elseif a:fd.stderr == '/dev/clip'
-      " Write to clipboard.
-      let @+ .= a:string
-    else
-      let l:string = (&termencoding != '' && &encoding != &termencoding) ?
-            \ iconv(a:string, &encoding, &termencoding) : a:string
-
-      " Write file.
-      let l:file = extend(readfile(a:fd.stderr), split(a:string, '\r\n\|\n'))
-      call writefile(l:file, a:fd.stderr)
-    endif
-
-    return
-  endif
-
-  let l:string = '!!!' . a:string . '!!!'
-
-  let l:linenr = line('.')
-  if l:linenr == 1 && getline('.') == ''
-    call setline('.', l:string)
-  else
-    call append('.', l:string)
-    normal! j
-  endif
+  return vimshell#interactive#error_buffer(a:fd, "\n" . a:string)
 endfunction"}}}
 function! vimshell#echo_error(string)"{{{
   echohl Error | echo a:string | echohl None
