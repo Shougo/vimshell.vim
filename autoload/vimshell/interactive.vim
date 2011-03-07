@@ -458,8 +458,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     return
   endif
 
-  if a:fd.stdout != ''
-    return vimproc#parser#print(a:fd.stdout, a:string)
+  if !empty(a:fd) && a:fd.stdout != ''
+    return vimproc#write(a:fd.stdout, a:string, 'a')
   endif
 
   " Convert encoding.
@@ -495,8 +495,8 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     return
   endif
 
-  if a:fd.stderr != ''
-    return vimproc#parser#print(a:fd.stderr, a:string)
+  if !empty(a:fd) && a:fd.stderr != ''
+    return vimproc#write(a:fd.stderr, a:string)
   endif
 
   " Convert encoding.
