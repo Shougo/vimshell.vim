@@ -296,13 +296,13 @@ function! vimshell#read(fd)"{{{
   endif
 endfunction"}}}
 function! vimshell#print(fd, string)"{{{
-  return vimshell#interactive#print_buffer(a:fd, "\n" . a:string)
+  return vimshell#interactive#print_buffer(a:fd, a:string)
 endfunction"}}}
 function! vimshell#print_line(fd, string)"{{{
-  return vimshell#interactive#print_buffer(a:fd, "\n" . a:string)
+  return vimshell#interactive#print_buffer(a:fd, a:string . "\n")
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
-  return vimshell#interactive#error_buffer(a:fd, "\n" . a:string)
+  return vimshell#interactive#error_buffer(a:fd, a:string . "\n")
 endfunction"}}}
 function! vimshell#echo_error(string)"{{{
   echohl Error | echo a:string | echohl None

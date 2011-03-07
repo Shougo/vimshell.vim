@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Mar 2011.
+" Last Modified: 07 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,6 +26,12 @@
 
 function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
+
+  if &filetype ==# 'vimshell' && vimshell#check_prompt()
+    " Move line.
+    call append(line('.'), '')
+    normal! j
+  endif
 
   let l:current_line = getline('.')
   let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')

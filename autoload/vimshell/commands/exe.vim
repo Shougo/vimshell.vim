@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Dec 2010.
+" Last Modified: 07 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,7 @@ function! s:command.execute(commands, context)"{{{
   if !has_key(l:options, '--encoding')
     let l:options['--encoding'] = &termencoding
   endif
-  
+
   if empty(l:commands[0].args)
     return
   endif
@@ -48,7 +48,7 @@ function! s:command.execute(commands, context)"{{{
       call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
     endfor
   endif
-  
+
   " Execute command.
   if s:init_process(l:commands, a:context, l:options)
     return
@@ -63,7 +63,7 @@ function! s:command.execute(commands, context)"{{{
   if a:context.is_interactive
     throw 'exe: Process started.'
   endif
-  
+
   echo 'Running command.'
   while b:interactive.process.is_valid
     call vimshell#interactive#execute_pipe_out()
