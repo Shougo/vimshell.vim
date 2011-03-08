@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 08 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -275,7 +275,7 @@ function! s:init_terminal()"{{{
 
   if s:use_conceal()
     syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
-    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m'
+    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
   endif
 endfunction"}}}
 function! s:output_string(string)"{{{
@@ -411,7 +411,7 @@ function! s:escape.highlight(matchstr)"{{{
     call s:output_string("\<ESC>" . a:matchstr)
 
     " Check cached highlight.
-    if a:matchstr =~ '^\[0m$'
+    if a:matchstr =~ '^\[0\?m$'
           \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
       return
     endif
@@ -499,7 +499,7 @@ function! s:escape.highlight(matchstr)"{{{
 
   if s:use_conceal()
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-    let l:syntax_command = printf('start=+\e\%s+ end=+\e\[+me=e-2 ' .
+    let l:syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
           \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
 
     execute 'syntax region' l:syntax_name l:syntax_command

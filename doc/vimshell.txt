@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-08
+- Improved concealed color.
+
 2011-03-07
 - Improved print.
 - Improved virtual file.

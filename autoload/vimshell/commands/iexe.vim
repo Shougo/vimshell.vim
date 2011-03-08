@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2010.
+" Last Modified: 08 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -235,7 +235,7 @@ function! s:default_settings()"{{{
   setlocal foldmethod=manual
   if has('conceal')
     setlocal conceallevel=3
-    setlocal concealcursor=n
+    setlocal concealcursor=nvi
   endif
 
   " For interactive.
