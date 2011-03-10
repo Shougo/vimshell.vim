@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 10 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -145,27 +145,33 @@ endfunction"}}}
 " VimShell key-mappings functions.
 function! s:push_current_line()"{{{
   " Check current line.
-  if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  if !vimshell#check_prompt()
     return
   endif
 
   call add(b:vimshell.commandline_stack, getline('.'))
 
+  " Todo:
+  " Print command line stack.
+  " let l:stack = map(deepcopy(b:vimshell.commandline_stack),
+  "       \ 'vimshell#get_prompt_command(v:val)')
+  " call append('.', l:stack)
+
   " Set prompt line.
-  call setline(line('.'), vimshell#get_prompt())
+  call setline('.', vimshell#get_prompt())
 
   startinsert!
 endfunction"}}}
 function! s:push_and_execute(command)"{{{
   " Check current line.
-  if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  if !vimshell#check_prompt()
     return
   endif
 
   call add(b:vimshell.commandline_stack, getline('.'))
 
   " Set prompt line.
-  call setline(line('.'), vimshell#get_prompt() . a:command)
+  call setline('.', vimshell#get_prompt() . a:command)
 
   call s:execute_line(1)
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 10 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -418,8 +418,13 @@ function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
   return vimshell#get_cur_line()[len(vimshell#get_prompt()):]
 endfunction"}}}
-function! vimshell#get_prompt_command()"{{{
+function! vimshell#get_prompt_command(...)"{{{
   " Get command without prompt.
+
+  if a:0 > 0
+    return a:1[len(vimshell#get_prompt()):]
+  endif
+
   if !vimshell#check_prompt()
     " Search prompt.
     let [l:lnum, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
