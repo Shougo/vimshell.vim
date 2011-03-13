@@ -521,6 +521,11 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		bgの場合、ユーザーからの入力は一切受け付けない。 バックグラウン
 		ドバッファ上で<C-c>を入力すると、{command}の実行を強制的に終了
 		させる。
+		コマンドラインの最後に&を付加すると、bgを指定したことと同じとなる。
+		例：
+>
+		vimshell% ls&
+<
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づいて
 		挙動を変更する。詳しくは |vimshell-execute-options|を参照せよ。
 		ここでは、bgのみに存在するオプションを解説する。

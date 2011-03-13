@@ -212,6 +212,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-13
+- Implemented &.
+- Improved parser.
+
 2011-03-08
 - Improved concealed color.
 

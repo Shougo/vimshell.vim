@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 13 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -72,24 +72,30 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   endif
 
   let l:internal_commands = vimshell#available_commands()
-  let l:program = a:commands[0].args[0]
-  let l:args = a:commands[0].args[1:]
-  let l:fd = a:commands[0].fd
-  let l:line = join(a:commands[0].args)
+
+  let l:commands = a:commands
+  let l:program = l:commands[0].args[0]
+  let l:args = l:commands[0].args[1:]
+  let l:fd = l:commands[0].fd
+  let l:context = a:context
+  let l:context.fd = l:fd
 
   " Check pipeline.
   if has_key(l:internal_commands, l:program)
         \ && l:internal_commands[l:program].kind ==# 'execute'
     " Execute execute commands.
-    let l:context = a:context
-    let l:context.fd = l:fd
-    let l:commands = a:commands
     let l:commands[0].args = l:args
     return l:internal_commands[l:program].execute(l:commands, l:context)
-  elseif len(a:commands) > 1
-    let l:context = a:context
-    let l:context.fd = l:fd
+  elseif a:commands[-1].args[-1] =~ '&$'
+    " Convert to internal bg command.
+    let l:commands[-1].args[-1] = l:commands[-1].args[-1][:-2]
+    if l:commands[-1].args[-1] == ''
+      " Delete empty arg.
+      call remove(l:commands[-1].args, -1)
+    endif
 
+    return l:internal_commands['bg'].execute(l:commands, l:context)
+  elseif len(a:commands) > 1
     if a:commands[-1].args[0] == 'less'
       " Execute less(Syntax sugar).
       let l:commands = a:commands[: -2]
@@ -102,8 +108,9 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       return l:internal_commands['exe'].execute(a:commands, l:context)
     endif
   else"{{{
+    let l:line = join(a:commands[0].args)
     let l:dir = substitute(substitute(l:line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
-    let l:command = vimshell#get_command_path(program)
+    let l:command = vimshell#get_command_path(l:program)
     let l:ext = fnamemodify(l:program, ':e')
 
     " Check internal commands.
@@ -124,13 +131,15 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       let l:commands = [ { 'args' : l:args, 'fd' : l:fd } ]
       return vimshell#parser#execute_command(l:commands, a:context)
     elseif l:command != '' || executable(l:program)
+      let l:args = insert(l:args, l:program)
+
       if has_key(g:vimshell_terminal_commands, l:program)
             \ && g:vimshell_terminal_commands[l:program]
         " Execute terminal commands.
-        return vimshell#execute_internal_command('texe', insert(l:args, l:program), l:fd, a:context)
+        return l:internal_commands['texe'].execute(a:commands, l:context)
       else
         " Execute external commands.
-        return vimshell#execute_internal_command('exe', insert(l:args, l:program), l:fd, a:context)
+        return l:internal_commands['exe'].execute(a:commands, l:context)
       endif
     else
       throw printf('Error: File "%s" is not found.', l:program)
@@ -283,7 +292,7 @@ function! vimshell#parser#parse_program(statement)"{{{
     " Parse tilde.
     let l:program = substitute($HOME, '\\', '/', 'g') . l:program[1:]
   endif
-  
+
   return l:program
 endfunction"}}}
 function! s:parse_galias(script)"{{{
