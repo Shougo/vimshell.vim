@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-14
+- Deleted highlight oneline option.
+
 2011-03-13
 - Implemented &.
 - Improved parser.

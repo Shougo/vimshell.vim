@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Mar 2011.
+" Last Modified: 14 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -500,7 +500,7 @@ function! s:escape.highlight(matchstr)"{{{
   if s:use_conceal()
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
     let l:syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
-          \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
+          \ 'contains=vimshellEscapeSequenceConceal', a:matchstr)
 
     execute 'syntax region' l:syntax_name l:syntax_command
     execute 'highlight' l:syntax_name l:highlight
@@ -511,7 +511,7 @@ function! s:escape.highlight(matchstr)"{{{
     " setlocal nowrap
   else
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-    let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', s:line, s:col)
+    let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
 
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
