@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Mar 2011.
+" Last Modified: 16 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -257,6 +257,11 @@ function! vimshell#terminal#clear_highlight()"{{{
       endfor
     endif
   endfor
+
+  if s:use_conceal()
+    " Restore wrap.
+    let &l:wrap = b:interactive.terminal.wrap
+  endif
 endfunction"}}}
 
 function! s:init_terminal()"{{{
@@ -271,6 +276,7 @@ function! s:init_terminal()"{{{
         \ 'alternate_character_set' : 'United States',
         \ 'current_character_set' : 'United States',
         \ 'is_error' : 0,
+        \ 'wrap' : &l:wrap,
         \}
 
   if s:use_conceal()
@@ -508,7 +514,7 @@ function! s:escape.highlight(matchstr)"{{{
     let b:interactive.terminal.syntax_names[a:matchstr] = l:syntax_name
 
     " Note: When use concealed text, wrapped text is wrong...
-    " setlocal nowrap
+    setlocal nowrap
   else
     let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
     let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
