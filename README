@@ -1,0 +1,42 @@
+==============================================================================
+INTRODUCTION						*vimshell-introduction*
+
+==============================================================================
+USAGE							*vimshell-usage*
+
+You can start vimshell in ":VimShell".  Because vimshell works similar with
+a common shell, you may operate it intuitively.  But vimshell perform the
+path appointment in '/'. Vimshell is misunderstood with escape sequence when
+you use '\' by Windows for a path and do not work.
+
+==============================================================================
+INSTALL							*vimshell-install*
+
+vimshell needs |vimproc|
+http://github.com/Shougo/vimproc
+
+Please install vimproc Ver.5.0(or later) before use vimshell.
+And make proc.so
+
+Make method:
+
+* Mingw: >
+	$ make -f make_mingw.mak
+
+* Mac OS X: >
+	$ make -f make_mac.mak
+
+* Linux BSD: >
+	$ make -f make_gcc.mak
+
+* Visual Studio: >
+	$ make -f make_msvc.mak
+
+* Cygwin: >
+	$ make -f make_cygwin.mak
+
+After compile, copy autoload/vimproc.vim and autoload/vimproc/parser.vim and
+autoload/proc.so(or proc.dll) to autoload directory.
+Note: "proc.dll" compiled in Cygwin environment is only Cygwin Vim. Can't use
+in Windows Vim.
+
