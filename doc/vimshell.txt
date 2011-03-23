@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-03-23
+- Implemented vimshell history source.
+
 2011-03-16
 - Improved concealed highlight.
 

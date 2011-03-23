@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Mar 2011.
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -406,7 +406,7 @@ function! vimshell#escape_match(str)"{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
 function! vimshell#get_prompt()"{{{
-  return s:prompt
+  return &filetype == 'vimshell' ? s:prompt : vimshell#interactive#get_prompt(line('.'))
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
   return s:secondary_prompt
@@ -416,11 +416,12 @@ function! vimshell#get_user_prompt()"{{{
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
-  return vimshell#get_cur_line()[len(vimshell#get_prompt()):]
+  return &filetype == 'vimshell' ?
+        \ vimshell#get_cur_line()[len(vimshell#get_prompt()):]
+        \ : vimshell#interactive#get_cur_text()
 endfunction"}}}
 function! vimshell#get_prompt_command(...)"{{{
   " Get command without prompt.
-
   if a:0 > 0
     return a:1[len(vimshell#get_prompt()):]
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Mar 2011.
+" Last Modified: 23 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,7 +58,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:call <SID>move_head()<CR>
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<C-o>:<C-u>call <SID>execute_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:call <SID>interrupt(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
@@ -115,7 +115,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
   " History completion.
-  imap <buffer> <C-l>  <Plug>(vimshell_history_complete_whole)
+  " imap <buffer> <C-l>  <Plug>(vimshell_history_complete_whole)
+  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
