@@ -42,8 +42,10 @@ let s:source = {
       \ 'name': 'vimshell/history',
       \ 'hooks' : {},
       \ 'max_candidates' : 100,
+      \ 'default_action' : { '*' : 'execute' },
       \ 'action_table' : {},
       \ 'syntax' : 'uniteSource__VimshellHistory',
+      \ 'alias_table' : { '*' : { 'ex' : 'nop', 'narrow' : 'edit' } },
       \ }
 
 let s:current_filetype = &filetype
@@ -60,13 +62,22 @@ endfunction"}}}
 function! s:source.gather_candidates(args, context) "{{{
   let l:keyword_pos = a:context.source__cur_keyword_pos
 
-  return map(copy(a:context.source__candidates), '{
-        \   "word" : v:val,
-        \   "abbr" : substitute(v:val, "\\s\\+$", ">-", ""),
-        \   "kind": "completion",
-        \   "action__complete_word" : v:val,
-        \   "action__complete_pos" : l:keyword_pos,
-        \ }')
+  let l:cnt = 0
+  let l:candidates = []
+  for l:history in a:context.source__candidates
+    call add(l:candidates, {
+          \   'word' : l:history,
+          \   'abbr' : substitute(l:history, '\s\+$', '>-', ''),
+          \   'kind': 'completion',
+          \   'action__complete_word' : l:history,
+          \   'action__complete_pos' : l:keyword_pos,
+          \   'action__source_history_number' : l:cnt,
+          \ })
+
+    let l:cnt += 1
+  endfor
+
+  return l:candidates
 endfunction "}}}
 
 function! unite#sources#vimshell_history#start_complete() "{{{
@@ -91,6 +102,33 @@ function! s:action_table.delete.func(candidates)"{{{
   for l:candidate in a:candidates
     call filter(l:histories, 'v:val !=# l:candidate.action__complete_word')
   endfor
+endfunction"}}}
+
+let s:action_table.edit = {
+      \ 'description' : 'edit history',
+      \ 'is_invalidate_cache' : 1,
+      \ 'is_quit' : 0,
+      \ }
+function! s:action_table.edit.func(candidate)"{{{
+  let l:histories = s:current_filetype ==# 'vimshell' ?
+        \ g:vimshell#hist_buffer : b:interactive.command_history
+  let l:history = input('Please edit history: ', a:candidate.action__complete_word)
+  if l:history != ''
+    let l:histories[a:candidate.action__source_history_number] = l:history
+  endif
+endfunction"}}}
+
+let s:action_table.execute = {
+      \ 'description' : 'execute history',
+      \ }
+function! s:action_table.execute.func(candidate)"{{{
+  if !vimshell#check_prompt()
+    echoerr 'Not in command line.'
+    return
+  endif
+
+  call setline('.', vimshell#get_prompt() . a:candidate.action__complete_word)
+  call vimshell#execute_current_line(unite#get_current_unite().context.complete)
 endfunction"}}}
 
 let s:source.action_table['*'] = s:action_table

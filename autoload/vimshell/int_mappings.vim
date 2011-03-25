@@ -31,7 +31,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)  vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)  <SID>delete_backward_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)  <SID>delete_backward_char(1)
@@ -43,7 +43,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
 
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call <SID>execute_line(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call vimshell#execute_current_line(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
@@ -165,7 +165,7 @@ function! s:delete_backward_line()"{{{
 
   return l:prefix . repeat("\<BS>", l:len)
 endfunction"}}}
-function! s:execute_line(is_insert)"{{{
+function! vimshell#int_mappings#execute_line(is_insert)"{{{
   if !a:is_insert
     " Search cursor file.
     let l:filename = matchstr(substitute(substitute(expand('<cfile>'), '\\', '/', 'g'), ' ', '\\ ', 'g'), '\h\w*://\f\+')

@@ -27,7 +27,7 @@
 " Define default mappings.
 function! vimshell#mappings#define_default_mappings()"{{{
   " Plugin keymappings"{{{
-  nnoremap <buffer><silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call <SID>execute_line(0)<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call vimshell#execute_current_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
@@ -58,7 +58,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:call <SID>move_head()<CR>
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call <SID>execute_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:call <SID>interrupt(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
@@ -176,7 +176,7 @@ function! s:push_and_execute(command)"{{{
   call s:execute_line(1)
 endfunction"}}}
 
-function! s:execute_line(is_insert)"{{{
+function! vimshell#mappings#execute_line(is_insert)"{{{
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
 

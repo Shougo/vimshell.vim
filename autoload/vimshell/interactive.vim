@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,7 +58,7 @@ function! vimshell#interactive#get_cur_line(line, ...)"{{{
   return s:chomp_prompt(getline(a:line), a:line, l:interactive)
 endfunction"}}}
 function! vimshell#interactive#get_prompt(...)"{{{
-  let l:line = a:0? a:1 : line('.')
+  let l:line = a:0 ? a:1 : line('.')
   " Get prompt line.
   return !has_key(b:interactive.prompt_history, l:line) ? '' : b:interactive.prompt_history[l:line]
 endfunction"}}}
