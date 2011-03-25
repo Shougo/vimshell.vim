@@ -36,6 +36,7 @@ Special Commands	|vimshell-special-commands|
 Alter Command		|vimshell-alter-command|
 Hook			|vimshell-hook|
 Tips			|vimshell-tips|
+Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
 ToDo			|vimshell-todo|
 Bugs			|vimshell-bugs|
@@ -917,6 +918,30 @@ vcs_info						*vimshell-tips-vcs-info*
 <
 		たとえば、このようにvimshellの右プロンプトにVCSの情報を表示する。
 		フォーマットはzshのvcs_infoに準拠している。
+
+==============================================================================
+UNITE SOURCES						*vimshell-unite-sources*
+
+ここでは、vimshellに添付されている、|unite|用sourceについて解説を行なう。
+
+							*vimshell-unite-source-vimshell-history*
+vimshell/history
+		vimshellのヒストリを候補とする。インタラクティブバッファでも
+		有効。候補はcompletion kindである。普通、mapping内で
+		|unite#sources#vimshell_history#start_complete()|を呼び出し
+		て使用する。
+		デフォルトでは、<C-l>がvimshell/historyの呼び出しとなる。
+		例：
+>
+		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+<
+
+source別アクション
+
+vimshell/history					*vimshell-unite-action-vimshell-history*
+	execute		履歴の実行
+	edit		履歴の編集
+	delete		履歴の削除
 
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*
