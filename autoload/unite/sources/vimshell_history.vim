@@ -49,10 +49,12 @@ let s:source = {
       \ }
 
 let s:current_filetype = &filetype
+let s:current_histories = []
 function! s:source.hooks.on_init(args, context) "{{{
-  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
-  let a:context.source__candidates = &filetype ==# 'vimshell' ?
+  let s:current_filetype = &filetype
+  let s:current_histories = &filetype ==# 'vimshell' ?
         \ g:vimshell#hist_buffer : b:interactive.command_history
+  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/ containedin=uniteSource__VimshellHistory
@@ -64,7 +66,7 @@ function! s:source.gather_candidates(args, context) "{{{
 
   let l:cnt = 0
   let l:candidates = []
-  for l:history in a:context.source__candidates
+  for l:history in s:current_histories
     call add(l:candidates, {
           \   'word' : l:history,
           \   'abbr' : substitute(l:history, '\s\+$', '>-', ''),
@@ -97,10 +99,8 @@ let s:action_table.delete = {
       \ 'is_selectable' : 1,
       \ }
 function! s:action_table.delete.func(candidates)"{{{
-  let l:histories = s:current_filetype ==# 'vimshell' ?
-        \ g:vimshell#hist_buffer : b:interactive.command_history
   for l:candidate in a:candidates
-    call filter(l:histories, 'v:val !=# l:candidate.action__complete_word')
+    call filter(s:current_histories, 'v:val !=# l:candidate.action__complete_word')
   endfor
 endfunction"}}}
 
@@ -110,11 +110,9 @@ let s:action_table.edit = {
       \ 'is_quit' : 0,
       \ }
 function! s:action_table.edit.func(candidate)"{{{
-  let l:histories = s:current_filetype ==# 'vimshell' ?
-        \ g:vimshell#hist_buffer : b:interactive.command_history
   let l:history = input('Please edit history: ', a:candidate.action__complete_word)
   if l:history != ''
-    let l:histories[a:candidate.action__source_history_number] = l:history
+    let s:current_histories[a:candidate.action__source_history_number] = l:history
   endif
 endfunction"}}}
 
