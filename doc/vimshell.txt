@@ -222,6 +222,7 @@ CHANGELOG						*vimshell-changelog*
 - Added edit and execute actions.
 - Improved default_action.
 - Added unite source description.
+- Refactoringed vimshell history.
 
 2011-03-23
 - Implemented vimshell history source.

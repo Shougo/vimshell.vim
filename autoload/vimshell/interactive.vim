@@ -79,7 +79,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   let l:in = vimshell#interactive#get_cur_line(line('.'))
 
-  call vimshell#history#interactive_append(l:in)
+  call vimshell#history#append(l:in)
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.

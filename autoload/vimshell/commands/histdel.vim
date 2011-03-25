@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: histdel.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,13 +40,14 @@ function! s:command.execute(command, args, fd, context)"{{{
 
     let l:new_hist = []
     let l:cnt = 0
-    for h in g:vimshell#hist_buffer
+    for h in vimshell#history#read()
       if !has_key(l:del_hist, l:cnt)
         call add(l:new_hist, h)
       endif
       let l:cnt += 1
     endfor
-    let g:vimshell#hist_buffer = l:new_hist
+
+    call vimshell#history#write(l:new_hist)
   else
     call vimshell#error_line(a:fd, 'histdel: Arguments required.')
   endif

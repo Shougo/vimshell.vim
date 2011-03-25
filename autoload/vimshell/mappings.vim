@@ -292,6 +292,11 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   " Save cmdline.
   let b:vimshell.cmdline = l:line
 
+  " Not append history if starts spaces or dups.
+  if l:line !~ '^\s'
+    call vimshell#history#append(l:line)
+  endif
+
   try
     let l:ret = vimshell#parser#eval_script(l:line, l:context)
   catch /File ".*" is not found./
@@ -317,11 +322,6 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
     call vimshell#start_insert(a:is_insert)
     return
   endtry
-
-  " Not append history if starts spaces or dups.
-  if l:line !~ '^\s'
-    call vimshell#history#append(l:line)
-  endif
 
   if l:ret == 0
     call vimshell#print_prompt(l:context)
@@ -387,8 +387,9 @@ function! s:delete_previous_output()"{{{
 endfunction"}}}
 function! s:insert_last_word()"{{{
   let l:word = ''
-  if !empty(g:vimshell#hist_buffer)
-    for w in reverse(split(g:vimshell#hist_buffer[0], '[^\\]\zs\s'))
+  let l:histories = vimshell#history#read()
+  if !empty(l:histories)
+    for w in reverse(split(l:histories[0], '[^\\]\zs\s'))
       if w =~ '[[:alpha:]_/\\]\{2,}'
         let l:word = w
         break

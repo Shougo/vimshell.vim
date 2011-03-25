@@ -30,6 +30,8 @@ let s:command = {
       \ 'description' : 'history [{search-string}]',
       \}
 function! s:command.execute(command, args, fd, context)"{{{
+  let l:histories = vimshell#history#read()
+
   let l:arguments = join(a:args, ' ')
   if l:arguments =~ '^\d\+$'
     let l:search = ''
@@ -40,24 +42,24 @@ function! s:command.execute(command, args, fd, context)"{{{
     let l:max = 20
   else
     let l:search = l:arguments
-    let l:max = len(g:vimshell#hist_buffer)
+    let l:max = len(l:histories)
   endif
-  
-  if l:max <=0 || l:max >= len(g:vimshell#hist_buffer)
+
+  if l:max <=0 || l:max >= len(l:histories)
     " Overflow.
-    let l:max = len(g:vimshell#hist_buffer)
+    let l:max = len(l:histories)
   endif
-  
+
   let l:list = []
   let l:cnt = 0
-  for l:hist in g:vimshell#hist_buffer
+  for l:hist in l:histories
     if vimshell#head_match(l:hist, l:search)
       call add(l:list, [l:cnt, l:hist])
     endif
 
     let l:cnt += 1
   endfor
-  
+
   for [l:cnt, l:hist] in l:list[: l:max-1]
     call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, l:hist))
   endfor

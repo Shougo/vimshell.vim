@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Dec 2010.
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -121,14 +121,13 @@ function! s:command.execute(commands, context)"{{{
 
   " Set variables.
   let b:interactive = {
-        \ 'type': 'terminal', 
+        \ 'type': 'terminal',
         \ 'syntax' : &syntax,
-        \ 'process' : l:sub, 
-        \ 'fd' : a:context.fd, 
+        \ 'process' : l:sub,
+        \ 'fd' : a:context.fd,
         \ 'encoding' : l:options['--encoding'],
-        \ 'is_secret': 0, 
-        \ 'prompt_history' : {}, 
-        \ 'command_history' : [], 
+        \ 'is_secret': 0,
+        \ 'prompt_history' : {},
         \ 'is_pty' : 1,
         \ 'args' : l:args,
         \ 'echoback_linenr' : 0,

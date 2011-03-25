@@ -116,7 +116,7 @@ function! s:execute_history(is_insert)"{{{
     " Do update.
     call vimshell#interactive#execute_pty_out(a:is_insert)
   endif
-  
+
   " Search prompt.
   let l:command = vimshell#interactive#get_cur_line(line('.'))
 
@@ -182,7 +182,7 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
       return
     endif
   endif
-  
+
   " Execute history.
   call s:execute_history(a:is_insert)
 endfunction"}}}
@@ -201,22 +201,22 @@ function! s:restart_command()"{{{
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
-  
+
   set modifiable
   " Clean up the screen.
   % delete _
   call vimshell#terminal#clear_highlight()
-  
+
   " Initialize.
   let l:sub = vimproc#ptyopen(b:interactive.args)
-  
+
   call s:default_settings()
 
   " Set variables.
   call extend(b:interactive, {
-        \ 'process' : l:sub, 
-        \ 'is_secret': 0, 
-        \ 'prompt_history' : {}, 
+        \ 'process' : l:sub,
+        \ 'is_secret': 0,
+        \ 'prompt_history' : {},
         \ 'echoback_linenr' : 0
         \}, 'force')
 
@@ -236,7 +236,7 @@ function! s:command_complete()"{{{
     call setline('$', l:prompt . l:cur_text . getline('$'))
     startinsert!
   endif
-  
+
   let b:interactive.prompt_history[line('$')] = getline('$')
 endfunction "}}}
 function! s:insert_enter()"{{{
@@ -277,7 +277,7 @@ function! s:append_end()"{{{
 endfunction"}}}
 function! s:clear()"{{{
   set modifiable
-  
+
   " Clean up the screen.
   if line('$') != 1
     if has_key(b:interactive.prompt_history, line('$'))

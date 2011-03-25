@@ -32,6 +32,7 @@ let s:command = {
 function! s:command.execute(command, args, fd, context)"{{{
   " Execute from history.
 
+  let l:histories = vimshell#history#read()
   if empty(a:args) || a:args[0] =~ '^\d\+'
     if empty(a:args)
       let l:num = 0
@@ -39,16 +40,16 @@ function! s:command.execute(command, args, fd, context)"{{{
       let l:num = str2nr(a:args[0])
     endif
 
-    if l:num >= len(g:vimshell#hist_buffer)
+    if l:num >= len(l:histories)
       " Error.
       call vimshell#error_line(a:fd, 'h: Not found in history.')
       return
     endif
 
-    let l:hist = g:vimshell#hist_buffer[l:num]
+    let l:hist = l:histories[l:num]
   else
     let l:args = join(a:args)
-    for h in g:vimshell#hist_buffer
+    for h in l:histories
       if vimshell#head_match(h, l:args)
         let l:hist = h
         break

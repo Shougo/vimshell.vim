@@ -48,13 +48,13 @@ let s:source = {
       \ 'alias_table' : { '*' : { 'ex' : 'nop', 'narrow' : 'edit' } },
       \ }
 
-let s:current_filetype = &filetype
 let s:current_histories = []
 function! s:source.hooks.on_init(args, context) "{{{
-  let s:current_filetype = &filetype
-  let s:current_histories = &filetype ==# 'vimshell' ?
-        \ g:vimshell#hist_buffer : b:interactive.command_history
+  let s:current_histories = copy(vimshell#history#read())
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
+endfunction"}}}
+function! s:source.hooks.on_close(args, context) "{{{
+  call vimshell#history#write(s:current_histories)
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/ containedin=uniteSource__VimshellHistory
