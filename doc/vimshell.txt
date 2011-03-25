@@ -218,6 +218,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed delete action.
 - Improved vimproc check.
 - Fixed completion error when using neocomplcache.
+- Deleted obsolute completefuncs.
 
 2011-03-23
 - Implemented vimshell history source.

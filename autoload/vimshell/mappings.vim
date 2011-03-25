@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2011.
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,7 +115,6 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
   " History completion.
-  " imap <buffer> <C-l>  <Plug>(vimshell_history_complete_whole)
   inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
   imap <buffer> <C-q>  <Plug>(vimshell_history_complete_insert)
   " Command completion.
