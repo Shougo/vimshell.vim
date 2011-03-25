@@ -217,6 +217,7 @@ CHANGELOG						*vimshell-changelog*
 - Deleted g:vimshell_external_history_path option.
 - Fixed delete action.
 - Improved vimproc check.
+- Fixed completion error when using neocomplcache.
 
 2011-03-23
 - Implemented vimshell history source.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Sep 2010
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,17 +168,25 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   return l:ret
 endfunction"}}}
 function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
+  if !exists('b:vimshell')
+    return []
+  endif
+
   let l:ret = []
 
   for keyword in vimshell#complete#helper#keyword_simple_filter(range(len(b:vimshell.directory_stack)), a:cur_keyword_str)
     let l:dict = { 'word' : keyword, 'menu' : b:vimshell.directory_stack[keyword] }
 
     call add(l:ret, l:dict)
-  endfor 
+  endfor
 
   return l:ret
 endfunction"}}}
 function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
+  if !exists('b:vimshell')
+    return []
+  endif
+
   let l:ret = []
   for keyword in vimshell#complete#helper#keyword_simple_filter(keys(b:vimshell.alias_table), a:cur_keyword_str)
     let l:dict = { 'word' : keyword }
@@ -190,7 +198,7 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
     endif
 
     call add(l:ret, l:dict)
-  endfor 
+  endfor
 
   return l:ret
 endfunction"}}}
