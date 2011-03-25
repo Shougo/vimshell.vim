@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Mar 2011.
+" Last Modified: 25 Mar 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,13 +24,17 @@
 " }}}
 "=============================================================================
 
-function! unite#sources#vimshell_history#define() "{{{
-  if !exists('*unite#version') || unite#version() <= 100
-    echoerr 'Your unite.vim is too old.'
-    echoerr 'Please install unite.vim Ver.1.1 or above.'
-    return []
-  endif
+if !exists(':Unite')
+  echoerr 'unite.vim is not installed.'
+  echoerr 'Please install unite.vim Ver.1.5 or above.'
+  finish
+elseif unite#version() < 100
+  echoerr 'Your unite.vim is too old.'
+  echoerr 'Please install unite.vim Ver.1.5 or above.'
+  finish
+endif
 
+function! unite#sources#vimshell_history#define() "{{{
   return s:source
 endfunction "}}}
 
@@ -39,16 +43,18 @@ let s:source = {
       \ 'hooks' : {},
       \ 'max_candidates' : 100,
       \ 'action_table' : {},
+      \ 'syntax' : 'uniteSource__VimshellHistory',
       \ }
 
-let s:current_filetype = 'dummy'
-
+let s:current_filetype = &filetype
 function! s:source.hooks.on_init(args, context) "{{{
-  let s:current_filetype = &filetype
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
-  let a:context.source__candidates = s:current_filetype ==# 'vimshell' ?
-        \ g:vimshell#hist_buffer + vimshell#history#external_read(g:vimshell_external_history_path) :
-        \ b:interactive.command_history
+  let a:context.source__candidates = &filetype ==# 'vimshell' ?
+        \ g:vimshell#hist_buffer : b:interactive.command_history
+endfunction"}}}
+function! s:source.hooks.on_syntax(args, context)"{{{
+  syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/ containedin=uniteSource__VimshellHistory
+  highlight default link uniteSource__VimshellHistorySpaces Comment
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
@@ -56,6 +62,7 @@ function! s:source.gather_candidates(args, context) "{{{
 
   return map(copy(a:context.source__candidates), '{
         \   "word" : v:val,
+        \   "abbr" : substitute(v:val, "\\s\\+$", ">-", ""),
         \   "kind": "completion",
         \   "action__complete_word" : v:val,
         \   "action__complete_pos" : l:keyword_pos,
@@ -80,9 +87,7 @@ let s:action_table.delete = {
       \ }
 function! s:action_table.delete.func(candidates)"{{{
   let l:histories = s:current_filetype ==# 'vimshell' ?
-        \ g:vimshell#hist_buffer :
-        \ b:interactive.command_history
-
+        \ g:vimshell#hist_buffer : b:interactive.command_history
   for l:candidate in a:candidates
     call filter(l:histories, 'v:val !=# l:candidate.action__complete_word')
   endfor

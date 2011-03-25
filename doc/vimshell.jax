@@ -292,13 +292,6 @@ g:vimshell_cd_command					*g:vimshell_cd_command*
 			
 			初期値は"lcd"である。
 
-g:vimshell_external_history_path			*g:vimshell_external_history_path*
-			vimshellが履歴検索に使用する外部シェルの履歴ファイル
-			へのパスである。これを空にすると無視される。zshの拡
-			張履歴ファイルも自動認識する。
-			
-			初期値は""である。
-
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			ヒストリを保存しないコマンド名をキーとしたディクショ
 			ナリ。存在しないと無視される。
