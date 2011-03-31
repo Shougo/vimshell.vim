@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-04-01
+- Improved vimshell/history source.
+
 2011-03-25
 - Implemented unite highlight.
 - Deleted g:vimshell_external_history_path option.

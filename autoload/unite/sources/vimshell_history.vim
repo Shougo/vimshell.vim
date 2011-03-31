@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 01 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ if !exists(':Unite')
   echoerr 'unite.vim is not installed.'
   echoerr 'Please install unite.vim Ver.1.5 or above.'
   finish
-elseif unite#version() < 100
+elseif unite#version() < 150
   echoerr 'Your unite.vim is too old.'
   echoerr 'Please install unite.vim Ver.1.5 or above.'
   finish
@@ -60,26 +60,22 @@ function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/ containedin=uniteSource__VimshellHistory
   highlight default link uniteSource__VimshellHistorySpaces Comment
 endfunction"}}}
-
-function! s:source.gather_candidates(args, context) "{{{
-  let l:keyword_pos = a:context.source__cur_keyword_pos
-
+function! s:source.hooks.on_post_filter(args, context)"{{{
   let l:cnt = 0
-  let l:candidates = []
-  for l:history in s:current_histories
-    call add(l:candidates, {
-          \   'word' : l:history,
-          \   'abbr' : substitute(l:history, '\s\+$', '>-', ''),
-          \   'kind': 'completion',
-          \   'action__complete_word' : l:history,
-          \   'action__complete_pos' : l:keyword_pos,
-          \   'action__source_history_number' : l:cnt,
-          \ })
+
+  for l:candidate in a:context.candidates
+    let l:candidate.abbr = substitute(l:candidate.word, '\s\+$', '>-', '')
+    let l:candidate.kind = 'completion'
+    let l:candidate.action__complete_word = l:candidate.word
+    let l:candidate.action__complete_pos = a:context.source__cur_keyword_pos
+    let l:candidate.action__source_history_number = l:cnt
 
     let l:cnt += 1
   endfor
+endfunction"}}}
 
-  return l:candidates
+function! s:source.gather_candidates(args, context) "{{{
+  return map(copy(s:current_histories), '{ "word" : v:val }')
 endfunction "}}}
 
 function! unite#sources#vimshell_history#start_complete() "{{{
