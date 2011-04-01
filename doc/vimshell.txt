@@ -216,6 +216,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved vimshell/history source.
 - Fixed interactive command bug.
 - Supported fsi interpreter.
+- Improved unite source split direction.
 
 2011-03-25
 - Implemented unite highlight.

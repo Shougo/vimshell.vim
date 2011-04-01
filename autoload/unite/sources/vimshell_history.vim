@@ -81,6 +81,7 @@ endfunction "}}}
 function! unite#sources#vimshell_history#start_complete() "{{{
   return printf("\<ESC>:call unite#start(['vimshell/history'],
         \ { 'col' : %d, 'complete' : 1,
+        \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'input' : vimshell#get_cur_text(),
         \   'buffer_name' : 'completion', })\<CR>", len(vimshell#get_prompt()))
 endfunction "}}}
