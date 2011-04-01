@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 01 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -194,9 +194,10 @@ if vimshell#iswin()
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'powershell', '-Command -')
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'scala', '-Xnojline')
   call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'nyaos', '-t')
-  
+  call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'fsi', '--gui- --readline-')
+
   call vimshell#set_dictionary_helper(g:vimshell_interactive_encodings, 'gosh,fakecygpty', 'utf8')
-  
+
   call vimshell#set_dictionary_helper(g:vimshell_interactive_cygwin_commands, 'tail,zsh,ssh', 1)
 endif
 call vimshell#set_dictionary_helper(g:vimshell_interactive_command_options, 'termtter', '--monochrome')

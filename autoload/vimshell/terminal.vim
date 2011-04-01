@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2011.
+" Last Modified: 01 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,6 +65,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
             \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
             \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
         call append('.', l:lines)
+        normal! j
       else
         if line('.') != b:interactive.echoback_linenr
           call setline('.', l:current_line . l:lines[0])
