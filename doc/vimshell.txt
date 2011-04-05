@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-04-05
+- Supported sbt in Windows.
+
 2011-04-01
 - Improved vimshell/history source.
 - Fixed interactive command bug.
