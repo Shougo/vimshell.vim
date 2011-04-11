@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Apr 2011.
+" Last Modified: 12 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -117,13 +117,26 @@ let s:action_table.execute = {
       \ 'description' : 'execute history',
       \ }
 function! s:action_table.execute.func(candidate)"{{{
+  call unite#take_action('insert', a:candidate)
+
+  call vimshell#execute_current_line(unite#get_current_unite().context.complete)
+endfunction"}}}
+
+let s:action_table.insert = {
+      \ 'description' : 'insert history',
+      \ }
+function! s:action_table.insert.func(candidate)"{{{
   if !vimshell#check_prompt()
     echoerr 'Not in command line.'
     return
   endif
 
   call setline('.', vimshell#get_prompt() . a:candidate.action__complete_word)
-  call vimshell#execute_current_line(unite#get_current_unite().context.complete)
+  if unite#get_context().complete
+    startinsert!
+  else
+    normal! $
+  endif
 endfunction"}}}
 
 let s:source.action_table['*'] = s:action_table
