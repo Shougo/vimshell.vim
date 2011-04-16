@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-04-16
+- Fixed execute command line bug.
+
 2011-04-12
 - Improved history source.
 

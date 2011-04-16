@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 16 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -226,7 +226,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     let [l:next_line, l:next_col] = searchpos(l:nprompt, 'Wn')
 
     if l:next_line > 0 && l:next_line - line('.') > 1
-      execute printf('%s,%sdelete', line('.')+1, l:next_line-1)
+      execute printf('%s,%sdelete _', line('.')+1, l:next_line-1)
 
       call vimshell#terminal#clear_highlight()
       normal! k
@@ -257,9 +257,9 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   let l:line = vimshell#get_prompt_command()
   let l:context = {
         \ 'has_head_spaces' : l:line =~ '^\s\+',
-        \ 'is_interactive' : 1, 
-        \ 'is_insert' : a:is_insert, 
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
+        \ 'is_interactive' : 1,
+        \ 'is_insert' : a:is_insert,
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
         \}
 
   if l:line =~ '^\s*-\s*$'
