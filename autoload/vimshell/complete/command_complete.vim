@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2010.
+" Last Modified: 16 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,7 +100,7 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
   if a:cur_keyword_str =~ '/'
     " Filename completion.
     let l:ret = vimshell#complete#helper#files(a:cur_keyword_str)
-    
+
     " Restore option.
     let &ignorecase = l:ignorecase_save
 
@@ -113,11 +113,11 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
       let l:keyword.word = './' . l:keyword.word
     endfor
   endif
-  
+
   let l:ret =    l:directories
-        \+ vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
-        \+ vimshell#complete#helper#aliases(a:cur_keyword_str)
-        \+ vimshell#complete#helper#internals(a:cur_keyword_str)
+        \ + vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
+        \ + vimshell#complete#helper#aliases(a:cur_keyword_str)
+        \ + vimshell#complete#helper#internals(a:cur_keyword_str)
 
   if len(a:cur_keyword_str) >= 1
     let l:ret += vimshell#complete#helper#executables(a:cur_keyword_str)
@@ -131,8 +131,13 @@ endfunction"}}}
 
 function! s:complete_args(findstart, base, args)"{{{
   if a:findstart
-    " Get cursor word.
-    return col('.')-len(a:args[-1])-1
+    let l:pos = col('.')-len(a:args[-1])-1
+    if a:args[-1] =~ '/'
+      " Filename completion.
+      let l:pos += match(a:args[-1], '\%(\\[^[:alnum:].-]\|\f\)\+$')
+    endif
+
+    return l:pos
   endif
 
   " Get command name.
