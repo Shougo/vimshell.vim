@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 16 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,9 +78,10 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endtry
 
-  if empty(l:files)
-    return []
-  elseif len(l:files) > g:vimshell_max_list
+  " Extend pseudo files.
+  let l:files += ['/dev/null', '/dev/clip', '/dev/quickfix']
+
+  if len(l:files) > g:vimshell_max_list
     " Truncate items.
     let l:files = l:files[: g:vimshell_max_list - 1]
   endif
@@ -89,6 +90,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
   let l:paths = map((a:0 == 1 ? split(&path, ',') : [ getcwd() ]), 'substitute(v:val, "\\\\", "/", "g")')
   let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
+
   for l:word in l:files
     let l:dict = {
           \'word' : l:word, 'menu' : 'file'

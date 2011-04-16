@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-04-16
 - Fixed execute command line bug.
+- Improved filename completion.
 
 2011-04-12
 - Improved history source.
