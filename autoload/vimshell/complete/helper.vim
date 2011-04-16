@@ -79,7 +79,11 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   endtry
 
   " Extend pseudo files.
-  let l:files += ['/dev/null', '/dev/clip', '/dev/quickfix']
+  if a:cur_keyword_str =~ '^/dev/'
+    let l:files += vimshell#complete#helper#keyword_simple_filter(
+          \  ['/dev/null', '/dev/clip', '/dev/quickfix'],
+          \ a:cur_keyword_str)
+  endif
 
   if len(l:files) > g:vimshell_max_list
     " Truncate items.
