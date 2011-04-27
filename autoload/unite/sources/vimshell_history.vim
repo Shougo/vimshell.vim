@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Apr 2011.
+" Last Modified: 27 Apr 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,7 +83,7 @@ function! unite#sources#vimshell_history#start_complete() "{{{
         \ { 'col' : %d, 'complete' : 1,
         \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'input' : vimshell#get_cur_text(),
-        \   'buffer_name' : 'completion', })\<CR>", len(vimshell#get_prompt()))
+        \   'buffer_name' : 'completion', })\<CR>", col('.'))
 endfunction "}}}
 
 " Actions"{{{
