@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-08
+- Fixed set nocompatible bug.
+
 2011-04-27
 - Fixed vimshell history source.
 
