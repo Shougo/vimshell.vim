@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-11
+- Supported hash tag in termtter syntax.
+
 2011-05-08
 - Fixed set nocompatible bug.
 

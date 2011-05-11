@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2011.
+" Last Modified: 11 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,6 +45,7 @@ syn match   TermtterConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
 syn match   TermtterConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
 syn match   TermtterRemark      '\[\$\a\+\]'
 syn match   TermtterRemark      '\$\a\+'
+syn match   TermtterHashTag     '#\h\w*'
 syn match   TermtterDate        '^(\d\+:\d\+:\d\+)'
 syn match   TermtterMessage     '^updated => '
 syn region  TermtterError       start='^\s*\[ERROR\] ' end='\n' oneline
@@ -75,6 +76,7 @@ hi def link TermtterName Type
 hi def link TermtterMessage Constant
 hi def link TermtterError Error
 hi def link TermtterDate Constant
+hi def link TermtterHashTag Comment
 hi def link TermtterRemark Identifier
 
 let b:current_syntax = 'int_termtter'
