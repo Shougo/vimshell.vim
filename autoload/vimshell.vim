@@ -38,7 +38,7 @@ catch
   echoerr 'Please install vimproc Ver.5.0 or above.'
   finish
 endtry
-if s:exists_vimproc_version < 520
+if s:exists_vimproc_version < 502
   echoerr 'Your vimproc is too old.'
   echoerr 'Please install vimproc Ver.5.2 or above.'
   finish
