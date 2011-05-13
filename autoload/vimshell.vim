@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2011.
+" Last Modified: 13 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,9 +38,9 @@ catch
   echoerr 'Please install vimproc Ver.5.0 or above.'
   finish
 endtry
-if s:exists_vimproc_version < 500
+if s:exists_vimproc_version < 520
   echoerr 'Your vimproc is too old.'
-  echoerr 'Please install vimproc Ver.5.0 or above.'
+  echoerr 'Please install vimproc Ver.5.2 or above.'
   finish
 endif"}}}
 
