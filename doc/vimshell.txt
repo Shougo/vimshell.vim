@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-05-15
 - Fixed conceal problem.
+- Fixed quote error.
 
 2011-05-14
 - Fixed man.
