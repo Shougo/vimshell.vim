@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-15
+- Fixed conceal problem.
+
 2011-05-14
 - Fixed man.
 

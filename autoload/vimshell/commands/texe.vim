@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 15 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -199,9 +199,9 @@ function! s:init_bg(args, context)"{{{
 
   edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   call vimshell#cd(l:cwd)
-  
+
   call s:default_settings()
-  
+
   let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   execute 'set filetype=term-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
@@ -212,6 +212,7 @@ function! s:init_bg(args, context)"{{{
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
+    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 
   " Set send buffer.
@@ -258,4 +259,9 @@ function! s:insert_leave()"{{{
     let &guicursor = s:guicursor_save
   endif
 endfunction"}}}
-
+function! s:event_bufwin_enter()"{{{
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=nvi
+  endif
+endfunction"}}}

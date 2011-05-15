@@ -155,6 +155,7 @@ function! vimshell#commands#bg#init(commands, context, syntax, interactive)"{{{
 
   augroup vimshell
     autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 
   nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
@@ -190,3 +191,9 @@ function! s:on_exit()"{{{
     bdelete
   endif  
 endfunction "}}}
+function! s:event_bufwin_enter()"{{{
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=nvi
+  endif
+endfunction"}}}
