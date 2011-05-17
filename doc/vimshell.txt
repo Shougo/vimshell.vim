@@ -215,6 +215,13 @@ CHANGELOG						*vimshell-changelog*
 2011-05-17
 - Use neocomplcache filename_complete.
 
+2011-05-15
+- Fixed conceal problem.
+- Fixed quote error.
+
+2011-05-14
+- Fixed man.
+
 2011-05-13
 - Use system_gui().
 - Use vimproc Ver.5.2.

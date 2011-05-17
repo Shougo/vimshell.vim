@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 May 2011.
+" Last Modified: 14 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -144,7 +144,7 @@ if !exists('g:vimshell_terminal_cursor')
 endif
 if !exists('g:vimshell_terminal_commands')
   let g:vimshell_terminal_commands = {
-        \ 'man' : 1, 'more' : 1, 'screen' : 1, 'tmux' : 1,
+        \ 'more' : 1, 'screen' : 1, 'tmux' : 1,
         \ 'vi' : 1, 'emacs' : 1, 'sl' : 1,
         \}
 endif

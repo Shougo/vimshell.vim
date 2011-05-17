@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 May 2011.
+" Last Modified: 15 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,8 +106,8 @@ function! s:default_settings()"{{{
 
   " Set autocommands.
   augroup vimshell
-    autocmd BufWinEnter,WinEnter <buffer> call s:restore_current_dir()
-    autocmd WinLeave,BufWinLeave <buffer> call s:event_bufwin_leave()
+    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
+    autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
     autocmd InsertEnter <buffer>    call s:insert_enter()
@@ -462,27 +462,21 @@ function! vimshell#get_cur_line()"{{{
 endfunction"}}}
 function! vimshell#get_current_args(...)"{{{
   let l:cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
-  try
-    let l:statements = vimproc#parser#split_statements(l:cur_text)
-    if empty(l:statements)
-      return []
-    endif
-
-    let l:commands = vimproc#parser#split_commands(l:statements[-1])
-    if empty(l:commands)
-      return []
-    endif
-
-    let l:args = vimproc#parser#split_args_through(l:commands[-1])
-    if vimshell#get_cur_text() =~ '\\\@!\s\+$'
-      " Add blank argument.
-      call add(l:args, '')
-    endif
-  catch
-    let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-    echohl WarningMsg | echomsg l:message | echohl None
+  let l:statements = vimproc#parser#split_statements(l:cur_text)
+  if empty(l:statements)
     return []
-  endtry
+  endif
+
+  let l:commands = vimproc#parser#split_commands(l:statements[-1])
+  if empty(l:commands)
+    return []
+  endif
+
+  let l:args = vimproc#parser#split_args_through(l:commands[-1])
+  if vimshell#get_cur_text() =~ '\\\@!\s\+$'
+    " Add blank argument.
+    call add(l:args, '')
+  endif
 
   return l:args
 endfunction"}}}
@@ -734,7 +728,12 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
 endfunction"}}}
 
 " Auto commands function.
-function! s:restore_current_dir()"{{{
+function! s:event_bufwin_enter()"{{{
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=nvi
+  endif
+
   if !exists('b:vimshell') ||
         \ !isdirectory(b:vimshell.save_dir)
     return
