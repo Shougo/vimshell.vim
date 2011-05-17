@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Apr 2011.
+" Last Modified: 17 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,113 +31,29 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     echoerr 'Too many arguments.'
   endif
 
-  " Not Filename pattern.
-  if a:cur_keyword_str =~ 
-        \'\*\*\|\*$\|\.\.\+$\|[/\\][/\\]\f*$\|/c\%[ygdrive/]$\|\\|$\|\a:[^/]*$'
+  if !exists('*neocomplcache#sources#filename_complete#get_complete_words')
     return []
   endif
 
-  let l:cur_keyword_str = escape(a:cur_keyword_str, '[]')
-
-  let l:cur_keyword_str = substitute(l:cur_keyword_str, '\\ ', ' ', 'g')
-
-  " Set mask.
-  if l:cur_keyword_str =~ '\*$'
-    let l:mask = ''
-  else
-    let l:mask = '*'
-  endif
-
-  if a:cur_keyword_str =~ '^\$\h\w*'
-    let l:env = matchstr(a:cur_keyword_str, '^\$\h\w*')
-    let l:env_ev = eval(l:env)
-    if vimshell#iswin()
-      let l:env_ev = substitute(l:env_ev, '\\', '/', 'g')
-    endif
-    let l:len_env = len(l:env_ev)
-  else
-    let l:len_env = 0
-
-    if a:cur_keyword_str =~ '^\~\h\w*'
-      let l:cur_keyword_str = simplify($HOME . '/../' . l:cur_keyword_str[1:])
-    endif
-  endif
-
-  try
-    let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
-    let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
-
-    if empty(l:files)
-      " Add '*' to a delimiter.
-      let l:cur_keyword_str = substitute(l:cur_keyword_str, '\w\+\ze[/._-]', '\0*', 'g')
-      let l:glob = (a:0 == 1) ? globpath(a:1, l:cur_keyword_str . l:mask) : glob(l:cur_keyword_str . l:mask)
-      let l:files = split(substitute(l:glob, '\\', '/', 'g'), '\n')
-    endif
-  catch
-    call vimshell#echo_error(v:exception)
-    return []
-  endtry
+  let l:path = (a:0 == 1 ? &path : a:1)
+  let l:list = neocomplcache#sources#filename_complete#get_complete_words(a:cur_keyword_str, l:path)
 
   " Extend pseudo files.
   if a:cur_keyword_str =~ '^/dev/'
-    let l:files += vimshell#complete#helper#keyword_simple_filter(
+    for l:word in vimshell#complete#helper#keyword_simple_filter(
           \  ['/dev/null', '/dev/clip', '/dev/quickfix'],
           \ a:cur_keyword_str)
+      let l:dict = {
+            \ 'word' : l:word, 'menu' : 'file'
+            \}
+
+      " Escape word.
+      let l:dict.orig = l:dict.word
+      let l:dict.word = escape(l:dict.word, ' *?[]"={}')
+
+      call add(l:list, l:dict)
+    endfor
   endif
-
-  if len(l:files) > g:vimshell_max_list
-    " Truncate items.
-    let l:files = l:files[: g:vimshell_max_list - 1]
-  endif
-
-  let l:list = []
-  let l:home_pattern = '^'.substitute($HOME, '\\', '/', 'g').'/'
-  let l:paths = map((a:0 == 1 ? split(&path, ',') : [ getcwd() ]), 'substitute(v:val, "\\\\", "/", "g")')
-  let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-
-  for l:word in l:files
-    let l:dict = {
-          \'word' : l:word, 'menu' : 'file'
-          \}
-
-    if l:len_env != 0 && l:dict.word[: l:len_env-1] == l:env_ev
-      let l:dict.word = l:env . l:dict.word[l:len_env :]
-    elseif a:cur_keyword_str =~ '^\~/'
-      let l:dict.word = substitute(word, l:home_pattern, '\~/', '')
-    elseif a:cur_keyword_str !~ '^\.\.\?/'
-      " Path search.
-      for path in l:paths
-        if path != '' && vimshell#head_match(word, path . '/')
-          let l:dict.word = l:dict.word[len(path)+1 : ]
-          break
-        endif
-      endfor
-    endif
-
-    let l:abbr = l:dict.word
-    if isdirectory(l:word)
-      let l:abbr .= '/'
-      if g:vimshell_enable_auto_slash
-        let l:dict.word .= '/'
-      endif
-      let l:dict.menu = 'directory'
-    elseif vimshell#iswin()
-      if '.'.fnamemodify(l:word, ':e') =~ l:exts
-        let l:abbr .= '*'
-        let l:dict.menu = 'executable'
-      endif
-    elseif executable(l:word)
-      let l:abbr .= '*'
-      let l:dict.menu = 'executable'
-    endif
-    let l:dict.abbr = l:abbr
-
-    " Escape word.
-    let l:dict.orig = l:dict.word
-    let l:dict.word = escape(l:dict.word, ' *?[]"={}')
-
-    call add(l:list, l:dict)
-  endfor
 
   return l:list
 endfunction"}}}

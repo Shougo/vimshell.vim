@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-17
+- Use neocomplcache filename_complete.
+
 2011-05-13
 - Use system_gui().
 - Use vimproc Ver.5.2.
