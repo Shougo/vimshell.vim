@@ -141,14 +141,14 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
     let l:path = a:0 > 1 ? a:1 : vimshell#iswin() ? substitute($PATH, '\\\?;', ',', 'g') : substitute($PATH, '/\?:', ',', 'g')
     let l:files = vimshell#complete#helper#files(a:cur_keyword_str, l:path)
   endif
-  
+
   if vimshell#iswin()
     let l:exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
-    let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
+    let l:pattern = (a:cur_keyword_str =~ '[/\\]')?
           \ 'isdirectory(expand(v:val.orig)) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts) :
           \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(l:exts)
   else
-    let l:pattern = (a:cur_keyword_str =~ '[/\\]')? 
+    let l:pattern = (a:cur_keyword_str =~ '[/\\]')?
           \ 'isdirectory(expand(v:val.orig)) || executable(expand(v:val.orig))' : 'executable(expand(v:val.orig))'
   endif
 
@@ -164,7 +164,7 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
     endif
 
     call add(l:ret, l:dict)
-  endfor 
+  endfor
 
   return l:ret
 endfunction"}}}
