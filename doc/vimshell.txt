@@ -214,6 +214,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-05-18
 - Fixed vimshell completion error.
+- Fixed mappings error.
 
 2011-05-17
 - Use neocomplcache filename_complete.
