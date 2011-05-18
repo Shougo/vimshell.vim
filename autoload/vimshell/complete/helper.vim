@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 May 2011.
+" Last Modified: 18 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endif
 
-  let l:path = (a:0 == 1 ? &path : a:1)
+  let l:path = (a:0 == 1 ? a:1 : &path)
   let l:list = neocomplcache#sources#filename_complete#get_complete_words(a:cur_keyword_str, l:path)
 
   " Extend pseudo files.
