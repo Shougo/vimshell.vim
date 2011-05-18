@@ -35,7 +35,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
     return []
   endif
 
-  let l:path = (a:0 == 1 ? a:1 : &path)
+  let l:path = (a:0 == 1 ? a:1 : '.')
   let l:list = neocomplcache#sources#filename_complete#get_complete_words(a:cur_keyword_str, l:path)
 
   " Extend pseudo files.
