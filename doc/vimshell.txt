@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-20
+- Fixed vimshell error problem.
+
 2011-05-18
 - Fixed vimshell completion error.
 - Fixed mappings error.

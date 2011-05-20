@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 May 2011.
+" Last Modified: 20 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -242,6 +242,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
       let l:context = b:vimshell.continuation.context
+      let b:vimshell.continuation = {}
       call vimshell#print_prompt(l:context)
       call vimshell#start_insert(a:is_insert)
     endtry
