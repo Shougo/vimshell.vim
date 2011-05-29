@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2011.
+" Last Modified: 29 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -173,9 +173,13 @@ function! s:command.execute(commands, context)"{{{
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
-  return vimshell#iswin() && len(a:args) > 1 && a:args[1] == 'fakecygpty' ?
-        \ vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) : 
-        \ vimshell#complete#helper#executables(a:args[-1])
+  if len(a:args) == 1
+    return vimshell#complete#helper#executables(a:args[-1])
+  elseif vimshell#iswin() && len(a:args) > 1 && a:args[1] == 'fakecygpty'
+    return vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
+  endif
+
+  return []
 endfunction"}}}
 
 function! vimshell#commands#iexe#define()
