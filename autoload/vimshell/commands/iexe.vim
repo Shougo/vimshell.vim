@@ -107,7 +107,7 @@ function! s:command.execute(commands, context)"{{{
   if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
     let l:home_save = vimshell#set_variables({
-          \ '$HOME' : g:vimshell_interactive_cygwin_home, 
+          \ '$HOME' : g:vimshell_interactive_cygwin_home,
           \})
   endif
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2011.
+" Last Modified: 29 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,9 +28,9 @@ let s:last_interactive_bufnr = 1
 
 " Utility functions.
 
-let s:password_regex = 
+let s:password_regex =
       \'\%(Enter \\|[Oo]ld \\|[Nn]ew \\|''s \\|login \\|'''  .
-      \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' . 
+      \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' .
       \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
 let s:character_regex = ''
 

@@ -666,6 +666,11 @@ shell 							*vimshell-internal-shell*
 		ckw上でシェルを起動する。シグナルやトラップなど、vimshellでは
 		対応できない用途にも対応することができる。
 
+source {files}						*vimshell-internal-source*
+		Windows環境では、"cmd.exe", 他の環境では、'shell'を利用して、
+		{files}を読み込む。{files}は環境変数を変化させるシェルスクリ
+		プトである。環境変数の変化は、vimshellに反映される。
+
 sudo {command}						*vimshell-internal-sudo*
 		管理者権限が必要な外部コマンドを実行する。{command}がvimの場合、
 		|sudo.vim|を用いて編集しようとする。
