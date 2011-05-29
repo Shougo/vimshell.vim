@@ -506,6 +506,13 @@ INTERNAL COMMANDS					*vimshell-internal-commands*
 internal commandは普通のシェルにおける内部コマンドのように動作する。
 引数はvimshellに解釈された後に分割して渡される。
 
+Note: 現状、内部コマンドはパイプラインに対応しないことに注意しなければならな
+い。パイプラインを使用した場合、強制的に外部コマンドが起動される。よって、次
+のコマンドはフリーズする。
+>
+		vimshell% echo hello | vim
+<
+
 bcd {buffer-name}					*vimshell-internal-bcd*
 		{buffer}のディレクトリへ移動する。
 
