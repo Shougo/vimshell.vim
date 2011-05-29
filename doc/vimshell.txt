@@ -216,6 +216,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved iexe completion.
 - Improved description.
 - Added source internal command.
+- Improved :VimShellSendString command.
 
 2011-05-20
 - Fixed vimshell error problem.

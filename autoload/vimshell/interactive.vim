@@ -37,7 +37,7 @@ let s:character_regex = ''
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
   autocmd CursorHold * call s:check_all_output()
-  autocmd BufWinEnter,WinEnter * call s:winenter(expand('<afile>'))
+  autocmd BufWinEnter,WinEnter * call s:winenter()
   autocmd BufWinLeave,WinLeave * call s:winleave(expand('<afile>'))
 augroup END
 
@@ -176,14 +176,22 @@ function! vimshell#interactive#send_char(char)"{{{
   call vimshell#interactive#execute_pty_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
-  let l:winnr = bufwinnr(s:last_interactive_bufnr)
-  if l:winnr <= 0
+  if s:last_interactive_bufnr <= 0
     return
   endif
 
+  let l:winnr = bufwinnr(s:last_interactive_bufnr)
+  if l:winnr <= 0
+    " Open buffer.
+    call vimshell#split_nicely()
+
+    edit `=a:bufname`
+  endif
+
   " Check alternate buffer.
-  let l:type = getbufvar(winbufnr(l:winnr), 'interactive').type
+  let l:type = getbufvar(s:last_interactive_bufnr, 'interactive').type
   if l:type !=# 'interactive' && l:type !=# 'terminal'
+        \ && l:type !=# 'vimshell'
     return
   endif
 
@@ -193,37 +201,38 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   let l:string .= "\<LF>"
 
-  let l:line = split(l:string, "\<LF>")[0]
-
   let l:save_winnr = winnr()
   execute l:winnr 'wincmd w'
 
-  if l:type !=# 'terminal'
+  if l:type ==# 'interactive'
     " Save prompt.
     let l:prompt = vimshell#interactive#get_prompt(line('$'))
     let l:prompt_nr = line('$')
   endif
 
   " Send string.
-  call vimshell#interactive#send_string(l:string)
+  if l:type ==# 'vimshell'
+    for l:line in split(l:string, "\<LF>")
+      call vimshell#set_prompt_command(l:line)
+      call vimshell#execute(l:line)
+    endfor
 
-  if l:type !=# 'terminal'
+    call vimshell#print_prompt()
+  else
+    call vimshell#interactive#send_string(l:string)
+  endif
+
+  if l:type ==# 'interactive'
         \ && b:interactive.process.is_valid
-    call setline(l:prompt_nr, l:prompt . l:line)
+    call setline(l:prompt_nr, split(l:prompt . l:string, "\<LF>"))
   endif
 
   stopinsert
   execute l:save_winnr 'wincmd w'
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
-  let s:last_interactive_bufnr = bufnr(a:bufname)
-  let l:winnr = bufwinnr(s:last_interactive_bufnr)
-  if s:last_interactive_bufnr >= 0 && l:winnr <= 0
-    " Open buffer.
-    call vimshell#split_nicely()
-
-    edit `=a:bufname`
-  endif
+  let l:bufname = a:bufname == '' ? bufname('%') : a:bufname
+  let s:last_interactive_bufnr = bufnr(l:bufname)
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_out(is_insert)"{{{
@@ -666,19 +675,19 @@ function! s:cache_output(interactive)"{{{
   return l:outputed
 endfunction"}}}
 
-function! s:winenter(bufnr)"{{{
+function! s:winenter()"{{{
   if !exists('b:interactive')
     return
   endif
 
   call vimshell#terminal#set_title()
 endfunction"}}}
-function! s:winleave(bufnr)"{{{
+function! s:winleave(bufname)"{{{
   if !exists('b:interactive')
     return
   endif
 
-  let s:last_interactive_bufnr = a:bufnr
+  let s:last_interactive_bufnr = bufnr(a:bufname)
   call vimshell#terminal#restore_title()
 endfunction"}}}
 

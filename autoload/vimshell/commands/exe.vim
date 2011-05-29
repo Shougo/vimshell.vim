@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2011.
+" Last Modified: 29 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -103,7 +103,7 @@ function! s:init_process(commands, context, options)"{{{
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
-  
+
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term, 
@@ -118,7 +118,7 @@ function! s:init_process(commands, context, options)"{{{
 
   " Initialize.
   let l:sub = vimproc#plineopen3(a:commands)
-  
+
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
 
@@ -129,7 +129,7 @@ function! s:init_process(commands, context, options)"{{{
 
   " Set variables.
   let b:interactive = {
-        \ 'type' : 'execute',
+        \ 'type' : 'vimshell',
         \ 'syntax' : b:interactive.syntax,
         \ 'process' : l:sub,
         \ 'fd' : a:context.fd,

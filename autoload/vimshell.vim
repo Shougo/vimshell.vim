@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 May 2011.
+" Last Modified: 29 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -209,6 +209,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call vimshell#print_prompt(l:context)
 
   call vimshell#start_insert()
+  call vimshell#interactive#set_send_buffer(bufname('%'))
 
   " Set undo point.
   call feedkeys("\<C-g>u", 'n')

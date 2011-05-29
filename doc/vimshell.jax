@@ -145,9 +145,9 @@ COMMANDS 						*vimshell-commands*
 			しまだ未完成である。
 
 :VimShellSendString {string}				*:VimShellSendString*
-			裏ウインドウのインタプリタに選択文字列を送信する。
-			まるで|quickrun|を使っているかのようにインタプリタを
-			操作できる。
+			vimshell, iexe, texeの裏ウインドウのインタプリタに選
+			択文字列を送信する。まるで|quickrun|を使っているかの
+			ようにインタプリタを操作できる。
 
 :VimShellSendBuffer {bufname}				*:VimShellSendBuffer*
 			裏ウインドウを{bufname}として設定する。{bufname}が
