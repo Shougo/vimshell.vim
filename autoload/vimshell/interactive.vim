@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2011.
+" Last Modified: 30 May 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -576,7 +576,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     return
   endif
 
-  if mode() !=# 'i' && l:type !=# 'execute'
+  if mode() !=# 'i' && l:type !=# 'vimshell'
     let l:intbuffer_pos = getpos('.')
   endif
 
@@ -588,7 +588,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     setlocal modifiable
     call vimshell#interactive#execute_pipe_out()
     setlocal nomodifiable
-  elseif l:type ==# 'execute'
+  elseif l:type ==# 'vimshell'
     try
       call vimshell#parser#execute_continuation(mode() ==# 'i')
     catch
@@ -613,7 +613,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     endif
   endif
 
-  if mode() !=# 'i' && l:type !=# 'execute'
+  if mode() !=# 'i' && l:type !=# 'vimshell'
     call setpos('.', l:intbuffer_pos)
   endif
 
@@ -627,7 +627,7 @@ function! s:cache_output(interactive)"{{{
   endif
 
   let l:outputed = 0
-  if a:interactive.type ==# 'background' || a:interactive.type ==# 'execute'
+  if a:interactive.type ==# 'background' || a:interactive.type ==# 'vimshell'
     " Background.
 
     if a:interactive.process.stdout.eof

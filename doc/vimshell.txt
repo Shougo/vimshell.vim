@@ -212,6 +212,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-05-30
+- Fixed vimshell update bug.
+
 2011-05-29
 - Improved iexe completion.
 - Improved description.
