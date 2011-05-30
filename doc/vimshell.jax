@@ -446,6 +446,14 @@ autoload/vimshell/term_mappings.vimのvimshell#term_mappings#define_default_mapp
 ==============================================================================
 EXAMPLES						*vimshell-examples*
 >
+	" Initialize execute file list.
+	let g:vimshell_execute_file_list = {}
+	call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
+	let g:vimshell_execute_file_list['rb'] = 'ruby'
+	let g:vimshell_execute_file_list['pl'] = 'perl'
+	let g:vimshell_execute_file_list['py'] = 'python'
+	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
+	
 	let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 	let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
@@ -461,7 +469,7 @@ EXAMPLES						*vimshell-examples*
 	  call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
 	  let g:vimshell_execute_file_list['zip'] = 'zipinfo'
 	  call vimshell#set_execute_file('tgz,gz', 'gzcat')
-	  call vimshell#set_execute_file('tbz,bz2', 'bzcat')
+	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 	endif
 	
 	autocmd FileType vimshell
@@ -470,29 +478,13 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
 	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
-	\| call vimshell#hook#set('emptycmd', ['g:my_emptycmd'])
-	\| call vimshell#hook#set('preprompt', ['g:my_preprompt'])
-	\| call vimshell#hook#set('preexec', ['g:my_preexec'])
-
+	
 	function! g:my_chpwd(args, context)
-	  call vimshell#execute('echo "chpwd"')
+	  call vimshell#execute('ls')
 	endfunction
-	function! g:my_emptycmd(cmdline, context)
-	  call vimshell#execute('echo "emptycmd"')
-	  return a:cmdline
-	endfunction
-	function! g:my_preprompt(args, context)
-	  call vimshell#execute('echo "preprompt"')
-	endfunction
-	function! g:my_preexec(cmdline, context)
-	  call vimshell#execute('echo "preexec"')
 	
-	  let l:args = vimproc#parser#split_args(a:cmdline)
-	  if len(l:args) > 0 && l:args[0] ==# 'diff'
-	    call vimshell#set_syntax('diff')
-	  endif
-	
-	  return a:cmdline
+	autocmd FileType int-* call s:interactive_settings()
+	function! s:interactive_settings()
 	endfunction
 <
 プロンプトをユーザー名にしているだけで、後は凝った設定はしてないです。 ちな
