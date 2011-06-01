@@ -136,12 +136,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'command' : fnamemodify(vimshell#iswin() ? l:args[1] : l:args[0], ':t:r'),
-        \}
-  let b:interactive.hook_functions_table = {
-        \ 'preprompt' : [], 'preparse' : [],
-        \ 'preexec' : [], 'postexec' : [],
-        \ 'emptycmd' : [], 'notfound' : [],
-        \ 'chpwd' : [],
+        \ 'hook_functions_table' : {},
         \}
   call vimshell#interactive#init()
 

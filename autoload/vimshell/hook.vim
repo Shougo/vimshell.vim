@@ -26,6 +26,7 @@
 
 function! vimshell#hook#call(hook_point, context, args)"{{{
   if !a:context.is_interactive || &filetype !=# 'vimshell'
+        \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return
   endif
 
@@ -34,17 +35,13 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   call vimshell#set_context(l:context)
 
   " Call hook function.
-  try
-    for Func in b:interactive.hook_functions_table[a:hook_point]
-      call call(Func, [a:args, l:context], {})
-    endfor
-  catch
-    " Error.
-    call vimshell#error_line(a:context.fd, v:exception . ' ' . v:throwpoint)
-  endtry
+  for Func in b:interactive.hook_functions_table[a:hook_point]
+    call call(Func, [a:args, l:context], {})
+  endfor
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
   if !a:context.is_interactive || &filetype !=# 'vimshell'
+        \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return a:args
   endif
 
@@ -54,31 +51,17 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
 
   " Call hook function.
   let l:args = a:args
-  try
-    for Func in b:interactive.hook_functions_table[a:hook_point]
-      let l:args = call(Func, [l:args, l:context], {})
-    endfor
-  catch
-    " Error.
-    call vimshell#error_line(a:context.fd, v:exception . ' ' . v:throwpoint)
-    return l:args
-  endtry
+  for Func in b:interactive.hook_functions_table[a:hook_point]
+    let l:args = call(Func, [l:args, l:context], {})
+  endfor
 
   return l:args
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list)"{{{
-  if !has_key(b:interactive.hook_functions_table, a:hook_point)
-    throw 'Hook point "' . a:hook_point . '" is not supported.'
-  endif
-
   let b:interactive.hook_functions_table[a:hook_point] = a:func_list
 endfunction"}}}
 function! vimshell#hook#get(hook_point)"{{{
-  if !has_key(b:interactive.hook_functions_table, a:hook_point)
-    throw 'Hook point "' . a:hook_point . '" is not supported.'
-  endif
-
-  return b:interactive.hook_functions_table[a:hook_point]
+  return get(b:interactive.hook_functions_table, a:hook_point, [])
 endfunction"}}}
 
 " vim: foldmethod=marker

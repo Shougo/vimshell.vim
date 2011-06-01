@@ -88,12 +88,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \}
-  let l:interactive.hook_functions_table = {
-        \ 'preprompt' : [], 'preparse' : [],
-        \ 'preexec' : [], 'postexec' : [],
-        \ 'emptycmd' : [], 'notfound' : [],
-        \ 'chpwd' : [],
+        \ 'hook_functions_table' : {},
         \}
 
   " Input from stdin.

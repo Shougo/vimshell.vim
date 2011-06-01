@@ -156,12 +156,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'command' : fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r'),
         \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
         \    && a:context.is_close_immediately,
-        \}
-  let b:interactive.hook_functions_table = {
-        \ 'preprompt' : [], 'preparse' : [],
-        \ 'preexec' : [], 'postexec' : [],
-        \ 'emptycmd' : [], 'notfound' : [],
-        \ 'chpwd' : [],
+        \ 'hook_functions_table' : {},
         \}
 
   call vimshell#interactive#execute_pty_out(1)

@@ -187,12 +187,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \}
-  let b:interactive.hook_functions_table = {
-        \ 'preprompt' : [], 'preparse' : [],
-        \ 'preexec' : [], 'postexec' : [],
-        \ 'emptycmd' : [], 'notfound' : [],
-        \ 'chpwd' : [],
+        \ 'hook_functions_table' : {},
         \}
 
   " Load rc file.
