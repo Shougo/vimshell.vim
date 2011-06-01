@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -99,7 +99,7 @@ function! vimshell#commands#exe#define()
 endfunction
 
 function! s:init_process(commands, context, options)"{{{
-  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
+  if !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
@@ -128,18 +128,15 @@ function! s:init_process(commands, context, options)"{{{
   endfor
 
   " Set variables.
-  let b:interactive = {
-        \ 'type' : 'vimshell',
-        \ 'syntax' : b:interactive.syntax,
-        \ 'process' : l:sub,
-        \ 'fd' : a:context.fd,
-        \ 'encoding' : a:options['--encoding'],
-        \ 'is_pty' : !vimshell#iswin(),
-        \ 'echoback_linenr' : -1,
-        \ 'stdout_cache' : '',
-        \ 'stderr_cache' : '',
-        \ 'cmdline' : join(l:cmdline, '|'),
-        \}
+  let b:interactive.syntax = b:interactive.syntax
+  let b:interactive.process = l:sub
+  let b:interactive.fd = a:context.fd
+  let b:interactive.encoding = a:options['--encoding']
+  let b:interactive.is_pty = !vimshell#iswin()
+  let b:interactive.echoback_linenr = -1
+  let b:interactive.stdout_cache = ''
+  let b:interactive.stderr_cache = ''
+  let b:interactive.cmdline = join(l:cmdline, '|')
 
   " Input from stdin.
   if b:interactive.fd.stdin != ''

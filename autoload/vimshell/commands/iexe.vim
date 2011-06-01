@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 May 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -156,6 +156,12 @@ function! s:command.execute(commands, context)"{{{
         \ 'command' : fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r'),
         \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
         \    && a:context.is_close_immediately,
+        \}
+  let b:interactive.hook_functions_table = {
+        \ 'preprompt' : [], 'preparse' : [],
+        \ 'preexec' : [], 'postexec' : [],
+        \ 'emptycmd' : [], 'notfound' : [],
+        \ 'chpwd' : [],
         \}
 
   call vimshell#interactive#execute_pty_out(1)

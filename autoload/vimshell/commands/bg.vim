@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2010
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -41,7 +41,7 @@ function! s:command.execute(commands, context)"{{{
   if !has_key(l:options, '--syntax')
     let l:options['--syntax'] = 'vimshell-bg'
   endif
-  
+
   if empty(l:commands[0].args)
     return
   endif
@@ -51,7 +51,7 @@ function! s:command.execute(commands, context)"{{{
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
-  
+
   " Encoding conversion.
   if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
     for l:command in l:commands
@@ -73,7 +73,7 @@ function! s:command.execute(commands, context)"{{{
 
   " Initialize.
   let l:sub = vimproc#plineopen3(l:commands)
-  
+
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
 
@@ -88,6 +88,12 @@ function! s:command.execute(commands, context)"{{{
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
+        \}
+  let l:interactive.hook_functions_table = {
+        \ 'preprompt' : [], 'preparse' : [],
+        \ 'preexec' : [], 'postexec' : [],
+        \ 'emptycmd' : [], 'notfound' : [],
+        \ 'chpwd' : [],
         \}
 
   " Input from stdin.

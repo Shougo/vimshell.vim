@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Jan 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
 
   " Call hook function.
   try
-    for Func in b:vimshell.hook_functions_table[a:hook_point]
+    for Func in b:interactive.hook_functions_table[a:hook_point]
       call call(Func, [a:args, l:context], {})
     endfor
   catch
@@ -55,7 +55,7 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
   " Call hook function.
   let l:args = a:args
   try
-    for Func in b:vimshell.hook_functions_table[a:hook_point]
+    for Func in b:interactive.hook_functions_table[a:hook_point]
       let l:args = call(Func, [l:args, l:context], {})
     endfor
   catch
@@ -67,18 +67,18 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
   return l:args
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list)"{{{
-  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
+  if !has_key(b:interactive.hook_functions_table, a:hook_point)
     throw 'Hook point "' . a:hook_point . '" is not supported.'
   endif
 
-  let b:vimshell.hook_functions_table[a:hook_point] = a:func_list
+  let b:interactive.hook_functions_table[a:hook_point] = a:func_list
 endfunction"}}}
 function! vimshell#hook#get(hook_point)"{{{
-  if !has_key(b:vimshell.hook_functions_table, a:hook_point)
+  if !has_key(b:interactive.hook_functions_table, a:hook_point)
     throw 'Hook point "' . a:hook_point . '" is not supported.'
   endif
 
-  return b:vimshell.hook_functions_table[a:hook_point]
+  return b:interactive.hook_functions_table[a:hook_point]
 endfunction"}}}
 
 " vim: foldmethod=marker
