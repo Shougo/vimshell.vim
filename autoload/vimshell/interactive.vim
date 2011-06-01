@@ -476,7 +476,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
 
   " Convert encoding.
   let l:string =
-        \ b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
+        \ (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   call vimshell#terminal#print(l:string, 0)
@@ -514,7 +514,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
 
   " Convert encoding.
   let l:string =
-        \ && b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
+        \ (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   " Print buffer.
