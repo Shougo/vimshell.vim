@@ -466,7 +466,7 @@ function! vimshell#interactive#decode_signal(signal)"{{{
 endfunction"}}}
 
 function! vimshell#interactive#print_buffer(fd, string)"{{{
-  if a:string == ''
+  if a:string == '' || !exists('b:interactive')
     return
   endif
 
@@ -475,8 +475,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   endif
 
   " Convert encoding.
-  let l:string = (exists('b:interactive')
-        \ && b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
+  let l:string =
+        \ b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   call vimshell#terminal#print(l:string, 0)
@@ -504,7 +504,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#error_buffer(fd, string)"{{{
-  if a:string == ''
+  if a:string == '' || !exists('b:interactive')
     return
   endif
 
@@ -513,7 +513,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   endif
 
   " Convert encoding.
-  let l:string = (exists('b:interactive')
+  let l:string =
         \ && b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
