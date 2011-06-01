@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2011.
+" Last Modified: 01 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,6 +80,9 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   let l:in = vimshell#interactive#get_cur_line(line('.'))
 
   call vimshell#history#append(l:in)
+  let l:context = vimshell#get_context()
+  let l:context.is_interactive = 1
+  let l:in = vimshell#hook#call_filter('input', l:context, l:in)
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
@@ -472,7 +475,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   endif
 
   " Convert encoding.
-  let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
+  let l:string = (exists('b:interactive')
+        \ && b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   call vimshell#terminal#print(l:string, 0)
@@ -509,7 +513,8 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   endif
 
   " Convert encoding.
-  let l:string = (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
+  let l:string = (exists('b:interactive')
+        \ && b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
         \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   " Print buffer.

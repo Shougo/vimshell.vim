@@ -219,6 +219,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-06-01
 - Improved hook.
+- Added input hook.
 
 2011-05-30
 - Fixed vimshell update bug.

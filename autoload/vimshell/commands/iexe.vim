@@ -159,6 +159,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'hook_functions_table' : {},
         \}
 
+  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r')
+
   call vimshell#interactive#execute_pty_out(1)
 
   let l:last_winnr = winnr()
@@ -273,7 +275,6 @@ function! s:init_bg(args, context)"{{{
   call s:default_settings()
 
   let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
-  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.
   augroup vimshell

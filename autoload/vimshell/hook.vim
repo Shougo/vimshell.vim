@@ -25,7 +25,7 @@
 "=============================================================================
 
 function! vimshell#hook#call(hook_point, context, args)"{{{
-  if !a:context.is_interactive || &filetype !=# 'vimshell'
+  if !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return
   endif
@@ -40,7 +40,7 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   endfor
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
-  if !a:context.is_interactive || &filetype !=# 'vimshell'
+  if !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return a:args
   endif
