@@ -839,10 +839,15 @@ notfound						*vimshell-hook-notfound*
 preprompt						*vimshell-hook-preprompt*
 		コマンド実行後、プロンプト表示前に呼びだされる。
 
-input							*vimshell-hook-input*
+preinput						*vimshell-hook-preinput*
 		コマンド実行時において、ユーザーの入力後に呼びだされる。第一引
 		数はinputというユーザー入力文字列で、戻り値は変更後の入力文字列
 		である。普通|vimshell-internal-iexe|のバッファに使う。
+
+postinput						*vimshell-hook-postinput*
+		コマンド実行時において、ユーザーの入力がプロセスに処理された後
+		に呼びだされる。第一引数はinputというユーザー入力文字列である。
+		普通|vimshell-internal-iexe|のバッファに使う。
 
 cmdlineを簡易的に解析するなら、|vimproc#parser#split_args()|か、
 |vimproc#parser#split_args_through()|を使用する。この関数は引数に分割するコマン

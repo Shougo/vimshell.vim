@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 02 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -82,7 +82,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   call vimshell#history#append(l:in)
   let l:context = vimshell#get_context()
   let l:context.is_interactive = 1
-  let l:in = vimshell#hook#call_filter('input', l:context, l:in)
+  let l:in = vimshell#hook#call_filter('preinput', l:context, l:in)
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
@@ -107,8 +107,8 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
-  if exists('b:interactive') && has_key(b:interactive.process, 'eof')
-        \ && !b:interactive.process.eof
+
+  if has_key(b:interactive.process, 'eof') && !b:interactive.process.eof
     if a:is_insert
       startinsert!
     else
@@ -117,6 +117,9 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
     let b:interactive.output_pos = getpos('.')
   endif
+
+  " Call postinput hook.
+  call vimshell#hook#call('postinput', l:context, l:in)
 endfunction"}}}
 function! vimshell#interactive#send_string(string)"{{{
   if !b:interactive.process.is_valid
