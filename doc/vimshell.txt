@@ -220,6 +220,7 @@ CHANGELOG						*vimshell-changelog*
 2011-06-02
 - Added postinput hook.
 - Changed input hook to preinput hook.
+- Improved iexe and texe description.
 
 2011-06-01
 - Improved hook.

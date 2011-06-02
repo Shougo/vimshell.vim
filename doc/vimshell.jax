@@ -613,6 +613,13 @@ iexe [{options}...] {command}				*vimshell-internal-iexe*
 		iexeバッファは|filetype|がint-{command}となる。iexeバッファ全体
 		にautocmdを使用する場合は、"int-*"というパターンを使用するとよ
 		い。
+		
+		Note:
+		iexeはzshの右プロンプトに対応していない。仕組み上、右プロンプト
+		には対応できない。iexeバッファからプロセスを起動すると、
+		環境変数 "$VIMSHELL" が1にセットされるので、それにより判別し右
+		プロンプトを無効にするとよい。
+		
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づいて
 		挙動を変更する。詳しくは |vimshell-execute-options|を参照せよ。
 
@@ -677,7 +684,10 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		{command}に引数を与えて実行する。必ず外部コマンドが実行される。
 		exe, iexeとは違い、端末コマンドを実行することに特化している。入
 		出力を行なうために新しいバッファが生成される。パイプを使うとエ
-		ラーになる。このコマンドは、まだ動作が不完全である。
+		ラーになる。
+		
+		Note: このコマンドは、まだ動作が不完全である。
+		
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
 		て挙動を変更する。詳しくは |vimshell-execute-options|を参
 		照せよ。

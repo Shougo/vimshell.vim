@@ -29,9 +29,9 @@ let s:last_interactive_bufnr = 1
 " Utility functions.
 
 let s:password_regex =
-      \'\%(Enter \\|[Oo]ld \\|[Nn]ew \\|''s \\|login \\|'''  .
-      \'Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] \|^\)' .
-      \'[Pp]assword\|\%(^\|\n\)[Pp]assword'
+      \'\%(Enter \|[Oo]ld \|[Nn]ew \|login '  .
+      \'\|Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] ' .
+      \'\|^\|\n\|''s \)[Pp]assword'
 let s:character_regex = ''
 
 augroup vimshell
