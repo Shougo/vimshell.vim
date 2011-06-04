@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 04 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,8 +35,9 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   call vimshell#set_context(l:context)
 
   " Call hook function.
-  for Func in b:interactive.hook_functions_table[a:hook_point]
-    call call(Func, [a:args, l:context], {})
+  let l:table = b:interactive.hook_functions_table[a:hook_point]
+  for key in sort(keys(l:table))
+    call call(l:table[key], [a:args, l:context], {})
   endfor
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
@@ -51,17 +52,44 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
 
   " Call hook function.
   let l:args = a:args
-  for Func in b:interactive.hook_functions_table[a:hook_point]
-    let l:args = call(Func, [l:args, l:context], {})
+  let l:table = b:interactive.hook_functions_table[a:hook_point]
+  for key in sort(keys(l:table))
+    let l:args = call(l:table[key], [l:args, l:context], {})
   endfor
 
   return l:args
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list)"{{{
-  let b:interactive.hook_functions_table[a:hook_point] = a:func_list
+  if !has_key(b:interactive.hook_functions_table, a:hook_point)
+    let b:interactive.hook_functions_table[a:hook_point] = {}
+  endif
+
+  let l:cnt = 1
+  let b:interactive.hook_functions_table[a:hook_point] = {}
+  for Func in a:func_list
+    let b:interactive.hook_functions_table[a:hook_point][l:cnt] = Func
+
+    let l:cnt += 1
+  endfor
 endfunction"}}}
 function! vimshell#hook#get(hook_point)"{{{
-  return get(b:interactive.hook_functions_table, a:hook_point, [])
+  return get(b:interactive.hook_functions_table, a:hook_point, {})
+endfunction"}}}
+function! vimshell#hook#add(hook_point, hook_name, func)"{{{
+  if !has_key(b:interactive.hook_functions_table, a:hook_point)
+    let b:interactive.hook_functions_table[a:hook_point] = {}
+  endif
+
+  let b:interactive.hook_functions_table[a:hook_point][a:hook_name] = a:func
+endfunction"}}}
+function! vimshell#hook#remove(hook_point, hook_name)"{{{
+  if !has_key(b:interactive.hook_functions_table, a:hook_point)
+    let b:interactive.hook_functions_table[a:hook_point] = {}
+  endif
+
+  if has_key(b:interactive.hook_functions_table[a:hook_point], a:hook_name)
+    call remove(b:interactive.hook_functions_table[a:hook_point], a:hook_name)
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

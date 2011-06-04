@@ -217,6 +217,10 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-03
+- Improved hooks.
+- Added some hook functions.
+
 2011-06-02
 - Added postinput hook.
 - Changed input hook to preinput hook.

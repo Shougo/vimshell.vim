@@ -29,6 +29,7 @@ Install			|vimshell-install|
 Interface		|vimshell-interface|
   Commands		  |vimshell-commands|
   Variables		  |vimshell-variables|
+  Functions		  |vimshell-functions|
   Key mappings		  |vimshell-key-mappings|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
@@ -423,6 +424,25 @@ KEY MAPPINGS 						*vimshell-key-mappings*
 			ても、新しくvimshellバッファを作成する。
 
 ------------------------------------------------------------------------------
+FUNCTIONS 						*vimshell-functions*
+
+vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
+			{hook-point}のhook関数を{func-list}で定義する。すでに定
+			義されているhookは上書きされるので注意しなければなら
+			ない。hook関数は{func-list}で指定された順番で呼びだされる。
+
+vimshell#hook#get({hook-point})				*vimshell#hook#get()*
+			{hook-point}に定義されているhookを辞書形式で返す。
+
+vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
+			{hook-point}に{hook-name}で{func}を登録する。既に存
+			在するhook関数は{hook-name}が同じでない限り上書きさ
+			れない。
+
+vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
+			{hook-point}の{hook-name}関数を削除する。
+
+------------------------------------------------------------------------------
 BUFFER KEY MAPPINGS 					*vimshell-buffer-key-mappings*
 
 vimshellバッファで使えるキーマッピングについては、
@@ -477,7 +497,7 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('i', 'iexe')
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
-	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\| call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
 	
 	function! g:my_chpwd(args, context)
 	  call vimshell#execute('ls')
@@ -809,7 +829,7 @@ vimshellには関数がまだ存在しないが、決められたフック地点
 ようにしている。
 >
 	autocmd FileType vimshell
-	\ call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\ call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
 	
 	function! g:my_chpwd(args, context)
 		call vimshell#execute('ls')
@@ -817,8 +837,7 @@ vimshellには関数がまだ存在しないが、決められたフック地点
 <
 vimshellでは次のようなフック地点が用意されている。フック関数はargsという引数を
 表す変数と、contextというコンテキスト情報を引数に取る。フィルターとして動作する、
-一部のフック関数はcmdlineを第一引数に取る。|vimshell#hook#set()|の第二引数は
-関数名のリストとなっていて、ここで指定された順番で関数が呼び出される。
+一部のフック関数はcmdlineを第一引数に取る。
 
 chpwd							*vimshell-hook-chpwd*
 		vimshellのカレントディレクトリが変更されるときに呼びだされる。
