@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-04
+- Fixed terminal print error.
+
 2011-06-03
 - Improved hooks.
 - Added some hook functions.

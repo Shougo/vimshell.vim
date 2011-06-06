@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Oct 2010
+" Last Modified: 06 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,13 +106,13 @@ if v:version >= 703
 
     return width
   endfunction"}}}
-  
+
   function! vimshell#util#wcswidth(str)"{{{
     return strwidth(a:str)
   endfunction"}}}
-  
+
 else
-  
+
   function! vimshell#util#strwidthpart(str, width)"{{{
     let ret = a:str
     let width = vimshell#util#wcswidth(a:str)
@@ -146,7 +146,7 @@ else
 
     return width
   endfunction"}}}
-  function! vimshell#util#strwidthpart_reverse(str, width)"{{{
+  function! vimshell#util#strwidthpart_len_reverse(str, width)"{{{
     let ret = a:str
     let width = vimshell#util#wcswidth(a:str)
     while width > a:width
@@ -157,7 +157,7 @@ else
 
     return width
   endfunction"}}}
-  
+
   function! vimshell#util#wcswidth(str)"{{{
     let mx_first = '^\(.\)'
     let str = a:str
