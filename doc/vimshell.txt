@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-08
+- Fixed restart keymapping.
+
 2011-06-04
 - Fixed terminal print error.
 

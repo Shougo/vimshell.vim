@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 May 2011.
+" Last Modified: 08 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -301,13 +301,15 @@ function! s:clear()"{{{
   else
     " Clear prompt history.
     let b:interactive.prompt_history = {}
-    
+
     % delete _
   endif
-  
+
   let b:interactive.echoback_linenr = 0
-  
+
+  " Clear.
   call vimshell#terminal#clear_highlight()
+  call remove(b:interactive, 'terminal')
 
   call vimshell#interactive#execute_pty_out(1)
 
