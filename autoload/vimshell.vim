@@ -497,27 +497,9 @@ function! vimshell#set_execute_file(exts, program)"{{{
     let g:vimshell_execute_file_list[ext] = a:program
   endfor
 endfunction"}}}
-function! vimshell#system(str, ...)"{{{
-  let l:command = a:str
-  let l:input = a:0 >= 1 ? a:1 : ''
-  if &termencoding != '' && &termencoding != &encoding
-    let l:command = iconv(l:command, &encoding, &termencoding)
-    let l:input = iconv(l:input, &encoding, &termencoding)
-  endif
-
-  if a:0 == 0
-    let l:output = vimproc#system(l:command)
-  elseif a:0 == 1
-    let l:output = vimproc#system(l:command, l:input)
-  else
-    let l:output = vimproc#system(l:command, l:input, a:2)
-  endif
-
-  if &termencoding != '' && &termencoding != &encoding
-    let l:output = iconv(l:output, &termencoding, &encoding)
-  endif
-
-  return l:output
+function! vimshell#system(...)"{{{
+  let V = vital#of('unite')
+  return call(V.system, a:000)
 endfunction"}}}
 function! vimshell#open(filename)"{{{
   call vimproc#open(a:filename)
