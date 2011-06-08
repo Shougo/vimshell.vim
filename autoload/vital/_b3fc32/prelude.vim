@@ -226,9 +226,13 @@ function! s:system(str, ...)"{{{
   if a:0 == 0
     let l:output = s:has_vimproc() ?
           \ vimproc#system(l:command) : system(l:command)
-  else
+  elseif a:0 == 1
     let l:output = s:has_vimproc() ?
           \ vimproc#system(l:command, l:input) : system(l:command, l:input)
+  else
+    " ignores 3rd argument unless you have vimproc.
+    let l:output = s:has_vimproc() ?
+          \ vimproc#system(l:command, l:input, a:2) : system(l:command, l:input)
   endif
 
   if &termencoding != '' && &termencoding != &encoding
