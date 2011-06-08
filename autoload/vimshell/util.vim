@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:V = vital#of('unite')
+let s:V = vital#of('vimshell')
 
 function! vimshell#util#truncate_smart(...)"{{{
   return V.call(s:V.truncate_smart, a:000)

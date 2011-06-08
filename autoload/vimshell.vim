@@ -498,7 +498,7 @@ function! vimshell#set_execute_file(exts, program)"{{{
   endfor
 endfunction"}}}
 function! vimshell#system(...)"{{{
-  let V = vital#of('unite')
+  let V = vital#of('vimshell')
   return call(V.system, a:000)
 endfunction"}}}
 function! vimshell#open(filename)"{{{
