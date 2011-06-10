@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jun 2011.
+" Last Modified: 10 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,25 +27,25 @@
 let s:V = vital#of('vimshell')
 
 function! vimshell#util#truncate_smart(...)"{{{
-  return V.call(s:V.truncate_smart, a:000)
+  return call(s:V.truncate_smart, a:000)
 endfunction"}}}
 
-function! vimshell#util#truncate(str, width)"{{{
-  return V.call(s:V.truncate, a:000)
+function! vimshell#util#truncate(...)"{{{
+  return call(s:V.truncate, a:000)
 endfunction"}}}
 
-function! vimshell#util#strchars(str)"{{{
-  return V.call(s:V.strchars, a:000)
+function! vimshell#util#strchars(...)"{{{
+  return call(s:V.strchars, a:000)
 endfunction"}}}
 
-function! vimshell#util#wcswidth(str)"{{{
-  return V.call(s:V.wcswidth, a:000)
+function! vimshell#util#wcswidth(...)"{{{
+  return call(s:V.wcswidth, a:000)
 endfunction"}}}
-function! vimshell#util#strwidthpart(str, width)"{{{
-  return V.call(s:V.strwidthpart, a:000)
+function! vimshell#util#strwidthpart(...)"{{{
+  return call(s:V.strwidthpart, a:000)
 endfunction"}}}
-function! vimshell#util#strwidthpart_reverse(str, width)"{{{
-  return V.call(s:V.strwidthpart_reverse, a:000)
+function! vimshell#util#strwidthpart_reverse(...)"{{{
+  return call(s:V.strwidthpart_reverse, a:000)
 endfunction"}}}
 if v:version >= 703
   " Use builtin function.
