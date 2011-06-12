@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2011.
+" Last Modified: 12 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -199,9 +199,11 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
         let l:pattern = l:line[1]
       else
         " Search cursor file.
-        let l:filename = expand('<cfile>')
+        " let l:filename = expand('<cfile>')
+        let l:filename = matchstr(getline('.')[: col('.')-1], '\%(\f\+\s\)*\f\+$')
+              \ . matchstr(getline('.')[col('.') :], '^\%(\f\+\s\)*\f\+')
         if has('conceal') && l:filename =~ '\[\%[%\]]\|^%$'
-          let l:filename = matchstr(getline('.'), '\f\+', 3)
+          let l:filename = matchstr(getline('.'), '\%(\f\+\s\)*\f\+', 3)
         endif
         let l:pattern = ''
       endif
@@ -552,12 +554,10 @@ function! s:open_file(filename, pattern)"{{{
     let l:filename = a:filename
   endif
 
-  let l:filename = expand(l:filename)
-  
   if l:filename =~ '^\%(https\?\|ftp\)://'
     " Open URI.
     call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-  elseif isdirectory(l:filename)
+  elseif isdirectory(substitute(l:filename, '\\ ', ' ', 'g'))
     " Change directory.
     call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
   else

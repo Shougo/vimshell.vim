@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-12
+- Improved open cursor file.
+
 2011-06-10
 - Fixed vital error.
 
