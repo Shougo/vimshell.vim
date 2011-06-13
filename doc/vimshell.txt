@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-14
+- Fixed :VimShellInteractive error.
+
 2011-06-12
 - Improved open cursor file.
 
