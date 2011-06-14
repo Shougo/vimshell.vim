@@ -220,6 +220,7 @@ CHANGELOG						*vimshell-changelog*
 2011-06-14
 - Fixed filename completion.
 - Fixed colorscheme problem.
+- Fixed :VimShellInteractive error.
 
 2011-06-12
 - Improved open cursor file.

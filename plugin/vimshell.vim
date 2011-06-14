@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 May 2011.
+" Last Modified: 14 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,30 +185,54 @@ function! s:execute_completefunc(lead, cmd, pos)"{{{
   return keys
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
-  call vimshell#execute_internal_command('bg', vimproc#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 0,
+        \ 'is_single_command' : 1,
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+        \}
+  call vimshell#set_context(l:context)
+
+  call vimshell#execute_internal_command('bg',
+        \ vimproc#parser#split_args(a:args), l:context.fd, l:context)
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
     call vimshell#commands#iexe#init()
-    
+
     " Search interpreter.
     if &filetype == '' || !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
       echoerr 'Interpreter is not found.'
       return
     endif
-    
+
     let l:args = g:vimshell_interactive_interpreter_commands[&filetype]
   else
     let l:args = a:args
   endif
-  
-  call vimshell#execute_internal_command('iexe', vimproc#parser#split_args(l:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
+
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 0,
+        \ 'is_single_command' : 1,
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+        \}
+  call vimshell#set_context(l:context)
+
+  call vimshell#execute_internal_command('iexe',
+        \ vimproc#parser#split_args(l:args), l:context.fd, l:context)
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
-  call vimshell#execute_internal_command('texe', vimproc#parser#split_args(a:args), { 'stdin' : '', 'stdout' : '', 'stderr' : '' }, 
-        \ { 'is_interactive' : 0, 'is_single_command' : 1 })
+  let l:context = {
+        \ 'has_head_spaces' : 0,
+        \ 'is_interactive' : 0,
+        \ 'is_single_command' : 1,
+        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+        \}
+  call vimshell#set_context(l:context)
+
+  call vimshell#execute_internal_command('texe',
+        \ vimproc#parser#split_args(a:args), l:context.fd, l:context)
 endfunction"}}}
 
 augroup vimshell
