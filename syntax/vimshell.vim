@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Feb 2011.
+" Last Modified: 14 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,12 +54,12 @@ syn match   VimShellVariable          '$\h\w*' contained
 syn match   VimShellVariable          '$$\h\w*' contained
 syn region   VimShellVariable  start=+${+ end=+}+ contained
 if vimshell#iswin()
-    syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
-    syn match   VimShellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
-    syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
+  syn match   VimShellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
+  syn match   VimShellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
+  syn match   VimShellLink              '\([[:alnum:]_.-]\+\.lnk\)'
 else
-    syn match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
-    syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
+  syn match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
+  syn match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 syn region   VimShellHistory  start=+^\s*\d\+:\s[^[:space:]]+ end=+.*+ oneline
 syn region   VimShellGrep  start=+^[^!]\f\+:+ end=+.*+ oneline
@@ -81,9 +81,9 @@ execute "syn region   VimShellExe start=".string('^'.vimshell#escape_match(vimsh
 execute "syn region   VimShellLine start=".string('^'.vimshell#escape_match(vimshell#get_secondary_prompt())) "end='$' keepend contains=VimShellExe,VimShellDirectory,VimShellConstants,VimShellArguments, VimShellQuoted,VimShellString,VimShellVariable,VimShellSpecial,VimShellComment"
 
 if has('gui_running')
-    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+  hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
 else
-    hi def link VimShellPrompt Identifier
+  hi def link VimShellPrompt Identifier
 endif
 
 hi def link VimShellUserPrompt Special

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 May 2011.
+" Last Modified: 14 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -190,13 +190,10 @@ function! vimshell#complete#helper#args(command, args)"{{{
   let l:complete_words = has_key(l:commands, a:command) && has_key(l:commands[a:command], 'complete') ?
         \ l:commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
 
-  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$'
+  if a:args[-1] =~ '^--[[:alnum:]._-]\+=\f*$\|[<>]\+\f*$'
     " Complete file.
-    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=')
-    for keyword in vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
-      let keyword.word = l:prefix . keyword.word
-      call add(l:complete_words, keyword)
-    endfor
+    let l:prefix = matchstr(a:args[-1], '^--[[:alnum:]._-]\+=\f*$\|[<>]\+\f*$')
+    let l:complete_words += vimshell#complete#helper#files(a:args[-1][len(l:prefix): ])
   endif
 
   return l:complete_words

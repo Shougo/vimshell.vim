@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2011.
+" Last Modified: 14 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,11 +57,20 @@ syn keyword TermtterKeyword
       \ remove_alias re remove replies reply restore_user resume retweet retweeted_to_me retweeted_by_me retweets retweets_of_me
       \ rt s save search sent_list set settings show shows stats status switch u unblock update user vi_editing_mode
 
-if has('gui_running')
-  hi TermtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-else
-  hi def link TermtterPrompt Identifier
-endif
+augroup vimshell-int-termtter
+  autocmd!
+  autocmd ColorScheme <buffer>    call s:color_scheme()
+augroup END
+
+function! s:color_scheme()"{{{
+  if has('gui_running')
+    hi TermtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+  else
+    hi def link TermtterPrompt Identifier
+  endif
+endfunction"}}}
+
+call s:color_scheme()
 
 hi def link TermtterConstants Constant
 hi def link TermtterCommand Statement

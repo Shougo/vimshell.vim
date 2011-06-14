@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 14 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -112,6 +112,7 @@ function! s:default_settings()"{{{
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
     autocmd InsertEnter <buffer>    call s:insert_enter()
     autocmd InsertLeave <buffer>    call s:insert_leave()
+    autocmd ColorScheme <buffer>    call s:color_scheme()
   augroup end
 
   " Define mappings.
@@ -731,6 +732,13 @@ endfunction"}}}
 function! s:insert_leave()"{{{
   if &updatetime < s:update_time_save
     let &updatetime = s:update_time_save
+  endif
+endfunction"}}}
+function! s:color_scheme()"{{{
+  if has('gui_running')
+    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+  else
+    hi def link VimShellPrompt Identifier
   endif
 endfunction"}}}
 
