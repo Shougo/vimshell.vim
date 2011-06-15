@@ -219,6 +219,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-06-15
 - Fixed execute_line().
+- Improved vimshell description.
 
 2011-06-14
 - Fixed filename completion.

@@ -68,6 +68,10 @@ vimshellは他のシェルと同じように動作する。 よって、すぐ�
 vimshellは初期化ファイルとして、.vimshrcを読み込む。
 aliasの設定はそこで行っておくと便利である。
 
+Note: vimshellとbash, zshは全く別のシェルであり、互換性はない。よって、vimshell
+は.bashrcや.zshrcを読み込むことはない。環境変数の設定だけは、
+|vimshell-internal-source|コマンドにより引き継ぐことができる。
+
 ==============================================================================
 INSTALL							*vimshell-install*
 
