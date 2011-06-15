@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jun 2011.
+" Last Modified: 15 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -200,10 +200,10 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       else
         " Search cursor file.
         " let l:filename = expand('<cfile>')
-        let l:filename = matchstr(getline('.')[: col('.')-1], '\%(\f\+\s\)*\f\+$')
-              \ . matchstr(getline('.')[col('.') :], '^\%(\f\+\s\)*\f\+')
+        let l:filename = matchstr(getline('.')[: col('.')-1], '\%(\f\+[ ]\)*\f\+$')
+              \ . matchstr(getline('.')[col('.') :], '^\%(\f\+[ ]\)*\f\+')
         if has('conceal') && l:filename =~ '\[\%[%\]]\|^%$'
-          let l:filename = matchstr(getline('.'), '\%(\f\+\s\)*\f\+', 3)
+          let l:filename = matchstr(getline('.'), '\%(\f\+[ ]\)*\f\+', 3)
         endif
         let l:pattern = ''
       endif

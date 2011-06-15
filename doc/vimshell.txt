@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-15
+- Fixed execute_line().
+
 2011-06-14
 - Fixed filename completion.
 - Fixed colorscheme problem.
