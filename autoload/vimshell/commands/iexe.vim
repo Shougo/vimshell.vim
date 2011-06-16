@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 16 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -230,6 +230,7 @@ call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands,
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'sml', 'sml')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_interpreter_commands, 'javascript', 'js')
 call vimshell#set_dictionary_helper(g:vimshell_interactive_prompts, 'termtter', '> ')
+call vimshell#set_dictionary_helper(g:vimshell_interactive_monochrome_commands, 'earthquake', '1')
 "}}}
 
 function! s:default_settings()"{{{

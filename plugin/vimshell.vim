@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 16 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -150,6 +150,9 @@ if !exists('g:vimshell_terminal_commands')
 endif
 if !exists('g:vimshell_enable_auto_slash')
   let g:vimshell_enable_auto_slash = 0
+endif
+if !exists('g:vimshell_monochrome_command')
+  let g:vimshell_monochrome_command = {}
 endif
 
 " For Cygwin commands.

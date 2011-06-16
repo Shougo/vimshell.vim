@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 16 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -414,6 +414,13 @@ let s:highlight_table = {
       \ 49 : ' ctermbg=NONE guibg=NONE', 
       \}"}}}
 function! s:escape.highlight(matchstr)"{{{
+  if g:vimshell_disable_escape_highlight
+        \ || (b:interactive.type == 'interactive' &&
+        \     has_key(g:vimshell_interactive_monochrome_commands, b:interactive.command)
+        \     && g:vimshell_interactive_monochrome_commands[b:interactive.command])
+    return
+  endif
+
   if s:use_conceal()
     call s:output_string("\<ESC>" . a:matchstr)
 
@@ -500,7 +507,7 @@ function! s:escape.highlight(matchstr)"{{{
     let l:cnt += 1
   endfor
 
-  if l:highlight == '' || g:vimshell_disable_escape_highlight
+  if l:highlight == ''
     return
   endif
 

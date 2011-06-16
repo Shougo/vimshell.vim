@@ -219,6 +219,8 @@ CHANGELOG						*vimshell-changelog*
 
 2011-06-16
 - Fixed open_file().
+- Supported earthquake command.
+- Added g:vimshell_interactive_monochrome_commands option.
 
 2011-06-15
 - Fixed execute_line().

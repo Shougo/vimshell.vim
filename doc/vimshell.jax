@@ -408,6 +408,13 @@ g:vimshell_enable_auto_slash				*g:vimshell_enable_auto_slash*
 			
 			初期値は0である。
 
+g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
+			コマンド名をキーとするディクショナリ変数になっていて、
+			vimshellによる色分けを無効化するコマンドを指定する。
+			
+			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
+			せよ。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
