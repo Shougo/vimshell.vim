@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jun 2011.
+" Last Modified: 16 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -550,6 +550,7 @@ function! s:open_file(filename, pattern)"{{{
     let l:filename = (has_key(b:vimshell.prompt_current_dir, l:prompt_nr)?
           \ b:vimshell.prompt_current_dir[l:prompt_nr] : getcwd()) . '/' . a:filename
     let l:filename = substitute(l:filename, '//', '/', 'g')
+    let l:filename = substitute(l:filename, ' ', '\\ ', 'g')
   else
     let l:filename = a:filename
   endif
