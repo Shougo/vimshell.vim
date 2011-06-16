@@ -151,8 +151,8 @@ endif
 if !exists('g:vimshell_enable_auto_slash')
   let g:vimshell_enable_auto_slash = 0
 endif
-if !exists('g:vimshell_monochrome_command')
-  let g:vimshell_monochrome_command = {}
+if !exists('g:vimshell_interactive_monochrome_commands')
+  let g:vimshell_interactive_monochrome_commands = {}
 endif
 
 " For Cygwin commands.
