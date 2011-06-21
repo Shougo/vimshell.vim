@@ -64,7 +64,7 @@ endfunction"}}}
 if v:version >= 703
   " Use builtin function.
   function! s:wcswidth(str)"{{{
-    return strdisplaywidth(a:str)
+    return strwidth(a:str)
   endfunction"}}}
   function! s:wcwidth(str)"{{{
     return strwidth(a:str)
