@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-06-25
+- Changed <Plug>(vimshell_paste_prompt) behavior.
+
 2011-06-16
 - Fixed open_file().
 - Supported earthquake command.
