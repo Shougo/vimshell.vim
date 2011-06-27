@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2011.
+" Last Modified: 25 Jun 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -433,16 +433,18 @@ function! s:run_help()"{{{
   endif
 endfunction"}}}
 function! s:paste_prompt()"{{{
-  if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  let l:prompt = getline('.')
+  if l:prompt !~# vimshell#escape_match(vimshell#get_prompt())
     return
   endif
 
-  if match(getline('$'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  if getline('$') !~# vimshell#escape_match(vimshell#get_prompt())
+        \ || vimshell#get_prompt_command(getline('$')) != ''
     " Insert prompt line.
-    call append(line('$'), getline('.'))
+    call append(line('$'), l:prompt)
   else
     " Set prompt line.
-    call setline(line('$'), getline('.'))
+    call setline(line('$'), l:prompt)
   endif
   $
 endfunction"}}}
