@@ -668,7 +668,9 @@ less [{options}...] {command}				*vimshell-internal-less*
 		照せよ。
 
 ls [{argument}...]					*vimshell-internal-ls*
-		外部コマンドのlsを適切な引数を与えて実行する。
+		外部コマンドのlsを適切な引数を与えて実行する。lsコマンドがイン
+		ストールされていない場合、エラーとなる。特にWindows環境では、ls
+		コマンドをどこかから入手する必要があるだろう。
 
 mkcd {directory-name}					*vimshell-internal-mkcd*
 		{directory-name}を作成してから、そのディレクトリへ
