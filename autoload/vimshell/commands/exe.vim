@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 01 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,8 +65,9 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   echo 'Running command.'
+  let l:is_insert = mode() ==# 'i'
   while b:interactive.process.is_valid
-    call vimshell#interactive#execute_pipe_out()
+    call vimshell#interactive#execute_pipe_out(l:is_insert)
 
     " Get input key.
     let l:char = getchar(0)

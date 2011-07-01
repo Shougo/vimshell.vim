@@ -245,7 +245,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     call vimshell#interactive#exit()
   endif
 endfunction"}}}
-function! vimshell#interactive#execute_pipe_out()"{{{
+function! vimshell#interactive#execute_pipe_out(is_insert)"{{{
   if !b:interactive.process.is_valid
     return
   endif
@@ -572,36 +572,38 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     call setpos('.', a:interactive.output_pos)
   endif
 
+  let l:is_insert = mode() ==# 'i'
+
   if l:type ==# 'background'
     setlocal modifiable
-    call vimshell#interactive#execute_pipe_out()
+    call vimshell#interactive#execute_pipe_out(l:is_insert)
     setlocal nomodifiable
   elseif l:type ==# 'vimshell'
     try
-      call vimshell#parser#execute_continuation(mode() ==# 'i')
+      call vimshell#parser#execute_continuation(l:is_insert)
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
       let l:context = b:vimshell.continuation.context
       let b:vimshell.continuation = {}
       call vimshell#print_prompt(l:context)
-      call vimshell#start_insert(mode() ==# 'i')
+      call vimshell#start_insert(l:is_insert)
     endtry
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
-    if l:type ==# 'terminal' && mode() !=# 'i'
+    if l:type ==# 'terminal' && !l:is_insert
       setlocal modifiable
     endif
 
-    call vimshell#interactive#execute_pty_out(mode() ==# 'i')
+    call vimshell#interactive#execute_pty_out(l:is_insert)
 
     if l:type ==# 'terminal'
       setlocal nomodifiable
-    elseif !a:interactive.process.eof && mode() ==# 'i'
+    elseif !a:interactive.process.eof && l:is_insert
       startinsert!
     endif
   endif
 
-  if mode() !=# 'i' && l:type !=# 'vimshell'
+  if !l:is_insert && l:type !=# 'vimshell'
     call setpos('.', l:intbuffer_pos)
   endif
 

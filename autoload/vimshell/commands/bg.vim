@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2011.
+" Last Modified: 01 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -182,7 +182,7 @@ endfunction"}}}
 function! s:on_execute()"{{{
   setlocal modifiable
   echo 'Running command.'
-  call vimshell#interactive#execute_pipe_out()
+  call vimshell#interactive#execute_pipe_out(mode() ==# 'i')
   redraw
   echo ''
   setlocal nomodifiable
