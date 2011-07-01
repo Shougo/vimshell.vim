@@ -320,7 +320,7 @@ function! s:output_string(string)"{{{
     let s:lines[s:line] = ''
   endif
   let l:left_line = matchstr(s:lines[s:line], '^.*\%' . s:col . 'c')
-  let l:right_line = s:lines[s:line][len(l:left_line) :]
+  let l:right_line = matchstr(s:lines[s:line], '\%' . s:col+len(l:string) . 'c.*$')
 
   let s:lines[s:line] = l:left_line . l:string . l:right_line
 
