@@ -219,6 +219,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-07-01
 - Improved escape sequences.
+- Close popup if output.
 
 2011-06-25
 - Changed <Plug>(vimshell_paste_prompt) behavior.

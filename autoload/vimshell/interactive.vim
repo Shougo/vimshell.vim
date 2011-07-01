@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 01 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -111,16 +111,6 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   endtry
 
   call vimshell#interactive#execute_pty_out(a:is_insert)
-
-  if has_key(b:interactive.process, 'eof') && !b:interactive.process.eof
-    if a:is_insert
-      startinsert!
-    else
-      normal! $
-    endif
-
-    let b:interactive.output_pos = getpos('.')
-  endif
 
   " Call postinput hook.
   call vimshell#hook#call('postinput', l:context, l:in)
@@ -280,6 +270,11 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endif
 
     let b:interactive.output_pos = getpos('.')
+  endif
+
+  if a:is_insert && exists('*neocomplcache#is_enabled') && neocomplcache#is_enabled()
+    " If response delays, so you have to close popup manually.
+    call neocomplcache#close_popup()
   endif
 
   if b:interactive.process.eof
