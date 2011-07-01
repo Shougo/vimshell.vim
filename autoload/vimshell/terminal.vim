@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2011.
+" Last Modified: 01 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,6 +26,7 @@
 
 function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
+  " echomsg a:string
 
   if &filetype ==# 'vimshell' && vimshell#check_prompt()
     " Move line.
@@ -581,14 +582,13 @@ function! s:escape.clear_line(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
   if l:param == '' || l:param == '0'
     " Clear right line.
-    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col - 2]
+    let s:lines[s:line] = (s:col == 1) ? '' : s:lines[s:line][ : s:col - 2]
   elseif l:param == '1'
     " Clear left line.
     let s:lines[s:line] = s:lines[s:line][s:col - 1 :]
     let s:col = 1
   elseif l:param == '2'
     " Clear whole line.
-
     let s:lines[s:line] = ''
     let s:col = 1
   endif
@@ -597,53 +597,24 @@ function! s:escape.clear_screen(matchstr)"{{{
   let l:param = matchstr(a:matchstr, '\d\+')
   if l:param == '' || l:param == '0'
     " Clear screen from cursor down.
-    let s:lines[s:line] = s:col == 1 ? '' : s:lines[s:line][ : s:col - 2]
-    for l:linenr in keys(s:lines)
-      if l:linenr >= s:line
-        " Clear previous highlight.
-        call s:clear_highlight_line(s:line)
-
-        " Clear line.
-        let s:lines[l:linenr] = ''
-      endif
-    endfor
-
-    let l:linenr = s:line
-    let l:max_line = line('$')
-    while l:linenr <= l:max_line
+    call s:escape.clear_line(0)
+    for l:linenr in filter(keys(s:lines), 'v:val > s:line')
       " Clear previous highlight.
       call s:clear_highlight_line(s:line)
 
       " Clear line.
       let s:lines[l:linenr] = ''
-      let l:linenr += 1
-    endwhile
-
-    let s:col = 1
+    endfor
   elseif l:param == '1'
     " Clear screen from cursor up.
-    for l:linenr in keys(s:lines)
-      if l:linenr <= s:line
-        " Clear previous highlight.
-        call s:clear_highlight_line(s:line)
-
-        " Clear line.
-        let s:lines[l:linenr] = ''
-      endif
-    endfor
-
-    let l:linenr = 1
-    let l:max_line = s:line
-    while l:linenr <= l:max_line
+    call s:escape.clear_line(1)
+    for l:linenr in filter(keys(s:lines), 'v:val < s:line')
       " Clear previous highlight.
       call s:clear_highlight_line(s:line)
 
       " Clear line.
       let s:lines[l:linenr] = ''
-      let l:linenr += 1
-    endwhile
-
-    let s:col = 1
+    endfor
   elseif l:param == '2'
     " Clear entire screen.
     let l:reg = @x
@@ -724,9 +695,14 @@ function! s:escape.move_down_head1(matchstr)"{{{
   call s:control.newline()
 endfunction"}}}
 function! s:escape.move_down_head(matchstr)"{{{
-  call s:control.newline()
+  call s:scroll_down(a:matchstr)
+  let s:col = 1
 endfunction"}}}
 function! s:escape.move_up_head(matchstr)"{{{
+  let l:param = matchstr(a:matchstr, '\d\+')
+  if l:param != '0'
+    call s:scroll_up(a:matchstr)
+  endif
   let s:col = 1
 endfunction"}}}
 function! s:escape.scroll_up1(matchstr)"{{{
@@ -736,7 +712,11 @@ function! s:escape.scroll_down1(matchstr)"{{{
   call s:scroll_down(1)
 endfunction"}}}
 function! s:escape.move_col(matchstr)"{{{
-  let s:col = matchstr(a:matchstr, '\d\+')
+  let l:num = matchstr(a:matchstr, '\d\+')
+  let s:col = l:num
+  if s:col < 1
+    let s:col = 1
+  endif
 endfunction"}}}
 function! s:escape.save_pos(matchstr)"{{{
   let b:interactive.terminal.save_pos = [s:line, s:col]
@@ -819,7 +799,6 @@ function! s:control.delete_backword_char()"{{{
     let s:col = len(s:lines[s:line])
     return
   endif
-
   call s:escape.move_left(1)
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{

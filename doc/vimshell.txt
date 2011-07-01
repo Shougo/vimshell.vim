@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-01
+- Improved escape sequences.
+
 2011-06-25
 - Changed <Plug>(vimshell_paste_prompt) behavior.
 
