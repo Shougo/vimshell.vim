@@ -77,75 +77,15 @@ function! s:chomp_prompt(cur_text, line, interactive)"{{{
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
-  if !b:interactive.process.is_valid
-    return
-  endif
-
   let l:in = vimshell#interactive#get_cur_line(line('.'))
-
-  call vimshell#history#append(l:in)
-  let l:context = vimshell#get_context()
-  let l:context.is_interactive = 1
-  let l:in = vimshell#hook#call_filter('preinput', l:context, l:in)
-
-  if b:interactive.encoding != '' && &encoding != b:interactive.encoding
-    " Convert encoding.
-    let l:in = iconv(l:in, &encoding, b:interactive.encoding)
+  if l:in !~ "\<C-d>$"
+    let l:in .= "\<LF>"
   endif
 
-  try
-    let b:interactive.echoback_linenr = line('.')
-
-    if l:in =~ "\<C-d>$"
-      " EOF.
-      let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
-
-      call b:interactive.process.write(l:in[:-2] . l:eof)
-      return
-    else
-      call b:interactive.process.write(l:in . "\<LF>")
-    endif
-  catch
-    call vimshell#interactive#exit()
-    return
-  endtry
-
-  call vimshell#interactive#execute_pty_out(a:is_insert)
-
-  " Call postinput hook.
-  call vimshell#hook#call('postinput', l:context, l:in)
+  call s:send_string(l:in, a:is_insert, line('.'))
 endfunction"}}}
-function! vimshell#interactive#send_string(string)"{{{
-  if !b:interactive.process.is_valid
-    return
-  endif
-
-  setlocal modifiable
-
-  let l:in = a:string
-
-  if b:interactive.encoding != '' && &encoding != b:interactive.encoding
-    " Convert encoding.
-    let l:in = iconv(l:in, &encoding, b:interactive.encoding)
-  endif
-
-  try
-    let b:interactive.echoback_linenr = line('$')
-
-    if l:in =~ "\<C-d>$"
-      " EOF.
-      let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
-
-      call b:interactive.process.write(l:in[:-2] . l:eof)
-    else
-      call b:interactive.process.write(l:in)
-    endif
-  catch
-    call vimshell#interactive#exit()
-    return
-  endtry
-
-  call vimshell#interactive#execute_pty_out(1)
+function! vimshell#interactive#send_string(string, is_insert)"{{{
+  call s:send_string(a:string, 1, line('$'))
 endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let l:input = input('Please input send string: ', vimshell#interactive#get_cur_line(line('.')))
@@ -230,6 +170,43 @@ function! s:send_region(line1, line2, string)"{{{
   stopinsert
   execute l:save_winnr 'wincmd w'
 endfunction"}}}
+function! s:send_string(string, is_insert, linenr)"{{{
+  if !b:interactive.process.is_valid
+    return
+  endif
+
+  setlocal modifiable
+
+  let l:in = a:string
+
+  if b:interactive.encoding != '' && &encoding != b:interactive.encoding
+    " Convert encoding.
+    let l:in = iconv(l:in, &encoding, b:interactive.encoding)
+  endif
+
+  try
+    let b:interactive.echoback_linenr = a:linenr
+
+    if l:in =~ "\<C-d>$"
+      " EOF.
+      let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
+
+      call b:interactive.process.write(l:in[:-2] . l:eof)
+    else
+      call b:interactive.process.write(l:in)
+    endif
+  catch
+    call vimshell#interactive#exit()
+    return
+  endtry
+
+  call vimshell#interactive#execute_pty_out(a:is_insert)
+
+  call s:set_output_pos(a:is_insert)
+
+  " Call postinput hook.
+  call vimshell#hook#call('postinput', vimshell#get_context(), l:in)
+endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let l:bufname = a:bufname == '' ? bufname('%') : a:bufname
   let s:last_interactive_bufnr = bufnr(l:bufname)
@@ -260,28 +237,14 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     endwhile
   endif
 
-  if l:outputed && b:interactive.type !=# 'terminal'
-    if !b:interactive.process.eof
-      if a:is_insert
-        startinsert!
-      else
-        normal! $
-      endif
-    endif
-
-    let b:interactive.output_pos = getpos('.')
-  endif
-
-  if a:is_insert && exists('*neocomplcache#is_enabled') && neocomplcache#is_enabled()
-    " If response delays, so you have to close popup manually.
-    call neocomplcache#close_popup()
+  if l:outputed
+    call s:set_output_pos(a:is_insert)
   endif
 
   if b:interactive.process.eof
     call vimshell#interactive#exit()
   endif
 endfunction"}}}
-
 function! vimshell#interactive#execute_pipe_out()"{{{
   if !b:interactive.process.is_valid
     return
@@ -317,8 +280,26 @@ function! vimshell#interactive#execute_pipe_out()"{{{
     endwhile
   endif
 
+  call s:set_output_pos(a:is_insert)
+
   if b:interactive.process.stdout.eof && b:interactive.process.stderr.eof
     call vimshell#interactive#exit()
+  endif
+endfunction"}}}
+function! s:set_output_pos(is_insert)"{{{
+  if b:interactive.type !=# 'terminal' &&
+        \ has_key(b:interactive.process, 'eof') && !b:interactive.process.eof
+    if a:is_insert
+      startinsert!
+    else
+      normal! $
+    endif
+    let b:interactive.output_pos = getpos('.')
+  endif
+
+  if a:is_insert && exists('*neocomplcache#is_enabled') && neocomplcache#is_enabled()
+    " If response delays, so you have to close popup manually.
+    call neocomplcache#close_popup()
   endif
 endfunction"}}}
 
