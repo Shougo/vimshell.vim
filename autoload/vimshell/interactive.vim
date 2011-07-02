@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2011.
+" Last Modified: 02 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -81,6 +81,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   if l:in !~ "\<C-d>$"
     let l:in .= "\<LF>"
   endif
+  call vimshell#history#append(l:in)
 
   call s:send_string(l:in, a:is_insert, line('.'))
 endfunction"}}}
@@ -179,6 +180,11 @@ function! s:send_string(string, is_insert, linenr)"{{{
 
   let l:in = a:string
 
+  let l:context = vimshell#get_context()
+  let l:context.is_interactive = 1
+
+  let l:in = vimshell#hook#call_filter('preinput', l:context, l:in)
+
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
     let l:in = iconv(l:in, &encoding, b:interactive.encoding)
@@ -205,7 +211,7 @@ function! s:send_string(string, is_insert, linenr)"{{{
   call s:set_output_pos(a:is_insert)
 
   " Call postinput hook.
-  call vimshell#hook#call('postinput', vimshell#get_context(), l:in)
+  call vimshell#hook#call('postinput', l:context, l:in)
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let l:bufname = a:bufname == '' ? bufname('%') : a:bufname

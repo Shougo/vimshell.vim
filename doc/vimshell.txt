@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-02
+- Fixed preinput bug.
+
 2011-07-01
 - Improved escape sequences.
 - Close popup if output.
