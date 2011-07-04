@@ -94,6 +94,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Delete line.
   nmap <buffer> dd <Plug>(vimshell_delete_line)
   " Start insert.
+  nmap <buffer> ^         <Plug>(vimshell_insert_head)<Esc>l
   nmap <buffer> I         <Plug>(vimshell_insert_head)
   nmap <buffer> A         <Plug>(vimshell_append_end)
   nmap <buffer> i         <Plug>(vimshell_insert_enter)
