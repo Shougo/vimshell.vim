@@ -219,6 +219,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-07-04
 - Added <Plug>(vimshell_move_head) mapping.
+- Improved <Plug>(vimshell_previous_prompt) and <Plug>(vimshell_next_prompt)
 
 2011-07-02
 - Fixed preinput bug.

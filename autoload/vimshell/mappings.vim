@@ -334,10 +334,10 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:previous_prompt()"{{{
-  call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'bWe')
+  call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
 endfunction"}}}
 function! s:next_prompt()"{{{
-  call search('^' . vimshell#escape_match(vimshell#get_prompt()), 'We')
+  call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
 endfunction"}}}
 function! s:select_previous_prompt()"{{{
   let l:prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
