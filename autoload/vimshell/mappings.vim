@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jun 2011.
+" Last Modified: 04 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,13 +44,14 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_clear)  :<C-u>call <SID>clear(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_move_head)  :<C-u>call <SID>move_head()<CR><ESC>l
 
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
 
   inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
   inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
-  inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ? 
+  inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
         \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)  <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)  <ESC>:call <SID>insert_last_word()<CR>
@@ -98,6 +99,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> A         <Plug>(vimshell_append_end)
   nmap <buffer> i         <Plug>(vimshell_insert_enter)
   nmap <buffer> a         <Plug>(vimshell_append_enter)
+  nmap <buffer> ^         <Plug>(vimshell_move_head)
   " Interrupt.
   nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Clear.

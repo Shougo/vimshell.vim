@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-04
+- Added <Plug>(vimshell_move_head) mapping.
+
 2011-07-02
 - Fixed preinput bug.
 
