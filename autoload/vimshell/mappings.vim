@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jul 2011.
+" Last Modified: 05 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -201,11 +201,12 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
         let l:pattern = l:line[1]
       else
         " Search cursor file.
-        " let l:filename = expand('<cfile>')
-        let l:filename = matchstr(getline('.')[: col('.')-1], '\%(\f\+[ ]\)*\f\+$')
-              \ . matchstr(getline('.')[col('.') :], '^\%(\f\+[ ]\)*\f\+')
+        let l:filename_pattern = '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+        let l:filename = matchstr(getline('.')[: col('.')-1], l:filename_pattern . '$')
+              \ . matchstr(getline('.')[col('.') :], '^'.l:filename_pattern)
         if has('conceal') && l:filename =~ '\[\%[%\]]\|^%$'
-          let l:filename = matchstr(getline('.'), '\%(\f\+[ ]\)*\f\+', 3)
+          " Skip user prompt.
+          let l:filename = matchstr(getline('.'), l:filename_pattern, 3)
         endif
         let l:pattern = ''
       endif
