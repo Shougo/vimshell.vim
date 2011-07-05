@@ -201,13 +201,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
         let l:pattern = l:line[1]
       else
         " Search cursor file.
-        let l:filename_pattern = '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-        let l:filename = matchstr(getline('.')[: col('.')-1], l:filename_pattern . '$')
-              \ . matchstr(getline('.')[col('.') :], '^'.l:filename_pattern)
-        if has('conceal') && l:filename =~ '\[\%[%\]]\|^%$'
-          " Skip user prompt.
-          let l:filename = matchstr(getline('.'), l:filename_pattern, 3)
-        endif
+        let l:filename = vimshell#get_cursor_filename()
         let l:pattern = ''
       endif
 

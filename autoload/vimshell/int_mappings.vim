@@ -173,11 +173,8 @@ function! s:delete_backward_line()"{{{
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert)"{{{
   if !a:is_insert
-    " Search cursor file.
-    let l:filename_pattern = '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-    let l:filename = matchstr(getline('.')[: col('.')-1], l:filename_pattern . '$')
-          \ . matchstr(getline('.')[col('.') :], '^'.l:filename_pattern)
-    let l:filename = substitute(l:filename, '\\', '/', 'g')
+    " Search cursor filename.
+    let l:filename = vimshell#get_cursor_filename()
 
     if &termencoding != '' && &encoding != &termencoding
       " Convert encoding.
