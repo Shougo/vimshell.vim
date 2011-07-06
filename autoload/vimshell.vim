@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2011.
+" Last Modified: 06 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -610,7 +610,9 @@ function! vimshell#execute_current_line(is_insert)"{{{
         \ vimshell#int_mappings#execute_line(a:is_insert)
 endfunction"}}}
 function! vimshell#get_cursor_filename()"{{{
-  let l:filename_pattern = '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+  let l:filename_pattern = (b:interactive.type ==# 'vimshell') ?
+        \ '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+' :
+        \ '[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
   let l:filename = matchstr(getline('.')[: col('.')-1], l:filename_pattern . '$')
         \ . matchstr(getline('.')[col('.') :], '^'.l:filename_pattern)
 
