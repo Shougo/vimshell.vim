@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: cd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2010
+" Last Modified: 10 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,13 +86,11 @@ function! s:command.execute(command, args, fd, context)"{{{
     endif
   endif
 
-  if empty(b:vimshell.directory_stack) || getcwd() != b:vimshell.directory_stack[0]
-    " Push current directory and filtering.
-    call insert(filter(b:vimshell.directory_stack, 'v:val != ' . string(l:cwd)), l:cwd)
+  " Push current directory and filtering.
+  call insert(filter(b:vimshell.directory_stack, 'v:val != ' . string(l:cwd)), l:cwd)
 
-    " Truncate.
-    let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
-  endif
+  " Truncate.
+  let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
 
   if a:context.is_interactive
     " Call chpwd hook.
