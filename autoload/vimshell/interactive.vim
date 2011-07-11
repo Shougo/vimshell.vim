@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jul 2011.
+" Last Modified: 11 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,10 +78,10 @@ endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   let l:in = vimshell#interactive#get_cur_line(line('.'))
+  call vimshell#history#append(l:in)
   if l:in !~ "\<C-d>$"
     let l:in .= "\<LF>"
   endif
-  call vimshell#history#append(l:in)
 
   call s:send_string(l:in, a:is_insert, line('.'))
 endfunction"}}}
