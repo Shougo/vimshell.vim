@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-12
+- Fixed :VimShellSendString error.
+
 2011-07-10
 - Fixed cd internal command.
 

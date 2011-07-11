@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jul 2011.
+" Last Modified: 12 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -94,7 +94,7 @@ function! vimshell#interactive#send_input()"{{{
   call setline('.', vimshell#interactive#get_prompt() . ' ')
 
   normal! $h
-  call vimshell#interactive#send_string(l:input)
+  call vimshell#interactive#send_string(l:input, 1)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
@@ -160,7 +160,7 @@ function! s:send_region(line1, line2, string)"{{{
 
     call vimshell#print_prompt()
   else
-    call vimshell#interactive#send_string(l:string)
+    call vimshell#interactive#send_string(l:string, mode() ==# 'i')
   endif
 
   if l:type ==# 'interactive'
