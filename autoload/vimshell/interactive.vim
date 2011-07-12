@@ -1,11 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-<<<<<<< HEAD
 " Last Modified: 12 Jul 2011.
-=======
-" Last Modified: 11 Jul 2011.
->>>>>>> 1dc9bfd77f95a72515b6e9110a52e6b8f66e50da
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
