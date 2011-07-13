@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jul 2011.
+" Last Modified: 13 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -465,14 +465,15 @@ function! s:clear(is_insert)"{{{
   " Clean up the screen.
   let l:lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
   % delete _
-  
+
   call vimshell#terminal#clear_highlight()
+  call vimshell#terminal#init()
 
   call vimshell#print_prompt()
   call vimshell#set_prompt_command(l:lines[0])
   call append('$', map(l:lines[1:], string(vimshell#get_secondary_prompt()).'.v:val'))
   $
-  
+
   if a:is_insert
     call vimshell#start_insert()
   endif

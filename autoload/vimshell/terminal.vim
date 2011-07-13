@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2011.
+" Last Modified: 13 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,6 +24,26 @@
 " }}}
 "=============================================================================
 
+function! vimshell#terminal#init()"{{{
+  let b:interactive.terminal = {
+        \ 'syntax_names' : {},
+        \ 'titlestring' : &titlestring,
+        \ 'titlestring_save' : &titlestring,
+        \ 'save_pos' : getpos('.')[1 : 2],
+        \ 'region_top' : 0,
+        \ 'region_bottom' : 0,
+        \ 'standard_character_set' : 'United States',
+        \ 'alternate_character_set' : 'United States',
+        \ 'current_character_set' : 'United States',
+        \ 'is_error' : 0,
+        \ 'wrap' : &l:wrap,
+        \}
+
+  if s:use_conceal()
+    syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
+    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
+  endif
+endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
   " echomsg a:string
@@ -81,7 +101,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   if !has_key(b:interactive, 'terminal')
-    call s:init_terminal()
+    call vimshell#terminal#init()
   endif
   let b:interactive.terminal.is_error = a:is_error
 
@@ -231,21 +251,21 @@ function! vimshell#terminal#print(string, is_error)"{{{
 endfunction"}}}
 function! vimshell#terminal#set_title()"{{{
   if !has_key(b:interactive, 'terminal')
-    call s:init_terminal()
+    call vimshell#terminal#init()
   endif
 
   let &titlestring = b:interactive.terminal.titlestring
 endfunction"}}}
 function! vimshell#terminal#restore_title()"{{{
   if !has_key(b:interactive, 'terminal')
-    call s:init_terminal()
+    call vimshell#terminal#init()
   endif
 
   let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
 function! vimshell#terminal#clear_highlight()"{{{
   if !has_key(b:interactive, 'terminal')
-    call s:init_terminal()
+    call vimshell#terminal#init()
   endif
 
   for l:syntax_names in values(b:interactive.terminal.syntax_names)
@@ -260,6 +280,8 @@ function! vimshell#terminal#clear_highlight()"{{{
     endif
   endfor
 
+  let b:interactive.terminal.syntax_names = {}
+
   if s:use_conceal()
     " Restore wrap.
     let &l:wrap = b:interactive.terminal.wrap
@@ -267,24 +289,6 @@ function! vimshell#terminal#clear_highlight()"{{{
 endfunction"}}}
 
 function! s:init_terminal()"{{{
-  let b:interactive.terminal = {
-        \ 'syntax_names' : {},
-        \ 'titlestring' : &titlestring,
-        \ 'titlestring_save' : &titlestring,
-        \ 'save_pos' : getpos('.')[1 : 2],
-        \ 'region_top' : 0,
-        \ 'region_bottom' : 0,
-        \ 'standard_character_set' : 'United States',
-        \ 'alternate_character_set' : 'United States',
-        \ 'current_character_set' : 'United States',
-        \ 'is_error' : 0,
-        \ 'wrap' : &l:wrap,
-        \}
-
-  if s:use_conceal()
-    syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
-    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
-  endif
 endfunction"}}}
 function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
@@ -764,7 +768,7 @@ function! s:escape.change_character_set(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.reset(matchstr)"{{{
-  call s:init_terminal()
+  call vimshell#terminal#init()
 endfunction"}}}
 
 " Control sequence functions.
