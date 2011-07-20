@@ -221,6 +221,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed complete error in interactive buffer.
 - Improved set variables.
 - Implemented interrupt in interactive buffer.
+- Improved interrupt in vimshell buffer.
 
 2011-07-13
 - Fixed clear bug.

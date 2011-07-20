@@ -138,6 +138,8 @@ function! s:init_process(commands, context, options)"{{{
   let b:interactive.stdout_cache = ''
   let b:interactive.stderr_cache = ''
   let b:interactive.cmdline = join(l:cmdline, '|')
+  let b:interactive.width = winwidth(0)
+  let b:interactive.height = winheight(0)
 
   " Input from stdin.
   if b:interactive.fd.stdin != ''

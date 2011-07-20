@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2011.
+" Last Modified: 20 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,7 +38,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <buffer><expr> <Plug>(vimshell_change_line) vimshell#check_prompt() ? printf('0%dlc$', vimshell#util#strchars(vimshell#get_prompt())) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interrupt)       :<C-u>call <SID>interrupt(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_hangup)       :<C-u>call <SID>hangup(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
@@ -60,7 +60,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <ESC>:call <SID>interrupt(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char()
@@ -101,7 +101,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> a         <Plug>(vimshell_append_enter)
   nmap <buffer> ^         <Plug>(vimshell_move_head)
   " Interrupt.
-  nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  nmap <buffer> <C-c> <Plug>(vimshell_hangup)
   " Clear.
   nmap <buffer> <C-l> <Plug>(vimshell_clear)
 
@@ -566,24 +566,24 @@ function! s:open_file(filename, pattern)"{{{
     call setline('$', vimshell#get_prompt() . 'vim ' . l:filename . (a:pattern != '' ? ' '.a:pattern : ''))
   endif
 endfunction"}}}
-function! s:interrupt(is_insert)"{{{
+function! s:hangup(is_insert)"{{{
   if empty(b:vimshell.continuation)
     return
   endif
-  
+
   " Kill process.
   call vimshell#interactive#hang_up(bufname('%'))
-  
+
   " Clear continuation.
   let b:vimshell.continuation = {}
-  
+
   let l:context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 1, 
         \ 'is_insert' : a:is_insert, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
-  
+
   call vimshell#print_prompt(l:context)
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
