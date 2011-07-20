@@ -32,7 +32,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)  vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_hangup)       <C-o>:<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)  <SID>delete_backward_char(0)
   inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)  <SID>delete_backward_char(1)
   inoremap <buffer><expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
@@ -45,7 +45,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call vimshell#execute_current_line(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       :<C-u>call vimshell#interactive#send_char("\<C-c>")<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call <SID>restart_command()<CR>
   nnoremap <buffer><expr> <Plug>(vimshell_int_change_line) vimshell#interactive#get_prompt() == '' ? 'ddO' : printf('0%dlc$', vimshell#util#strchars(vimshell#interactive#get_prompt()))
@@ -67,7 +67,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nmap <buffer> <CR>      <Plug>(vimshell_int_execute_line)
   nmap <buffer> <C-y>     <Plug>(vimshell_int_paste_prompt)
   nmap <buffer> <C-z>     <Plug>(vimshell_int_restart_command)
-  nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
+  nmap <buffer> <C-c>     <Plug>(vimshell_int_hangup)
   nmap <buffer> q         <Plug>(vimshell_int_exit)
   nmap <buffer> cc         <Plug>(vimshell_int_change_line)
   nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
@@ -280,6 +280,8 @@ endfunction"}}}
 function! s:append_end()"{{{
   call s:insert_enter()
   startinsert!
+endfunction"}}}
+function! s:send_intrrupt()"{{{
 endfunction"}}}
 function! s:clear()"{{{
   set modifiable

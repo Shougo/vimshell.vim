@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2011.
+" Last Modified: 20 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -111,11 +111,15 @@ function! s:command.execute(commands, context)"{{{
           \})
   endif
 
+  let l:save_winnr = winnr()
+
+  call s:init_bg(l:args, a:context)
+
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
-        \ '$TERM' : g:vimshell_environment_term, 
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
-        \ '$VIMSHELL' : 1, 
+        \ '$TERM' : g:vimshell_environment_term,
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
+        \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'interactive',
@@ -133,10 +137,6 @@ function! s:command.execute(commands, context)"{{{
     " Restore $HOME.
     call vimshell#restore_variables(l:home_save)
   endif
-
-  let l:save_winnr = winnr()
-
-  call s:init_bg(l:args, a:context)
 
   " Set variables.
   let b:interactive = {

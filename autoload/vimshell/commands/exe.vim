@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jul 2011.
+" Last Modified: 20 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -107,9 +107,9 @@ function! s:init_process(commands, context, options)"{{{
 
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
-        \ '$TERM' : g:vimshell_environment_term, 
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0), 
-        \ '$VIMSHELL' : 1, 
+        \ '$TERM' : g:vimshell_environment_term,
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
+        \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'execute',
