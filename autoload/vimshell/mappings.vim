@@ -60,7 +60,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
+  " inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call <SID>hangup(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
 
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char()
