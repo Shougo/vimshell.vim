@@ -61,14 +61,6 @@ let s:update_time_save = &updatetime
 set vb t_vb=
 
 let s:last_vimshell_bufnr = -1
-
-let l:context = {
-      \ 'has_head_spaces' : 0,
-      \ 'is_interactive' : 0,
-      \ 'is_insert' : 0,
-      \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
-      \}
-call vimshell#set_context(l:context)
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
@@ -650,6 +642,18 @@ function! vimshell#set_context(context)"{{{
   let s:context = a:context
 endfunction"}}}
 function! vimshell#get_context()"{{{
+  if !exists('s:context')
+    " Set context.
+    let l:context = {
+      \ 'has_head_spaces' : 0,
+      \ 'is_interactive' : 0,
+      \ 'is_insert' : 0,
+      \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+      \}
+
+    call vimshell#set_context(l:context)
+  endif
+
   return s:context
 endfunction"}}}
 function! vimshell#set_alias(name, value)"{{{
