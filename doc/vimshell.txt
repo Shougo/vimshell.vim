@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-21
+- Fixed vimshell initialize error.
+
 2011-07-20
 - Fixed complete error in interactive buffer.
 - Improved set variables.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jul 2011.
+" Last Modified: 21 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,6 +61,14 @@ let s:update_time_save = &updatetime
 set vb t_vb=
 
 let s:last_vimshell_bufnr = -1
+
+let l:context = {
+      \ 'has_head_spaces' : 0,
+      \ 'is_interactive' : 0,
+      \ 'is_insert' : 0,
+      \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+      \}
+call vimshell#set_context(l:context)
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
