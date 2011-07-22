@@ -293,6 +293,13 @@ function! vimshell#interactive#execute_pipe_out(is_insert)"{{{
   endif
 endfunction"}}}
 function! s:set_output_pos(is_insert)"{{{
+  " There are cases when this variable doesn't 
+  " exist 
+  " USE: 'b:interactive.is_close_immediately = 1' to replicate
+  if !exists('b:interactive')
+    return
+  end
+
   if b:interactive.type !=# 'terminal' &&
         \ has_key(b:interactive.process, 'eof') && !b:interactive.process.eof
     if a:is_insert

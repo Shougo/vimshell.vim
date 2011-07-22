@@ -25,6 +25,13 @@
 "=============================================================================
 
 function! vimshell#hook#call(hook_point, context, args)"{{{
+  " There are cases when this variable doesn't 
+  " exist 
+  " USE: 'b:interactive.is_close_immediately = 1' to replicate
+  if !exists('b:interactive')
+    return
+  end
+
   if !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return
