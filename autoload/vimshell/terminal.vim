@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2011.
+" Last Modified: 22 Jul 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -400,23 +400,30 @@ let s:grey_table = [
       \0xA8, 0xB2, 0xBC, 0xC6, 0xD0, 0xDA, 0xE4, 0xEE
       \]
 let s:highlight_table = {
-      \ 0 : ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE', 
-      \ 1 : ' cterm=BOLD gui=BOLD',
-      \ 3 : ' cterm=ITALIC gui=ITALIC',
-      \ 4 : ' cterm=UNDERLINE gui=UNDERLINE',
-      \ 7 : ' cterm=REVERSE gui=REVERSE',
-      \ 8 : ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000',
-      \ 9 : ' gui=UNDERCURL',
-      \ 21 : ' cterm=UNDERLINE gui=UNDERLINE',
-      \ 22 : ' gui=NONE',
-      \ 23 : ' gui=NONE',
-      \ 24 : ' gui=NONE',
-      \ 25 : ' gui=NONE',
-      \ 27 : ' gui=NONE',
-      \ 28 : ' ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE',
-      \ 29 : ' gui=NONE',
-      \ 39 : ' ctermfg=NONE guifg=NONE', 
-      \ 49 : ' ctermbg=NONE guibg=NONE', 
+      \ '0' : ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE',
+      \ '00' : ' cterm=NONE ctermfg=NONE ctermbg=NONE gui=NONE guifg=NONE guibg=NONE',
+      \ '1' : ' cterm=BOLD gui=BOLD',
+      \ '01' : ' cterm=BOLD gui=BOLD',
+      \ '3' : ' cterm=ITALIC gui=ITALIC',
+      \ '03' : ' cterm=ITALIC gui=ITALIC',
+      \ '4' : ' cterm=UNDERLINE gui=UNDERLINE',
+      \ '04' : ' cterm=UNDERLINE gui=UNDERLINE',
+      \ '7' : ' cterm=REVERSE gui=REVERSE',
+      \ '07' : ' cterm=REVERSE gui=REVERSE',
+      \ '8' : ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000',
+      \ '08' : ' ctermfg=0 ctermbg=0 guifg=#000000 guibg=#000000',
+      \ '9' : ' gui=UNDERCURL',
+      \ '09' : ' gui=UNDERCURL',
+      \ '21' : ' cterm=UNDERLINE gui=UNDERLINE',
+      \ '22' : ' gui=NONE',
+      \ '23' : ' gui=NONE',
+      \ '24' : ' gui=NONE',
+      \ '25' : ' gui=NONE',
+      \ '27' : ' gui=NONE',
+      \ '28' : ' ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE',
+      \ '29' : ' gui=NONE',
+      \ '39' : ' ctermfg=NONE guifg=NONE', 
+      \ '49' : ' ctermbg=NONE guibg=NONE', 
       \}"}}}
 function! s:escape.highlight(matchstr)"{{{
   if g:vimshell_disable_escape_highlight
