@@ -217,6 +217,9 @@ BUGS							*vimshell-bugs*
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-07-23
+- Deleted obsolute option.
+
 2011-07-21
 - Fixed vimshell initialize error.
 
