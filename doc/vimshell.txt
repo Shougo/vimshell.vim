@@ -29,16 +29,18 @@ Install			|vimshell-install|
 Interface		|vimshell-interface|
   Commands		  |vimshell-commands|
   Variables		  |vimshell-variables|
+  Functions		  |vimshell-functions|
   Key mappings		  |vimshell-key-mappings|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
 Alter Command		|vimshell-alter-command|
 Hook			|vimshell-hook|
+Tips			|vimshell-tips|
+Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
-ToDo			|vimshell-todo|
-Bugs			|vimshell-bugs|
 Changelog		|vimshell-changelog|
+
 
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
@@ -50,6 +52,8 @@ You can start vimshell in ":VimShell".  Because vimshell works similar with
 a common shell, you may operate it intuitively.  But vimshell perform the
 path appointment in '/'. Vimshell is misunderstood with escape sequence when
 you use '\' by Windows for a path and do not work.
+
+ToDo
 
 ==============================================================================
 INSTALL							*vimshell-install*
@@ -91,49 +95,193 @@ COMMANDS 						*vimshell-commands*
 :VimShell                                       *:VimShell*
 		Run vimshell.
 
+:VimShellCreate {path}					*:VimShellCreate*
+			Todo
+
+:VimShellTab {path}					*:VimShellTab*
+			Todo
+
+:VimShellPop {path}					*:VimShellPop*
+			Todo
+
+:VimShellExecute {command}				*:VimShellExecute*
+			Todo
+
+:VimShellInteractive [{command}]			*:VimShellInteractive*
+			Todo
+
+:VimShellTerminal {command}				*:VimShellTerminal*
+			Todo
+
+:VimShellSendString {string}				*:VimShellSendString*
+			Todo
+
+:VimShellSendBuffer {bufname}				*:VimShellSendBuffer*
+			Todo
+
 ------------------------------------------------------------------------------
 VARIABLES 						*vimshell-variables*
 
+g:vimshell_prompt					*g:vimshell_prompt*
+			Todo
+
+g:vimshell_user_prompt					*g:vimshell_user_prompt*
+			Todo
+>
+			let g:vimshell_user_prompt = 'getcwd()'
+<
+			Todo
+
+g:vimshell_right_prompt					*g:vimshell_right_prompt*
+			Todo
+>
+			let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+<
+			Todo
+
+g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
+			Todo
+
 g:vimshell_ignore_case					*g:vimshell_ignore_case*
-			
+			Todo
 
 g:vimshell_smart_case					*g:vimshell_smart_case*
-			
+			Todo
 
 g:vimshell_max_list					*g:vimshell_max_list*
-			
+			Todo
 
 g:vimshell_use_ckw					*g:vimshell_use_ckw*
+			Todo
 
 g:vimshell_split_height					*g:vimshell_split_height*
-			
+			Todo
 
 g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
-			
+			Todo
 
 g:vimshell_max_command_history				*g:vimshell_max_command_history*
-			
+			Todo
+
+g:vimshell_max_directory_stack				*g:vimshell_max_directory_stack*
+			Todo
 
 g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
-			
+			Todo
 
 g:vimshell_escape_colors				*g:vimshell_escape_colors*
-			
+			Todo
+
+g:vimshell_disable_escape_highlight			*g:vimshell_disable_escape_highlight*
+			Todo
+
+g:vimshell_cat_command					*g:vimshell_cat_command*
+			Todo
+
+g:vimshell_environment_term				*g:vimshell_environment_term*
+			Todo
+
+g:vimshell_split_command				*g:vimshell_split_command*
+			Todo
+
+g:vimshell_cd_command					*g:vimshell_cd_command*
+			Todo
+
+g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
+			Todo
+
+g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
+			Todo
+
+g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
+			Todo
+
+g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options*
+			Todo
+
+g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter_commands*
+			Todo
+
+g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
+			Todo
+
+g:vimshell_interactive_no_echoback_commands		*g:vimshell_interactive_no_echoback_commands*
+			Todo
+
+g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
+			Todo
+
+g:vimshell_terminal_commands				*g:vimshell_terminal_commands*
+			Todo
+
+g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
+			Todo
+
+g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
+			Todo
+
+g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
+			Todo
+
+g:vimshell_vcs_print_null				*g:vimshell_vcs_print_null*
+			Todo
+
+g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
+			Todo
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
 <Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
-			
+			Todo
 
 <Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
-			
+			Todo
 
 <Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
-			
+			Todo
 
 <Plug>(vimshell_create)					*<Plug>(vimshell_create)*
-			
+			Todo
+
+------------------------------------------------------------------------------
+FUNCTIONS 						*vimshell-functions*
+
+vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
+			Todo
+
+vimshell#hook#get({hook-point})				*vimshell#hook#get()*
+			Todo
+
+vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
+			Todo
+
+vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
+			Todo
+
+------------------------------------------------------------------------------
+BUFFER KEY MAPPINGS 					*vimshell-buffer-key-mappings*
+
+Please refer to vimshell#mappings#define_default_mappings() in
+"autoload/vimshell/mappings.vim".
+
+Todo
+
+------------------------------------------------------------------------------
+INTERACTIVE KEY MAPPINGS 				*vimshell-interactive-key-mappings*
+
+Please refer to vimshell#int_mappings#define_default_mappings() in
+"autoload/vimshell/int_mappings.vim".
+
+Todo
+
+------------------------------------------------------------------------------
+TERMINAL KEY MAPPINGS 					*vimshell-terminal-key-mappings*
+
+Please refer to vimshell#term_mappings#define_default_mappings() in
+"autoload/vimshell/term_mappings.vim".
+
+Todo
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -150,7 +298,7 @@ EXAMPLES						*vimshell-examples*
 	let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
 	
-	if has('win32') || has('win64') 
+	if has('win32') || has('win64')
 	  " Display user name on Windows.
 	  let g:vimshell_prompt = $USERNAME."% "
 	else
@@ -169,7 +317,7 @@ EXAMPLES						*vimshell-examples*
 	\| call vimshell#altercmd#define('i', 'iexe')
 	\| call vimshell#altercmd#define('l', 'll')
 	\| call vimshell#altercmd#define('ll', 'ls -l')
-	\| call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\| call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
 	
 	function! g:my_chpwd(args, context)
 	  call vimshell#execute('ls')
@@ -178,30 +326,310 @@ EXAMPLES						*vimshell-examples*
 	autocmd FileType int-* call s:interactive_settings()
 	function! s:interactive_settings()
 	endfunction
-
 <
+
+Todo
+
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
 
 ==============================================================================
-SPECIAL COMMANDS					*vimshell-special-commands*
+INTERNAL COMMANDS					*vimshell-internal-commands*
+
+Todo
+
+Note: Todo
+>
+		vimshell% echo hello | vim
+<
+
+bcd {buffer-name}					*vimshell-internal-bcd*
+		Todo
+
+bg [{option}...] {command}				*vimshell-internal-bg*
+		Todo
+		
+		Example:
+>
+		vimshell% ls&
+<
+		Todo
+		
+		--filetype = {filetype-name}
+		Todo
+
+cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
+		Todo
+
+clear 							*vimshell-internal-clear*
+		Clear display.
+
+dirs [{max}]						*vimshell-internal-dirs*
+		Todo
+
+echo [{argument}...]					*vimshell-internal-echo*
+		print arguments.
+
+eval {expression}					*vimshell-internal-eval*
+		Todo
+
+exe [{option}...] {command} 				*vimshell-internal-exe*
+		Todo
+		
+							*vimshell-execute-options*
+		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
+		Todo
+
+exit 							*vimshell-internal-exit*
+		Exit vimshell buffer.
+
+gcd [{directory-path}]					*vimshell-internal-gcd*
+		Todo
+
+gendoc {command} {args}					*vimshell-internal-gendoc*
+		Todo
+
+gexe {command}						*vimshell-internal-gexe*
+		Todo
+
+h [{pattern}]						*vimshell-internal-h*
+		Todo
+
+histdel {history-number}				*vimshell-internal-histdel*
+		Todo
+
+history [{search-string}]				*vimshell-internal-history*
+		Todo
+
+iexe [{options}...] {command}				*vimshell-internal-iexe*
+		Todo
+		
+		Note:
+		Todo
+
+less [{options}...] {command}				*vimshell-internal-less*
+		Todo
+
+ls [{argument}...]					*vimshell-internal-ls*
+		Todo
+
+mkcd {directory-name}					*vimshell-internal-mkcd*
+		Todo
+
+nop 							*vimshell-internal-nop*
+		No operation.
+
+open {filename}						*vimshell-internal-open*
+		Open {filename} by associated application.
+
+popd [{directory-stack-number}]				*vimshell-internal-popd*
+		Todo
+
+pwd 							*vimshell-internal-pwd*
+		Print vimshell working directory.
+
+repeat {cnt} {command}					*vimshell-internal-repeat*
+		Execute {command} {cnt} times.
+
+shell 							*vimshell-internal-shell*
+		Todo
+
+source {files}						*vimshell-internal-source*
+		Todo
+
+sudo {command}						*vimshell-internal-sudo*
+		Todo
+
+texe [{options}...] {command}				*vimshell-internal-texe*
+		Todo
+		
+		Note: Todo
+		
+
+view {filename} [{pattern}]				*vimshell-internal-view*
+		Todo
+
+vim [{filename} [{pattern}]]				*vimshell-internal-vim*
+		Todo
+
+vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
+		Todo
+
+vimsh [{filename}]					*vimshell-internal-vimsh*
+		Todo
+
+which {command}					*vimshell-internal-which*
+		Todo
+
+whereis {command}				*vimshell-internal-whereis*
+		Print {command} by full path.
 
 ==============================================================================
+SPECIAL COMMANDS					*vimshell-special-commands*
+Todo
+
+alias {alias-name} = {command}				*vimshell-special-alias*
+		Todo
+>
+		vimshell% alias echo=':echo "$$args"'
+		vimshell% alias echo2=':echo "$$args[1]"'
+		vimshell% alias echo3=':echo "$$args[2:]"'
+<
+galias {global-alias-name} = {command}			*vimshell-internal-galias*
+		Todo
+>
+		vimshell% galias G = '|grep'
+		vimshell% ls G hoge
+<
+let ${var-name} = {expression}				*vimshell-special-let*
+		Todo
+>
+		vimshell% let $Hoge = $hoge
+<
+sexe {command}						*vimshell-special-sexe*
+		Todo
+
+vexe {expression}					*vimshell-special-vexe*
+		Todo
+		
+		Example:
+>
+		:ls
+<
+==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
+
+Todo
 >
 	autocmd FileType vimshell
 	\ call vimshell#altercmd#define('g', 'git')
 <
 ==============================================================================
 HOOK							*vimshell-hook*
+
+Todo
 >
 	autocmd FileType vimshell
-	\ call vimshell#hook#set('chpwd', ['g:my_chpwd'])
+	\ call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
 	
 	function! g:my_chpwd(args, context)
-		call vimshell#execute('ls', a:context)
+		call vimshell#execute('ls')
 	endfunction
 <
+Todo
+
+chpwd							*vimshell-hook-chpwd*
+		Todo
+
+preparse						*vimshell-hook-preparse*
+		Todo
+
+preexec							*vimshell-hook-preexec*
+		Todo
+
+postexec						*vimshell-hook-postexec*
+		Todo
+
+emptycmd						*vimshell-hook-emptycmd*
+		Todo
+
+notfound						*vimshell-hook-notfound*
+		Todo
+
+preprompt						*vimshell-hook-preprompt*
+		Todo
+
+preinput						*vimshell-hook-preinput*
+		Todo
+
+postinput						*vimshell-hook-postinput*
+		Todo
+
+		Todo
+
+==============================================================================
+TIPS							*vimshell-tips*
+Todo
+
+directory stack						*vimshell-tips-directory-stack*
+		Todo
+
+auto_cd							*vimshell-tips-auto_cd*
+		Todo
+
+block							*vimshell-tips-block*
+		Todo
+>
+		vimshell% echo /hoge/piyo/{hoge,hogera}
+		-> /hoge/piyo/hoge /hoge/piyo/hogera
+<
+		Todo
+>
+		vimshell% echo {00..09}
+		-> 00 01 02 03 04 05 06 07 08 09
+<
+wild card						*vimshell-tips-wildcard*
+		Todo
+>
+		vimshell% ls *.htm
+<
+		Todo
+>
+		vimshell% ls *~*.htm
+<
+		Todo
+
+backquote						*vimshell-tips-backquote*
+		コマンドの引数にコマンドの実行結果が使える。
+>
+		vimshell% echo `ls`
+<
+		Vim scriptの埋め込みもできる。
+>
+		vimshell% echo `=3`
+<
+
+fakecygpty						*vimshell-tips-fakecygpty*
+		Todo
+>
+		> fakecygpty ssh
+<
+		Todo
+		http://github.com/Shougo/fakecygpty
+>
+		$ gcc fakecygpty.c -o fakecygpty.exe
+<
+		Todo
+>
+vcs_info						*vimshell-tips-vcs-info*
+
+		Todo
+>
+		let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+<
+		Todo
+
+==============================================================================
+UNITE SOURCES						*vimshell-unite-sources*
+
+Todo
+
+							*vimshell-unite-source-vimshell-history*
+vimshell/history
+		Todo
+		
+		Exmaple:
+>
+		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+<
+
+actions:
+
+vimshell/history					*vimshell-unite-action-vimshell-history*
+	execute		Execute history
+	edit		Edit history
+	delete		Delete history.
+
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*
 
@@ -209,13 +637,10 @@ In this clause, I comment on a method to make plugin of vimshell.  The
 ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
-TODO							*vimshell-todo*
-
-==============================================================================
-BUGS							*vimshell-bugs*
-
-==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-08-03
+- Improved documentation.
 
 2011-07-23
 - Deleted obsolute option.

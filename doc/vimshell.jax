@@ -39,8 +39,6 @@ Hook			|vimshell-hook|
 Tips			|vimshell-tips|
 Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
-ToDo			|vimshell-todo|
-Bugs			|vimshell-bugs|
 Changelog		|vimshell-changelog|
 
 ==============================================================================
@@ -455,6 +453,8 @@ vimshellバッファで使えるキーマッピングについては、
 autoload/vimshell/mappings.vimのvimshell#mappings#define_default_mappings()
 を参照する。
 
+Todo
+
 ------------------------------------------------------------------------------
 INTERACTIVE KEY MAPPINGS 				*vimshell-interactive-key-mappings*
 
@@ -462,12 +462,16 @@ interactiveバッファで使えるキーマッピングについては、
 autoload/vimshell/int_mappings.vimのvimshell#int_mappings#define_default_mappings()
 を参照する。
 
+Todo
+
 ------------------------------------------------------------------------------
 TERMINAL KEY MAPPINGS 					*vimshell-terminal-key-mappings*
 
 terminalバッファで使えるキーマッピングについては、
 autoload/vimshell/term_mappings.vimのvimshell#term_mappings#define_default_mappings()
 を参照する。
+
+Todo
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -484,7 +488,7 @@ EXAMPLES						*vimshell-examples*
 	let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
 	
-	if has('win32') || has('win64') 
+	if has('win32') || has('win64')
 	  " Display user name on Windows.
 	  let g:vimshell_prompt = $USERNAME."% "
 	else
@@ -1003,12 +1007,6 @@ CREATE PLUGIN						*vimshell-create-plugin*
 vimshellの内部コマンドとして、autoload/internal/以下にある*.vimファイルを読
 み込むため、 自分でそこにプラグインファイルを追加することで、簡単にコマンド
 が追加できる。
-
-==============================================================================
-TODO							*vimshell-todo*
-
-==============================================================================
-BUGS							*vimshell-bugs*
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
