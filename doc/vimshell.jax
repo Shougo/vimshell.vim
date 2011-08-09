@@ -738,7 +738,7 @@ vim [{filename} [{pattern}]]				*vimshell-internal-vim*
 
 vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
 		{filename1}と{filename2}を|:vimdiff|で比較する。vimshellから
-		diffを呼び出すのは不便なので、存分に活用するべきだ。
+		diffを呼び出すのは不便なので、存分に活用するべきである。
 
 vimsh [{filename}]					*vimshell-internal-vimsh*
 		{filename}で表されるvimshellスクリプトファイルを実行する。ただ
@@ -769,7 +769,6 @@ alias {alias-name} = {command}				*vimshell-special-alias*
 		vimshell% alias echo2=':echo "$$args[1]"'
 		vimshell% alias echo3=':echo "$$args[2:]"'
 <
-
 galias {global-alias-name} = {command}			*vimshell-internal-galias*
 		vimshellにグローバルなaliasを定義する。vimshellは
 		{global-alias-name}がコマン ドライン中に現われると、自動的に
@@ -813,7 +812,6 @@ vexe {expression}					*vimshell-special-vexe*
 >
 		:ls
 <
-
 ==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
 

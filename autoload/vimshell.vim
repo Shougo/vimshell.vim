@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jul 2011.
+" Last Modified: 09 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -477,6 +477,10 @@ function! vimshell#get_current_args(...)"{{{
 
   return l:args
 endfunction"}}}
+function! vimshell#get_prompt_linenr()"{{{
+  let [l:line, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bcW')
+  return l:line
+endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   if &filetype !=# 'vimshell'
     return call('vimshell#interactive#get_prompt', a:000) != ''
@@ -485,13 +489,26 @@ function! vimshell#check_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_prompt())
 endfunction"}}}
-function! vimshell#get_prompt_linenr()"{{{
-  let [l:line, l:col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bcW')
-  return l:line
-endfunction"}}}
 function! vimshell#check_secondary_prompt(...)"{{{
   let l:line = a:0 == 0 ? getline('.') : getline(a:1)
   return vimshell#head_match(l:line, vimshell#get_secondary_prompt())
+endfunction"}}}
+function! vimshell#check_user_prompt(...)"{{{
+  let l:line = a:0 == 0 ? line('.') : a:1
+  if !vimshell#head_match(getline(l:line-1), '[%] ')
+    " Not found.
+    return 0
+  endif
+
+  while 1
+    let l:line -= 1
+
+    if !vimshell#head_match(getline(l:line-1), '[%] ')
+      break
+    endif
+  endwhile
+
+  return l:line
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
   for ext in split(a:exts, ',')
@@ -726,9 +743,17 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
     let l:current = fnamemodify(a:directory, ':p')
     let b:vimshell.save_dir = l:current
     call vimshell#cd(l:current)
-
-    call vimshell#print_prompt()
   endif
+
+  if getline('$') ==# vimshell#get_prompt()
+    " Delete current prompt.
+    let l:promptnr = vimshell#check_user_prompt(line('$')) > 0 ?
+          \ vimshell#check_user_prompt(line('$')) : vimshell#check_prompt()
+    echomsg l:promptnr
+    execute 'silent ' . l:promptnr . ',$delete _'
+  endif
+
+  call vimshell#print_prompt()
   call vimshell#start_insert()
 endfunction"}}}
 
