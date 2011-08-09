@@ -748,9 +748,8 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
   if getline('$') ==# vimshell#get_prompt()
     " Delete current prompt.
     let l:promptnr = vimshell#check_user_prompt(line('$')) > 0 ?
-          \ vimshell#check_user_prompt(line('$')) : vimshell#check_prompt()
-    echomsg l:promptnr
-    execute 'silent ' . l:promptnr . ',$delete _'
+          \ vimshell#check_user_prompt(line('$')) . ',' : ''
+    execute 'silent ' . l:promptnr . '$delete _'
   endif
 
   call vimshell#print_prompt()
