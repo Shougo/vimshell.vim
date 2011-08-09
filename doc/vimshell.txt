@@ -333,9 +333,6 @@ Todo
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
 
-==============================================================================
-INTERNAL COMMANDS					*vimshell-internal-commands*
-
 Todo
 
 Note: Todo
