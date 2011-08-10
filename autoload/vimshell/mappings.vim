@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jul 2011.
+" Last Modified: 10 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -195,19 +195,10 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       " History output execution.
       call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
-      if getline('.') =~ '^\f\+:'
-        " Grep pattern.
-        let l:line = split(getline('.'), ':')
-        let l:filename = l:line[0]
-        let l:pattern = l:line[1]
-      else
-        " Search cursor file.
-        let l:filename = vimshell#get_cursor_filename()
-        let l:pattern = ''
-      endif
-
-      let l:filename = substitute(substitute(l:filename, '\\', '/', 'g'), ' ', '\\ ', 'g')
-      call s:open_file(l:filename, l:pattern)
+      " Search cursor file.
+      let l:filename = substitute(substitute(vimshell#get_cursor_filename(),
+            \ '\\', '/', 'g'), ' ', '\\ ', 'g')
+      call s:open_file(l:filename)
     endif
 
     $
@@ -540,7 +531,7 @@ function! s:delete_backward_line()"{{{
 
   return l:prefix . repeat("\<BS>", l:len)
 endfunction"}}}
-function! s:open_file(filename, pattern)"{{{
+function! s:open_file(filename)"{{{
   " Execute cursor file.
   if a:filename == ''
     return
@@ -564,7 +555,7 @@ function! s:open_file(filename, pattern)"{{{
     call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
   else
     " Edit file.
-    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename . (a:pattern != '' ? ' '.a:pattern : ''))
+    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
   endif
 endfunction"}}}
 function! s:hangup(is_insert)"{{{

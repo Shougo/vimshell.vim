@@ -642,6 +642,7 @@ CHANGELOG						*vimshell-changelog*
 2011-08-10
 - Improved internal commands initialize.
 - Added vi internal command.
+- Improved open file mapping.
 
 2011-08-09
 - Improved vimshell switch.
