@@ -446,6 +446,9 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 view {filename} [{pattern}]				*vimshell-internal-view*
 		Todo
 
+vi [{filename} [{pattern}]]				*vimshell-internal-vi*
+		Same as |vimshell-internal-vim|.
+
 vim [{filename} [{pattern}]]				*vimshell-internal-vim*
 		Todo
 
@@ -635,6 +638,10 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-08-10
+- Improved internal commands initialize.
+- Added vi internal command.
 
 2011-08-09
 - Improved vimshell switch.

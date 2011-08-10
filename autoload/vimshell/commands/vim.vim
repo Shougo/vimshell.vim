@@ -24,12 +24,12 @@
 " }}}
 "=============================================================================
 
-let s:command = {
+let s:command_vim = {
       \ 'name' : 'vim',
       \ 'kind' : 'internal',
       \ 'description' : 'vim [{filename}]',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command_vim.execute(program, args, fd, context)"{{{
   " Edit file.
 
   if empty(a:args)
@@ -82,5 +82,9 @@ function! s:command.execute(program, args, fd, context)"{{{
 endfunction"}}}
 
 function! vimshell#commands#vim#define()
-  return s:command
+  let s:command_vi = deepcopy(s:command_vim)
+  let s:command_vi.name = 'vi'
+  let s:command_vi.description = 'vi [{filename}]'
+
+  return [s:command_vim, s:command_vi]
 endfunction
