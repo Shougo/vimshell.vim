@@ -525,12 +525,12 @@ EXAMPLES						*vimshell-examples*
 
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
-internal commandは普通のシェルにおける内部コマンドのように動作する。
+internal commandは普通のシェルにおける組み込みコマンドのように動作する。
 引数はvimshellに解釈された後に分割して渡される。
 
-Note: 現状、内部コマンドはパイプラインに対応しないことに注意しなければならな
-い。パイプラインを使用した場合、強制的に外部コマンドが起動される。よって、次
-のコマンドはフリーズする。
+Note: 現状、internal commandコマンドはパイプラインに対応しないことに注意しなけ
+ればならない。パイプラインを使用した場合、強制的に外部コマンドが起動される。よ
+って、次のコマンドはフリーズする。
 >
 		vimshell% echo hello | vim
 <
@@ -1005,9 +1005,9 @@ vimshell/history					*vimshell-unite-action-vimshell-history*
 ==============================================================================
 CREATE PLUGIN						*vimshell-create-plugin*
 
-vimshellの内部コマンドとして、autoload/internal/以下にある*.vimファイルを読
-み込むため、 自分でそこにプラグインファイルを追加することで、簡単にコマンド
-が追加できる。
+vimshellのinternal commandとして、autoload/internal/以下にある*.vimファイルを読
+み込むため、 自分でそこにプラグインファイルを追加することで、簡単にコマンドが追
+加できる。
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*

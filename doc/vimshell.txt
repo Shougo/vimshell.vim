@@ -641,6 +641,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-08-12
 - Fixed for complete and echodoc error.
+- Fixed documentation.
 
 2011-08-10
 - Improved internal commands initialize.
