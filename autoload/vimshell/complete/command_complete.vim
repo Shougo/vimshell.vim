@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 12 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,7 +47,7 @@ endfunction"}}}
 function! vimshell#complete#command_complete#get_candidates(cur_text, findstart, base)"{{{
   try
     let l:args = vimshell#get_current_args(a:cur_text)
-  catch /^Exception: Quote/
+  catch /^Exception:/
     return a:findstart ? -1 : []
   endtry
 

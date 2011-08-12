@@ -639,6 +639,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-08-12
+- Fixed for complete and echodoc error.
+
 2011-08-10
 - Improved internal commands initialize.
 - Added vi internal command.
