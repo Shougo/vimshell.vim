@@ -340,9 +340,6 @@ Note: Todo
 		vimshell% echo hello | vim
 <
 
-bcd {buffer-name}					*vimshell-internal-bcd*
-		Todo
-
 bg [{option}...] {command}				*vimshell-internal-bg*
 		Todo
 		
@@ -638,6 +635,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-08-13
+- Deleted bcd internal command.
 
 2011-08-12
 - Fixed for complete and echodoc error.
