@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2011.
+" Last Modified: 14 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -597,7 +597,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      let l:context = b:vimshell.continuation.context
+      let l:context = vimshell#get_context()
       let b:vimshell.continuation = {}
       call vimshell#print_prompt(l:context)
       call vimshell#start_insert(l:is_insert)
