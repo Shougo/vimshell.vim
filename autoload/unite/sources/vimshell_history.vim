@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Apr 2011.
+" Last Modified: 16 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,7 @@ let s:source = {
       \ 'action_table' : {},
       \ 'syntax' : 'uniteSource__VimshellHistory',
       \ 'alias_table' : { '*' : { 'ex' : 'nop', 'narrow' : 'edit' } },
+      \ 'is_listed' : 0,
       \ }
 
 let s:current_histories = []

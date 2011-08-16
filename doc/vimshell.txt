@@ -636,6 +636,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-08-16
+- Added is_listed attribute.
+
 2011-08-14
 - Fixed context error.
 
