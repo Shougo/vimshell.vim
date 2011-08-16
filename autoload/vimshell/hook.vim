@@ -33,6 +33,7 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
   end
 
   if !a:context.is_interactive
+        \ || !has_key(b:interactive, 'hook_functions_table')
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return
   endif
