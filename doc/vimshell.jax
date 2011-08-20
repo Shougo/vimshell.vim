@@ -188,9 +188,6 @@ g:vimshell_right_prompt					*g:vimshell_right_prompt*
 			代入する。|g:vimshell_user_prompt|に似ているが、ウイン
 			ドウの大きさを計算し、自動的に最適な位置にプロンプトを
 			表示する。
->
-			let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-<
 			セキュリティの関係上、vimshellの関数を呼び出す前に値
 			を設定しなければ無効になる。
 			初期値は空である。
@@ -394,13 +391,6 @@ g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
 			
 			初期値は''である。
 
-g:vimshell_vcs_print_null				*g:vimshell_vcs_print_null*
-			これが0以外のとき、vimshellの|vimshell-tips-vcs_info|
-			において、利用できるVCSプラグインが存在しないとき、
-			'[novcs]-(noinfo)'と表示する。
-			
-			初期値は0である。
-
 g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			vimshellによる色分けを無効化するコマンドを指定する。
@@ -485,7 +475,7 @@ EXAMPLES						*vimshell-examples*
 	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 	
 	let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
-	let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+	"let g:vimshell_right_prompt = 'vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
 	
 	if has('win32') || has('win64')
@@ -964,17 +954,6 @@ fakecygpty						*vimshell-tips-fakecygpty*
 		というコマンドを実行する。あとはfakecygptyを$PATHの通ったところ
 		に置けば準備完了である。
 >
-vcs_info						*vimshell-tips-vcs-info*
-
-		vimshellには、zshが実装しているようなVCSとの連携機能がある。標
-		準ではgitにしか対応していないが、プラグインを追加することで、さ
-		まざまなVCSに対応できる。
->
-		let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-<
-		たとえば、このようにvimshellの右プロンプトにVCSの情報を表示する。
-		フォーマットはzshのvcs_infoに準拠している。
-
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 

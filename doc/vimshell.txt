@@ -135,10 +135,6 @@ g:vimshell_user_prompt					*g:vimshell_user_prompt*
 g:vimshell_right_prompt					*g:vimshell_right_prompt*
 			Todo
 >
-			let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-<
-			Todo
-
 g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
 			Todo
 
@@ -223,9 +219,6 @@ g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
 g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
 			Todo
 
-g:vimshell_vcs_print_null				*g:vimshell_vcs_print_null*
-			Todo
-
 g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
 			Todo
 
@@ -295,7 +288,7 @@ EXAMPLES						*vimshell-examples*
 	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 	
 	let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
-	let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
+	"let g:vimshell_right_prompt = 'vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
 	
 	if has('win32') || has('win64')
@@ -598,14 +591,6 @@ fakecygpty						*vimshell-tips-fakecygpty*
 <
 		Todo
 >
-vcs_info						*vimshell-tips-vcs-info*
-
-		Todo
->
-		let g:vimshell_right_prompt = 'vimshell#vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
-<
-		Todo
-
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 
@@ -635,6 +620,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-08-20
+- Improved documentation.
 
 2011-08-16
 - Added is_listed attribute.
