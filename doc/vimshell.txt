@@ -623,6 +623,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-08-21
 - Improved clear.
+- Improved :VimShellPop.
 
 2011-08-20
 - Improved documentation.

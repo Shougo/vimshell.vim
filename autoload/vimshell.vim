@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Aug 2011.
+" Last Modified: 21 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,8 +135,10 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     let l:cnt += 1
   endwhile
 
+  let l:winheight = a:split_flag ?
+        \ winheight(0)*g:vimshell_split_height/100 : 0
   if a:split_flag
-    execute winheight(0)*g:vimshell_split_height/100 'split `=l:bufname`'
+    execute l:winheight 'split `=l:bufname`'
   else
     edit `=l:bufname`
   endif
@@ -165,6 +167,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.directory_stack = []
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.continuation = {}
+  let b:vimshell.winheight = l:winheight
 
   " Default settings.
   call s:default_settings()
@@ -739,11 +742,15 @@ function! s:init_internal_commands()"{{{
   endfor
 endfunction"}}}
 function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
+  let l:winheight = a:split_flag ?
+        \ winheight(0)*g:vimshell_split_height/100 : 0
   if a:split_flag
-    execute winheight(0)*g:vimshell_split_height / 100 'sbuffer' a:bufnr
+    execute l:winheight 'sbuffer' a:bufnr
   else
     execute 'buffer' a:bufnr
   endif
+
+  let b:vimshell.winheight = l:winheight
 
   if a:directory != '' && isdirectory(a:directory)
     " Change current directory.
@@ -776,6 +783,10 @@ function! s:event_bufwin_enter()"{{{
   endif
 
   call vimshell#cd(fnamemodify(b:vimshell.save_dir, ':p'))
+
+  if b:vimshell.winheight > 0
+    execute 'resize' b:vimshell.winheight
+  endif
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
