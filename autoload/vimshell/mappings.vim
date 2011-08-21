@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Aug 2011.
+" Last Modified: 21 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -454,6 +454,9 @@ function! s:delete_line()"{{{
   endif
 endfunction"}}}
 function! s:clear(is_insert)"{{{
+  " Hangup current process.
+  call s:hangup(a:is_insert)
+
   " Clean up the screen.
   let l:lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
   % delete _
