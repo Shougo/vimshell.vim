@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Aug 2011.
+" Last Modified: 22 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,6 +168,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
         \ || (l:condition ==# 'false' && !l:ret)
     " Exit.
     let b:vimshell.continuation.statements = []
+    let l:statements = []
   endif
 
   if l:ret != 0
