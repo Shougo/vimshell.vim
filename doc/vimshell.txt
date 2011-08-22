@@ -621,6 +621,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-08-23
+- Fixed execute command behavior.
+
 2011-08-22
 - Fixed parser.
 
