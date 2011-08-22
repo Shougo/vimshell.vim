@@ -268,6 +268,9 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
     return
   endif
 
+  " Move to line end.
+  normal! $
+
   try
     call vimshell#parser#check_script(l:line)
   catch /^Exception: Quote/
