@@ -623,6 +623,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-08-24
 - Set winfixheight.
+- Improved vimshell history error.
 
 2011-08-23
 - Fixed execute command behavior.

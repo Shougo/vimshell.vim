@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Aug 2011.
+" Last Modified: 23 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,16 +23,6 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
-
-if !exists(':Unite')
-  echoerr 'unite.vim is not installed.'
-  echoerr 'Please install unite.vim Ver.1.5 or above.'
-  finish
-elseif unite#version() < 150
-  echoerr 'Your unite.vim is too old.'
-  echoerr 'Please install unite.vim Ver.1.5 or above.'
-  finish
-endif
 
 function! unite#sources#vimshell_history#define() "{{{
   return s:source
@@ -80,6 +70,16 @@ function! s:source.gather_candidates(args, context) "{{{
 endfunction "}}}
 
 function! unite#sources#vimshell_history#start_complete() "{{{
+  if !exists(':Unite')
+    echoerr 'unite.vim is not installed.'
+    echoerr 'Please install unite.vim Ver.1.5 or above.'
+    return ''
+  elseif unite#version() < 150
+    echoerr 'Your unite.vim is too old.'
+    echoerr 'Please install unite.vim Ver.1.5 or above.'
+    return ''
+  endif
+
   return printf("\<ESC>:call unite#start(['vimshell/history'],
         \ { 'col' : %d, 'complete' : 1,
         \   'direction' : 'rightbelow', 'winheight' : 10,
