@@ -111,8 +111,6 @@ function! s:default_settings()"{{{
     autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
-    autocmd InsertEnter <buffer>    call s:insert_enter()
-    autocmd InsertLeave <buffer>    call s:insert_leave()
     autocmd ColorScheme <buffer>    call s:color_scheme()
   augroup end
 
@@ -770,6 +768,11 @@ endfunction"}}}
 
 " Auto commands function.
 function! s:event_bufwin_enter()"{{{
+  if &updatetime > g:vimshell_interactive_update_time
+    let s:update_time_save = &updatetime
+    let &updatetime = g:vimshell_interactive_update_time
+  endif
+
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi
@@ -784,14 +787,7 @@ function! s:event_bufwin_enter()"{{{
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
-endfunction"}}}
-function! s:insert_enter()"{{{
-  if &updatetime > g:vimshell_interactive_update_time
-    let s:update_time_save = &updatetime
-    let &updatetime = g:vimshell_interactive_update_time
-  endif
-endfunction"}}}
-function! s:insert_leave()"{{{
+
   if &updatetime < s:update_time_save
     let &updatetime = s:update_time_save
   endif
