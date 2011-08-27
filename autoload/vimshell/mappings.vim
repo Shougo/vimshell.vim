@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Aug 2011.
+" Last Modified: 27 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,8 +49,6 @@ function! vimshell#mappings#define_default_mappings()"{{{
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
 
-  inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_whole)  vimshell#complete#history_complete#whole()
-  inoremap <buffer><silent><expr> <Plug>(vimshell_history_complete_insert)  vimshell#complete#history_complete#insert()
   inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
         \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)  <ESC>:call <SID>push_current_line()<CR>
@@ -118,7 +116,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
   " History completion.
-  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete(!0)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.

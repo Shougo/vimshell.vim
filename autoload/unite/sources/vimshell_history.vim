@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Aug 2011.
+" Last Modified: 27 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,7 +69,7 @@ function! s:source.gather_candidates(args, context) "{{{
   return map(copy(s:current_histories), '{ "word" : v:val }')
 endfunction "}}}
 
-function! unite#sources#vimshell_history#start_complete() "{{{
+function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
   if !exists(':Unite')
     echoerr 'unite.vim is not installed.'
     echoerr 'Please install unite.vim Ver.1.5 or above.'
@@ -81,10 +81,11 @@ function! unite#sources#vimshell_history#start_complete() "{{{
   endif
 
   return printf("\<ESC>:call unite#start(['vimshell/history'],
-        \ { 'col' : %d, 'complete' : 1,
+        \ { 'col' : %d, 'complete' : 1, 'start_insert' : %d,
         \   'direction' : 'rightbelow', 'winheight' : 10,
         \   'input' : vimshell#get_cur_text(),
-        \   'buffer_name' : 'completion', })\<CR>", col('.'))
+        \   'buffer_name' : 'completion', })\<CR>",
+        \  col('.'), a:is_insert)
 endfunction "}}}
 
 " Actions"{{{

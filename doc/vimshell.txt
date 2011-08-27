@@ -623,6 +623,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-08-27
 - Fixed for gdb.
+- Improved vimshell/history source.
 
 2011-08-24
 - Fixed vimshell get prompt error.
