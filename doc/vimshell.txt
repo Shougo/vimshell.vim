@@ -621,6 +621,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-08-29
+- Improved :VimShellPop behavior.
+
 2011-08-27
 - Fixed for gdb.
 - Improved vimshell/history source.

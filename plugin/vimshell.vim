@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Aug 2011.
+" Last Modified: 29 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -166,7 +166,7 @@ endif
 
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
 command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
-command! -nargs=? -complete=dir VimShellPop call vimshell#switch_shell(1, <q-args>)
+command! -nargs=? -complete=dir VimShellPop call s:vimshell_popup(<q-args>)
 command! -nargs=? -complete=dir VimShellTab tabnew | call vimshell#create_shell(0, <q-args>)
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
 command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
@@ -233,6 +233,16 @@ function! s:vimshell_terminal(args)"{{{
 
   call vimshell#execute_internal_command('texe',
         \ vimproc#parser#split_args(a:args), l:context.fd, l:context)
+endfunction"}}}
+function! s:vimshell_popup(args)"{{{
+  if &filetype ==# 'vimshell'
+    " Quit vimshell.
+    hide
+    return
+  endif
+
+  " Popup vimshell buffer.
+  call vimshell#switch_shell(1, a:args)
 endfunction"}}}
 
 augroup vimshell

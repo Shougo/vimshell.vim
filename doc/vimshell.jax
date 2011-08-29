@@ -128,6 +128,8 @@ COMMANDS 						*vimshell-commands*
 			ポップアップする。ちょっとだけvimshellの機能を使
 			いたいときに便利である。ウインドウを分割する高さは
 			|g:vimshell_split_height|で決定される。
+			現在vimshellバッファに居るときは、vimshellバッファを閉
+			じる。
 
 :VimShellExecute {command}				*:VimShellExecute*
 			vimshellを起動せずに、{command}で指定された実行
