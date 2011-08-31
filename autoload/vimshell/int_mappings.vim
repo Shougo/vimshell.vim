@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jul 2011.
+" Last Modified: 31 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,6 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   " 3 == char2nr("\<C-c>")
   inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)  <SID>delete_backward_char(1)
-  inoremap <buffer><expr> <Plug>(vimshell_int_history_complete)  vimshell#complete#interactive_history_complete#complete()
   inoremap <buffer><silent> <Plug>(vimshell_int_send_input)  <C-o>:call vimshell#interactive#send_input()<CR>
   inoremap <buffer><expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)  <C-o>:call <SID>command_complete()<CR>
@@ -88,7 +87,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete(!0)
   imap <buffer> <C-v>  <Plug>(vimshell_int_send_input)
   inoremap <buffer> <C-n>     <C-n>
   imap <buffer><expr> <TAB>  pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_int_command_complete)"
