@@ -210,7 +210,10 @@ function! vimshell#complete#helper#command_args(args)"{{{
 endfunction"}}}
 
 function! vimshell#complete#helper#call_omnifunc(omnifunc)"{{{
-  if exists(':NeoComplCacheDisable')
+  " Note: neocomplcache#sources#completefunc_complete#call_completefunc()
+  "     is not working. :-(
+  " if exists(':NeoComplCacheDisable')
+  if 0
     return neocomplcache#sources#completefunc_complete#call_completefunc(a:omnifunc)
   else
     " Set complete function.

@@ -624,6 +624,7 @@ CHANGELOG						*vimshell-changelog*
 2011-08-31
 - Fixed interactive history completion.
 - Fixed command completion.
+- Fixed manual completion error.
 
 2011-08-29
 - Improved :VimShellPop behavior.
