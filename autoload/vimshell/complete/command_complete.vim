@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Aug 2011.
+" Last Modified: 31 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,7 +54,7 @@ function! vimshell#complete#command_complete#get_candidates(cur_text, findstart,
   if len(l:args) <= 1
     return s:complete_commands(a:findstart, a:base)
   else
-    if a:cur_text =~ '\s\+$'
+    if a:findstart && a:cur_text =~ '\s\+$'
       " Add blank argument.
       call add(l:args, '')
     endif
@@ -152,6 +152,8 @@ function! s:complete_args(findstart, base, args)"{{{
   else
     let &ignorecase = g:vimshell_ignore_case
   endif
+
+  let a:args[-1] = a:base
 
   " Get complete words.
   let l:complete_words = vimshell#complete#helper#args(l:command, a:args[1:])

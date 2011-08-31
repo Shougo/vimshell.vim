@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 31 Aug 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,7 +59,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let l:ret = []
-  for l:keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str), 
+  for l:keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str),
         \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
     let l:dict = l:keyword
     let l:dict.menu = 'directory'
