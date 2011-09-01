@@ -621,6 +621,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-09-01
+- Use unite#start_complete().
+
 2011-08-31
 - Fixed interactive history completion.
 - Fixed command completion.
