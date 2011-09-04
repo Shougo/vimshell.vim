@@ -157,7 +157,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
 
   " Change current directory.
   let l:current = (a:directory != '')? fnamemodify(a:directory, ':p') : getcwd()
-  let b:vimshell.save_dir = l:current
+  let b:vimshell.current_dir = l:current
   call vimshell#cd(l:current)
 
   let b:vimshell.alias_table = {}
@@ -757,7 +757,7 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
   if a:directory != '' && isdirectory(a:directory)
     " Change current directory.
     let l:current = fnamemodify(a:directory, ':p')
-    let b:vimshell.save_dir = l:current
+    let b:vimshell.current_dir = l:current
     call vimshell#cd(l:current)
   endif
 
@@ -785,11 +785,11 @@ function! s:event_bufwin_enter()"{{{
   endif
 
   if !exists('b:vimshell') ||
-        \ !isdirectory(b:vimshell.save_dir)
+        \ !isdirectory(b:vimshell.current_dir)
     return
   endif
 
-  call vimshell#cd(fnamemodify(b:vimshell.save_dir, ':p'))
+  call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
