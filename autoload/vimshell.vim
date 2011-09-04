@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Aug 2011.
+" Last Modified: 04 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -127,12 +127,15 @@ endfunction"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{
-  let l:bufname = '[1]vimshell'
-  let l:cnt = 2
-  while buflisted(l:bufname)
-    let l:bufname = printf('[%d]vimshell', l:cnt)
+  " Create new buffer.
+  let l:prefix = vimfiler#iswin() ? '[vimshell]' : '*vimshell*'
+  let l:postfix = ' - 1'
+  let l:cnt = 1
+  while buflisted(l:prefix.l:postfix)
     let l:cnt += 1
+    let l:postfix = ' - ' . l:cnt
   endwhile
+  let l:bufname = l:prefix.l:postfix
 
   let l:winheight = a:split_flag ?
         \ winheight(0)*g:vimshell_split_height/100 : 0

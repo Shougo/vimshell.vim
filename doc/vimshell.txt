@@ -621,6 +621,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-09-04
+- Improved buffer name.
+
 2011-09-01
 - Use unite#start_complete().
 
