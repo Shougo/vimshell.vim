@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 8.0
+Version: 9.0
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -621,6 +621,12 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-09-07
+- Ver.9.0 development is started.
+
+------------------------------------------------------------------------------
+ChangeLog 8.0
+
 2011-09-06
 - Fixed vimfiler function error.
 
@@ -1099,6 +1105,7 @@ CHANGELOG						*vimshell-changelog*
 
 ------------------------------------------------------------------------------
 ChangeLog 7.2
+
 2010-09-04
 - Deleted VimShellBang and VimShellRead commands.
 

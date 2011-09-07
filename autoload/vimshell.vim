@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Sep 2011.
+" Last Modified: 07 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,7 @@
 "=============================================================================
 
 function! vimshell#version()"{{{
-  return '800'
+  return '900'
 endfunction"}}}
 
 " Check vimproc."{{{
