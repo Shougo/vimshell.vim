@@ -225,21 +225,6 @@ function! vimshell#interactive#execute_process_out(is_insert)"{{{
   endif
 
   " Check cache.
-  if b:interactive.stdout_cache != ''
-    call vimshell#interactive#print_buffer(b:interactive.fd, b:interactive.stdout_cache)
-    let b:interactive.stdout_cache = ''
-  endif
-
-  if !b:interactive.process.stdout.eof
-    let l:read = b:interactive.process.stdout.read(1000, 40)
-    while l:read != ''
-      call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
-
-      let l:read = b:interactive.process.stdout.read(1000, 40)
-    endwhile
-  endif
-
-  " Check cache.
   if b:interactive.stderr_cache != ''
     call vimshell#interactive#error_buffer(b:interactive.fd, b:interactive.stderr_cache)
     let b:interactive.stderr_cache = ''
@@ -251,6 +236,21 @@ function! vimshell#interactive#execute_process_out(is_insert)"{{{
       call vimshell#interactive#error_buffer(b:interactive.fd, l:read)
 
       let l:read = b:interactive.process.stderr.read(1000, 40)
+    endwhile
+  endif
+
+  " Check cache.
+  if b:interactive.stdout_cache != ''
+    call vimshell#interactive#print_buffer(b:interactive.fd, b:interactive.stdout_cache)
+    let b:interactive.stdout_cache = ''
+  endif
+
+  if !b:interactive.process.stdout.eof
+    let l:read = b:interactive.process.stdout.read(1000, 40)
+    while l:read != ''
+      call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
+
+      let l:read = b:interactive.process.stdout.read(1000, 40)
     endwhile
   endif
 
@@ -465,7 +465,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
 
   let b:interactive.output_pos = getpos('.')
 
-  if has_key(b:interactive, 'prompt_history') && line('.') != b:interactive.echoback_linenr && getline('.') != ''
+  if has_key(b:interactive, 'prompt_history')
+        \ && line('.') != b:interactive.echoback_linenr && getline('.') != ''
     let b:interactive.prompt_history[line('.')] = getline('.')
   endif
 endfunction"}}}

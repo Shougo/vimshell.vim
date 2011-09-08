@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Aug 2011.
+" Last Modified: 08 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -178,28 +178,30 @@ endfunction"}}}
 
 function! vimshell#mappings#execute_line(is_insert)"{{{
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
-    " Prompt not found
+    if !has_key(b:interactive.prompt_history, line('.'))
+      " Prompt not found
 
-    if a:is_insert
-      return
+      if a:is_insert
+        return
+      endif
+
+      if !vimshell#check_prompt('$')
+        " Create prompt line.
+        call append('$', vimshell#get_prompt())
+      endif
+
+      if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
+        " History output execution.
+        call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
+      else
+        " Search cursor file.
+        let l:filename = substitute(substitute(vimshell#get_cursor_filename(),
+              \ '\\', '/', 'g'), ' ', '\\ ', 'g')
+        call s:open_file(l:filename)
+      endif
+
+      $
     endif
-
-    if !vimshell#check_prompt('$')
-      " Create prompt line.
-      call append('$', vimshell#get_prompt())
-    endif
-
-    if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
-      " History output execution.
-      call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
-    else
-      " Search cursor file.
-      let l:filename = substitute(substitute(vimshell#get_cursor_filename(),
-            \ '\\', '/', 'g'), ' ', '\\ ', 'g')
-      call s:open_file(l:filename)
-    endif
-
-    $
   elseif line('.') != line('$')
     " History execution.
 
@@ -225,6 +227,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   let b:interactive.output_pos = getpos('.')
 
   if !empty(b:vimshell.continuation)
+    call vimshell#interactive#execute_pty_inout(a:is_insert)
+
     try
       let l:ret = vimshell#parser#execute_continuation(a:is_insert)
     catch

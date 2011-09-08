@@ -118,7 +118,8 @@ function! s:init_process(commands, context, options)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#plineopen3(a:commands)
+  " let l:sub = vimproc#plineopen3(a:commands)
+  let l:sub = vimproc#ptyopen(a:commands)
 
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
@@ -140,12 +141,8 @@ function! s:init_process(commands, context, options)"{{{
   let b:interactive.cmdline = join(l:cmdline, '|')
   let b:interactive.width = winwidth(0)
   let b:interactive.height = winheight(0)
-
-  " Input from stdin.
-  if b:interactive.fd.stdin != ''
-    call b:interactive.process.stdin.write(vimshell#read(a:context.fd))
-  endif
-  call b:interactive.process.stdin.close()
+  let b:interactive.prompt_history = {}
+  let b:interactive.echoback_linenr = 0
 
   return
 endfunction"}}}
