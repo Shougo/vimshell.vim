@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Aug 2011.
+" Last Modified: 08 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -114,7 +114,7 @@ function! vimshell#interactive#send_char(char)"{{{
 
   call b:interactive.process.write(l:char)
 
-  call vimshell#interactive#execute_pty_out(1)
+  call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
   if s:last_interactive_bufnr <= 0
@@ -197,16 +197,16 @@ function! s:send_string(string, is_insert, linenr)"{{{
       " EOF.
       let l:eof = (b:interactive.is_pty ? "\<C-d>" : "\<C-z>")
 
-      call b:interactive.process.write(l:in[:-2] . l:eof)
+      call b:interactive.process.stdin.write(l:in[:-2] . l:eof)
     else
-      call b:interactive.process.write(l:in)
+      call b:interactive.process.stdin.write(l:in)
     endif
   catch
     call vimshell#interactive#exit()
     return
   endtry
 
-  call vimshell#interactive#execute_pty_out(a:is_insert)
+  call vimshell#interactive#execute_process_out(a:is_insert)
 
   call s:set_output_pos(a:is_insert)
 
@@ -218,7 +218,7 @@ function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let s:last_interactive_bufnr = bufnr(l:bufname)
 endfunction"}}}
 
-function! vimshell#interactive#execute_pty_out(is_insert)"{{{
+function! vimshell#interactive#execute_process_out(is_insert)"{{{
   if !b:interactive.process.is_valid
     return
   endif
@@ -251,7 +251,7 @@ function! vimshell#interactive#execute_pty_out(is_insert)"{{{
     call vimshell#interactive#exit()
   endif
 endfunction"}}}
-function! vimshell#interactive#execute_pipe_out(is_insert)"{{{
+function! vimshell#interactive#execute_process_out(is_insert)"{{{
   if !b:interactive.process.is_valid
     return
   endif
@@ -589,7 +589,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   if l:type ==# 'background'
     setlocal modifiable
-    call vimshell#interactive#execute_pipe_out(l:is_insert)
+    call vimshell#interactive#execute_process_out(l:is_insert)
     setlocal nomodifiable
   elseif l:type ==# 'vimshell'
     try
@@ -607,7 +607,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
       setlocal modifiable
     endif
 
-    call vimshell#interactive#execute_pty_out(l:is_insert)
+    call vimshell#interactive#execute_process_out(l:is_insert)
 
     if l:type ==# 'terminal'
       setlocal nomodifiable

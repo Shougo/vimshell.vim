@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2011.
+" Last Modified: 08 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,15 +34,11 @@ let s:command = {
 function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
 
-  if len(a:commands) > 1
-    call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
-    return
-  endif
-
   let l:commands = a:commands
-  let [l:args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args,
         \{ 'arg=' : ['--encoding']
         \})
+  let l:args = l:commands[0].args
 
   if empty(l:args)
     return
@@ -128,7 +124,7 @@ function! s:command.execute(commands, context)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#ptyopen(l:args)
+  let l:sub = vimproc#ptyopen(l:commands)
 
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)
@@ -161,7 +157,7 @@ function! s:command.execute(commands, context)"{{{
 
   execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r')
 
-  call vimshell#interactive#execute_pty_out(1)
+  call vimshell#interactive#execute_process_out(1)
 
   let l:last_winnr = winnr()
   execute l:save_winnr.'wincmd w'

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2011.
+" Last Modified: 08 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -114,7 +114,7 @@ endfunction"}}}
 function! s:execute_history(is_insert)"{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     " Do update.
-    call vimshell#interactive#execute_pty_out(a:is_insert)
+    call vimshell#interactive#execute_process_out(a:is_insert)
   endif
 
   " Search prompt.
@@ -226,7 +226,7 @@ function! s:restart_command()"{{{
         \ 'echoback_linenr' : 0
         \}, 'force')
 
-  call vimshell#interactive#execute_pty_out(1)
+  call vimshell#interactive#execute_process_out(1)
 
   startinsert!
 endfunction"}}}
@@ -313,7 +313,7 @@ function! s:clear()"{{{
   call vimshell#terminal#clear_highlight()
   call vimshell#terminal#init()
 
-  call vimshell#interactive#execute_pty_out(1)
+  call vimshell#interactive#execute_process_out(1)
 
   startinsert!
 endfunction"}}}
