@@ -155,8 +155,9 @@ function! s:command.execute(commands, context)"{{{
         \    && a:context.is_close_immediately,
         \ 'hook_functions_table' : {},
         \}
-
-  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r')
+  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ?
+        \ l:args[1] : l:args[0], ':t:r')
+  call s:default_syntax()
 
   call vimshell#interactive#execute_process_out(1)
 
@@ -250,12 +251,32 @@ function! s:default_settings()"{{{
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
-  syn match   InteractiveErrorHidden            '!!!' contained
   hi def link InteractiveError Error
-  hi def link InteractiveErrorHidden Ignore
+
+  if has('conceal')
+    " Supported conceal features.
+    syn match   InteractiveErrorHidden            '!!!' contained conceal
+  else
+    syn match   InteractiveErrorHidden            '!!!' contained
+    hi def link InteractiveErrorHidden Ignore
+  endif
 
   " Define mappings.
   call vimshell#int_mappings#define_default_mappings()
+endfunction"}}}
+
+function! s:default_syntax()"{{{
+  " Set syntax.
+  syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
+  hi def link InteractiveError Error
+
+  if has('conceal')
+    " Supported conceal features.
+    syn match   InteractiveErrorHidden            '!!!' contained conceal
+  else
+    syn match   InteractiveErrorHidden            '!!!' contained
+    hi def link InteractiveErrorHidden Ignore
+  endif
 endfunction"}}}
 
 function! s:init_bg(args, context)"{{{
@@ -268,6 +289,7 @@ function! s:init_bg(args, context)"{{{
   endif
 
   edit `='iexe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
+
   call vimshell#cd(l:cwd)
 
   call s:default_settings()

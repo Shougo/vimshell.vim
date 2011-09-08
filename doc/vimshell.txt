@@ -624,6 +624,7 @@ CHANGELOG						*vimshell-changelog*
 2011-09-08
 - Supported vimproc Ver.6
 - Improved error message.
+- Supported iexe error output.
 
 2011-09-07
 - Ver.9.0 development is started.
