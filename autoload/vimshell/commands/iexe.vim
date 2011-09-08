@@ -149,6 +149,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r'),
         \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
         \    && a:context.is_close_immediately,

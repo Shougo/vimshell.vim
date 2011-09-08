@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jul 2011.
+" Last Modified: 08 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -136,6 +136,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(vimshell#iswin() ? l:args[1] : l:args[0], ':t:r'),
         \ 'hook_functions_table' : {},
         \}

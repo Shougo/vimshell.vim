@@ -202,8 +202,9 @@ function! s:send_string(string, is_insert, linenr)"{{{
       call b:interactive.process.stdin.write(l:in)
     endif
   catch
+    " Error.
+    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
     call vimshell#interactive#exit()
-    return
   endtry
 
   call vimshell#interactive#execute_process_out(a:is_insert)
@@ -218,39 +219,6 @@ function! vimshell#interactive#set_send_buffer(bufname)"{{{
   let s:last_interactive_bufnr = bufnr(l:bufname)
 endfunction"}}}
 
-function! vimshell#interactive#execute_process_out(is_insert)"{{{
-  if !b:interactive.process.is_valid
-    return
-  endif
-
-  let l:outputed = 0
-
-  " Check cache.
-  if b:interactive.stdout_cache != ''
-    let l:outputed = 1
-    call vimshell#interactive#print_buffer(b:interactive.fd, b:interactive.stdout_cache)
-    let b:interactive.stdout_cache = ''
-  endif
-
-  if !b:interactive.process.eof
-    let l:read = b:interactive.process.read(1000, 40)
-    while l:read != ''
-      let l:outputed = 1
-
-      call vimshell#interactive#print_buffer(b:interactive.fd, l:read)
-
-      let l:read = b:interactive.process.read(1000, 40)
-    endwhile
-  endif
-
-  if l:outputed
-    call s:set_output_pos(a:is_insert)
-  endif
-
-  if b:interactive.process.eof
-    call vimshell#interactive#exit()
-  endif
-endfunction"}}}
 function! vimshell#interactive#execute_process_out(is_insert)"{{{
   if !b:interactive.process.is_valid
     return
@@ -301,7 +269,9 @@ function! s:set_output_pos(is_insert)"{{{
   end
 
   if b:interactive.type !=# 'terminal' &&
-        \ has_key(b:interactive.process, 'eof') && !b:interactive.process.eof
+        \ has_key(b:interactive.process, 'stdout')
+        \ && (!b:interactive.process.stdout.eof ||
+        \     !b:interactive.process.stderr.eof)
     if a:is_insert
       startinsert!
     else
@@ -500,7 +470,12 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#error_buffer(fd, string)"{{{
-  if a:string == '' || !exists('b:interactive')
+  if a:string == ''
+    return
+  endif
+
+  if !exists('b:interactive')
+    echohl WarningMsg | echomsg a:string | echohl None
     return
   endif
 
@@ -611,7 +586,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
     if l:type ==# 'terminal'
       setlocal nomodifiable
-    elseif !a:interactive.process.eof && l:is_insert
+    elseif (!a:interactive.process.stdout.eof || !a:interactive.process.stderr.eof)
+          \ && l:is_insert
       startinsert!
     endif
   endif
@@ -630,49 +606,30 @@ function! s:cache_output(interactive)"{{{
   endif
 
   let l:outputed = 0
-  if a:interactive.type ==# 'background' || a:interactive.type ==# 'vimshell'
-    " Background.
-
-    if a:interactive.process.stdout.eof
+  if a:interactive.process.stdout.eof
+    let l:outputed = 1
+  else
+    let l:read = a:interactive.process.stdout.read(1000, 40)
+    let a:interactive.stdout_cache = l:read
+    while l:read != ''
       let l:outputed = 1
-    else
+
       let l:read = a:interactive.process.stdout.read(1000, 40)
-      let a:interactive.stdout_cache = l:read
-      while l:read != ''
-        let l:outputed = 1
+      let a:interactive.stdout_cache .= l:read
+    endwhile
+  endif
 
-        let l:read = a:interactive.process.stdout.read(1000, 40)
-        let a:interactive.stdout_cache .= l:read
-      endwhile
-    endif
-
-    if a:interactive.process.stderr.eof
+  if a:interactive.process.stderr.eof
+    let l:outputed = 1
+  else
+    let l:read = a:interactive.process.stderr.read(1000, 40)
+    let a:interactive.stderr_cache = l:read
+    while l:read != ''
       let l:outputed = 1
-    else
+
       let l:read = a:interactive.process.stderr.read(1000, 40)
-      let a:interactive.stderr_cache = l:read
-      while l:read != ''
-        let l:outputed = 1
-
-        let l:read = a:interactive.process.stderr.read(1000, 40)
-        let a:interactive.stderr_cache .= l:read
-      endwhile
-    endif
-  elseif a:interactive.type ==# 'terminal' || a:interactive.type ==# 'interactive'
-    " Terminal or interactive.
-
-    if a:interactive.process.eof
-      let l:outputed = 1
-    else
-      let l:read = a:interactive.process.read(1000, 40)
-      let a:interactive.stdout_cache = l:read
-      while l:read != ''
-        let l:outputed = 1
-
-        let l:read = a:interactive.process.read(1000, 40)
-        let a:interactive.stdout_cache .= l:read
-      endwhile
-    endif
+      let a:interactive.stderr_cache .= l:read
+    endwhile
   endif
 
   return l:outputed
