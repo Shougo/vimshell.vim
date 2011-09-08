@@ -112,12 +112,12 @@ function! vimshell#interactive#send_char(char)"{{{
     endfor
   endif
 
-  call b:interactive.process.write(l:char)
+  call b:interactive.process.stdin.write(l:char)
 
   call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
-  if s:last_interactive_bufnr <= 0
+  if s:last_interactive_bufnr <= 0 || vimshell#is_cmdwin()
     return
   endif
 
@@ -533,6 +533,7 @@ endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   " Output cache.
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
+        \ || vimshell#is_cmdwin()
     return
   endif
 

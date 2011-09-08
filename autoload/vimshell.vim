@@ -127,6 +127,12 @@ endfunction"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(split_flag, directory)"{{{
+  if vimshell#is_cmdwin()
+    echoerr 'Command line buffer is detected!'
+    echoerr 'Please close command line buffer.'
+    return
+  endif
+
   " Create new buffer.
   let l:prefix = vimshell#iswin() ? '[vimshell]' : '*vimshell*'
   let l:postfix = ' - 1'
@@ -215,6 +221,12 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call feedkeys("\<C-g>u", 'n')
 endfunction"}}}
 function! vimshell#switch_shell(split_flag, directory)"{{{
+  if vimshell#is_cmdwin()
+    echoerr 'Command line buffer is detected!'
+    echoerr 'Please close command line buffer.'
+    return
+  endif
+
   let l:context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 1,
@@ -646,6 +658,11 @@ function! vimshell#get_cursor_filename()"{{{
   endif
 
   return expand(l:filename)
+endfunction"}}}
+function! vimshell#is_cmdwin()"{{{
+  silent! noautocmd wincmd p
+  silent! noautocmd wincmd p
+  return v:errmsg =~ '^E11:'
 endfunction"}}}
 "}}}
 

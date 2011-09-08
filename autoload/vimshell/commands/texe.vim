@@ -37,9 +37,10 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   let l:commands = a:commands
-  let [l:args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
         \{ 'arg=' : ['--encoding']
         \})
+  let l:args = l:commands[0].args
 
   if empty(l:args)
     return
@@ -109,7 +110,7 @@ function! s:command.execute(commands, context)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#ptyopen(l:args)
+  let l:sub = vimproc#ptyopen(l:commands)
 
   " Restore environment variables.
   call vimshell#restore_variables(l:environments_save)

@@ -80,11 +80,6 @@ function! vimshell#terminal#print(string, is_error)"{{{
       endfor
     else
       " Optimized print.
-
-      call append('.', l:lines)
-      execute 'normal!' len(l:lines).'j$'
-      return
-
       if !b:interactive.is_pty
             \ && has_key(b:interactive, 'command')
             \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
