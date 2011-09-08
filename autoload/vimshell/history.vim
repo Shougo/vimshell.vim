@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 09 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,24 +30,31 @@ function! vimshell#history#append(command)"{{{
 
   " Reload history.
   if &filetype ==# 'vimshell'
-    let l:program = matchstr(l:command, vimshell#get_program_pattern())
-    if l:program != '' && has_key(g:vimshell_no_save_history_commands, l:program)
-      " No history command.
-      return
+    if !empty(b:vimshell.continuation)
+      " Search program name.
+      let l:statement = b:vimshell.continuation.statements[0].statement
+      let l:program = fnamemodify(vimshell#parser#parse_program(l:statement), ':r')
+      let l:no_history_commands = g:vimshell_interactive_no_save_history_commands
+    else
+      let l:program = matchstr(l:command, vimshell#get_program_pattern())
+      let l:no_history_commands = g:vimshell_no_save_history_commands
     endif
   else
-    if has_key(g:vimshell_interactive_no_save_history_commands, &filetype[4:])
-          \ && g:vimshell_interactive_no_save_history_commands[&filetype[4:]]
-      " No history command.
-      return
-    endif
+    let l:program = &filetype[4:]
+    let l:no_history_commands = g:vimshell_interactive_no_save_history_commands
+  endif
+
+  if l:program != '' && has_key(l:no_history_commands, l:program)
+    " No history command.
+    return
   endif
 
   " Reload history.
   let l:histories = vimshell#history#read()
 
   " Filtering.
-  call insert(filter(l:histories, 'v:val !=# '.string(substitute(l:command, "'", "''", 'g'))), l:command)
+  call insert(filter(l:histories, 'v:val !=# '.
+        \ string(substitute(l:command, "'", "''", 'g'))), l:command)
 
   " Truncate.
   let l:histories = l:histories[: g:vimshell_max_command_history-1]
@@ -68,7 +75,7 @@ function! vimshell#history#write(list)"{{{
 endfunction"}}}
 
 function! s:get_history_path()"{{{
-  if &filetype ==# 'vimshell'
+  if &filetype ==# 'vimshell' && empty(b:vimshell.continuation)
     let l:history_path = g:vimshell_temporary_directory . '/command-history'
     if !filereadable(l:history_path)
       " Create file.
@@ -80,7 +87,16 @@ function! s:get_history_path()"{{{
       call mkdir(fnamemodify(l:history_dir, ':p'), 'p')
     endif
 
-    let l:history_path = l:history_dir . '/'.&filetype
+    if &filetype ==# 'vimshell'
+      " Search program name.
+      let l:statement = b:vimshell.continuation.statements[0].statement
+      let l:program = 'int-' . fnamemodify(
+            \ vimshell#parser#parse_program(l:statement), ':r')
+    else
+      let l:program = &filetype
+    endif
+
+    let l:history_path = l:history_dir.'/'.l:program
   endif
 
   return l:history_path

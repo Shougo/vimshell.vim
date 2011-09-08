@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Sep 2011.
+" Last Modified: 09 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -87,45 +87,43 @@ function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
 endfunction "}}}
 
 " Actions"{{{
-let s:action_table = {}
-
-let s:action_table.delete = {
+let s:source.action_table.delete = {
       \ 'description' : 'delete from vimshell history',
       \ 'is_invalidate_cache' : 1,
       \ 'is_quit' : 0,
       \ 'is_selectable' : 1,
       \ }
-function! s:action_table.delete.func(candidates)"{{{
+function! s:source.action_table.delete.func(candidates)"{{{
   for l:candidate in a:candidates
     call filter(s:current_histories, 'v:val !=# l:candidate.action__complete_word')
   endfor
 endfunction"}}}
 
-let s:action_table.edit = {
+let s:source.action_table.edit = {
       \ 'description' : 'edit history',
       \ 'is_invalidate_cache' : 1,
       \ 'is_quit' : 0,
       \ }
-function! s:action_table.edit.func(candidate)"{{{
+function! s:source.action_table.edit.func(candidate)"{{{
   let l:history = input('Please edit history: ', a:candidate.action__complete_word)
   if l:history != ''
     let s:current_histories[a:candidate.action__source_history_number] = l:history
   endif
 endfunction"}}}
 
-let s:action_table.execute = {
+let s:source.action_table.execute = {
       \ 'description' : 'execute history',
       \ }
-function! s:action_table.execute.func(candidate)"{{{
+function! s:source.action_table.execute.func(candidate)"{{{
   call unite#take_action('insert', a:candidate)
 
   call vimshell#execute_current_line(unite#get_current_unite().context.complete)
 endfunction"}}}
 
-let s:action_table.insert = {
+let s:source.action_table.insert = {
       \ 'description' : 'insert history',
       \ }
-function! s:action_table.insert.func(candidate)"{{{
+function! s:source.action_table.insert.func(candidate)"{{{
   if !vimshell#check_prompt()
     echoerr 'Not in command line.'
     return
@@ -138,9 +136,6 @@ function! s:action_table.insert.func(candidate)"{{{
     normal! $
   endif
 endfunction"}}}
-
-let s:source.action_table['*'] = s:action_table
-unlet! s:action_table
 "}}}
 
 " vim: foldmethod=marker
