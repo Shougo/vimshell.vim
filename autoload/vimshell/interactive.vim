@@ -59,18 +59,21 @@ endfunction"}}}
 function! vimshell#interactive#get_cur_line(line, ...)"{{{
   " Get cursor text without prompt.
   let l:interactive = a:0 > 0 ? a:1 : b:interactive
-  return s:chomp_prompt(getline(a:line), a:line, l:interactive)
+  let l:cur_line = getline(a:line)
+
+  return s:chomp_prompt(l:cur_line, a:line, l:interactive)
 endfunction"}}}
 function! vimshell#interactive#get_prompt(...)"{{{
   let l:line = a:0 ? a:1 : line('.')
   " Get prompt line.
-  return !has_key(b:interactive.prompt_history, l:line) ? '' : b:interactive.prompt_history[l:line]
+  return !has_key(b:interactive.prompt_history, l:line) ?
+        \ '' : b:interactive.prompt_history[l:line]
 endfunction"}}}
 function! s:chomp_prompt(cur_text, line, interactive)"{{{
   let l:cur_text = a:cur_text
 
   if has_key(a:interactive.prompt_history, a:line)
-    let l:cur_text = a:cur_text[len(a:interactive.prompt_history[a:line]) : ]
+    let l:cur_text = l:cur_text[len(a:interactive.prompt_history[a:line]) : ]
   endif
 
   return l:cur_text
@@ -261,8 +264,7 @@ function! vimshell#interactive#execute_process_out(is_insert)"{{{
   endif
 endfunction"}}}
 function! s:set_output_pos(is_insert)"{{{
-  " There are cases when this variable doesn't 
-  " exist 
+  " There are cases when this variable doesn't exist
   " USE: 'b:interactive.is_close_immediately = 1' to replicate
   if !exists('b:interactive')
     return
@@ -495,6 +497,11 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   let b:interactive.output_pos = getpos('.')
 
   redraw
+
+  if has_key(b:interactive, 'prompt_history')
+        \ && line('.') != b:interactive.echoback_linenr && getline('.') != ''
+    let b:interactive.prompt_history[line('.')] = getline('.')
+  endif
 endfunction"}}}
 
 " Autocmd functions.

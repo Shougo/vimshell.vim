@@ -626,6 +626,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved error message.
 - Supported iexe error output.
 - exe use pty.
+- Improved interactive.
 
 2011-09-07
 - Ver.9.0 development is started.
