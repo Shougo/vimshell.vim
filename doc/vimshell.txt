@@ -625,6 +625,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved execute continuation.
 - Improved commands history.
 - Fixed terminal.
+- Improved texe.
 
 2011-09-08
 - Supported vimproc Ver.6
