@@ -634,7 +634,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved interactive.
 
 2011-09-07
-- Ver.9.0 development is started.
+- Ver.9.0 development started.
 
 ------------------------------------------------------------------------------
 ChangeLog 8.0
@@ -1110,7 +1110,7 @@ ChangeLog 8.0
 - Implemented <Plug>(vimshell_int_clear).
 
 2010-09-05
-- Ver.8.0 development is started.
+- Ver.8.0 development started.
 - Use vimproc Ver.5.
 - Changed completion keymappings.
 - Fixed for scala.
@@ -1172,7 +1172,7 @@ ChangeLog 7.2
 - Implemented wherereis internal command.
 
 2010-08-15
-* Ver.7.2 development is started.
+* Ver.7.2 development started.
 - Improved wildcard.
 - Fixed wildcard parse.
 - Implemented file modifier.
@@ -1353,7 +1353,7 @@ ChangeLog 7.1:
 - Improved internal helper function.
 
 2010-07-07
-* Ver.7.1 development is started.
+* Ver.7.1 development started.
 - Fixed documentation.
 - Using dictionary.
 
@@ -1696,7 +1696,7 @@ ChangeLog 7.0:
 * Fixed mapping <CR>.
 
 2010-04-20
-* Ver.7 development is started.
+* Ver.7 development started.
 * Supported vimproc Ver.4.
 
 ------------------------------------------------------------------------------
