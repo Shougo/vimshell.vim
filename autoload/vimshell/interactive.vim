@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 12 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -462,7 +462,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
       let l:in = iconv(l:in, &encoding, b:interactive.encoding)
     endif
 
-    call b:interactive.process.write(l:in . "\<NL>")
+    call b:interactive.process.stdin.write(l:in . "\<NL>")
   endif
 
   let b:interactive.output_pos = getpos('.')
