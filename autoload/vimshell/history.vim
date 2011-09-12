@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 12 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,6 +70,10 @@ function! vimshell#history#write(list)"{{{
   " Save history file.
   let l:history_path = s:get_history_path()
   let l:temp_name = tempname()
+  if !isdirectory(fnamemodify(l:temp_name, ':h'))
+    " Make directory.
+    call mkdir(fnamemodify(l:temp_name, ':h'), 'p')
+  endif
   call writefile(a:list, l:temp_name)
   call rename(l:temp_name, l:history_path)
 endfunction"}}}
