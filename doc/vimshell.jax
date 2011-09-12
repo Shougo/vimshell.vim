@@ -694,13 +694,6 @@ source {files}						*vimshell-internal-source*
 		{files}を読み込む。{files}は環境変数を変化させるシェルスクリ
 		プトである。環境変数の変化は、vimshellに反映される。
 
-sudo {command}						*vimshell-internal-sudo*
-		管理者権限が必要な外部コマンドを実行する。{command}がvimの場合、
-		|sudo.vim|を用いて編集しようとする。
-		
-		Windows環境ではsudo.exeが必要である。
-		http://bitbucket.org/wantora/sudo/wiki/Home
-
 texe [{options}...] {command}				*vimshell-internal-texe*
 		{command}に引数を与えて実行する。必ず外部コマンドが実行される。
 		exe, iexeとは違い、端末コマンドを実行することに特化している。入
@@ -956,6 +949,13 @@ fakecygpty						*vimshell-tips-fakecygpty*
 		というコマンドを実行する。あとはfakecygptyを$PATHの通ったところ
 		に置けば準備完了である。
 >
+
+sudo						*vimshell-tips-sudo*
+		vimshell Ver.9より、sudoはiexeやsudo内部コマンドを用いなくて
+		も、そのまま実行できるようになった。ただし、Windows環境で
+		sudoするためには、Windows環境ではsudo.exeが必要である。
+		http://bitbucket.org/wantora/sudo/wiki/Home
+
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 

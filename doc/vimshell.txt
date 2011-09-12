@@ -424,9 +424,6 @@ shell 							*vimshell-internal-shell*
 source {files}						*vimshell-internal-source*
 		Todo
 
-sudo {command}						*vimshell-internal-sudo*
-		Todo
-
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Todo
 		
@@ -624,6 +621,7 @@ CHANGELOG						*vimshell-changelog*
 2011-09-12
 - Fixed inputsecret() error.
 - Fixed tempname() problem.
+- Deleted sudo internal command.
 
 2011-09-09
 - Improved execute continuation.
