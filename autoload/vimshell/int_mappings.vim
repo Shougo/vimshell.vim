@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2011.
+" Last Modified: 12 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -137,21 +137,17 @@ function! s:execute_history(is_insert)"{{{
   call vimshell#imdisable()
 endfunction"}}}
 function! s:previous_prompt()"{{{
-  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'), 'v:val < line(".")'), 'vimshell#compare_number')
+  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+        \ 'v:val < line(".")'), 'vimshell#compare_number')
   if !empty(l:prompts)
-    let l:pos = getpos('.')
-    let l:pos[1] = l:prompts[-1]
-    let l:pos[2] = len(vimshell#interactive#get_prompt()) + 1
-    call setpos('.', l:pos)
+    call cursor(l:prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
 function! s:next_prompt()"{{{
-  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'), 'v:val > line(".")'), 'vimshell#compare_number')
+  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+        \ 'v:val > line(".")'), 'vimshell#compare_number')
   if !empty(l:prompts)
-    let l:pos = getpos('.')
-    let l:pos[1] = l:prompts[0]
-    let l:pos[2] = len(vimshell#interactive#get_prompt()) + 1
-    call setpos('.', l:pos)
+    call cursor(l:prompts[0], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
 function! s:move_head()"{{{

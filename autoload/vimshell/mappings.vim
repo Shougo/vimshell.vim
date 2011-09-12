@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 12 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -330,10 +330,26 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:previous_prompt()"{{{
-  call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
+  if empty(b:vimshell.continuation)
+    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
+  else
+    let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+          \ 'v:val < line(".")'), 'vimshell#compare_number')
+    if !empty(l:prompts)
+      call cursor(l:prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
+    endif
+  endif
 endfunction"}}}
 function! s:next_prompt()"{{{
-  call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
+  if empty(b:vimshell.continuation)
+    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
+  else
+    let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+          \ 'v:val > line(".")'), 'vimshell#compare_number')
+    if !empty(l:prompts)
+      call cursor(l:prompts[0], len(vimshell#interactive#get_prompt()) + 1)
+    endif
+  endif
 endfunction"}}}
 function! s:select_previous_prompt()"{{{
   let l:prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
@@ -341,7 +357,7 @@ function! s:select_previous_prompt()"{{{
   if l:linenr == 0
     return ''
   endif
-  
+
   return (line('.') - l:linenr - 1) . 'k'
 endfunction"}}}
 function! s:select_next_prompt()"{{{
@@ -351,7 +367,7 @@ function! s:select_next_prompt()"{{{
   if l:linenr == 0
     return ''
   endif
-  
+
   return (l:linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output()"{{{

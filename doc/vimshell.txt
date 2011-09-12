@@ -622,6 +622,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed inputsecret() error.
 - Fixed tempname() problem.
 - Deleted sudo internal command.
+- Improved exe behavior.
 
 2011-09-09
 - Improved execute continuation.
