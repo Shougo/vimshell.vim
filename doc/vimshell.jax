@@ -134,7 +134,7 @@ COMMANDS 						*vimshell-commands*
 :VimShellExecute {command}				*:VimShellExecute*
 			vimshellを起動せずに、{command}で指定された実行
 			ファイルをバックグラウンドで起動する。vimshellを
-			GNU screenのように使えます。
+			GNU screenのように使える。
 
 :VimShellInteractive [{command}]			*:VimShellInteractive*
 			vimshellを起動せずに、{command}で指定された
@@ -576,6 +576,9 @@ exe [{option}...] {command} 				*vimshell-internal-exe*
 		{command}に引数を与えて実行する。必ず外部コマンドが実行される。
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づいて
 		挙動を変更する。詳しくは|vimshell-execute-options|を参照せよ。
+		コマンドを実行中はコマンドが終了するか、<C-c>で強制終了する
+		まで、他のコマンドを実行できないことに注意。
+		Note: vimshell Ver.9より、exeは入力も受けつけるように変更された。
 		
 							*vimshell-execute-options*
 		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
@@ -627,8 +630,7 @@ history [{search-string}]				*vimshell-internal-history*
 iexe [{options}...] {command}				*vimshell-internal-iexe*
 		{command}に引数を与えて実行する。必ず外部コマンドが実行される。
 		exeとは違い、対話コマンドを実行することに特化している。入出力を
-		行なうために新しいバッファが生成される。パイプを使うとエラーに
-		なる。
+		行なうために新しいバッファが生成される。
 		iexeバッファは|filetype|がint-{command}となる。iexeバッファ全体
 		にautocmdを使用する場合は、"int-*"というパターンを使用するとよ
 		い。
