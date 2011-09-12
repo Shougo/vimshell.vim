@@ -68,14 +68,7 @@ function! vimshell#history#read()"{{{
 endfunction"}}}
 function! vimshell#history#write(list)"{{{
   " Save history file.
-  let l:history_path = s:get_history_path()
-  let l:temp_name = tempname()
-  if !isdirectory(fnamemodify(l:temp_name, ':h'))
-    " Make directory.
-    call mkdir(fnamemodify(l:temp_name, ':h'), 'p')
-  endif
-  call writefile(a:list, l:temp_name)
-  call rename(l:temp_name, l:history_path)
+  call writefile(a:list, s:get_history_path())
 endfunction"}}}
 
 function! s:get_history_path()"{{{
