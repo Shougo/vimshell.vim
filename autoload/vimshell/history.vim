@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 13 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,8 @@ function! vimshell#history#append(command)"{{{
     if !empty(b:vimshell.continuation)
       " Search program name.
       let l:statement = b:vimshell.continuation.statements[0].statement
-      let l:program = fnamemodify(vimshell#parser#parse_program(l:statement), ':r')
+      let l:program = fnamemodify(vimshell#parser#parse_program(
+            \ l:statement), ':t:r')
       let l:no_history_commands = g:vimshell_interactive_no_save_history_commands
     else
       let l:program = matchstr(l:command, vimshell#get_program_pattern())
@@ -88,7 +89,7 @@ function! s:get_history_path()"{{{
       " Search program name.
       let l:statement = b:vimshell.continuation.statements[0].statement
       let l:program = 'int-' . fnamemodify(
-            \ vimshell#parser#parse_program(l:statement), ':r')
+            \ vimshell#parser#parse_program(l:statement), ':t:r')
     else
       let l:program = &filetype
     endif

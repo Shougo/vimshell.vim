@@ -618,6 +618,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-09-13
+- Fixed history error.
+
 2011-09-12
 - Fixed inputsecret() error.
 - Fixed tempname() problem.
