@@ -958,6 +958,17 @@ sudo						*vimshell-tips-sudo*
 		sudoするためには、Windows環境ではsudo.exeが必要である。
 		http://bitbucket.org/wantora/sudo/wiki/Home
 
+日本語の取り扱い				*vimshell-tips-japanese*
+		'encoding'を自前で設定している環境(主にWindows)では、起動するコ
+		マンドとエンコーディングの設定が合わず、日本語の出力が文字化け
+		することがある。その場合、'termencoding'をコマンドのエンコーデ
+		ィングと揃えると文字化けは解消される。
+		Windows環境なら、"cp932"に設定すると良い。
+		さらに、コマンドによってはUTF-8で出力することがある。その場合、
+		exeやiexeの"--encoding"オプションを使用すると良い。
+>
+		vimshell% iexe --encoding=utf8 ghci
+<
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 
