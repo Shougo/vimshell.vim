@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 14 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -450,7 +450,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   call vimshell#terminal#print(l:string, 0)
 
   if getline('.') =~ s:password_regex
-        \ && b:interactive.type == 'interactive'
+        \ && (b:interactive.type == 'interactive'
+        \     || b:interactive.type == 'vimshell')
     redraw
 
     " Password input.
