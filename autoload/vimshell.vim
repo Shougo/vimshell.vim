@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 14 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -663,6 +663,20 @@ function! vimshell#is_cmdwin()"{{{
   silent! noautocmd wincmd p
   silent! noautocmd wincmd p
   return v:errmsg =~ '^E11:'
+endfunction"}}}
+function! vimshell#next_prompt(context, is_insert)"{{{
+  if line('.') == line('$')
+    call vimshell#print_prompt(a:context)
+    call vimshell#start_insert(a:is_insert)
+  else
+    call search('^' . vimshell#escape_match(vimshell#get_prompt()).'.\?', 'We')
+    if vimshell#get_prompt_command() == ''
+      startinsert!
+    else
+      normal! l
+    endif
+    stopinsert
+  endif
 endfunction"}}}
 "}}}
 
