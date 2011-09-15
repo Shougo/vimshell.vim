@@ -50,18 +50,18 @@ function! s:command_vim.execute(program, args, fd, context)"{{{
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
-  let l:bufnr = bufnr('%')
-
   " Call explorer.
   doautocmd BufEnter
+
+  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
   call vimshell#cd(l:cwd)
 
   call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
-    call vimshell#restore_pos(l:new_pos, l:bufnr)
+    call vimshell#next_prompt(a:context)
+    call vimshell#restore_pos(l:new_pos)
     stopinsert
   endif
 endfunction"}}}

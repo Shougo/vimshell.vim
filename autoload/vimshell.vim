@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -698,9 +698,7 @@ function! vimshell#split(command)"{{{
 
   return [l:new_pos, l:old_pos]
 endfunction"}}}
-function! vimshell#restore_pos(pos, ...)"{{{
-  let l:bufnr = get(a:000, 0, a:pos[2])
-
+function! vimshell#restore_pos(pos)"{{{
   if tabpagenr() != a:pos[0]
     execute 'tabnext' a:pos[0]
   endif
@@ -709,8 +707,8 @@ function! vimshell#restore_pos(pos, ...)"{{{
     execute a:pos[1] 'winnr'
   endif
 
-  if bufnr('%') != l:bufnr
-    execute 'buffer' l:bufnr
+  if bufnr('%') != a:pos[2]
+    execute 'buffer' a:pos[2]
   endif
 
   call setpos('.', a:pos[3])
