@@ -31,52 +31,37 @@ let s:command_vim = {
       \}
 function! s:command_vim.execute(program, args, fd, context)"{{{
   " Edit file.
-
-  if empty(a:args)
-    " Read from stdin.
-    let l:filename = a:fd.stdin
-  else
-    let l:filename = a:args[0]
-  endif
+  let l:filename = empty(a:args) ? a:fd.stdin : a:args[0]
 
   " Save current directiory.
   let l:cwd = getcwd()
 
-  let l:save_winnr = winnr()
+  let [l:new_pos, l:old_pos] = vimshell#split(g:vimshell_split_command)
 
-  if l:filename == ''
-    " Split nicely.
-    if winwidth(0) > 2 * &winwidth
-      new
+  try
+    if l:filename == ''
+      enew
+    elseif len(a:args) > 1
+      execute 'edit' '+'.a:args[1] l:filename
     else
-      vnew
+      edit `=l:filename`
     endif
-  else
-    " Split nicely.
-    call vimshell#split_nicely()
+  catch
+    echohl Error | echomsg v:errmsg | echohl None
+  endtry
 
-    try
-      if len(a:args) > 1
-        execute 'edit' '+'.a:args[1] l:filename
-      else
-        edit `=l:filename`
-      endif
-    catch
-      echohl Error | echomsg v:errmsg | echohl None
-    endtry
-  endif
+  let l:bufnr = bufnr('%')
 
   " Call explorer.
   doautocmd BufEnter
 
   call vimshell#cd(l:cwd)
 
-  let l:last_winnr = winnr()
-  execute l:save_winnr.'wincmd w'
+  call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#print_prompt(a:context)
-    execute l:last_winnr.'wincmd w'
+    call vimshell#restore_pos(l:new_pos, l:bufnr)
     stopinsert
   endif
 endfunction"}}}

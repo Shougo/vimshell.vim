@@ -562,16 +562,6 @@ endfunction"}}}
 function! vimshell#get_alias_pattern()"{{{
   return '^\s*[[:alnum:].+#_@!%-]\+'
 endfunction"}}}
-function! vimshell#split_nicely()"{{{
-  " Split nicely.
-  if g:vimshell_split_command != ''
-    execute g:vimshell_split_command
-  elseif winwidth(0) > 2 * &winwidth
-    vsplit
-  else
-    split
-  endif
-endfunction"}}}
 function! vimshell#cd(directory)"{{{
   execute g:vimshell_cd_command '`=a:directory`'
 
@@ -665,6 +655,10 @@ function! vimshell#is_cmdwin()"{{{
   return v:errmsg =~ '^E11:'
 endfunction"}}}
 function! vimshell#next_prompt(context, is_insert)"{{{
+  if &filetype !=# 'vimshell'
+    return
+  endif
+
   if line('.') == line('$')
     call vimshell#print_prompt(a:context)
     call vimshell#start_insert(a:is_insert)
@@ -680,6 +674,46 @@ function! vimshell#next_prompt(context, is_insert)"{{{
 
     stopinsert
   endif
+endfunction"}}}
+function! vimshell#split_nicely()"{{{
+  " Split nicely.
+  if g:vimshell_split_command != ''
+    execute g:vimshell_split_command
+  elseif winwidth(0) > 2 * &winwidth
+    vsplit
+  else
+    split
+  endif
+endfunction"}}}
+function! vimshell#split(command)"{{{
+  let l:old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
+  if a:command != ''
+    let l:command =
+          \ a:command !=# 'nicely' ? a:command :
+          \ winwidth(0) > 2 * &winwidth ? 'vsplit' : 'split'
+    execute l:command
+  endif
+
+  let l:new_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]
+
+  return [l:new_pos, l:old_pos]
+endfunction"}}}
+function! vimshell#restore_pos(pos, ...)"{{{
+  let l:bufnr = get(a:000, 0, a:pos[2])
+
+  if tabpagenr() != a:pos[0]
+    execute 'tabnext' a:pos[0]
+  endif
+
+  if winnr() != a:pos[1]
+    execute a:pos[1] 'winnr'
+  endif
+
+  if bufnr('%') != l:bufnr
+    execute 'buffer' l:bufnr
+  endif
+
+  call setpos('.', a:pos[3])
 endfunction"}}}
 "}}}
 
