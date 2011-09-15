@@ -130,7 +130,9 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Delete previous word characters in the current line.
   imap <buffer> <C-w> <Plug>(vimshell_delete_backward_word)
   " Push current line to stack.
-  imap <buffer> <C-z> <Plug>(vimshell_push_current_line)
+  imap <silent><buffer><expr> <C-z> vimshell#mappings#smart_map(
+        \ "\<Plug>(vimshell_push_current_line)",
+        \ "\<Plug>(vimshell_execute_by_background)")
   " Insert last word.
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Run help.
@@ -145,6 +147,9 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Move to previous window.
   imap <buffer> <C-x>     <Plug>(vimshell_move_previous_window)
 endfunction"}}}
+function! vimshell#mappings#smart_map(vimshell_map, execute_map)
+  return empty(b:vimshell.continuation) ? a:vimshell_map : a:execute_map
+endfunction
 
 " VimShell key-mappings functions.
 function! s:push_current_line()"{{{
@@ -653,6 +658,18 @@ function! s:execute_by_background(is_insert)"{{{
   let l:context = b:vimshell.continuation.context
 
   let b:vimshell.continuation = {}
+  let b:interactive = {
+        \ 'type' : 'vimshell',
+        \ 'syntax' : 'vimshell',
+        \ 'process' : {},
+        \ 'fd' : l:context.fd,
+        \ 'encoding' : &encoding,
+        \ 'is_pty' : 0,
+        \ 'echoback_linenr' : -1,
+        \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
+        \ 'hook_functions_table' : {},
+        \}
 
   if !has_key(l:context, 'is_split') || l:context.is_split
     " Split nicely.
