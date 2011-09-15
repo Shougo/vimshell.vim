@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 15 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,9 +50,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Execute command.
-  if s:init_process(l:commands, a:context, l:options)
-    return
-  endif
+  call s:init_process(l:commands, a:context, l:options)
 
   " Move line.
   call append(line('.'), '')
@@ -132,6 +130,7 @@ function! s:init_process(commands, context, options)"{{{
   " Set variables.
   let b:interactive.syntax = b:interactive.syntax
   let b:interactive.process = l:sub
+  let b:interactive.args = a:commands[0].args
   let b:interactive.fd = a:context.fd
   let b:interactive.encoding = a:options['--encoding']
   let b:interactive.is_pty = !vimshell#iswin()

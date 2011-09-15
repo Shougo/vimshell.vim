@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2011.
+" Last Modified: 15 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,7 +109,10 @@ function! s:command.execute(commands, context)"{{{
 
   let l:save_winnr = winnr()
 
-  call s:init_bg(l:args, a:context)
+  if !has_key(a:context, 'is_split') || a:context.is_split
+    " Split nicely.
+    call vimshell#split_nicely()
+  endif
 
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
@@ -135,9 +138,8 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Set variables.
-  let b:interactive = {
+  let l:interactive = {
         \ 'type' : 'interactive',
-        \ 'syntax' : &syntax,
         \ 'process' : l:sub,
         \ 'fd' : a:context.fd,
         \ 'encoding' : l:options['--encoding'],
@@ -155,19 +157,10 @@ function! s:command.execute(commands, context)"{{{
         \    && a:context.is_close_immediately,
         \ 'hook_functions_table' : {},
         \}
-  execute 'set filetype=int-'.fnamemodify(l:use_cygpty ?
-        \ l:args[1] : l:args[0], ':t:r')
-  call s:default_syntax()
+
+  call vimshell#commands#iexe#init(a:context, l:interactive, l:save_winnr)
 
   call vimshell#interactive#execute_process_out(1)
-
-  let l:last_winnr = winnr()
-  execute l:save_winnr.'wincmd w'
-
-  if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
-    execute l:last_winnr.'wincmd w'
-  endif
 
   if b:interactive.process.is_valid
     startinsert!
@@ -249,9 +242,7 @@ function! s:default_settings()"{{{
   setlocal wrap
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
-  " Set syntax.
-  syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
-  hi def link InteractiveError Error
+  call s:default_syntax()
 
   if has('conceal')
     " Supported conceal features.
@@ -308,6 +299,49 @@ function! s:init_bg(args, context)"{{{
 
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
+endfunction"}}}
+
+function! vimshell#commands#iexe#init(context, interactive, save_winnr)"{{{
+  " Save current directiory.
+  let l:cwd = getcwd()
+
+  edit `='iexe-'.substitute(join(a:interactive.args),
+        \ '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  call vimshell#cd(l:cwd)
+
+  call s:default_settings()
+
+  " For bg.
+  setlocal wrap
+  setlocal nomodifiable
+
+  let b:interactive = a:interactive
+
+  let l:syntax = 'int-' . a:interactive.command
+  let &filetype = l:syntax
+  let b:interactive.syntax = l:syntax
+
+  " Set autocommands.
+  augroup vimshell
+    autocmd InsertEnter <buffer>       call s:insert_enter()
+    autocmd InsertLeave <buffer>       call s:insert_leave()
+    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
+    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
+    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
+  augroup END
+
+  " Set send buffer.
+  call vimshell#interactive#set_send_buffer(bufnr('%'))
+
+  let l:last_winnr = winnr()
+  execute a:save_winnr.'wincmd w'
+
+  if has_key(a:context, 'is_single_command') && a:context.is_single_command
+    call vimshell#print_prompt(a:context)
+    execute l:last_winnr.'wincmd w'
+    stopinsert
+  endif
 endfunction"}}}
 
 function! s:insert_enter()"{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Sep 2011.
+" Last Modified: 15 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,6 +45,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nnoremap <buffer><silent> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_clear)  :<C-u>call <SID>clear(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_head)  :<C-u>call <SID>move_head()<CR><ESC>l
+  nnoremap <buffer><silent> <Plug>(vimshell_execute_by_background)  :<C-u>call <SID>execute_by_background(0)<CR>
 
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
   vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
@@ -66,6 +67,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_another_backward_char()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
   inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:call <SID>clear(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_execute_by_background)  <ESC>:call <SID>execute_by_background(1)<CR>
   "}}}
 
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
@@ -103,6 +105,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   nmap <buffer> <C-c> <Plug>(vimshell_hangup)
   " Clear.
   nmap <buffer> <C-l> <Plug>(vimshell_clear)
+  " Execute background.
+  nmap <buffer> <C-z> <Plug>(vimshell_execute_by_background)
 
   " Visual mode key-mappings.
   " Move to previous prompt.
@@ -636,6 +640,26 @@ endfunction"}}}
 function! s:append_end()"{{{
   call s:insert_enter()
   startinsert!
+endfunction"}}}
+function! s:execute_by_background(is_insert)"{{{
+  if empty(b:vimshell.continuation)
+    return
+  endif
+
+  let l:save_winnr = winnr()
+
+  let l:interactive = b:interactive
+  let l:interactive.type = 'interactive'
+  let l:context = b:vimshell.continuation.context
+
+  let b:vimshell.continuation = {}
+
+  if !has_key(l:context, 'is_split') || l:context.is_split
+    " Split nicely.
+    call vimshell#split_nicely()
+  endif
+
+  call vimshell#commands#iexe#init(l:context, l:interactive, l:save_winnr)
 endfunction"}}}
 
 " vim: foldmethod=marker
