@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -676,7 +676,8 @@ function! s:execute_by_background(is_insert)"{{{
     call vimshell#split_nicely()
   endif
 
-  call vimshell#commands#iexe#init(l:context, l:interactive, l:save_winnr)
+  call vimshell#commands#iexe#init(l:context, l:interactive,
+        \ l:save_winnr, a:is_insert)
 endfunction"}}}
 
 " vim: foldmethod=marker

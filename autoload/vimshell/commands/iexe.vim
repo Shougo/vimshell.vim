@@ -158,7 +158,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'hook_functions_table' : {},
         \}
 
-  call vimshell#commands#iexe#init(a:context, l:interactive, l:save_winnr)
+  call vimshell#commands#iexe#init(a:context, l:interactive, l:save_winnr, 1)
 
   call vimshell#interactive#execute_process_out(1)
 
@@ -178,10 +178,6 @@ endfunction"}}}
 
 function! vimshell#commands#iexe#define()
   return s:command
-endfunction
-
-" Dummy.
-function! vimshell#commands#iexe#init()
 endfunction
 
 " Set interactive options."{{{
@@ -301,7 +297,7 @@ function! s:init_bg(args, context)"{{{
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 endfunction"}}}
 
-function! vimshell#commands#iexe#init(context, interactive, save_winnr)"{{{
+function! vimshell#commands#iexe#init(context, interactive, save_winnr, is_insert)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
@@ -338,7 +334,7 @@ function! vimshell#commands#iexe#init(context, interactive, save_winnr)"{{{
   execute a:save_winnr.'wincmd w'
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
+    call vimshell#next_prompt(a:context, a:is_insert)
     execute l:last_winnr.'wincmd w'
   endif
 endfunction"}}}
