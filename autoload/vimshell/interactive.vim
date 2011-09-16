@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -127,10 +127,15 @@ function! s:send_region(line1, line2, string)"{{{
   let l:winnr = bufwinnr(s:last_interactive_bufnr)
   if l:winnr <= 0
     " Open buffer.
-    call vimshell#split_nicely()
+    let [l:new_pos, l:old_pos] = vimshell#split(g:vimshell_split_command)
 
-    edit `=a:bufname`
+    execute 'buffer' s:last_interactive_bufnr
+  else
+    let [l:new_pos, l:old_pos] = vimshell#split('')
+    execute l:winnr 'wincmd w'
   endif
+
+  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
   " Check alternate buffer.
   let l:type = getbufvar(s:last_interactive_bufnr, 'interactive').type
@@ -144,9 +149,6 @@ function! s:send_region(line1, line2, string)"{{{
     let l:string = join(getline(a:line1, a:line2), "\<LF>")
   endif
   let l:string .= "\<LF>"
-
-  let l:save_winnr = winnr()
-  execute l:winnr 'wincmd w'
 
   if l:type ==# 'interactive'
     " Save prompt.
@@ -172,7 +174,7 @@ function! s:send_region(line1, line2, string)"{{{
   endif
 
   stopinsert
-  execute l:save_winnr 'wincmd w'
+  call vimshell#restore_pos(l:old_pos)
 endfunction"}}}
 function! s:send_string(string, is_insert, linenr)"{{{
   if !b:interactive.process.is_valid

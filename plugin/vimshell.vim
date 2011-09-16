@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -99,7 +99,7 @@ if !exists('g:vimshell_environment_term')
   let g:vimshell_environment_term = 'vt100'
 endif
 if !exists('g:vimshell_split_command')
-  let g:vimshell_split_command = ''
+  let g:vimshell_split_command = 'nicely'
 endif
 if !exists('g:vimshell_cd_command')
   let g:vimshell_cd_command = 'lcd'
@@ -193,8 +193,11 @@ function! s:vimshell_execute(args)"{{{
         \}
   call vimshell#set_context(l:context)
 
+  " No split.
+  let l:args = insert(vimproc#parser#split_args(a:args), '--split=')
+
   call vimshell#execute_internal_command('bg',
-        \ vimproc#parser#split_args(a:args), l:context.fd, l:context)
+        \ l:args, l:context.fd, l:context)
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
@@ -206,10 +209,12 @@ function! s:vimshell_interactive(args)"{{{
       return
     endif
 
-    let l:args = g:vimshell_interactive_interpreter_commands[&filetype]
+    let l:command_line = g:vimshell_interactive_interpreter_commands[&filetype]
   else
-    let l:args = a:args
+    let l:command_line = a:args
   endif
+
+  let l:args = insert(vimproc#parser#split_args(l:command_line), '--split=')
 
   let l:context = {
         \ 'has_head_spaces' : 0,
@@ -220,7 +225,7 @@ function! s:vimshell_interactive(args)"{{{
   call vimshell#set_context(l:context)
 
   call vimshell#execute_internal_command('iexe',
-        \ vimproc#parser#split_args(l:args), l:context.fd, l:context)
+        \ l:args, l:context.fd, l:context)
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
   let l:context = {

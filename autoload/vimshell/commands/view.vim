@@ -30,9 +30,13 @@ let s:command = {
       \ 'description' : 'view [{filename}]',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-  " View file.
+  let [l:args, l:options] = vimshell#parser#getopt(a:args, {
+        \ 'arg=' : ['--split'],
+        \ }, {
+        \ '--split' : g:vimshell_split_command,
+        \ })
 
-  if empty(a:args)
+  if empty(l:args)
     if a:fd.stdin == ''
       vimshell#error_line(a:fd, 'view: Filename required.')
       return
@@ -41,7 +45,7 @@ function! s:command.execute(program, args, fd, context)"{{{
     " Read from stdin.
     let l:filename = a:fd.stdin
   else
-    let l:filename = a:args[0]
+    let l:filename = l:args[0]
   endif
 
   if !isdirectory(l:filename)
@@ -59,10 +63,7 @@ function! s:command.execute(program, args, fd, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  let l:save_winnr = winnr()
-
-  " Split nicely.
-  call vimshell#split_nicely()
+  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
 
   try
     if len(a:args) > 1
@@ -74,17 +75,15 @@ function! s:command.execute(program, args, fd, context)"{{{
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
-  " Call explorer.
-  doautocmd BufEnter
+  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
   call vimshell#cd(l:cwd)
 
-  let l:last_winnr = winnr()
-  execute l:save_winnr.'wincmd w'
+  call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
-    execute l:last_winnr.'wincmd w'
+    call vimshell#next_prompt(a:context, 0)
+    call vimshell#restore_pos(l:new_pos)
     stopinsert
   endif
 endfunction"}}}

@@ -35,9 +35,12 @@ function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
 
   let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args,
-        \{ 'arg=' : ['--encoding']
-        \})
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+        \ 'arg=' : ['--encoding', '--split'],
+        \ }, {
+        \ '--split' : g:vimshell_split_command,
+        \ })
+
   let l:args = l:commands[0].args
 
   if empty(l:args)
@@ -107,12 +110,7 @@ function! s:command.execute(commands, context)"{{{
           \})
   endif
 
-  let l:save_winnr = winnr()
-
-  if !has_key(a:context, 'is_split') || a:context.is_split
-    " Split nicely.
-    call vimshell#split_nicely()
-  endif
+  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
 
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
@@ -158,7 +156,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'hook_functions_table' : {},
         \}
 
-  call vimshell#commands#iexe#init(a:context, l:interactive, l:save_winnr, 1)
+  call vimshell#commands#iexe#init(a:context, l:interactive,
+        \ l:new_pos, l:old_pos, 1)
 
   call vimshell#interactive#execute_process_out(1)
 
@@ -266,43 +265,14 @@ function! s:default_syntax()"{{{
   endif
 endfunction"}}}
 
-function! s:init_bg(args, context)"{{{
-  " Save current directiory.
-  let l:cwd = getcwd()
-
-  if !has_key(a:context, 'is_split') || a:context.is_split
-    " Split nicely.
-    call vimshell#split_nicely()
-  endif
-
-  edit `='iexe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
-
-  call vimshell#cd(l:cwd)
-
-  call s:default_settings()
-
-  let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
-
-  " Set autocommands.
-  augroup vimshell
-    autocmd InsertEnter <buffer>       call s:insert_enter()
-    autocmd InsertLeave <buffer>       call s:insert_leave()
-    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
-    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
-    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
-  augroup END
-
-  " Set send buffer.
-  call vimshell#interactive#set_send_buffer(bufnr('%'))
-endfunction"}}}
-
-function! vimshell#commands#iexe#init(context, interactive, save_winnr, is_insert)"{{{
+function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
   edit `='iexe-'.substitute(join(a:interactive.args),
         \ '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  let [a:new_pos[2], a:new_pos[3]] = [bufnr('%'), getpos('.')]
+
   call vimshell#cd(l:cwd)
 
   call s:default_settings()
@@ -330,12 +300,11 @@ function! vimshell#commands#iexe#init(context, interactive, save_winnr, is_inser
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 
-  let l:last_winnr = winnr()
-  execute a:save_winnr.'wincmd w'
+  call vimshell#restore_pos(a:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, a:is_insert)
-    execute l:last_winnr.'wincmd w'
+    call vimshell#restore_pos(a:new_pos)
   endif
 endfunction"}}}
 

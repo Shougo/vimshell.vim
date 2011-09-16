@@ -620,6 +620,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-09-16
 - Fixed stopinsert.
+- Improved g:vimshell_split_command behavior.
 
 2011-09-15
 - Added <Plug>(vimshell_execute_by_background) keymapping.

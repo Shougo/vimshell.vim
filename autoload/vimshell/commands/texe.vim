@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,9 +37,11 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
-        \{ 'arg=' : ['--encoding']
-        \})
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+        \ 'arg=' : ['--encoding', '--split']
+        \ }, {
+        \ '--split' : g:vimshell_split_command,
+        \ })
   let l:args = l:commands[0].args
 
   if empty(l:args)
@@ -70,7 +72,8 @@ function! s:command.execute(commands, context)"{{{
       " Use UTF-8 Cygwin.
       let l:options['--encoding'] = 'utf8'
     else
-      let l:options['--encoding'] = has_key(g:vimshell_interactive_encodings, l:cmdname) ?
+      let l:options['--encoding'] =
+            \ has_key(g:vimshell_interactive_encodings, l:cmdname) ?
             \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
     endif
   endif
@@ -94,8 +97,11 @@ function! s:command.execute(commands, context)"{{{
           \})
   endif
 
-  let l:save_winnr = winnr()
+  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+
   call s:init_bg(l:args, a:context)
+
+  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
@@ -120,7 +126,6 @@ function! s:command.execute(commands, context)"{{{
     call vimshell#restore_variables(l:home_save)
   endif
 
-
   " Set variables.
   let b:interactive = {
         \ 'type': 'terminal',
@@ -143,16 +148,17 @@ function! s:command.execute(commands, context)"{{{
         \}
   call vimshell#interactive#init()
 
-  let l:last_winnr = winnr()
-  execute l:save_winnr.'wincmd w'
+  call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
-    execute l:last_winnr.'wincmd w'
-  endif
+    call vimshell#next_prompt(a:context, 1)
+    call vimshell#restore_pos(l:new_pos)
 
-  if b:interactive.process.is_valid
-    startinsert
+    if b:interactive.process.is_valid
+      startinsert
+    else
+      stopinsert
+    endif
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
@@ -197,9 +203,6 @@ endfunction"}}}
 function! s:init_bg(args, context)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
-
-  " Split nicely.
-  call vimshell#split_nicely()
 
   edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
   call vimshell#cd(l:cwd)

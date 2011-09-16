@@ -30,13 +30,18 @@ let s:command_vim = {
       \ 'description' : 'vim [{filename}]',
       \}
 function! s:command_vim.execute(program, args, fd, context)"{{{
-  " Edit file.
-  let l:filename = empty(a:args) ? a:fd.stdin : a:args[0]
+  let [l:args, l:options] = vimshell#parser#getopt(a:args, {
+        \ 'arg=' : ['--split'],
+        \ }, {
+        \ '--split' : g:vimshell_split_command,
+        \ })
+
+  let l:filename = empty(l:args) ? a:fd.stdin : l:args[0]
 
   " Save current directiory.
   let l:cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(g:vimshell_split_command)
+  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
 
   try
     if l:filename == ''
@@ -50,9 +55,6 @@ function! s:command_vim.execute(program, args, fd, context)"{{{
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
-  " Call explorer.
-  doautocmd BufEnter
-
   let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
   call vimshell#cd(l:cwd)
@@ -60,7 +62,7 @@ function! s:command_vim.execute(program, args, fd, context)"{{{
   call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#next_prompt(a:context)
+    call vimshell#next_prompt(a:context, 0)
     call vimshell#restore_pos(l:new_pos)
     stopinsert
   endif

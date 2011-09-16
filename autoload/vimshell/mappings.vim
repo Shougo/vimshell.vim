@@ -651,8 +651,6 @@ function! s:execute_by_background(is_insert)"{{{
     return
   endif
 
-  let l:save_winnr = winnr()
-
   let l:interactive = b:interactive
   let l:interactive.type = 'interactive'
   let l:context = b:vimshell.continuation.context
@@ -671,13 +669,10 @@ function! s:execute_by_background(is_insert)"{{{
         \ 'hook_functions_table' : {},
         \}
 
-  if !has_key(l:context, 'is_split') || l:context.is_split
-    " Split nicely.
-    call vimshell#split_nicely()
-  endif
+  let [l:new_pos, l:old_pos] = vimshell#split(g:vimshell_split_command)
 
   call vimshell#commands#iexe#init(l:context, l:interactive,
-        \ l:save_winnr, a:is_insert)
+        \ l:new_pos, l:old_pos, a:is_insert)
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -675,16 +675,6 @@ function! vimshell#next_prompt(context, is_insert)"{{{
     stopinsert
   endif
 endfunction"}}}
-function! vimshell#split_nicely()"{{{
-  " Split nicely.
-  if g:vimshell_split_command != ''
-    execute g:vimshell_split_command
-  elseif winwidth(0) > 2 * &winwidth
-    vsplit
-  else
-    split
-  endif
-endfunction"}}}
 function! vimshell#split(command)"{{{
   let l:old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
   if a:command != ''
@@ -704,7 +694,7 @@ function! vimshell#restore_pos(pos)"{{{
   endif
 
   if winnr() != a:pos[1]
-    execute a:pos[1] 'winnr'
+    execute a:pos[1].'wincmd w'
   endif
 
   if bufnr('%') != a:pos[2]

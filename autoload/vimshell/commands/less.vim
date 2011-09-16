@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Feb 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,15 +32,13 @@ let s:command = {
 function! s:command.execute(commands, context)"{{{
   " Execute command in background.
   let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args,
-        \{ 'arg=' : ['--encoding', '--syntax']
-        \})
-  if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = &termencoding
-  endif
-  if !has_key(l:options, '--syntax')
-    let l:options['--syntax'] = 'vimshell-less'
-  endif
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+        \ 'arg=' : ['--encoding', '--syntax', '--split'],
+        \ }, {
+        \ '--encoding' : &termencoding,
+        \ '--syntax' : 'vimshell-less',
+        \ '--split' : g:vimshell_split_command,
+        \ })
 
   if empty(l:commands[0].args)
     return
@@ -74,7 +72,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'stdout_cache' : '',
         \}
 
-  return s:init(a:commands, a:context, l:options['--syntax'], l:interactive)
+  return s:init(a:commands, a:context, l:options, l:interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
@@ -84,14 +82,11 @@ function! vimshell#commands#less#define()
   return s:command
 endfunction
 
-function! s:init(commands, context, syntax, interactive)"{{{
+function! s:init(commands, context, options, interactive)"{{{
   " Save current directiory.
   let l:cwd = getcwd()
 
-  let l:save_winnr = winnr()
-
-  " Split nicely.
-  call vimshell#split_nicely()
+  let [l:new_pos, l:old_pos] = vimshell#split(a:options['--split'])
 
   " Set environment variables.
   let l:environments_save = vimshell#set_variables({
@@ -124,7 +119,11 @@ function! s:init(commands, context, syntax, interactive)"{{{
   for l:command in a:commands
     let l:args .= join(l:command.args)
   endfor
+
   edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+
+  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+
   call vimshell#cd(l:cwd)
 
   " Common.
@@ -145,7 +144,7 @@ function! s:init(commands, context, syntax, interactive)"{{{
   setlocal nomodifiable
 
   setlocal filetype=vimshell-less
-  let &syntax = a:syntax
+  let &syntax = a:options['--syntax']
   let b:interactive = a:interactive
 
   " Set syntax.
@@ -183,12 +182,11 @@ function! s:init(commands, context, syntax, interactive)"{{{
 
   call s:print_output(winheight(0))
 
-  let l:last_winnr = winnr()
-  execute l:save_winnr.'wincmd w'
+  call vimshell#restore_pos(l:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
-    call vimshell#print_prompt(a:context)
-    execute l:last_winnr.'wincmd w'
+    call vimshell#next_prompt(a:context, 0)
+    call vimshell#restore_pos(l:new_pos)
     stopinsert
   endif
 endfunction"}}}

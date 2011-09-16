@@ -284,10 +284,13 @@ g:vimshell_environment_term				*g:vimshell_environment_term*
 
 g:vimshell_split_command				*g:vimshell_split_command*
 			vimshellが画面を分割するときに用いるExコマンドである。
-			これを空文字列にすると、vimshellがウインドウの大きさを
+			これを"nicely"にすると、vimshellがウインドウの大きさを
 			見て最適な画面分割を行う。
+			空文字列にすると、分割しない。
+			"tabnew"にすると、新しいタブで開く。
+			"vsplit"で縦方向に分割する。
 			
-			初期値は""である。
+			初期値は"nicely"である。
 
 g:vimshell_cd_command					*g:vimshell_cd_command*
 			vimshellがカレントディレクトリを変更するときに用いるEx
@@ -542,9 +545,13 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		挙動を変更する。詳しくは |vimshell-execute-options|を参照せよ。
 		ここでは、bgのみに存在するオプションを解説する。
 		
-		--filetype = {filetype-name}
+		--filetype={filetype-name}
 		出力バッファの'filetype'を{filetype-name}に変更する。
 		このオプションが省略された場合、"background"となる。
+
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
 
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		カレントディレクトリを{directory-path}に変更する。引数が空の場
@@ -581,7 +588,7 @@ exe [{option}...] {command} 				*vimshell-internal-exe*
 		Note: vimshell Ver.9より、exeは入力も受けつけるように変更された。
 		
 							*vimshell-execute-options*
-		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
+		--encoding={encoding-name}		*vimshell-execute-options-encoding*
 		起動するプログラムのエンコーディングを{encoding-name}に変更する。
 		'encoding'と{encoding-name}が異なる場合、vimshellは入出力のエン
 		コーディング変換を自動的に行う。 このオプションが省略された場合、
@@ -644,6 +651,10 @@ iexe [{options}...] {command}				*vimshell-internal-iexe*
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づいて
 		挙動を変更する。詳しくは |vimshell-execute-options|を参照せよ。
 
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
+
 less [{options}...] {command}				*vimshell-internal-less*
 		{command}に引数を与えて実行する。必ず外部コマンドが実行される。
 		vimshellがページャとなり、出力が多いコマンドを実行するときに有
@@ -656,6 +667,10 @@ less [{options}...] {command}				*vimshell-internal-less*
 		iexe, exe, bg, texe, less はオプションを解釈し、それに基づい
 		て挙動を変更する。詳しくは|vimshell-execute-options|を参
 		照せよ。
+
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
 
 ls [{argument}...]					*vimshell-internal-ls*
 		外部コマンドのlsを適切な引数を与えて実行する。lsコマンドがイン
@@ -708,24 +723,39 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		て挙動を変更する。詳しくは |vimshell-execute-options|を参
 		照せよ。
 
-view {filename} [{pattern}]				*vimshell-internal-view*
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
+
+view [{options}...] {filename} [{pattern}]		*vimshell-internal-view*
 		{filename}を読み取り専用で別バッファに開く。ファイルの行数がウ
 		インドウサイズよりも少ない場合、別バッファを開かず、catのように
 		動作する。ファイルの中身をちょっと見てみたいときに便利である。
 		{pattern}を指定すると、その{pattern}を検索して現在位置とする。
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
 
-vi [{filename} [{pattern}]]				*vimshell-internal-vi*
+vi [{options}...] [{filename} [{pattern}]]		*vimshell-internal-vi*
 		|vimshell-internal-vim|と同じ動作をする。
 
-vim [{filename} [{pattern}]]				*vimshell-internal-vim*
+vim [{options}...] [{filename} [{pattern}]]		*vimshell-internal-vim*
 		{filename}を別バッファに開く。カレントディレクトリにある
 		ファイルを手軽に編集したいときに便利である。
 		{filename}を省略すると、無名バッファを開く。
 		{pattern}を指定すると、その{pattern}を検索して現在位置とする。
 
-vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
+
+vimdiff [{options}...] {filename1} {filename2}		*vimshell-internal-vimdiff*
 		{filename1}と{filename2}を|:vimdiff|で比較する。vimshellから
 		diffを呼び出すのは不便なので、存分に活用するべきである。
+
+		--split={split-command}
+		バッファの分割方向を指定する。このオプションが省略された場合、
+		|g:vimshell_split_command|が使用される。
 
 vimsh [{filename}]					*vimshell-internal-vimsh*
 		{filename}で表されるvimshellスクリプトファイルを実行する。ただ

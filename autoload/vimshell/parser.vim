@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -400,7 +400,9 @@ function! vimshell#parser#check_wildcard()"{{{
   let l:args = vimshell#get_current_args()
   return !empty(l:args) && l:args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
-function! vimshell#parser#getopt(args, optsyntax)"{{{
+function! vimshell#parser#getopt(args, optsyntax, ...)"{{{
+  let l:default_values = get(a:000, 0, {})
+
   " Initialize.
   let l:optsyntax = a:optsyntax
   if !has_key(l:optsyntax, 'noarg')
@@ -441,6 +443,13 @@ function! vimshell#parser#getopt(args, optsyntax)"{{{
 
     if !l:found
       call add(l:args, l:arg)
+    endif
+  endfor
+
+  " Set default value.
+  for [l:opt, l:default] in items(l:default_values)
+    if !has_key(l:options, l:opt)
+      let l:options[l:opt] = l:default
     endif
   endfor
 

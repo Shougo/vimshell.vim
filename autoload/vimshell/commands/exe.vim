@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Sep 2011.
+" Last Modified: 16 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,12 +31,11 @@ let s:command = {
       \}
 function! s:command.execute(commands, context)"{{{
   let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, 
-        \{ 'arg=' : ['--encoding']
-        \})
-  if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = &termencoding
-  endif
+  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+        \ 'arg=' : ['--encoding'],
+        \ }, {
+        \ '--encoding' : &termencoding,
+        \ })
 
   if empty(l:commands[0].args)
     return
@@ -75,7 +74,10 @@ function! s:command.execute(commands, context)"{{{
         call vimshell#error_line(a:context.fd, 'exe: Background executed.')
 
         " Background execution.
-        call vimshell#commands#bg#init(l:commands, a:context, 'vimshell-bg', b:interactive)
+        let l:options = { '--syntax' : 'vimshell-bg',
+              \ '--split' : g:vimshell_split_command }
+        call vimshell#commands#bg#init(l:commands, a:context,
+              \ l:options, b:interactive)
 
         unlet b:interactive
       elseif l:char == "\<C-d>"
