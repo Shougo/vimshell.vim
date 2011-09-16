@@ -622,6 +622,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed stopinsert.
 - Improved g:vimshell_split_command behavior.
 - Fixed complete files.
+- Fixed iexe.
 
 2011-09-15
 - Added <Plug>(vimshell_execute_by_background) keymapping.

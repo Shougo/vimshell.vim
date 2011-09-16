@@ -237,16 +237,6 @@ function! s:default_settings()"{{{
   setlocal wrap
   setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
-  call s:default_syntax()
-
-  if has('conceal')
-    " Supported conceal features.
-    syn match   InteractiveErrorHidden            '!!!' contained conceal
-  else
-    syn match   InteractiveErrorHidden            '!!!' contained
-    hi def link InteractiveErrorHidden Ignore
-  endif
-
   " Define mappings.
   call vimshell#int_mappings#define_default_mappings()
 endfunction"}}}
@@ -275,17 +265,15 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
 
   call vimshell#cd(l:cwd)
 
-  call s:default_settings()
-
-  " For bg.
-  setlocal wrap
-  setlocal nomodifiable
-
   let b:interactive = a:interactive
+
+  call s:default_settings()
 
   let l:syntax = 'int-' . a:interactive.command
   let &filetype = l:syntax
   let b:interactive.syntax = l:syntax
+
+  call s:default_syntax()
 
   " Set autocommands.
   augroup vimshell
