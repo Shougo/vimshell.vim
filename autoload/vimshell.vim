@@ -359,7 +359,7 @@ function! vimshell#print_prompt(...)"{{{
     if vimshell#get_right_prompt() != ''
       let l:right_prompt = eval(vimshell#get_right_prompt())
       if l:right_prompt != ''
-        let l:user_prompt_last = (vimshell#get_user_prompt( != '') ?
+        let l:user_prompt_last = (vimshell#get_user_prompt() != '') ?
               \   getline('$') : '[%] '
         let l:winwidth = winwidth(0) - 10
         let l:padding_len =
