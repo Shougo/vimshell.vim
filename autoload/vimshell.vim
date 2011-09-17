@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 17 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,10 +45,6 @@ if s:exists_vimproc_version < 600
 endif"}}}
 
 " Initialize."{{{
-let s:prompt = exists('g:vimshell_prompt') ? g:vimshell_prompt : 'vimshell% '
-let s:secondary_prompt = exists('g:vimshell_secondary_prompt') ? g:vimshell_secondary_prompt : '%% '
-let s:user_prompt = exists('g:vimshell_user_prompt') ? g:vimshell_user_prompt : ''
-let s:right_prompt = exists('g:vimshell_right_prompt') ? g:vimshell_right_prompt : ''
 if !exists('g:vimshell_execute_file_list')
   let g:vimshell_execute_file_list = {}
 endif
@@ -70,18 +66,6 @@ function! vimshell#tail_match(checkstr, tailstr)"{{{
   return a:tailstr == '' || a:checkstr ==# a:tailstr
         \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
 endfunction"}}}
-
-" Check prompt value."{{{
-if vimshell#head_match(s:prompt, s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, s:prompt)
-  echoerr printf('Head matched g:vimshell_prompt("%s") and your g:vimshell_secondary_prompt("%s").', s:prompt, s:secondary_prompt)
-  finish
-elseif vimshell#head_match(s:prompt, '[%] ') || vimshell#head_match('[%] ', s:prompt)
-  echoerr printf('Head matched g:vimshell_prompt("%s") and your g:vimshell_user_prompt("[%] ").', s:prompt)
-  finish
-elseif vimshell#head_match('[%] ', s:secondary_prompt) || vimshell#head_match(s:secondary_prompt, '[%] ')
-  echoerr printf('Head matched g:vimshell_user_prompt("[%] ") and your g:vimshell_secondary_prompt("%s").', s:secondary_prompt)
-  finish
-endif"}}}
 
 " User utility functions.
 function! s:default_settings()"{{{
@@ -217,6 +201,26 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   call vimshell#start_insert()
   call vimshell#interactive#set_send_buffer(bufname('%'))
 
+  " Check prompt value."{{{
+  if vimshell#head_match(vimshell#get_prompt(), vimshell#get_secondary_prompt())
+        \ || vimshell#head_match(vimshell#get_secondary_prompt(), vimshell#get_prompt())
+    echoerr printf('Head matched g:vimshell_prompt("%s")'.
+          \ ' and your g:vimshell_secondary_prompt("%s").',
+          \ vimshell#get_prompt(), vimshell#get_secondary_prompt())
+    finish
+  elseif vimshell#head_match(vimshell#get_prompt(), '[%] ')
+        \ || vimshell#head_match('[%] ', vimshell#get_prompt())
+    echoerr printf('Head matched g:vimshell_prompt("%s")'.
+          \ ' and your g:vimshell_user_prompt("[%] ").', vimshell#get_prompt())
+    finish
+  elseif vimshell#head_match('[%] ', vimshell#get_secondary_prompt())
+        \ || vimshell#head_match(vimshell#get_secondary_prompt(), '[%] ')
+    echoerr printf('Head matched g:vimshell_user_prompt("[%] ")'.
+          \ ' and your g:vimshell_secondary_prompt("%s").',
+          \ vimshell#get_secondary_prompt())
+    finish
+  endif"}}}
+
   " Set undo point.
   call feedkeys("\<C-g>u", 'n')
 endfunction"}}}
@@ -340,9 +344,9 @@ function! vimshell#print_prompt(...)"{{{
     call remove(b:vimshell.commandline_stack, -1)
   endif
 
-  if s:user_prompt != '' || s:right_prompt != ''
+  if vimshell#get_user_prompt() != '' || vimshell#get_right_prompt() != ''
     " Insert user prompt line.
-    for l:user in split(s:user_prompt, "\\n")
+    for l:user in split(vimshell#get_user_prompt(), "\\n")
       let l:secondary = '[%] ' . eval(l:user)
       if line('$') == 1 && getline('.') == ''
         call setline('$', l:secondary)
@@ -352,14 +356,19 @@ function! vimshell#print_prompt(...)"{{{
     endfor
 
     " Insert user prompt line.
-    if s:right_prompt != ''
-      let l:right_prompt = eval(s:right_prompt)
+    if vimshell#get_right_prompt() != ''
+      let l:right_prompt = eval(vimshell#get_right_prompt())
       if l:right_prompt != ''
-        let l:user_prompt_last = (s:user_prompt != '')? getline('$') : '[%] '
+        let l:user_prompt_last = (vimshell#get_user_prompt( != '') ?
+              \   getline('$') : '[%] '
         let l:winwidth = winwidth(0) - 10
-        let l:padding_len = (len(l:user_prompt_last)+len(s:right_prompt)+1 > l:winwidth)? 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
-        let l:secondary = printf('%s%s%s', l:user_prompt_last, repeat(' ', l:padding_len), l:right_prompt)
-        if s:user_prompt != ''
+        let l:padding_len =
+              \ (len(l:user_prompt_last)+len(vimshell#get_right_prompt())+1
+              \          > l:winwidth) ?
+              \ 1 : l:winwidth - (len(l:user_prompt_last)+len(l:right_prompt))
+        let l:secondary = printf('%s%s%s', l:user_prompt_last,
+              \ repeat(' ', l:padding_len), l:right_prompt)
+        if vimshell#get_user_prompt() != ''
           call setline('$', l:secondary)
         else
           call append('$', l:secondary)
@@ -418,16 +427,39 @@ function! vimshell#escape_match(str)"{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
 function! vimshell#get_prompt()"{{{
+  if !exists('s:prompt')
+    let s:prompt = exists('g:vimshell_prompt') ?
+          \ g:vimshell_prompt : 'vimshell% '
+  endif
+
   return &filetype ==# 'vimshell' && empty(b:vimshell.continuation) ?
         \ s:prompt : exists('b:interactive') ?
         \ vimshell#interactive#get_prompt(line('.'))
         \ : ''
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
+  if !exists('s:secondary_prompt')
+    let s:secondary_prompt = exists('g:vimshell_secondary_prompt') ?
+          \ g:vimshell_secondary_prompt : '%% '
+  endif
+
   return s:secondary_prompt
 endfunction"}}}
 function! vimshell#get_user_prompt()"{{{
+  if !exists('s:user_prompt')
+    let s:user_prompt = exists('g:vimshell_user_prompt') ?
+          \ g:vimshell_user_prompt : ''
+  endif
+
   return s:user_prompt
+endfunction"}}}
+function! vimshell#get_right_prompt()"{{{
+  if !exists('s:right_prompt')
+    let s:right_prompt = exists('g:vimshell_right_prompt') ?
+          \ g:vimshell_right_prompt : ''
+  endif
+
+  return s:right_prompt
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
