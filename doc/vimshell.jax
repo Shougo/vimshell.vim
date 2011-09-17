@@ -471,14 +471,6 @@ Todo
 ==============================================================================
 EXAMPLES						*vimshell-examples*
 >
-	" Initialize execute file list.
-	let g:vimshell_execute_file_list = {}
-	call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
-	let g:vimshell_execute_file_list['rb'] = 'ruby'
-	let g:vimshell_execute_file_list['pl'] = 'perl'
-	let g:vimshell_execute_file_list['py'] = 'python'
-	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
-	
 	let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 	"let g:vimshell_right_prompt = 'vcs#info("(%s)-[%b]", "(%s)-[%b|%a]")'
 	let g:vimshell_enable_smart_case = 1
@@ -496,6 +488,14 @@ EXAMPLES						*vimshell-examples*
 	  call vimshell#set_execute_file('tgz,gz', 'gzcat')
 	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 	endif
+	
+	" Initialize execute file list.
+	let g:vimshell_execute_file_list = {}
+	call vimshell#set_execute_file('txt,vim,c,h,cpp,d,xml,java', 'vim')
+	let g:vimshell_execute_file_list['rb'] = 'ruby'
+	let g:vimshell_execute_file_list['pl'] = 'perl'
+	let g:vimshell_execute_file_list['py'] = 'python'
+	call vimshell#set_execute_file('html,xhtml', 'gexe firefox')
 	
 	autocmd FileType vimshell
 	\ call vimshell#altercmd#define('g', 'git')
