@@ -617,6 +617,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-09-18
+- Fixed hangup bugs.
+
 2011-09-17
 - Improved vimshell initialize.
 - Fixed vimshell examples.

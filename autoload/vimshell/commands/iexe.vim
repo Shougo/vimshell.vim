@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -223,6 +223,7 @@ function! s:default_settings()"{{{
   " Common.
   setlocal nocompatible
   setlocal nolist
+  setlocal modifiable
   setlocal buftype=nofile
   setlocal noswapfile
   setlocal tabstop=8
@@ -279,7 +280,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   augroup vimshell
     autocmd InsertEnter <buffer>       call s:insert_enter()
     autocmd InsertLeave <buffer>       call s:insert_leave()
-    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
     autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
@@ -288,6 +289,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 
+  let bufnr = bufnr('%')
   call vimshell#restore_pos(a:old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command

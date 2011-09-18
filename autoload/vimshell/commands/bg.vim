@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -154,7 +154,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
   hi def link InteractiveErrorHidden Error
 
   augroup vimshell
-    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -311,7 +311,9 @@ function! vimshell#interactive#exit()"{{{
       call sub.kill(15)
       call sub.waitpid()
     catch
-      " Ignore error.
+      " Error.
+      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      call vimshell#interactive#exit()
     endtry
   endif
 
@@ -348,6 +350,9 @@ function! vimshell#interactive#force_exit()"{{{
     call b:interactive.process.kill(15)
     call b:interactive.process.waitpid()
   catch
+    " Error.
+    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    call vimshell#interactive#exit()
   endtry
 
   if &filetype !=# 'vimshell'
@@ -374,6 +379,9 @@ function! vimshell#interactive#hang_up(afile)"{{{
         call l:vimproc.process.kill(15)
         call l:vimproc.process.waitpid()
       catch
+        " Error.
+        call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+        call vimshell#interactive#exit()
       endtry
     endif
     let l:vimproc.process.is_valid = 0
@@ -590,9 +598,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
       call vimshell#start_insert(l:is_insert)
     endtry
   elseif l:type ==# 'interactive' || l:type ==# 'terminal'
-    if l:type ==# 'terminal' && !l:is_insert
-      setlocal modifiable
-    endif
+    setlocal modifiable
 
     call vimshell#interactive#execute_process_out(l:is_insert)
 

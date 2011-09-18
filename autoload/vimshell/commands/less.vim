@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,7 +158,7 @@ function! s:init(commands, context, options, interactive)"{{{
   hi def link InteractiveErrorHidden Error
 
   augroup vimshell
-    autocmd BufUnload <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
 
   nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)  :<C-u>call <SID>on_execute()<CR>

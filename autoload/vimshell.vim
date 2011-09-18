@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Sep 2011.
+" Last Modified: 18 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -132,7 +132,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   if a:split_flag
     execute l:winheight 'split `=l:bufname`'
   else
-    edit `=l:bufname`
+    edit! `=l:bufname`
   endif
 
   if empty(s:internal_commands)
