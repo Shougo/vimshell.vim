@@ -30,40 +30,40 @@ let s:command = {
       \ 'description' : 'vimdiff {filename1} {filename2}',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, {
+  let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  if len(l:args) != 2
+  if len(args) != 2
     " Error.
     call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
     return
   endif
 
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(options['--split'])
 
   try
-    edit `=l:args[0]`
+    edit `=args[0]`
   catch
     echohl Error | echomsg v:errmsg | echohl None
   endtry
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
   vertical diffsplit `=a:args[1]`
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

@@ -34,19 +34,19 @@ function! s:command.execute(command, args, fd, context)"{{{
     return
   endif
 
-  let l:name = a:args[0]
-  if vimshell#get_alias(l:name) != ''
-    let l:line = printf('which: %s: aliased to %s', l:name, vimshell#get_alias(l:name))
+  let name = a:args[0]
+  if vimshell#get_alias(name) != ''
+    let line = printf('which: %s: aliased to %s', name, vimshell#get_alias(name))
   else
-    let l:path = vimshell#get_command_path(l:name)
-    if l:path != ''
-      let l:line = printf('which: %s', l:path)
+    let path = vimshell#get_command_path(name)
+    if path != ''
+      let line = printf('which: %s', path)
     else
-      let l:line = printf('which: %s is not found', l:name)
+      let line = printf('which: %s is not found', name)
     endif
   endif
   
-  call vimshell#print_line(a:fd, l:line)
+  call vimshell#print_line(a:fd, line)
 endfunction"}}}
 
 function! vimshell#commands#which#define()

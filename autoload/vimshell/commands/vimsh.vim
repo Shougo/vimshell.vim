@@ -32,44 +32,44 @@ let s:command = {
 function! s:command.execute(program, args, fd, context)"{{{
   " Create new vimshell or execute script.
   if empty(a:args)
-    let l:bufnr = bufnr('%')
+    let bufnr = bufnr('%')
     call vimshell#create_shell(0, getcwd())
-    execute 'buffer' l:bufnr
+    execute 'buffer' bufnr
 
     return
   else
     " Filename escape.
-    let l:filename = join(a:args, ' ')
+    let filename = join(a:args, ' ')
 
-    if filereadable(l:filename)
-      let l:context = { 
+    if filereadable(filename)
+      let context = { 
             \'has_head_spaces' : 0, 'is_interactive' : 0, 
             \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
             \}
       let i = 0
-      let l:lines = readfile(l:filename)
-      let l:max = len(l:lines)
+      let lines = readfile(filename)
+      let max = len(lines)
 
-      while i < l:max
-        let l:script = l:lines[i]
+      while i < max
+        let script = lines[i]
 
         " Parse check.
-        while i+1 < l:max
+        while i+1 < max
           try
-            call vimshell#parser#check_script(l:script)
+            call vimshell#parser#check_script(script)
             break
           catch /^Exception: Quote/
             " Join to next line.
-            let l:script .= "\<NL>" . l:lines[i+1]
+            let script .= "\<NL>" . lines[i+1]
             let i += 1
           endtry
         endwhile
 
         try
-          call vimshell#parser#eval_script(l:script, l:context)
+          call vimshell#parser#eval_script(script, context)
         catch
-          let l:message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), i, l:message))
+          let message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
+          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), i, message))
           return
         endtry
 
@@ -77,7 +77,7 @@ function! s:command.execute(program, args, fd, context)"{{{
       endwhile
     else
       " Error.
-      call vimshell#error_line(a:fd, printf('vimsh: Not found the script "%s".', l:filename))
+      call vimshell#error_line(a:fd, printf('vimsh: Not found the script "%s".', filename))
     endif
   endif
 endfunction"}}}

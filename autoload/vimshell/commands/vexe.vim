@@ -32,24 +32,24 @@ let s:command = {
 function! s:command.execute(program, args, fd, context)"{{{
   " Execute vim command.
 
-  let l:context = a:context
-  let l:context.fd = a:fd
-  call vimshell#set_context(l:context)
+  let context = a:context
+  let context.fd = a:fd
+  call vimshell#set_context(context)
   
-  let l:temp = tempname()
-  let l:save_vfile = &verbosefile
-  let &verbosefile = l:temp
-  for l:command in split(join(a:args), '\n')
-    silent execute l:command
+  let temp = tempname()
+  let save_vfile = &verbosefile
+  let &verbosefile = temp
+  for command in split(join(a:args), '\n')
+    silent execute command
   endfor
-  if &verbosefile == l:temp
-    let &verbosefile = l:save_vfile
+  if &verbosefile == temp
+    let &verbosefile = save_vfile
   endif
-  let l:output = readfile(l:temp)
-  call delete(l:temp)
+  let output = readfile(temp)
+  call delete(temp)
 
-  for l:line in l:output
-    call vimshell#print_line(a:fd, l:line)
+  for line in output
+    call vimshell#print_line(a:fd, line)
   endfor
 endfunction"}}}
 

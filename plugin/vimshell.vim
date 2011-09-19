@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,19 +185,19 @@ function! s:execute_completefunc(lead, cmd, pos)"{{{
   return keys
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
-  let l:context = {
+  let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
         \ 'is_single_command' : 1,
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
         \}
-  call vimshell#set_context(l:context)
+  call vimshell#set_context(context)
 
   " No split.
-  let l:args = insert(vimproc#parser#split_args(a:args), '--split=')
+  let args = insert(vimproc#parser#split_args(a:args), '--split=')
 
   call vimshell#execute_internal_command('bg',
-        \ l:args, l:context.fd, l:context)
+        \ args, context.fd, context)
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
@@ -209,35 +209,35 @@ function! s:vimshell_interactive(args)"{{{
       return
     endif
 
-    let l:command_line = g:vimshell_interactive_interpreter_commands[&filetype]
+    let command_line = g:vimshell_interactive_interpreter_commands[&filetype]
   else
-    let l:command_line = a:args
+    let command_line = a:args
   endif
 
-  let l:args = insert(vimproc#parser#split_args(l:command_line), '--split=')
+  let args = insert(vimproc#parser#split_args(command_line), '--split=')
 
-  let l:context = {
+  let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
         \ 'is_single_command' : 1,
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
         \}
-  call vimshell#set_context(l:context)
+  call vimshell#set_context(context)
 
   call vimshell#execute_internal_command('iexe',
-        \ l:args, l:context.fd, l:context)
+        \ args, context.fd, context)
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
-  let l:context = {
+  let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
         \ 'is_single_command' : 1,
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
         \}
-  call vimshell#set_context(l:context)
+  call vimshell#set_context(context)
 
   call vimshell#execute_internal_command('texe',
-        \ vimproc#parser#split_args(a:args), l:context.fd, l:context)
+        \ vimproc#parser#split_args(a:args), context.fd, context)
 endfunction"}}}
 function! s:vimshell_popup(args)"{{{
   if &filetype ==# 'vimshell'

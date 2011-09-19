@@ -30,38 +30,38 @@ let s:command = {
       \ 'description' : 'history [{search-string}]',
       \}
 function! s:command.execute(command, args, fd, context)"{{{
-  let l:histories = vimshell#history#read()
+  let histories = vimshell#history#read()
 
-  let l:arguments = join(a:args, ' ')
-  if l:arguments =~ '^\d\+$'
-    let l:search = ''
-    let l:max = str2nr(l:arguments)
-  elseif empty(l:arguments)
+  let arguments = join(a:args, ' ')
+  if arguments =~ '^\d\+$'
+    let search = ''
+    let max = str2nr(arguments)
+  elseif empty(arguments)
     " Default max value.
-    let l:search = ''
-    let l:max = 20
+    let search = ''
+    let max = 20
   else
-    let l:search = l:arguments
-    let l:max = len(l:histories)
+    let search = arguments
+    let max = len(histories)
   endif
 
-  if l:max <=0 || l:max >= len(l:histories)
+  if max <=0 || max >= len(histories)
     " Overflow.
-    let l:max = len(l:histories)
+    let max = len(histories)
   endif
 
-  let l:list = []
-  let l:cnt = 0
-  for l:hist in l:histories
-    if vimshell#head_match(l:hist, l:search)
-      call add(l:list, [l:cnt, l:hist])
+  let list = []
+  let cnt = 0
+  for hist in histories
+    if vimshell#head_match(hist, search)
+      call add(list, [cnt, hist])
     endif
 
-    let l:cnt += 1
+    let cnt += 1
   endfor
 
-  for [l:cnt, l:hist] in l:list[: l:max-1]
-    call vimshell#print_line(a:fd, printf('%3d: %s', l:cnt, l:hist))
+  for [cnt, hist] in list[: max-1]
+    call vimshell#print_line(a:fd, printf('%3d: %s', cnt, hist))
   endfor
 endfunction"}}}
 

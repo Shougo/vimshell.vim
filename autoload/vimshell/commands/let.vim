@@ -30,35 +30,35 @@ let s:command = {
       \ 'description' : 'let ${var-name} = {expression}',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-    let l:args = join(a:args)
+    let args = join(a:args)
 
-    if l:args !~ '^$$\?\h\w*'
+    if args !~ '^$$\?\h\w*'
         call vimshell#error_line(a:fd, 'let: Wrong syntax.')
         return
     endif
 
-    if l:args =~ '^$\zs\l\w*'
+    if args =~ '^$\zs\l\w*'
         " User variable.
-        let l:varname = printf("b:vimshell.variables['%s']", matchstr(l:args, '^$\zs\l\w*'))
-    elseif l:args =~ '^$\u\w*'
+        let varname = printf("b:vimshell.variables['%s']", matchstr(args, '^$\zs\l\w*'))
+    elseif args =~ '^$\u\w*'
         " Environment variable.
-        let l:varname = matchstr(l:args, '^$\u\w*')
-    elseif l:args =~ '^$$\h\w*'
+        let varname = matchstr(args, '^$\u\w*')
+    elseif args =~ '^$$\h\w*'
         " System variable.
-        let l:varname = printf("b:vimshell.system_variables['%s']", matchstr(l:args, '^$$\zs\h\w*'))
+        let varname = printf("b:vimshell.system_variables['%s']", matchstr(args, '^$$\zs\h\w*'))
     else
-        let l:varname = ''
+        let varname = ''
     endif
 
-    let l:expression = l:args[match(l:args, '^$$\?\h\w*\zs') :]
-    while l:expression =~ '$$\h\w*'
-        let l:expression = substitute(l:expression, '$$\h\w*', printf("b:vimshell.system_variables['%s']", matchstr(l:expression, '$$\zs\h\w*')), '')
+    let expression = args[match(args, '^$$\?\h\w*\zs') :]
+    while expression =~ '$$\h\w*'
+        let expression = substitute(expression, '$$\h\w*', printf("b:vimshell.system_variables['%s']", matchstr(expression, '$$\zs\h\w*')), '')
     endwhile
-    while l:expression =~ '$\l\w*'
-        let l:expression = substitute(l:expression, '$\l\w*', printf("b:vimshell.variables['%s']", matchstr(l:expression, '$\zs\l\w*')), '')
+    while expression =~ '$\l\w*'
+        let expression = substitute(expression, '$\l\w*', printf("b:vimshell.variables['%s']", matchstr(expression, '$\zs\l\w*')), '')
     endwhile
 
-    execute 'let ' . l:varname . l:expression
+    execute 'let ' . varname . expression
 endfunction"}}}
 
 function! vimshell#commands#let#define()

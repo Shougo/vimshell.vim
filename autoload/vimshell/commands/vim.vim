@@ -30,38 +30,38 @@ let s:command_vim = {
       \ 'description' : 'vim [{filename}]',
       \}
 function! s:command_vim.execute(program, args, fd, context)"{{{
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, {
+  let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
         \ '--split' : g:vimshell_split_command,
         \ })
 
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(options['--split'])
 
-  for l:filename in empty(l:args) ? [a:fd.stdin] : l:args
+  for filename in empty(args) ? [a:fd.stdin] : args
     try
-      if l:filename == ''
+      if filename == ''
         silent enew
       else
-        silent edit `=l:filename`
+        silent edit `=filename`
       endif
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry
   endfor
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

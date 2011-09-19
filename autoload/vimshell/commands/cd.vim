@@ -34,61 +34,61 @@ function! s:command.execute(command, args, fd, context)"{{{
 
   if empty(a:args)
     " Move to HOME directory.
-    let l:dir = $HOME
+    let dir = $HOME
   elseif len(a:args) == 2
     " Substitute current directory.
-    let l:dir = substitute(getcwd(), a:args[0], a:args[1], 'g')
+    let dir = substitute(getcwd(), a:args[0], a:args[1], 'g')
   elseif len(a:args) > 2
     call vimshell#error_line(a:fd, 'cd: Too many arguments.')
     return
   else
     " Filename escape.
-    let l:dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
+    let dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
   if vimshell#iswin()
-    let l:dir = vimshell#resolve(l:dir)
+    let dir = vimshell#resolve(dir)
   endif
 
-  let l:cwd = getcwd()
-  if isdirectory(l:dir)
+  let cwd = getcwd()
+  if isdirectory(dir)
     " Move to directory.
-    let b:vimshell.current_dir = fnamemodify(l:dir, ':p')
+    let b:vimshell.current_dir = fnamemodify(dir, ':p')
     call vimshell#cd(b:vimshell.current_dir)
-  elseif l:dir =~ '^-\d*$'
+  elseif dir =~ '^-\d*$'
     " Popd.
-    return vimshell#execute_internal_command('popd', [ l:dir[1:] ], 
+    return vimshell#execute_internal_command('popd', [ dir[1:] ], 
           \ a:fd,
           \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
-  elseif filereadable(l:dir)
+  elseif filereadable(dir)
     " Move to parent directory.
-    let b:vimshell.current_dir = fnamemodify(l:dir, ':p:h')
+    let b:vimshell.current_dir = fnamemodify(dir, ':p:h')
     call vimshell#cd(b:vimshell.current_dir)
   else
     " Check cd path.
-    let l:dirs = split(globpath(&cdpath, l:dir), '\n')
+    let dirs = split(globpath(&cdpath, dir), '\n')
 
-    if empty(l:dirs)
-      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', l:dir))
+    if empty(dirs)
+      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', dir))
       return
     endif
 
     if vimshell#iswin()
-      let l:dir = vimshell#resolve(l:dir)
+      let dir = vimshell#resolve(dir)
     endif
 
-    if isdirectory(l:dirs[0])
-      let b:vimshell.current_dir = fnamemodify(l:dirs[0], ':p')
+    if isdirectory(dirs[0])
+      let b:vimshell.current_dir = fnamemodify(dirs[0], ':p')
       call vimshell#cd(b:vimshell.current_dir)
     else
-      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', l:dir))
+      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', dir))
       return
     endif
   endif
 
-  if empty(b:vimshell.directory_stack) || l:cwd !=# b:vimshell.directory_stack[0]
+  if empty(b:vimshell.directory_stack) || cwd !=# b:vimshell.directory_stack[0]
     " Push current directory and filtering.
-    call insert(b:vimshell.directory_stack, l:cwd)
+    call insert(b:vimshell.directory_stack, cwd)
 
     " Truncate.
     let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
@@ -96,23 +96,23 @@ function! s:command.execute(command, args, fd, context)"{{{
 
   if a:context.is_interactive
     " Call chpwd hook.
-    let l:context = a:context
-    let l:context.fd = a:fd
-    call vimshell#hook#call('chpwd', l:context, getcwd())
+    let context = a:context
+    let context.fd = a:fd
+    call vimshell#hook#call('chpwd', context, getcwd())
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
   if a:args[-1] =~ '^-\d*$'
-    let l:ret = vimshell#complete#helper#directory_stack(a:args[-1][1:])
-    for l:keyword in l:ret
-      let l:keyword.abbr = l:keyword.word
-      let l:keyword.word = '-' . l:keyword.word
+    let ret = vimshell#complete#helper#directory_stack(a:args[-1][1:])
+    for keyword in ret
+      let keyword.abbr = keyword.word
+      let keyword.word = '-' . keyword.word
     endfor
   else
-    let l:ret = vimshell#complete#helper#directories(a:args[-1])
+    let ret = vimshell#complete#helper#directories(a:args[-1])
   endif
     
-  return l:ret
+  return ret
 endfunction"}}}
 
 function! vimshell#commands#cd#define()

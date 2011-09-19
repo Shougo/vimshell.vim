@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,66 +34,66 @@ let s:command = {
 function! s:command.execute(commands, context)"{{{
   " Interactive execute command.
 
-  let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+  let commands = a:commands
+  let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--split'],
         \ }, {
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  let l:args = l:commands[0].args
+  let args = commands[0].args
 
-  if empty(l:args)
+  if empty(args)
     return
   endif
 
-  if has_key(g:vimshell_interactive_cygwin_commands, fnamemodify(l:args[0], ':r'))
+  if has_key(g:vimshell_interactive_cygwin_commands, fnamemodify(args[0], ':r'))
     " Use Cygwin pty.
-    call insert(l:args, 'fakecygpty')
+    call insert(args, 'fakecygpty')
   endif
 
-  let l:use_cygpty = vimshell#iswin() && l:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
-  if l:use_cygpty
+  let use_cygpty = vimshell#iswin() && args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  if use_cygpty
     if !executable('fakecygpty')
       call vimshell#error_line(a:context.fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
 
     " Get program path from g:vimshell_interactive_cygwin_path.
-    if len(l:args) < 2
+    if len(args) < 2
       call vimshell#error_line(a:context.fd, 'iexe: command is required.')
       return
     endif
 
-    let l:args[1] = vimproc#get_command_name(l:args[1], g:vimshell_interactive_cygwin_path)
+    let args[1] = vimproc#get_command_name(args[1], g:vimshell_interactive_cygwin_path)
   endif
 
-  let l:cmdname = fnamemodify(l:args[0], ':r')
-  if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = has_key(g:vimshell_interactive_encodings, l:cmdname) ?
-          \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
+  let cmdname = fnamemodify(args[0], ':r')
+  if !has_key(options, '--encoding')
+    let options['--encoding'] = has_key(g:vimshell_interactive_encodings, cmdname) ?
+          \ g:vimshell_interactive_encodings[cmdname] : &termencoding
   endif
 
-  if !l:use_cygpty && has_key(g:vimshell_interactive_command_options, l:cmdname)
-    for l:arg in vimproc#parser#split_args(g:vimshell_interactive_command_options[l:cmdname])
-      call add(l:args, l:arg)
+  if !use_cygpty && has_key(g:vimshell_interactive_command_options, cmdname)
+    for arg in vimproc#parser#split_args(g:vimshell_interactive_command_options[cmdname])
+      call add(args, arg)
     endfor
   endif
 
-  if vimshell#iswin() && l:cmdname == 'cmd'
+  if vimshell#iswin() && cmdname == 'cmd'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
       call vimshell#error_line(a:context.fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
       return
     endif
 
-    let l:args[0] = 'cmdproxy.exe'
+    let args[0] = 'cmdproxy.exe'
   endif
 
   " Encoding conversion.
-  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    for l:command in l:commands
-      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  if options['--encoding'] != '' && options['--encoding'] != &encoding
+    for command in commands
+      call map(command.args, 'iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
@@ -103,17 +103,17 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Initialize.
-  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+  if use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
-    let l:home_save = vimshell#set_variables({
+    let home_save = vimshell#set_variables({
           \ '$HOME' : g:vimshell_interactive_cygwin_home,
           \})
   endif
 
-  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(options['--split'])
 
   " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
+  let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -125,39 +125,39 @@ function! s:command.execute(commands, context)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#ptyopen(l:commands)
+  let sub = vimproc#ptyopen(commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
+  call vimshell#restore_variables(environments_save)
 
-  if l:use_cygpty && g:vimshell_interactive_cygwin_home != ''
+  if use_cygpty && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
-    call vimshell#restore_variables(l:home_save)
+    call vimshell#restore_variables(home_save)
   endif
 
   " Set variables.
-  let l:interactive = {
+  let interactive = {
         \ 'type' : 'interactive',
-        \ 'process' : l:sub,
+        \ 'process' : sub,
         \ 'fd' : a:context.fd,
-        \ 'encoding' : l:options['--encoding'],
+        \ 'encoding' : options['--encoding'],
         \ 'is_secret': 0,
         \ 'prompt_history' : {},
-        \ 'is_pty' : (!vimshell#iswin() || l:use_cygpty),
-        \ 'args' : l:args,
+        \ 'is_pty' : (!vimshell#iswin() || use_cygpty),
+        \ 'args' : args,
         \ 'echoback_linenr' : 0,
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'command' : fnamemodify(l:use_cygpty ? l:args[1] : l:args[0], ':t:r'),
+        \ 'command' : fnamemodify(use_cygpty ? args[1] : args[0], ':t:r'),
         \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
         \    && a:context.is_close_immediately,
         \ 'hook_functions_table' : {},
         \}
 
-  call vimshell#commands#iexe#init(a:context, l:interactive,
-        \ l:new_pos, l:old_pos, 1)
+  call vimshell#commands#iexe#init(a:context, interactive,
+        \ new_pos, old_pos, 1)
 
   call vimshell#interactive#execute_process_out(1)
 
@@ -258,21 +258,21 @@ endfunction"}}}
 
 function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert)"{{{
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
   edit `='iexe-'.substitute(join(a:interactive.args),
         \ '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   let [a:new_pos[2], a:new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
   let b:interactive = a:interactive
 
   call s:default_settings()
 
-  let l:syntax = 'int-' . a:interactive.command
-  let &filetype = l:syntax
-  let b:interactive.syntax = l:syntax
+  let syntax = 'int-' . a:interactive.command
+  let &filetype = syntax
+  let b:interactive.syntax = syntax
 
   call s:default_syntax()
 

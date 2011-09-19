@@ -36,13 +36,13 @@ function! s:command.execute(program, args, fd, context)"{{{
     call vimshell#error_line(a:fd, 'repeat: Arguments error.')
   else
     " Repeat.
-    let l:max = a:args[0]
-    let l:i = 0
-    while l:i < l:max
-      let l:commands = vimproc#parser#parse_pipe(a:args)
-      call vimshell#parser#execute_command(l:commands, a:context)
+    let max = a:args[0]
+    let i = 0
+    while i < max
+      let commands = vimproc#parser#parse_pipe(a:args)
+      call vimshell#parser#execute_command(commands, a:context)
       
-      let l:i += 1
+      let i += 1
     endwhile
   endif
 endfunction"}}}

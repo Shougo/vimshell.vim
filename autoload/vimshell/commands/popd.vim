@@ -38,26 +38,26 @@ function! s:command.execute(program, args, fd, context)"{{{
     return
   endif
 
-  let l:cnt = 0
-  let l:arguments = join(a:args)
-  if l:arguments =~ '^\d\+$'
-    let l:pop = str2nr(l:arguments)
-  elseif empty(l:arguments)
+  let cnt = 0
+  let arguments = join(a:args)
+  if arguments =~ '^\d\+$'
+    let pop = str2nr(arguments)
+  elseif empty(arguments)
     " Default pop value.
-    let l:pop = 0
+    let pop = 0
   else
     " Error.
     call vimshell#error_line(a:fd, 'popd: Arguments error.')
     return
   endif
 
-  if l:pop >= len(b:vimshell.directory_stack)
+  if pop >= len(b:vimshell.directory_stack)
     " Overflow.
-    call vimshell#error_line(a:fd, printf("popd: Not found '%d' in directory stack.", l:pop))
+    call vimshell#error_line(a:fd, printf("popd: Not found '%d' in directory stack.", pop))
     return
   endif
 
-  return vimshell#execute_internal_command('cd', [ b:vimshell.directory_stack[l:pop] ], 
+  return vimshell#execute_internal_command('cd', [ b:vimshell.directory_stack[pop] ], 
         \ a:fd, a:context)
 endfunction"}}}
 function! s:command.complete(args)"{{{

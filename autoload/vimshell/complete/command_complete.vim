@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: command_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,20 +46,20 @@ endfunction"}}}
 
 function! vimshell#complete#command_complete#get_candidates(cur_text, findstart, base)"{{{
   try
-    let l:args = vimshell#get_current_args(a:cur_text)
+    let args = vimshell#get_current_args(a:cur_text)
   catch /^Exception:/
     return a:findstart ? -1 : []
   endtry
 
-  if len(l:args) <= 1
+  if len(args) <= 1
     return s:complete_commands(a:findstart, a:base)
   else
     if a:findstart && a:cur_text =~ '\s\+$'
       " Add blank argument.
-      call add(l:args, '')
+      call add(args, '')
     endif
 
-    return s:complete_args(a:findstart, a:base, l:args)
+    return s:complete_args(a:findstart, a:base, args)
   endif
 endfunction"}}}
 
@@ -69,7 +69,7 @@ function! s:complete_commands(findstart, base)"{{{
   endif
 
   " Save option.
-  let l:ignorecase_save = &ignorecase
+  let ignorecase_save = &ignorecase
 
   " Complete.
   if g:vimshell_smart_case && a:base =~ '\u'
@@ -78,17 +78,17 @@ function! s:complete_commands(findstart, base)"{{{
     let &ignorecase = g:vimshell_ignore_case
   endif
 
-  let l:complete_words = s:get_complete_commands(a:base)
+  let complete_words = s:get_complete_commands(a:base)
 
   " Restore option.
-  let &ignorecase = l:ignorecase_save
+  let &ignorecase = ignorecase_save
 
-  return l:complete_words
+  return complete_words
 endfunction"}}}
 
 function! s:get_complete_commands(cur_keyword_str)"{{{
   " Save option.
-  let l:ignorecase_save = &ignorecase
+  let ignorecase_save = &ignorecase
 
   " Complete.
   if g:vimshell_smart_case && a:cur_keyword_str =~ '\u'
@@ -99,52 +99,52 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
 
   if a:cur_keyword_str =~ '/'
     " Filename completion.
-    let l:ret = vimshell#complete#helper#files(a:cur_keyword_str)
+    let ret = vimshell#complete#helper#files(a:cur_keyword_str)
 
     " Restore option.
-    let &ignorecase = l:ignorecase_save
+    let &ignorecase = ignorecase_save
 
-    return l:ret
+    return ret
   endif
 
-  let l:directories = vimshell#complete#helper#directories(a:cur_keyword_str)
+  let directories = vimshell#complete#helper#directories(a:cur_keyword_str)
   if a:cur_keyword_str =~ '^\./'
-    for l:keyword in l:directories
-      let l:keyword.word = './' . l:keyword.word
+    for keyword in directories
+      let keyword.word = './' . keyword.word
     endfor
   endif
 
-  let l:ret =    l:directories
+  let ret =    directories
         \ + vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
         \ + vimshell#complete#helper#aliases(a:cur_keyword_str)
         \ + vimshell#complete#helper#internals(a:cur_keyword_str)
 
   if len(a:cur_keyword_str) >= 1
-    let l:ret += vimshell#complete#helper#executables(a:cur_keyword_str)
+    let ret += vimshell#complete#helper#executables(a:cur_keyword_str)
   endif
 
   " Restore option.
-  let &ignorecase = l:ignorecase_save
+  let &ignorecase = ignorecase_save
 
-  return l:ret
+  return ret
 endfunction"}}}
 
 function! s:complete_args(findstart, base, args)"{{{
   if a:findstart
-    let l:pos = col('.')-len(a:args[-1])-1
+    let pos = col('.')-len(a:args[-1])-1
     if a:args[-1] =~ '/'
       " Filename completion.
-      let l:pos += match(a:args[-1], '\%(\\[^[:alnum:].-]\|\f\)\+$')
+      let pos += match(a:args[-1], '\%(\\[^[:alnum:].-]\|\f\)\+$')
     endif
 
-    return l:pos
+    return pos
   endif
 
   " Get command name.
-  let l:command = fnamemodify(a:args[0], ':t:r')
+  let command = fnamemodify(a:args[0], ':t:r')
 
   " Save option.
-  let l:ignorecase_save = &ignorecase
+  let ignorecase_save = &ignorecase
 
   " Complete.
   if g:vimshell_smart_case && a:base =~ '\u'
@@ -156,15 +156,15 @@ function! s:complete_args(findstart, base, args)"{{{
   let a:args[-1] = a:base
 
   " Get complete words.
-  let l:complete_words = vimshell#complete#helper#args(l:command, a:args[1:])
+  let complete_words = vimshell#complete#helper#args(command, a:args[1:])
 
   " Restore option.
-  let &ignorecase = l:ignorecase_save
+  let &ignorecase = ignorecase_save
 
   " Truncate many items.
-  let l:complete_words = l:complete_words[: g:vimshell_max_list-1]
+  let complete_words = complete_words[: g:vimshell_max_list-1]
 
-  return l:complete_words
+  return complete_words
 endfunction"}}}
 
 " vim: foldmethod=marker

@@ -37,19 +37,19 @@ endfunction
 
 function! s:recursive_expand_altercmd(string)
   " Recursive expand altercmd.
-  let l:abbrev = b:vimshell.altercmd_table[a:string]
-  let l:expanded = {}
+  let abbrev = b:vimshell.altercmd_table[a:string]
+  let expanded = {}
   while 1
-    let l:key = vimproc#parser#split_args(l:abbrev)[-1]
-    if has_key(l:expanded, l:abbrev) || !has_key(b:vimshell.altercmd_table, l:abbrev)
+    let key = vimproc#parser#split_args(abbrev)[-1]
+    if has_key(expanded, abbrev) || !has_key(b:vimshell.altercmd_table, abbrev)
       break
     endif
     
-    let l:expanded[l:abbrev] = 1
-    let l:abbrev = b:vimshell.altercmd_table[l:abbrev]
+    let expanded[abbrev] = 1
+    let abbrev = b:vimshell.altercmd_table[abbrev]
   endwhile
 
-  return l:abbrev
+  return abbrev
 endfunction
 
 " vim: foldmethod=marker

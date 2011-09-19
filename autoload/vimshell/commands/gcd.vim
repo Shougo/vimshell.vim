@@ -32,10 +32,10 @@ let s:command = {
 function! s:command.execute(command, args, fd, context)"{{{
   " Change the global working directory.
 
-  let l:dir = empty(a:args)? getcwd() : a:args[0]
-  let b:vimshell.current_dir = l:dir
+  let dir = empty(a:args)? getcwd() : a:args[0]
+  let b:vimshell.current_dir = dir
   
-  return vimshell#execute_internal_command('cd', [ l:dir ], a:fd, a:context)
+  return vimshell#execute_internal_command('cd', [ dir ], a:fd, a:context)
 endfunction"}}}
 
 function! vimshell#commands#gcd#define()

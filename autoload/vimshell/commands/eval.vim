@@ -32,19 +32,19 @@ let s:command = {
 function! s:command.execute(command, args, fd, context)"{{{
   " Evaluate arguments.
 
-  let l:line = join(a:args)
-  let l:context = {
-        \ 'has_head_spaces' : l:line =~ '^\s\+',
+  let line = join(a:args)
+  let context = {
+        \ 'has_head_spaces' : line =~ '^\s\+',
         \ 'is_interactive' : a:context.is_interactive, 
         \ 'is_insert' : a:context.is_insert, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
 
   try
-    call vimshell#parser#eval_script(l:line, l:context)
+    call vimshell#parser#eval_script(line, context)
   catch /.*/
-    let l:message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, l:message)
+    let message = v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, message)
     return
   endtry
 endfunction"}}}

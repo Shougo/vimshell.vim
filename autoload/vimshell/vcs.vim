@@ -30,70 +30,70 @@ if !exists('g:vimshell_vcs_print_null')
 endif
 
 function! vimshell#vcs#info(string, ...)"{{{
-    let l:func_name = s:load_vcs_plugin()
-    if l:func_name == ''
+    let func_name = s:load_vcs_plugin()
+    if func_name == ''
         return g:vimshell_vcs_print_null ? '[novcs]-(noinfo)' : ''
     endif
 
-    if call(l:func_name . 'action_message', []) != '' && !empty(a:000)
+    if call(func_name . 'action_message', []) != '' && !empty(a:000)
         " Use action format.
-        let l:format_string = a:1
+        let format_string = a:1
     else
-        let l:format_string = a:string
+        let format_string = a:string
     endif
     
     " Substitute format string.
-    let l:cnt = 0
-    let l:max = len(l:format_string)
-    let l:info = ''
-    while l:cnt < l:max
-        if l:format_string[l:cnt] == '%' && l:cnt+1 < l:max
-            let l:format = l:format_string[l:cnt + 1]
-            if l:format == '%'
+    let cnt = 0
+    let max = len(format_string)
+    let info = ''
+    while cnt < max
+        if format_string[cnt] == '%' && cnt+1 < max
+            let format = format_string[cnt + 1]
+            if format == '%'
                 " %%.
-                let l:info .= '%'
-            elseif l:format == 's'
+                let info .= '%'
+            elseif format == 's'
                 " %s : VCS name.
-                let l:info .= call(l:func_name . 'vcs_name', [])
-            elseif l:format == 'b'
+                let info .= call(func_name . 'vcs_name', [])
+            elseif format == 'b'
                 " %b : current branch name.
-                let l:info .= call(l:func_name . 'current_branch', [])
-            elseif l:format == 'r'
+                let info .= call(func_name . 'current_branch', [])
+            elseif format == 'r'
                 " %r : repository name.
-                let l:info .= call(l:func_name . 'repository_name', [])
-            elseif l:format == 'R'
+                let info .= call(func_name . 'repository_name', [])
+            elseif format == 'R'
                 " %R : path to repository root.
-                let l:info .= call(l:func_name . 'repository_root_path', [])
-            elseif l:format == 'S'
+                let info .= call(func_name . 'repository_root_path', [])
+            elseif format == 'S'
                 " %s : relative path to root.
-                let l:info .= call(l:func_name . 'repository_relative_path', [])
-            elseif l:format == 'a'
+                let info .= call(func_name . 'repository_relative_path', [])
+            elseif format == 'a'
                 " %s : action message.
-                let l:info .= call(l:func_name . 'action_message', [])
+                let info .= call(func_name . 'action_message', [])
             else
                 " Ignore.
-                let l:info .= '?'
+                let info .= '?'
             endif
             
-            let l:cnt += 1
+            let cnt += 1
         else
-            let l:info .= l:format_string[l:cnt]
+            let info .= format_string[cnt]
         endif
         
-        let l:cnt += 1
+        let cnt += 1
     endwhile
 
-    return l:info
+    return info
 endfunction"}}}
 
 function! s:load_vcs_plugin()"{{{
     " Load VCS plugins.
     " Search autoload.
-    let l:func_list = split(globpath(&runtimepath, 'autoload/vimshell/vcs/*.vim'), '\n')
-    for list in l:func_list
-        let l:func_name = 'vimshell#vcs#' . fnamemodify(list, ':t:r') . '#'
-        if call(l:func_name . 'is_vcs_dir', [])
-            return l:func_name
+    let func_list = split(globpath(&runtimepath, 'autoload/vimshell/vcs/*.vim'), '\n')
+    for list in func_list
+        let func_name = 'vimshell#vcs#' . fnamemodify(list, ':t:r') . '#'
+        if call(func_name . 'is_vcs_dir', [])
+            return func_name
         endif
     endfor
     

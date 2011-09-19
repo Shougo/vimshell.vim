@@ -619,6 +619,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-09-19
 - vim and view internal commands allow multiple files.
+- Refactored local variable names.
 
 2011-09-18
 - Fixed hangup bugs.
@@ -1497,7 +1498,7 @@ ChangeLog 7.0:
 2010-06-19
 - Improved get cur_text.
 - Fixed filename completion bug.
-- Fixed l:PATH_SEPARATOR error.
+- Fixed PATH_SEPARATOR error.
 - Fixed command complete.
 
 2010-06-18

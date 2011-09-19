@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,26 +30,26 @@ let s:command = {
       \ 'description' : 'exe [{option}...] {command}',
       \}
 function! s:command.execute(commands, context)"{{{
-  let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+  let commands = a:commands
+  let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding'],
         \ }, {
         \ '--encoding' : &termencoding,
         \ })
 
-  if empty(l:commands[0].args)
+  if empty(commands[0].args)
     return
   endif
 
   " Encoding conversion.
-  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    for l:command in l:commands
-      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  if options['--encoding'] != '' && options['--encoding'] != &encoding
+    for command in commands
+      call map(command.args, 'iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
   " Execute command.
-  call s:init_process(l:commands, a:context, l:options)
+  call s:init_process(commands, a:context, options)
 
   " Move line.
   call append(line('.'), '')
@@ -62,25 +62,25 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   echo 'Running command.'
-  let l:is_insert = mode() ==# 'i'
+  let is_insert = mode() ==# 'i'
   while b:interactive.process.is_valid
-    call vimshell#interactive#execute_process_out(l:is_insert)
+    call vimshell#interactive#execute_process_out(is_insert)
 
     " Get input key.
-    let l:char = getchar(0)
-    if l:char != 0
-      let l:char = nr2char(l:char)
-      if l:char == "\<C-z>"
+    let char = getchar(0)
+    if char != 0
+      let char = nr2char(char)
+      if char == "\<C-z>"
         call vimshell#error_line(a:context.fd, 'exe: Background executed.')
 
         " Background execution.
-        let l:options = { '--syntax' : 'vimshell-bg',
+        let options = { '--syntax' : 'vimshell-bg',
               \ '--split' : g:vimshell_split_command }
-        call vimshell#commands#bg#init(l:commands, a:context,
-              \ l:options, b:interactive)
+        call vimshell#commands#bg#init(commands, a:context,
+              \ options, b:interactive)
 
         unlet b:interactive
-      elseif l:char == "\<C-d>"
+      elseif char == "\<C-d>"
         " Interrupt.
         call vimshell#interactive#force_exit()
         call vimshell#error_line(a:context.fd, 'exe: Interrupted.')
@@ -106,7 +106,7 @@ function! s:init_process(commands, context, options)"{{{
   endif
 
   " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
+  let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -118,20 +118,20 @@ function! s:init_process(commands, context, options)"{{{
         \})
 
   " Initialize.
-  " let l:sub = vimproc#plineopen3(a:commands)
-  let l:sub = vimproc#ptyopen(a:commands)
+  " let sub = vimproc#plineopen3(a:commands)
+  let sub = vimproc#ptyopen(a:commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
+  call vimshell#restore_variables(environments_save)
 
-  let l:cmdline = []
-  for l:command in a:commands
-    call add(l:cmdline, join(l:command.args))
+  let cmdline = []
+  for command in a:commands
+    call add(cmdline, join(command.args))
   endfor
 
   " Set variables.
   let b:interactive.syntax = b:interactive.syntax
-  let b:interactive.process = l:sub
+  let b:interactive.process = sub
   let b:interactive.args = a:commands[0].args
   let b:interactive.fd = a:context.fd
   let b:interactive.encoding = a:options['--encoding']
@@ -139,7 +139,7 @@ function! s:init_process(commands, context, options)"{{{
   let b:interactive.echoback_linenr = -1
   let b:interactive.stdout_cache = ''
   let b:interactive.stderr_cache = ''
-  let b:interactive.cmdline = join(l:cmdline, '|')
+  let b:interactive.cmdline = join(cmdline, '|')
   let b:interactive.width = winwidth(0)
   let b:interactive.height = winheight(0)
   let b:interactive.prompt_history = {}

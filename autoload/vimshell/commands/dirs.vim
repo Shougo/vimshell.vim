@@ -32,25 +32,25 @@ let s:command = {
 function! s:command.execute(command, args, fd, context)"{{{
   " Print directory stack.
 
-  let l:cnt = 0
-  let l:arguments = join(a:args)
-  if empty(l:arguments)
+  let cnt = 0
+  let arguments = join(a:args)
+  if empty(arguments)
     " Default max value.
-    let l:max = 20
-  elseif l:arguments =~ '^\d\+$'
-    let l:max = str2nr(l:arguments)
+    let max = 20
+  elseif arguments =~ '^\d\+$'
+    let max = str2nr(arguments)
   else
     " Ignore arguments.
-    let l:max = len(b:vimshell.directory_stack)
+    let max = len(b:vimshell.directory_stack)
   endif
-  if l:max > len(b:vimshell.directory_stack)
+  if max > len(b:vimshell.directory_stack)
     " Overflow.
-    let l:max = len(b:vimshell.directory_stack)
+    let max = len(b:vimshell.directory_stack)
   endif
 
-  while l:cnt < l:max
-    call vimshell#print_line(a:fd, printf('%2d: %s', l:cnt, fnamemodify(b:vimshell.directory_stack[l:cnt], ':~')))
-    let l:cnt += 1
+  while cnt < max
+    call vimshell#print_line(a:fd, printf('%2d: %s', cnt, fnamemodify(b:vimshell.directory_stack[cnt], ':~')))
+    let cnt += 1
   endwhile
 endfunction"}}}
 

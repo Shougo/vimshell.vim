@@ -34,9 +34,9 @@ function! s:command.execute(command, args, fd, context)"{{{
     return
   endif
 
-  let l:name = a:args[0]
-  for l:arg in vimproc#get_command_name(a:args[0], $PATH, -1)
-    call vimshell#print_line(a:fd, l:arg)
+  let name = a:args[0]
+  for arg in vimproc#get_command_name(a:args[0], $PATH, -1)
+    call vimshell#print_line(a:fd, arg)
   endfor
 endfunction"}}}
 

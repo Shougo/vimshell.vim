@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -162,9 +162,9 @@ function! s:push_current_line()"{{{
 
   " Todo:
   " Print command line stack.
-  " let l:stack = map(deepcopy(b:vimshell.commandline_stack),
+  " let stack = map(deepcopy(b:vimshell.commandline_stack),
   "       \ 'vimshell#get_prompt_command(v:val)')
-  " call append('.', l:stack)
+  " call append('.', stack)
 
   " Set prompt line.
   call setline('.', vimshell#get_prompt())
@@ -186,20 +186,20 @@ function! s:push_and_execute(command)"{{{
 endfunction"}}}
 
 function! vimshell#mappings#execute_line(is_insert)"{{{
-  let l:oldpos = getpos('.')
+  let oldpos = getpos('.')
   let b:interactive.output_pos = getpos('.')
 
   if !empty(b:vimshell.continuation)
     call vimshell#interactive#execute_pty_inout(a:is_insert)
 
     try
-      let l:ret = vimshell#parser#execute_continuation(a:is_insert)
+      let ret = vimshell#parser#execute_continuation(a:is_insert)
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      let l:context = b:vimshell.continuation.context
+      let context = b:vimshell.continuation.context
       let b:vimshell.continuation = {}
-      call vimshell#print_prompt(l:context)
+      call vimshell#print_prompt(context)
       call vimshell#start_insert(a:is_insert)
     endtry
 
@@ -223,9 +223,9 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
       " Search cursor file.
-      let l:filename = substitute(substitute(vimshell#get_cursor_filename(),
+      let filename = substitute(substitute(vimshell#get_cursor_filename(),
             \ '\\', '/', 'g'), ' ', '\\ ', 'g')
-      call s:open_file(l:filename)
+      call s:open_file(filename)
     endif
 
     $
@@ -233,45 +233,45 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
     " History execution.
 
     " Search next prompt.
-    let l:prompt = vimshell#escape_match(vimshell#get_prompt())
+    let prompt = vimshell#escape_match(vimshell#get_prompt())
     if vimshell#get_user_prompt() != ''
-      let l:nprompt = '^\[%\] '
+      let nprompt = '^\[%\] '
     else
-      let l:nprompt = '^' . l:prompt
+      let nprompt = '^' . prompt
     endif
 
-    let [l:next_line, l:next_col] = searchpos(l:nprompt, 'Wn')
+    let [next_line, next_col] = searchpos(nprompt, 'Wn')
 
-    if l:next_line > 0 && l:next_line - line('.') > 1
-      execute printf('%s,%sdelete _', line('.')+1, l:next_line-1)
+    if next_line > 0 && next_line - line('.') > 1
+      execute printf('%s,%sdelete _', line('.')+1, next_line-1)
 
       call vimshell#terminal#clear_highlight()
       normal! k
     endif
   endif
 
-  call s:execute_command_line(a:is_insert, l:oldpos)
+  call s:execute_command_line(a:is_insert, oldpos)
 endfunction"}}}
 function! s:execute_command_line(is_insert, oldpos)"{{{
   " Get command line.
-  let l:line = vimshell#get_prompt_command()
-  let l:context = {
-        \ 'has_head_spaces' : l:line =~ '^\s\+',
+  let line = vimshell#get_prompt_command()
+  let context = {
+        \ 'has_head_spaces' : line =~ '^\s\+',
         \ 'is_interactive' : 1,
         \ 'is_insert' : a:is_insert,
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
         \}
 
-  if l:line =~ '^\s*-\s*$'
+  if line =~ '^\s*-\s*$'
     " Popd.
     call vimshell#execute_internal_command('cd', ['-'], {}, {})
-  elseif l:line =~ '^\s*$'
+  elseif line =~ '^\s*$'
     " Call emptycmd filter.
-    let l:line = vimshell#hook#call_filter('emptycmd', l:context, l:line)
+    let line = vimshell#hook#call_filter('emptycmd', context, line)
   endif
 
-  if l:line =~ '^\s*$\|^\s*-\s*$'
-    call vimshell#print_prompt(l:context)
+  if line =~ '^\s*$\|^\s*-\s*$'
+    call vimshell#print_prompt(context)
 
     call vimshell#start_insert(a:is_insert)
     return
@@ -281,7 +281,7 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   normal! $
 
   try
-    call vimshell#parser#check_script(l:line)
+    call vimshell#parser#check_script(line)
   catch /^Exception: Quote/
     call vimshell#print_secondary_prompt()
 
@@ -290,44 +290,44 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
   endtry
 
   " Call preparse filter.
-  let l:line = vimshell#hook#call_filter('preparse', l:context, l:line)
+  let line = vimshell#hook#call_filter('preparse', context, line)
 
   " Save cmdline.
-  let b:vimshell.cmdline = l:line
+  let b:vimshell.cmdline = line
 
   " Not append history if starts spaces or dups.
-  if l:line !~ '^\s'
-    call vimshell#history#append(l:line)
+  if line !~ '^\s'
+    call vimshell#history#append(line)
   endif
 
   try
-    let l:ret = vimshell#parser#eval_script(l:line, l:context)
+    let ret = vimshell#parser#eval_script(line, context)
   catch /File ".*" is not found./
     " Command not found.
-    let l:oldline = l:line
-    let l:line = vimshell#hook#call_filter('notfound', l:context, l:line)
-    if l:line !=# l:oldline
+    let oldline = line
+    let line = vimshell#hook#call_filter('notfound', context, line)
+    if line !=# oldline
       " Retry.
       call setpos('.', a:oldpos)
-      call setline('.', l:line)
+      call setline('.', line)
       call s:execute_line(a:is_insert)
     endif
 
     " Error.
     call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#print_prompt(l:context)
+    call vimshell#print_prompt(context)
     call vimshell#start_insert(a:is_insert)
     return
   catch
     " Error.
     call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#print_prompt(l:context)
+    call vimshell#print_prompt(context)
     call vimshell#start_insert(a:is_insert)
     return
   endtry
 
-  if l:ret == 0
-    call vimshell#next_prompt(l:context, a:is_insert)
+  if ret == 0
+    call vimshell#next_prompt(context, a:is_insert)
   endif
 
   call vimshell#start_insert(a:is_insert)
@@ -336,10 +336,10 @@ function! s:previous_prompt()"{{{
   if empty(b:vimshell.continuation)
     call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
   else
-    let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+    let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val < line(".")'), 'vimshell#compare_number')
-    if !empty(l:prompts)
-      call cursor(l:prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
+    if !empty(prompts)
+      call cursor(prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
     endif
   endif
 endfunction"}}}
@@ -347,57 +347,57 @@ function! s:next_prompt()"{{{
   if empty(b:vimshell.continuation)
     call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
   else
-    let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+    let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val > line(".")'), 'vimshell#compare_number')
-    if !empty(l:prompts)
-      call cursor(l:prompts[0], len(vimshell#interactive#get_prompt()) + 1)
+    if !empty(prompts)
+      call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
     endif
   endif
 endfunction"}}}
 function! s:select_previous_prompt()"{{{
-  let l:prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
-  let [l:linenr, l:col] = searchpos(l:prompt_pattern, 'bWen')
-  if l:linenr == 0
+  let prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
+  let [linenr, col] = searchpos(prompt_pattern, 'bWen')
+  if linenr == 0
     return ''
   endif
 
-  return (line('.') - l:linenr - 1) . 'k'
+  return (line('.') - linenr - 1) . 'k'
 endfunction"}}}
 function! s:select_next_prompt()"{{{
-  let l:prompt_pattern = vimshell#get_user_prompt() != '' ?
+  let prompt_pattern = vimshell#get_user_prompt() != '' ?
         \ '^' . vimshell#escape_match(vimshell#get_prompt()) : '^\[%\] '
-  let [l:linenr, l:col] = searchpos(l:prompt_pattern, 'Wen')
-  if l:linenr == 0
+  let [linenr, col] = searchpos(prompt_pattern, 'Wen')
+  if linenr == 0
     return ''
   endif
 
-  return (l:linenr - line('.') - 2) . 'j'
+  return (linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output()"{{{
-  let l:prompt = vimshell#escape_match(vimshell#get_prompt())
+  let prompt = vimshell#escape_match(vimshell#get_prompt())
   if vimshell#get_user_prompt() != ''
-    let l:nprompt = '^\[%\] '
+    let nprompt = '^\[%\] '
   else
-    let l:nprompt = '^' . l:prompt
+    let nprompt = '^' . prompt
   endif
-  let l:pprompt = '^' . l:prompt
+  let pprompt = '^' . prompt
 
   " Search next prompt.
-  if getline('.') =~ l:nprompt
-    let l:next_line = line('.')
-  elseif vimshell#get_user_prompt() != '' && getline('.') =~ '^' . l:prompt
-    let [l:next_line, l:next_col] = searchpos(l:nprompt, 'bWn')
+  if getline('.') =~ nprompt
+    let next_line = line('.')
+  elseif vimshell#get_user_prompt() != '' && getline('.') =~ '^' . prompt
+    let [next_line, next_col] = searchpos(nprompt, 'bWn')
   else
-    let [l:next_line, l:next_col] = searchpos(l:nprompt, 'Wn')
+    let [next_line, next_col] = searchpos(nprompt, 'Wn')
   endif
-  while getline(l:next_line-1) =~ l:nprompt
-    let l:next_line -= 1
+  while getline(next_line-1) =~ nprompt
+    let next_line -= 1
   endwhile
 
   normal! 0
-  let [l:prev_line, l:prev_col] = searchpos(l:pprompt, 'bWn')
-  if l:prev_line > 0 && l:next_line - l:prev_line > 1
-    execute printf('%s,%sdelete', l:prev_line+1, l:next_line-1)
+  let [prev_line, prev_col] = searchpos(pprompt, 'bWn')
+  if prev_line > 0 && next_line - prev_line > 1
+    execute printf('%s,%sdelete', prev_line+1, next_line-1)
     call append(line('.')-1, "* Output was deleted *")
   endif
   call s:next_prompt()
@@ -405,17 +405,17 @@ function! s:delete_previous_output()"{{{
   call vimshell#terminal#clear_highlight()
 endfunction"}}}
 function! s:insert_last_word()"{{{
-  let l:word = ''
-  let l:histories = vimshell#history#read()
-  if !empty(l:histories)
-    for w in reverse(split(l:histories[0], '[^\\]\zs\s'))
+  let word = ''
+  let histories = vimshell#history#read()
+  if !empty(histories)
+    for w in reverse(split(histories[0], '[^\\]\zs\s'))
       if w =~ '[[:alpha:]_/\\]\{2,}'
-        let l:word = w
+        let word = w
         break
       endif
     endfor
   endif
-  call setline(line('.'), getline('.') . l:word)
+  call setline(line('.'), getline('.') . word)
   startinsert!
 endfunction"}}}
 function! s:run_help()"{{{
@@ -425,43 +425,43 @@ function! s:run_help()"{{{
   endif
 
   " Delete prompt string.
-  let l:line = substitute(getline('.'), '^' . vimshell#escape_match(vimshell#get_prompt()), '', '')
-  if l:line =~ '^\s*$'
+  let line = substitute(getline('.'), '^' . vimshell#escape_match(vimshell#get_prompt()), '', '')
+  if line =~ '^\s*$'
     startinsert!
     return
   endif
 
-  let l:program = split(l:line)[0]
-  if l:program !~ '\h\w*'
+  let program = split(line)[0]
+  if program !~ '\h\w*'
     startinsert!
     return
-  elseif has_key(b:vimshell.alias_table, l:program)
-    let l:program = b:vimshell.alias_table[l:program]
-  elseif has_key(b:vimshell.galias_table, l:program)
-    let l:program = b:vimshell.galias_table[l:program]
+  elseif has_key(b:vimshell.alias_table, program)
+    let program = b:vimshell.alias_table[program]
+  elseif has_key(b:vimshell.galias_table, program)
+    let program = b:vimshell.galias_table[program]
   endif
   
   if exists(':Ref')
-    execute 'Ref man' l:program
+    execute 'Ref man' program
   elseif exists(':Man')
-    execute 'Man' l:program
+    execute 'Man' program
   else
     call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
   endif
 endfunction"}}}
 function! s:paste_prompt()"{{{
-  let l:prompt = getline('.')
-  if l:prompt !~# vimshell#escape_match(vimshell#get_prompt())
+  let prompt = getline('.')
+  if prompt !~# vimshell#escape_match(vimshell#get_prompt())
     return
   endif
 
   if getline('$') !~# vimshell#escape_match(vimshell#get_prompt())
         \ || vimshell#get_prompt_command(getline('$')) != ''
     " Insert prompt line.
-    call append(line('$'), l:prompt)
+    call append(line('$'), prompt)
   else
     " Set prompt line.
-    call setline(line('$'), l:prompt)
+    call setline(line('$'), prompt)
   endif
   $
 endfunction"}}}
@@ -473,11 +473,11 @@ function! s:move_end_argument()"{{{
   call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))
 endfunction"}}}
 function! s:delete_line()"{{{
-  let l:col = col('.')
-  let l:mcol = col('$')
-  call setline(line('.'), vimshell#get_prompt() . getline('.')[l:col :])
+  let col = col('.')
+  let mcol = col('$')
+  call setline(line('.'), vimshell#get_prompt() . getline('.')[col :])
   call s:move_head()
-  if l:col == l:mcol-1
+  if col == mcol-1
     startinsert!
   endif
 endfunction"}}}
@@ -486,15 +486,15 @@ function! s:clear(is_insert)"{{{
   call s:hangup(a:is_insert)
 
   " Clean up the screen.
-  let l:lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
+  let lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
   % delete _
 
   call vimshell#terminal#clear_highlight()
   call vimshell#terminal#init()
 
   call vimshell#print_prompt()
-  call vimshell#set_prompt_command(l:lines[0])
-  call append('$', map(l:lines[1:], string(vimshell#get_secondary_prompt()).'.v:val'))
+  call vimshell#set_prompt_command(lines[0])
+  call append('$', map(lines[1:], string(vimshell#get_secondary_prompt()).'.v:val'))
   $
 
   if a:is_insert
@@ -506,14 +506,14 @@ function! s:expand_wildcard()"{{{
   if empty(vimshell#get_current_args())
     return ''
   endif
-  let l:wildcard = vimshell#get_current_args()[-1]
-  let l:expanded = vimproc#parser#expand_wildcard(l:wildcard)
+  let wildcard = vimshell#get_current_args()[-1]
+  let expanded = vimproc#parser#expand_wildcard(wildcard)
 
   return (pumvisible() ? "\<C-e>" : '')
-        \ . repeat("\<BS>", len(l:wildcard)) . join(l:expanded)
+        \ . repeat("\<BS>", len(wildcard)) . join(expanded)
 endfunction"}}}
 function! s:hide()"{{{
-  let l:vimsh_buf = bufnr('%')
+  let vimsh_buf = bufnr('%')
   " Switch buffer.
   if winnr('$') != 1
     close
@@ -523,23 +523,23 @@ function! s:hide()"{{{
 endfunction"}}}
 function! s:exit()"{{{
   call s:hide()
-  execute 'bdelete!'. l:vimsh_buf
+  execute 'bdelete!'. vimsh_buf
 endfunction"}}}
 function! s:delete_backward_char()"{{{
   if !pumvisible()
-    let l:prefix = ''
+    let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
-    let l:prefix = "\<C-e>"
+    let prefix = "\<C-e>"
   else
-    let l:prefix = "\<C-y>"
+    let prefix = "\<C-y>"
   endif
 
   " Prevent backspace over prompt
-  let l:cur_text = vimshell#get_cur_line()
-  if l:cur_text !=# vimshell#get_prompt()
-    return l:prefix . "\<BS>"
+  let cur_text = vimshell#get_cur_line()
+  if cur_text !=# vimshell#get_prompt()
+    return prefix . "\<BS>"
   else
-    return l:prefix
+    return prefix
   endif
 endfunction"}}}
 function! s:delete_another_backward_char()"{{{
@@ -551,16 +551,16 @@ function! s:delete_another_backward_char()"{{{
 endfunction"}}}
 function! s:delete_backward_line()"{{{
   if !pumvisible()
-    let l:prefix = ''
+    let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
-    let l:prefix = "\<C-e>"
+    let prefix = "\<C-e>"
   else
-    let l:prefix = "\<C-y>"
+    let prefix = "\<C-y>"
   endif
 
-  let l:len = len(substitute(vimshell#get_cur_text(), '.', 'x', 'g'))
+  let len = len(substitute(vimshell#get_cur_text(), '.', 'x', 'g'))
 
-  return l:prefix . repeat("\<BS>", l:len)
+  return prefix . repeat("\<BS>", len)
 endfunction"}}}
 function! s:open_file(filename)"{{{
   " Execute cursor file.
@@ -569,24 +569,24 @@ function! s:open_file(filename)"{{{
   endif
 
   if a:filename !~ '^\a\+:\|^[/~]'
-    let l:prompt_nr = vimshell#get_prompt_linenr()
-    let l:filename = (has_key(b:vimshell.prompt_current_dir, l:prompt_nr)?
-          \ b:vimshell.prompt_current_dir[l:prompt_nr] : getcwd()) . '/' . a:filename
-    let l:filename = substitute(l:filename, '//', '/', 'g')
-    let l:filename = substitute(l:filename, ' ', '\\ ', 'g')
+    let prompt_nr = vimshell#get_prompt_linenr()
+    let filename = (has_key(b:vimshell.prompt_current_dir, prompt_nr)?
+          \ b:vimshell.prompt_current_dir[prompt_nr] : getcwd()) . '/' . a:filename
+    let filename = substitute(filename, '//', '/', 'g')
+    let filename = substitute(filename, ' ', '\\ ', 'g')
   else
-    let l:filename = a:filename
+    let filename = a:filename
   endif
 
-  if l:filename =~ '^\%(https\?\|ftp\)://'
+  if filename =~ '^\%(https\?\|ftp\)://'
     " Open URI.
-    call setline('$', vimshell#get_prompt() . 'open ' . l:filename)
-  elseif isdirectory(substitute(l:filename, '\\ ', ' ', 'g'))
+    call setline('$', vimshell#get_prompt() . 'open ' . filename)
+  elseif isdirectory(substitute(filename, '\\ ', ' ', 'g'))
     " Change directory.
-    call setline('$', vimshell#get_prompt() . 'cd ' . l:filename)
+    call setline('$', vimshell#get_prompt() . 'cd ' . filename)
   else
     " Edit file.
-    call setline('$', vimshell#get_prompt() . 'vim ' . l:filename)
+    call setline('$', vimshell#get_prompt() . 'vim ' . filename)
   endif
 endfunction"}}}
 function! s:hangup(is_insert)"{{{
@@ -600,14 +600,14 @@ function! s:hangup(is_insert)"{{{
   " Clear continuation.
   let b:vimshell.continuation = {}
 
-  let l:context = {
+  let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 1, 
         \ 'is_insert' : a:is_insert, 
         \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
         \}
 
-  call vimshell#print_prompt(l:context)
+  call vimshell#print_prompt(context)
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:insert_enter()"{{{
@@ -622,9 +622,9 @@ function! s:insert_enter()"{{{
       startinsert!
       return
     else
-      let l:pos = getpos('.')
-      let l:pos[2] = len(vimshell#get_prompt()) + 1
-      call setpos('.', l:pos)
+      let pos = getpos('.')
+      let pos[2] = len(vimshell#get_prompt()) + 1
+      call setpos('.', pos)
     endif
   endif
 
@@ -651,16 +651,16 @@ function! s:execute_by_background(is_insert)"{{{
     return
   endif
 
-  let l:interactive = b:interactive
-  let l:interactive.type = 'interactive'
-  let l:context = b:vimshell.continuation.context
+  let interactive = b:interactive
+  let interactive.type = 'interactive'
+  let context = b:vimshell.continuation.context
 
   let b:vimshell.continuation = {}
   let b:interactive = {
         \ 'type' : 'vimshell',
         \ 'syntax' : 'vimshell',
         \ 'process' : {},
-        \ 'fd' : l:context.fd,
+        \ 'fd' : context.fd,
         \ 'encoding' : &encoding,
         \ 'is_pty' : 0,
         \ 'echoback_linenr' : -1,
@@ -669,10 +669,10 @@ function! s:execute_by_background(is_insert)"{{{
         \ 'hook_functions_table' : {},
         \}
 
-  let [l:new_pos, l:old_pos] = vimshell#split(g:vimshell_split_command)
+  let [new_pos, old_pos] = vimshell#split(g:vimshell_split_command)
 
-  call vimshell#commands#iexe#init(l:context, l:interactive,
-        \ l:new_pos, l:old_pos, a:is_insert)
+  call vimshell#commands#iexe#init(context, interactive,
+        \ new_pos, old_pos, a:is_insert)
 endfunction"}}}
 
 " vim: foldmethod=marker

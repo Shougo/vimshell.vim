@@ -30,60 +30,60 @@ let s:command = {
       \ 'description' : 'sexe {command}',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, 
+  let [args, options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})
-  if !has_key(l:options, '--encoding')
-    let l:options['--encoding'] = &termencoding
+  if !has_key(options, '--encoding')
+    let options['--encoding'] = &termencoding
   endif
 
   " Execute shell command.
-  let l:cmdline = ''
-  for arg in l:args
-    if l:iswin
-      let l:arg = substitute(arg, '"', '\\"', 'g')
-      let l:arg = substitute(arg, '[<>|^]', '^\0', 'g')
-      let l:cmdline .= '"' . arg . '" '
+  let cmdline = ''
+  for arg in args
+    if iswin
+      let arg = substitute(arg, '"', '\\"', 'g')
+      let arg = substitute(arg, '[<>|^]', '^\0', 'g')
+      let cmdline .= '"' . arg . '" '
     else
-      let l:cmdline .= shellescape(arg) . ' '
+      let cmdline .= shellescape(arg) . ' '
     endif
   endfor
 
   if vimshell#iswin()
-    let l:cmdline = '"' . l:cmdline . '"'
+    let cmdline = '"' . cmdline . '"'
   endif
 
   " Set redirection.
   if a:fd.stdin == ''
-    let l:stdin = ''
+    let stdin = ''
   elseif a:fd.stdin == '/dev/null'
-    let l:null = tempname()
-    call writefile([], l:null)
+    let null = tempname()
+    call writefile([], null)
 
-    let l:stdin = '<' . l:null
+    let stdin = '<' . null
   else
-    let l:stdin = '<' . a:fd.stdin
+    let stdin = '<' . a:fd.stdin
   endif
 
   echo 'Running command.'
-  
-  if l:options['--encoding'] != '' && &encoding != l:options['--encoding']
+
+  if options['--encoding'] != '' && &encoding != options['--encoding']
     " Convert encoding.
-    let l:cmdline = iconv(l:cmdline, &encoding, l:options['--encoding'])
-    let l:stdin = iconv(l:stdin, &encoding, l:options['--encoding'])
+    let cmdline = iconv(cmdline, &encoding, options['--encoding'])
+    let stdin = iconv(stdin, &encoding, options['--encoding'])
   endif
-  let l:result = system(printf('%s %s', l:cmdline, l:stdin))
-  if l:options['--encoding'] != '' && &encoding != l:options['--encoding']
+  let result = system(printf('%s %s', cmdline, stdin))
+  if options['--encoding'] != '' && &encoding != options['--encoding']
     " Convert encoding.
-    let l:result = iconv(l:result, l:options['--encoding'], &encoding)
+    let result = iconv(result, options['--encoding'], &encoding)
   endif
-  
-  call vimshell#print(a:fd, l:result)
+
+  call vimshell#print(a:fd, result)
   redraw
   echo ''
 
   if a:fd.stdin == '/dev/null'
-    call delete(l:null)
+    call delete(null)
   endif
 
   let b:vimshell.system_variables['status'] = v:shell_error

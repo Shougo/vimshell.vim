@@ -32,31 +32,31 @@ let s:command = {
 function! s:command.execute(command, args, fd, context)"{{{
   " Execute from history.
 
-  let l:histories = vimshell#history#read()
+  let histories = vimshell#history#read()
   if empty(a:args) || a:args[0] =~ '^\d\+'
     if empty(a:args)
-      let l:num = 0
+      let num = 0
     else
-      let l:num = str2nr(a:args[0])
+      let num = str2nr(a:args[0])
     endif
 
-    if l:num >= len(l:histories)
+    if num >= len(histories)
       " Error.
       call vimshell#error_line(a:fd, 'h: Not found in history.')
       return
     endif
 
-    let l:hist = l:histories[l:num]
+    let hist = histories[num]
   else
-    let l:args = join(a:args)
-    for h in l:histories
-      if vimshell#head_match(h, l:args)
-        let l:hist = h
+    let args = join(a:args)
+    for h in histories
+      if vimshell#head_match(h, args)
+        let hist = h
         break
       endif
     endfor
 
-    if !exists('l:hist')
+    if !exists('hist')
       " Error.
       call vimshell#error_line(a:fd, 'h: Not found in history.')
       return
@@ -64,20 +64,20 @@ function! s:command.execute(command, args, fd, context)"{{{
   endif
 
   if a:context.has_head_spaces
-    let l:hist = ' ' . l:hist
+    let hist = ' ' . hist
   endif
-  call vimshell#set_prompt_command(l:hist)
+  call vimshell#set_prompt_command(hist)
 
-  let l:context = a:context
-  let l:context.is_interactive = 0
-  let l:context.fd = a:fd
+  let context = a:context
+  let context.is_interactive = 0
+  let context.fd = a:fd
   try
-    call vimshell#parser#eval_script(l:hist, l:context)
+    call vimshell#parser#eval_script(hist, context)
   catch /.*/
     call vimshell#error_line({}, v:exception)
-    call vimshell#print_prompt(l:context)
+    call vimshell#print_prompt(context)
 
-    if has_key(l:context, 'is_insert') && l:context.is_insert
+    if has_key(context, 'is_insert') && context.is_insert
       call vimshell#start_insert()
     endif
     return

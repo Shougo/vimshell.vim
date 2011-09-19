@@ -30,31 +30,31 @@ let s:command = {
       \ 'description' : 'galias {global-alias-name} = {command}',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-  let l:args = join(a:args)
+  let args = join(a:args)
   
   if empty(a:args)
     " View all global aliases.
     for alias in keys(b:vimshell.galias_table)
       call vimshell#print_line(a:fd, printf('%s=%s', alias, vimshell#get_galias(alias)))
     endfor
-  elseif l:args =~ vimshell#get_alias_pattern().'$'
+  elseif args =~ vimshell#get_alias_pattern().'$'
     " View global alias.
     call vimshell#print_line(a:fd, printf('%s=%s', a:args[0], vimshell#get_galias(a:args[0])))
   else
     " Define global alias.
     
     " Parse command line.
-    let l:alias_name = matchstr(l:args, vimshell#get_alias_pattern().'\ze\s*=\s*')
+    let alias_name = matchstr(args, vimshell#get_alias_pattern().'\ze\s*=\s*')
 
     " Next.
-    if l:alias_name == ''
-      throw 'Wrong syntax: ' . l:args
+    if alias_name == ''
+      throw 'Wrong syntax: ' . args
     endif
 
     " Skip =.
-    let l:expression = l:args[matchend(l:args, '\s*=\s*') :]
+    let expression = args[matchend(args, '\s*=\s*') :]
 
-    call vimshell#set_galias(l:alias_name, l:expression)
+    call vimshell#set_galias(alias_name, expression)
   endif
 endfunction"}}}
 

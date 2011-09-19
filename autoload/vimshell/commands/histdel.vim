@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: histdel.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,21 +33,21 @@ function! s:command.execute(command, args, fd, context)"{{{
   " Delete from history.
 
   if !empty(a:args)
-    let l:del_hist = {}
+    let del_hist = {}
     for d in a:args
-      let l:del_hist[d] = 1
+      let del_hist[d] = 1
     endfor
 
-    let l:new_hist = []
-    let l:cnt = 0
+    let new_hist = []
+    let cnt = 0
     for h in vimshell#history#read()
-      if !has_key(l:del_hist, l:cnt)
-        call add(l:new_hist, h)
+      if !has_key(del_hist, cnt)
+        call add(new_hist, h)
       endif
-      let l:cnt += 1
+      let cnt += 1
     endfor
 
-    call vimshell#history#write(l:new_hist)
+    call vimshell#history#write(new_hist)
   else
     call vimshell#error_line(a:fd, 'histdel: Arguments required.')
   endif

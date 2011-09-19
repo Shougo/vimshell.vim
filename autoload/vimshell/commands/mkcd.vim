@@ -34,21 +34,21 @@ function! s:command.execute(command, args, fd, context)"{{{
 
   if empty(a:args)
     " Move to HOME directory.
-    let l:arguments = $HOME
+    let arguments = $HOME
   elseif len(a:args) == 2
     " Substitute current directory.
-    let l:arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
+    let arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
   elseif len(a:args) > 2
     call vimshell#error_line(a:fd, 'mkcd: Too many arguments.')
     return
   else
     " Filename escape.
-    let l:arguments = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
+    let arguments = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  if !isdirectory(l:arguments) && !filereadable(l:arguments)
+  if !isdirectory(arguments) && !filereadable(arguments)
     " Make directory.
-    call mkdir(l:arguments)
+    call mkdir(arguments)
   endif
 
   return vimshell#execute_internal_command('cd', a:args, a:fd, a:context)

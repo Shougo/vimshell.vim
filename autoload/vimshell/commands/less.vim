@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,8 +31,8 @@ let s:command = {
       \}
 function! s:command.execute(commands, context)"{{{
   " Execute command in background.
-  let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+  let commands = a:commands
+  let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--syntax', '--split'],
         \ }, {
         \ '--encoding' : &termencoding,
@@ -40,12 +40,12 @@ function! s:command.execute(commands, context)"{{{
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  if empty(l:commands[0].args)
+  if empty(commands[0].args)
     return
   endif
 
-  if !executable(l:commands[0].args[0])
-    return vimshell#execute_internal_command('view', l:commands[0].args, a:context.fd, a:context)
+  if !executable(commands[0].args[0])
+    return vimshell#execute_internal_command('view', commands[0].args, a:context.fd, a:context)
   endif
 
   " Background execute.
@@ -55,24 +55,24 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Encoding conversion.
-  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    for l:command in l:commands
-      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  if options['--encoding'] != '' && options['--encoding'] != &encoding
+    for command in commands
+      call map(command.args, 'iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
   " Set variables.
-  let l:interactive = {
+  let interactive = {
         \ 'type' : 'less',
-        \ 'syntax' : l:options['--syntax'],
+        \ 'syntax' : options['--syntax'],
         \ 'fd' : a:context.fd,
-        \ 'encoding' : l:options['--encoding'],
+        \ 'encoding' : options['--encoding'],
         \ 'is_pty' : 0,
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \}
 
-  return s:init(a:commands, a:context, l:options, l:interactive)
+  return s:init(a:commands, a:context, options, interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
@@ -84,12 +84,12 @@ endfunction
 
 function! s:init(commands, context, options, interactive)"{{{
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(a:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(a:options['--split'])
 
   " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
+  let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
         \ '$VIMSHELL' : 1,
@@ -104,7 +104,7 @@ function! s:init(commands, context, options, interactive)"{{{
   let a:interactive.process = vimproc#plineopen2(a:commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
+  call vimshell#restore_variables(environments_save)
 
   " Input from stdin.
   if a:interactive.fd.stdin != ''
@@ -115,16 +115,16 @@ function! s:init(commands, context, options, interactive)"{{{
   let a:interactive.width = winwidth(0)
   let a:interactive.height = winheight(0)
 
-  let l:args = ''
-  for l:command in a:commands
-    let l:args .= join(l:command.args)
+  let args = ''
+  for command in a:commands
+    let args .= join(command.args)
   endfor
 
-  edit `='less-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  edit `='less-'.substitute(args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
   " Common.
   setlocal nocompatible
@@ -182,11 +182,11 @@ function! s:init(commands, context, options, interactive)"{{{
 
   call s:print_output(winheight(0))
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}
@@ -235,32 +235,32 @@ function! s:print_output(line_num)"{{{
   endif
 
   " Check cache.
-  let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
-  if !b:interactive.process.stdout.eof && l:count < a:line_num
+  let cnt = len(split(b:interactive.stdout_cache, '\n', 1))
+  if !b:interactive.process.stdout.eof && cnt < a:line_num
     echo 'Running command.'
 
-    while l:count < a:line_num && !b:interactive.process.stdout.eof
+    while cnt < a:line_num && !b:interactive.process.stdout.eof
       let b:interactive.stdout_cache .= b:interactive.process.stdout.read(100, 40)
-      let l:count = len(split(b:interactive.stdout_cache, '\n', 1))
+      let cnt = len(split(b:interactive.stdout_cache, '\n', 1))
     endwhile
 
     redraw
     echo ''
   endif
 
-  if l:count > a:line_num
-    let l:count = a:line_num
+  if cnt > a:line_num
+    let cnt = a:line_num
   endif
 
-  let l:match = match(b:interactive.stdout_cache, '\n', 0, l:count)
-  if l:match <= 0
-    let l:output = b:interactive.stdout_cache
+  let match = match(b:interactive.stdout_cache, '\n', 0, cnt)
+  if match <= 0
+    let output = b:interactive.stdout_cache
     let b:interactive.stdout_cache = ''
   else
-    let l:output = b:interactive.stdout_cache[: l:match-1]
-    let b:interactive.stdout_cache = b:interactive.stdout_cache[l:match :]
+    let output = b:interactive.stdout_cache[: match-1]
+    let b:interactive.stdout_cache = b:interactive.stdout_cache[match :]
   endif
 
-  call vimshell#interactive#print_buffer(b:interactive.fd, l:output)
+  call vimshell#interactive#print_buffer(b:interactive.fd, output)
   setlocal nomodifiable
 endfunction"}}}

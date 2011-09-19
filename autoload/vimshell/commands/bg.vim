@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,8 +31,8 @@ let s:command = {
       \}
 function! s:command.execute(commands, context)"{{{
   " Execute command in background.
-  let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+  let commands = a:commands
+  let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--syntax', '--split'],
         \ }, {
         \ '--encoding' : &termencoding,
@@ -40,7 +40,7 @@ function! s:command.execute(commands, context)"{{{
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  if empty(l:commands[0].args)
+  if empty(commands[0].args)
     return
   endif
 
@@ -51,14 +51,14 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Encoding conversion.
-  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    for l:command in l:commands
-      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  if options['--encoding'] != '' && options['--encoding'] != &encoding
+    for command in commands
+      call map(command.args, 'iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
   " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
+  let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -70,18 +70,18 @@ function! s:command.execute(commands, context)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#plineopen3(l:commands)
+  let sub = vimproc#plineopen3(commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
+  call vimshell#restore_variables(environments_save)
 
   " Set variables.
-  let l:interactive = {
+  let interactive = {
         \ 'type' : 'background', 
         \ 'syntax' : &syntax,
-        \ 'process' : l:sub, 
+        \ 'process' : sub, 
         \ 'fd' : a:context.fd, 
-        \ 'encoding' : l:options['--encoding'], 
+        \ 'encoding' : options['--encoding'], 
         \ 'is_pty' : 0, 
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
@@ -90,12 +90,12 @@ function! s:command.execute(commands, context)"{{{
         \}
 
   " Input from stdin.
-  if l:interactive.fd.stdin != ''
-    call l:interactive.process.stdin.write(vimshell#read(a:context.fd))
+  if interactive.fd.stdin != ''
+    call interactive.process.stdin.write(vimshell#read(a:context.fd))
   endif
-  call l:interactive.process.stdin.close()
+  call interactive.process.stdin.close()
 
-  return vimshell#commands#bg#init(a:commands, a:context, l:options, l:interactive)
+  return vimshell#commands#bg#init(a:commands, a:context, options, interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
     return vimshell#complete#helper#command_args(a:args)
@@ -107,20 +107,20 @@ endfunction
 
 function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(a:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(a:options['--split'])
 
-  let l:args = ''
-  for l:command in a:commands
-    let l:args .= join(l:command.args)
+  let args = ''
+  for command in a:commands
+    let args .= join(command.args)
   endfor
 
-  edit `='bg-'.substitute(l:args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  edit `='bg-'.substitute(args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
   " Common.
   setlocal nocompatible
@@ -168,11 +168,11 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
 
   call s:on_execute()
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

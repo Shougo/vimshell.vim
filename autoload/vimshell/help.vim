@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: help.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Aug 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,41 +33,41 @@ let s:doc_dict = {
 function! s:doc_dict.search(cur_text)"{{{
   " Get command name.
   try
-    let l:args = vimshell#get_current_args(a:cur_text)
+    let args = vimshell#get_current_args(a:cur_text)
   catch /^Exception:/
     return []
   endtry
-  if empty(l:args)
+  if empty(args)
     return []
   endif
 
-  let l:command = fnamemodify(l:args[0], ':t:r')
+  let command = fnamemodify(args[0], ':t:r')
 
-  let l:commands = vimshell#available_commands()
-  if l:command == ''
+  let commands = vimshell#available_commands()
+  if command == ''
     return []
-  elseif !has_key(l:commands, l:command)
-    if !has_key(s:cached_doc, l:command)
+  elseif !has_key(commands, command)
+    if !has_key(s:cached_doc, command)
       return []
     endif
 
-    let l:description = s:cached_doc[l:command]
+    let description = s:cached_doc[command]
   else
-    let l:description = l:commands[l:command].description
+    let description = commands[command].description
   endif
 
-  let l:usage = [{ 'text' : 'Usage: ', 'highlight' : 'Identifier' }]
-  if l:description =~? '^usage:\s*'
-    call add(l:usage, { 'text' : l:command, 'highlight' : 'Statement' })
-    call add(l:usage, { 'text' : ' ' . join(split(l:description)[2:]) })
-  elseif l:description =~# l:command.'\s*'
-    call add(l:usage, { 'text' : l:command, 'highlight' : 'Statement' })
-    call add(l:usage, { 'text' : l:description[len(l:command) :] })
+  let usage = [{ 'text' : 'Usage: ', 'highlight' : 'Identifier' }]
+  if description =~? '^usage:\s*'
+    call add(usage, { 'text' : command, 'highlight' : 'Statement' })
+    call add(usage, { 'text' : ' ' . join(split(description)[2:]) })
+  elseif description =~# command.'\s*'
+    call add(usage, { 'text' : command, 'highlight' : 'Statement' })
+    call add(usage, { 'text' : description[len(command) :] })
   else
-    call add(l:usage, { 'text' : l:description })
+    call add(usage, { 'text' : description })
   endif
 
-  return l:usage
+  return usage
 endfunction"}}}
 "}}}
 
@@ -83,17 +83,17 @@ function! vimshell#help#get_cached_doc()"{{{
 endfunction"}}}
 function! vimshell#help#set_cached_doc(cache)"{{{
   let s:cached_doc = a:cache
-  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
-  call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), l:doc_path)
+  let doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), doc_path)
 endfunction"}}}
 
 function! s:load_cached_doc()"{{{
   let s:cached_doc = {}
-  let l:doc_path = g:vimshell_temporary_directory.'/cached-doc'
-  if !filereadable(l:doc_path)
-    call writefile([], l:doc_path)
+  let doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  if !filereadable(doc_path)
+    call writefile([], doc_path)
   endif
-  for args in map(readfile(l:doc_path), 'split(v:val, "!!!")')
+  for args in map(readfile(doc_path), 'split(v:val, "!!!")')
     let s:cached_doc[args[0]] = join(args[1:], '!!!')
   endfor
 endfunction"}}}

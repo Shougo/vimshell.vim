@@ -40,16 +40,16 @@ function! vimshell#vcs#git#vcs_name()"{{{
 endfunction"}}}
 
 function! vimshell#vcs#git#current_branch()"{{{
-  let l:git_dir = s:get_git_dir()
-  if !filereadable(l:git_dir . '/HEAD')
+  let git_dir = s:get_git_dir()
+  if !filereadable(git_dir . '/HEAD')
     return ''
   endif
 
-  let l:lines = readfile(l:git_dir . '/HEAD')
-  if empty(l:lines)
+  let lines = readfile(git_dir . '/HEAD')
+  if empty(lines)
     return ''
   else
-    return matchstr(l:lines[0], 'refs/heads/\zs.\+$')
+    return matchstr(lines[0], 'refs/heads/\zs.\+$')
   endif
 endfunction"}}}
 
@@ -66,44 +66,44 @@ function! vimshell#vcs#git#repository_relative_path()"{{{
 endfunction"}}}
 
 function! vimshell#vcs#git#action_message()"{{{
-  let l:action = []
-  let l:current_action = ''
-  let l:files = []
-  for l:status in split(vimshell#system('git status', '', 500), '\n')
-    if l:status =~# '^\s*#\s*unmerged'
-      if l:current_action != '' && len(l:files) > 0
-        call add(l:action, printf('%s:%d', l:current_action, len(l:files)))
+  let action = []
+  let current_action = ''
+  let files = []
+  for status in split(vimshell#system('git status', '', 500), '\n')
+    if status =~# '^\s*#\s*unmerged'
+      if current_action != '' && len(files) > 0
+        call add(action, printf('%s:%d', current_action, len(files)))
       endif
       
-      let l:current_action = 'unmerged'
-    elseif l:status =~# '^\s*#\s*Untracked'
-      if l:current_action != '' && len(l:files) > 0
-        call add(l:action, printf('%s:%d', l:current_action, len(l:files)))
+      let current_action = 'unmerged'
+    elseif status =~# '^\s*#\s*Untracked'
+      if current_action != '' && len(files) > 0
+        call add(action, printf('%s:%d', current_action, len(files)))
       endif
       
-      let l:current_action = 'untracked'
-    elseif l:status =~# '^#\t'
-      let l:file = matchstr(l:status, '^#\t\zs.*')
+      let current_action = 'untracked'
+    elseif status =~# '^#\t'
+      let file = matchstr(status, '^#\t\zs.*')
       
-      if l:file !=# '.gitignore' && l:file !~# '^modified:' 
-        call add(l:files, l:file)
+      if file !=# '.gitignore' && file !~# '^modified:' 
+        call add(files, file)
       endif
     endif
   endfor
-  if l:current_action != '' && len(l:files) > 0
-    call add(l:action, printf('%s:%d', l:current_action, len(l:files)))
+  if current_action != '' && len(files) > 0
+    call add(action, printf('%s:%d', current_action, len(files)))
   endif
 
-  return join(l:action)
+  return join(action)
 endfunction"}}}
 
 function! s:get_git_dir()"{{{
-  let l:git_dir = finddir('.git', ';')
-  if l:git_dir != ''
-    let l:git_dir = fnamemodify(l:git_dir, ':p')
+  let git_dir = finddir('.git', ';')
+  if git_dir != ''
+    let git_dir = fnamemodify(git_dir, ':p')
   endif
 
-  return l:git_dir
+  return git_dir
 endfunction"}}}
 
 " vim: foldmethod=marker

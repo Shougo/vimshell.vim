@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,52 +36,52 @@ function! s:command.execute(commands, context)"{{{
     return
   endif
 
-  let l:commands = a:commands
-  let [l:commands[0].args, l:options] = vimshell#parser#getopt(l:commands[0].args, {
+  let commands = a:commands
+  let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--split']
         \ }, {
         \ '--split' : g:vimshell_split_command,
         \ })
-  let l:args = l:commands[0].args
+  let args = commands[0].args
 
-  if empty(l:args)
+  if empty(args)
     return
   endif
 
   if vimshell#iswin()
     " Use Cygwin pty.
-    call insert(l:args, 'fakecygpty')
+    call insert(args, 'fakecygpty')
 
     if !executable('fakecygpty')
       call vimshell#error_line(a:context.fd, 'texe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
 
-    if len(l:args) < 2
+    if len(args) < 2
       call vimshell#error_line(a:context.fd, 'texe: command is required.')
       return
     endif
 
     " Get program path from g:vimshell_interactive_cygwin_path.
-    let l:args[1] = vimproc#get_command_name(l:args[1], g:vimshell_interactive_cygwin_path)
+    let args[1] = vimproc#get_command_name(args[1], g:vimshell_interactive_cygwin_path)
   endif
 
-  let l:cmdname = fnamemodify(l:args[0], ':r')
-  if !has_key(l:options, '--encoding')
+  let cmdname = fnamemodify(args[0], ':r')
+  if !has_key(options, '--encoding')
     if vimshell#iswin()
       " Use UTF-8 Cygwin.
-      let l:options['--encoding'] = 'utf8'
+      let options['--encoding'] = 'utf8'
     else
-      let l:options['--encoding'] =
-            \ has_key(g:vimshell_interactive_encodings, l:cmdname) ?
-            \ g:vimshell_interactive_encodings[l:cmdname] : &termencoding
+      let options['--encoding'] =
+            \ has_key(g:vimshell_interactive_encodings, cmdname) ?
+            \ g:vimshell_interactive_encodings[cmdname] : &termencoding
     endif
   endif
 
   " Encoding conversion.
-  if l:options['--encoding'] != '' && l:options['--encoding'] != &encoding
-    for l:command in l:commands
-      call map(l:command.args, 'iconv(v:val, &encoding, l:options["--encoding"])')
+  if options['--encoding'] != '' && options['--encoding'] != &encoding
+    for command in commands
+      call map(command.args, 'iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
@@ -92,19 +92,19 @@ function! s:command.execute(commands, context)"{{{
 
   if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
-    let l:home_save = vimshell#set_variables({
+    let home_save = vimshell#set_variables({
           \ '$HOME' : g:vimshell_interactive_cygwin_home, 
           \})
   endif
 
-  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(options['--split'])
 
-  call s:init_bg(l:args, a:context)
+  call s:init_bg(args, a:context)
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
   " Set environment variables.
-  let l:environments_save = vimshell#set_variables({
+  let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -116,43 +116,43 @@ function! s:command.execute(commands, context)"{{{
         \})
 
   " Initialize.
-  let l:sub = vimproc#ptyopen(l:commands, 2)
+  let sub = vimproc#ptyopen(commands, 2)
 
   " Restore environment variables.
-  call vimshell#restore_variables(l:environments_save)
+  call vimshell#restore_variables(environments_save)
 
   if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
-    call vimshell#restore_variables(l:home_save)
+    call vimshell#restore_variables(home_save)
   endif
 
   " Set variables.
   let b:interactive = {
         \ 'type': 'terminal',
         \ 'syntax' : &syntax,
-        \ 'process' : l:sub,
+        \ 'process' : sub,
         \ 'fd' : a:context.fd,
-        \ 'encoding' : l:options['--encoding'],
+        \ 'encoding' : options['--encoding'],
         \ 'is_secret': 0,
         \ 'prompt_history' : {},
         \ 'is_pty' : 1,
-        \ 'args' : l:args,
+        \ 'args' : args,
         \ 'echoback_linenr' : 0,
         \ 'save_cursor' : getpos('.'),
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'command' : fnamemodify(vimshell#iswin() ? l:args[1] : l:args[0], ':t:r'),
+        \ 'command' : fnamemodify(vimshell#iswin() ? args[1] : args[0], ':t:r'),
         \ 'hook_functions_table' : {},
         \}
   call vimshell#interactive#init()
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 1)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
 
     if b:interactive.process.is_valid
       startinsert
@@ -202,15 +202,15 @@ endfunction"}}}
 
 function! s:init_bg(args, context)"{{{
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
   edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
   call s:default_settings()
 
-  let l:use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
-  execute 'set filetype=term-'.fnamemodify(l:use_cygpty ? a:args[1] : a:args[0], ':t:r')
+  let use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  execute 'set filetype=term-'.fnamemodify(use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.
   augroup vimshell

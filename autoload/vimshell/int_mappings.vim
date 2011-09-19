@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,19 +96,19 @@ endfunction"}}}
 " vimshell interactive key-mappings functions.
 function! s:delete_backward_char(is_auto_select)"{{{
   if !pumvisible()
-    let l:prefix = ''
+    let prefix = ''
   elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
-    let l:prefix = "\<C-e>"
+    let prefix = "\<C-e>"
   else
-    let l:prefix = "\<C-y>"
+    let prefix = "\<C-y>"
   endif
 
   " Prevent backspace over prompt
-  let l:cur_text = vimshell#get_cur_line()
-  if !has_key(b:interactive.prompt_history, line('.')) || l:cur_text !=# b:interactive.prompt_history[line('.')]
-    return l:prefix . "\<BS>"
+  let cur_text = vimshell#get_cur_line()
+  if !has_key(b:interactive.prompt_history, line('.')) || cur_text !=# b:interactive.prompt_history[line('.')]
+    return prefix . "\<BS>"
   else
-    return l:prefix
+    return prefix
   endif
 endfunction"}}}
 function! s:execute_history(is_insert)"{{{
@@ -118,15 +118,15 @@ function! s:execute_history(is_insert)"{{{
   endif
 
   " Search prompt.
-  let l:command = vimshell#interactive#get_cur_line(line('.'))
+  let command = vimshell#interactive#get_cur_line(line('.'))
 
   if line('.') != line('$')
     if !has_key(b:interactive.prompt_history, line('$'))
       " Insert prompt line.
-      call append(line('$'), l:command)
+      call append(line('$'), command)
     else
       " Set prompt line.
-      call setline(line('$'), b:interactive.prompt_history[line('$')] . l:command)
+      call setline(line('$'), b:interactive.prompt_history[line('$')] . command)
     endif
   endif
 
@@ -137,17 +137,17 @@ function! s:execute_history(is_insert)"{{{
   call vimshell#imdisable()
 endfunction"}}}
 function! s:previous_prompt()"{{{
-  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+  let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
         \ 'v:val < line(".")'), 'vimshell#compare_number')
-  if !empty(l:prompts)
-    call cursor(l:prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
+  if !empty(prompts)
+    call cursor(prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
 function! s:next_prompt()"{{{
-  let l:prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
+  let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
         \ 'v:val > line(".")'), 'vimshell#compare_number')
-  if !empty(l:prompts)
-    call cursor(l:prompts[0], len(vimshell#interactive#get_prompt()) + 1)
+  if !empty(prompts)
+    call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
 function! s:move_head()"{{{
@@ -155,32 +155,32 @@ function! s:move_head()"{{{
 endfunction"}}}
 function! s:delete_backward_line()"{{{
   if !pumvisible()
-    let l:prefix = ''
+    let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
-    let l:prefix = "\<C-e>"
+    let prefix = "\<C-e>"
   else
-    let l:prefix = "\<C-y>"
+    let prefix = "\<C-y>"
   endif
 
-  let l:len = !has_key(b:interactive.prompt_history, line('.')) ?
+  let len = !has_key(b:interactive.prompt_history, line('.')) ?
         \ len(getline('.')) : len(substitute(vimshell#interactive#get_cur_text(), '.', 'x', 'g'))
 
-  return l:prefix . repeat("\<BS>", l:len)
+  return prefix . repeat("\<BS>", len)
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert)"{{{
   if !a:is_insert
     " Search cursor filename.
-    let l:filename = vimshell#get_cursor_filename()
+    let filename = vimshell#get_cursor_filename()
 
     if &termencoding != '' && &encoding != &termencoding
       " Convert encoding.
-      let l:filename = iconv(l:filename, &encoding, &termencoding)
+      let filename = iconv(filename, &encoding, &termencoding)
     endif
 
     " Execute cursor file.
-    if l:filename =~ '^\%(https\?\|ftp\)://'
+    if filename =~ '^\%(https\?\|ftp\)://'
       " Open uri.
-      call vimshell#open(l:filename)
+      call vimshell#open(filename)
       return
     endif
   endif
@@ -194,8 +194,8 @@ function! s:paste_prompt()"{{{
   endif
 
   " Set prompt line.
-  let l:cur_text = vimshell#interactive#get_cur_line(line('.'))
-  call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . l:cur_text)
+  let cur_text = vimshell#interactive#get_cur_line(line('.'))
+  call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . cur_text)
   $
 endfunction"}}}
 function! s:restart_command()"{{{
@@ -210,13 +210,13 @@ function! s:restart_command()"{{{
   call vimshell#terminal#clear_highlight()
 
   " Initialize.
-  let l:sub = vimproc#ptyopen(b:interactive.args)
+  let sub = vimproc#ptyopen(b:interactive.args)
 
   call s:default_settings()
 
   " Set variables.
   call extend(b:interactive, {
-        \ 'process' : l:sub,
+        \ 'process' : sub,
         \ 'is_secret': 0,
         \ 'prompt_history' : {},
         \ 'echoback_linenr' : 0
@@ -227,15 +227,15 @@ function! s:restart_command()"{{{
   startinsert!
 endfunction"}}}
 function! s:command_complete()"{{{
-  let l:prompt = vimshell#interactive#get_prompt()
-  let l:command = b:interactive.command
-  let l:cur_text = vimshell#interactive#get_cur_text()
-  call setline('.', l:prompt)
-  call vimshell#interactive#send_string(l:cur_text .
+  let prompt = vimshell#interactive#get_prompt()
+  let command = b:interactive.command
+  let cur_text = vimshell#interactive#get_cur_text()
+  call setline('.', prompt)
+  call vimshell#interactive#send_string(cur_text .
         \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"), !0)
-  if !vimshell#head_match(getline('$'), l:prompt)
+  if !vimshell#head_match(getline('$'), prompt)
     " Restore prompt.
-    call setline('$', l:prompt . l:cur_text . getline('$'))
+    call setline('$', prompt . cur_text . getline('$'))
     startinsert!
   endif
 
@@ -253,9 +253,9 @@ function! s:insert_enter()"{{{
       startinsert!
       return
     else
-      let l:pos = getpos('.')
-      let l:pos[2] = len(vimshell#interactive#get_prompt()) + 1
-      call setpos('.', l:pos)
+      let pos = getpos('.')
+      let pos[2] = len(vimshell#interactive#get_prompt()) + 1
+      call setpos('.', pos)
     endif
   endif
 
@@ -285,12 +285,12 @@ function! s:clear()"{{{
   " Clean up the screen.
   if line('$') != 1
     if has_key(b:interactive.prompt_history, line('$'))
-      let l:current_history = b:interactive.prompt_history[line('$')]
+      let current_history = b:interactive.prompt_history[line('$')]
 
       let b:interactive.prompt_history = {}
 
       " Restore history.
-      let b:interactive.prompt_history[1] = l:current_history
+      let b:interactive.prompt_history[1] = current_history
     else
       let b:interactive.prompt_history = {}
     endif

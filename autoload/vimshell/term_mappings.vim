@@ -34,7 +34,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 
-  for l:lhs in [
+  for lhs in [
         \ 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n',
         \ 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         \ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
@@ -44,11 +44,11 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '[', ']', '{', '}', ':', ';', '''', '"', ',', '<', '.', '>', '/', '?',
         \ ]
 
-    execute 'inoremap <buffer><silent><expr>' l:lhs 'vimshell#term_mappings#send_key('. string(l:lhs) .')'
-    "execute 'inoremap <buffer><silent>' l:lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:lhs))
+    execute 'inoremap <buffer><silent><expr>' lhs 'vimshell#term_mappings#send_key('. string(lhs) .')'
+    "execute 'inoremap <buffer><silent>' lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(lhs))
   endfor
   
-  for [l:key, l:value] in items({
+  for [key, value] in items({
         \ '<C-a>' : "\<C-a>", '<C-b>' : "\<C-b>", '<C-c>' : "\<C-c>", '<C-d>' : "\<C-d>", '<C-e>' : "\<C-e>", '<C-f>' : "\<C-f>", '<C-g>' : "\<C-g>",
         \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<LF>", '<C-n>' : "\<C-n>",
         \ '<C-o>' : "\<C-o>", '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>", '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
@@ -57,10 +57,10 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<Bar>' : '|', '<Space>' : ' ',
         \ })
     
-    execute 'inoremap <buffer><silent>' l:key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(l:value))
+    execute 'inoremap <buffer><silent>' key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(value))
   endfor
   
-  for [l:key, l:value] in items({
+  for [key, value] in items({
         \ '<Home>' : "\<ESC>OH", '<End>' : "\<ESC>OF", '<Del>' : "\<ESC>[3~", '<BS>' : "\<C-h>",
         \ '<Up>' : "\<ESC>[A", '<Down>' : "\<ESC>[B", '<Left>' : "\<ESC>[D", '<Right>' : "\<ESC>[C",
         \ '<PageUp>' : "\<ESC>[5~", '<PageDown>' : "\<ESC>[6~",
@@ -70,7 +70,7 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ '<Insert>' : "\<ESC>[2~",
         \ })
     
-    execute 'inoremap <buffer><silent>' l:key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', string(map(split(l:value, '\zs'), 'char2nr(v:val)')))
+    execute 'inoremap <buffer><silent>' key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', string(map(split(value, '\zs'), 'char2nr(v:val)')))
   endfor
   
   if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
@@ -105,17 +105,17 @@ function! s:start_insert()"{{{
 endfunction "}}}
 function! s:execute_line()"{{{
   " Search cursor file.
-  let l:filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+  let filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
 
   if &termencoding != '' && &encoding != &termencoding
     " Convert encoding.
-    let l:filename = iconv(l:filename, &encoding, &termencoding)
+    let filename = iconv(filename, &encoding, &termencoding)
   endif
 
   " Execute cursor file.
-  if l:filename =~ '^\%(https\?\|ftp\)://'
+  if filename =~ '^\%(https\?\|ftp\)://'
     " Open uri.
-    call vimshell#open(l:filename)
+    call vimshell#open(filename)
     return
   endif
 endfunction"}}}

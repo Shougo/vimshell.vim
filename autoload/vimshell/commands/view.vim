@@ -30,30 +30,30 @@ let s:command = {
       \ 'description' : 'view [{filename}]',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
-  let [l:args, l:options] = vimshell#parser#getopt(a:args, {
+  let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  if empty(l:args)
+  if empty(args)
     if a:fd.stdin == ''
       vimshell#error_line(a:fd, 'view: Filename required.')
       return
     endif
 
     " Read from stdin.
-    let l:filenames = [a:fd.stdin]
+    let filenames = [a:fd.stdin]
   else
-    let l:filenames = l:args
+    let filenames = args
   endif
 
-  if len(l:filenames) == 1 && !isdirectory(l:filenames[0])
-    let l:lines = readfile(l:filenames[0])
-    if len(l:lines) < winheight(0)
+  if len(filenames) == 1 && !isdirectory(filenames[0])
+    let lines = readfile(filenames[0])
+    if len(lines) < winheight(0)
       " Print lines if one screen.
-      for l:line in l:lines
-        call vimshell#print_line(a:fd, l:line)
+      for line in lines
+        call vimshell#print_line(a:fd, line)
       endfor
 
       return
@@ -61,27 +61,27 @@ function! s:command.execute(program, args, fd, context)"{{{
   endif
 
   " Save current directiory.
-  let l:cwd = getcwd()
+  let cwd = getcwd()
 
-  let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
+  let [new_pos, old_pos] = vimshell#split(options['--split'])
 
-  for l:filename in l:filenames
+  for filename in filenames
     try
-      silent edit +setlocal\ readonly `=l:filename`
+      silent edit +setlocal\ readonly `=filename`
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry
   endfor
 
-  let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
+  let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(l:cwd)
+  call vimshell#cd(cwd)
 
-  call vimshell#restore_pos(l:old_pos)
+  call vimshell#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(l:new_pos)
+    call vimshell#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

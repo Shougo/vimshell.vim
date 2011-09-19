@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,14 +38,14 @@ function! vimshell#hook#call(hook_point, context, args)"{{{
     return
   endif
 
-  let l:context = copy(a:context)
-  let l:context.is_interactive = 0
-  call vimshell#set_context(l:context)
+  let context = copy(a:context)
+  let context.is_interactive = 0
+  call vimshell#set_context(context)
 
   " Call hook function.
-  let l:table = b:interactive.hook_functions_table[a:hook_point]
-  for key in sort(keys(l:table))
-    call call(l:table[key], [a:args, l:context], {})
+  let table = b:interactive.hook_functions_table[a:hook_point]
+  for key in sort(keys(table))
+    call call(table[key], [a:args, context], {})
   endfor
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args)"{{{
@@ -54,30 +54,30 @@ function! vimshell#hook#call_filter(hook_point, context, args)"{{{
     return a:args
   endif
 
-  let l:context = copy(a:context)
-  let l:context.is_interactive = 0
-  call vimshell#set_context(l:context)
+  let context = copy(a:context)
+  let context.is_interactive = 0
+  call vimshell#set_context(context)
 
   " Call hook function.
-  let l:args = a:args
-  let l:table = b:interactive.hook_functions_table[a:hook_point]
-  for key in sort(keys(l:table))
-    let l:args = call(l:table[key], [l:args, l:context], {})
+  let args = a:args
+  let table = b:interactive.hook_functions_table[a:hook_point]
+  for key in sort(keys(table))
+    let args = call(table[key], [args, context], {})
   endfor
 
-  return l:args
+  return args
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list)"{{{
   if !has_key(b:interactive.hook_functions_table, a:hook_point)
     let b:interactive.hook_functions_table[a:hook_point] = {}
   endif
 
-  let l:cnt = 1
+  let cnt = 1
   let b:interactive.hook_functions_table[a:hook_point] = {}
   for Func in a:func_list
-    let b:interactive.hook_functions_table[a:hook_point][l:cnt] = Func
+    let b:interactive.hook_functions_table[a:hook_point][cnt] = Func
 
-    let l:cnt += 1
+    let cnt += 1
   endfor
 endfunction"}}}
 function! vimshell#hook#get(hook_point)"{{{

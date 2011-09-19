@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,27 +54,27 @@ function! vimshell#terminal#print(string, is_error)"{{{
     normal! j
   endif
 
-  let l:current_line = getline('.')
-  let l:cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
+  let current_line = getline('.')
+  let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
     " Strip <CR>.
-    let l:string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
+    let string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
 
-    let l:lines = l:string =~ '\r' ?
-          \ split(l:string, '\n', 1) : split(l:string, '\n', 1)
+    let lines = string =~ '\r' ?
+          \ split(string, '\n', 1) : split(string, '\n', 1)
 
     if a:is_error
-      call map(l:lines, '"!!!".v:val."!!!"')
+      call map(lines, '"!!!".v:val."!!!"')
     endif
 
-    if l:string =~ '\r'
-      for l:line in l:lines
+    if string =~ '\r'
+      for line in lines
         call append('.', '')
         normal! j
 
-        for l:l in split(l:line, '\r', 1)
-          call setline('.', l:l)
+        for l in split(line, '\r', 1)
+          call setline('.', l)
           redraw
         endfor
       endfor
@@ -84,16 +84,16 @@ function! vimshell#terminal#print(string, is_error)"{{{
             \ && has_key(b:interactive, 'command')
             \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
             \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
-        call append('.', l:lines)
-        execute 'normal!' len(l:lines).'j$'
+        call append('.', lines)
+        execute 'normal!' len(lines).'j$'
       else
         if line('.') != b:interactive.echoback_linenr
-          call setline('.', l:current_line . l:lines[0])
+          call setline('.', current_line . lines[0])
         endif
 
-        call append('.', l:lines[1:])
+        call append('.', lines[1:])
       endif
-      execute 'normal!' (len(l:lines)-1).'j$'
+      execute 'normal!' (len(lines)-1).'j$'
     endif
 
     return
@@ -104,138 +104,138 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
   let b:interactive.terminal.is_error = a:is_error
 
-  let l:newstr = ''
-  let l:pos = 0
-  let l:max = len(a:string)
+  let newstr = ''
+  let pos = 0
+  let max = len(a:string)
   let s:line = line('.')
   "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
         "\ (col('.') < 1 ? 1 : col('.') - 1) : col('.'))
   let s:col = col('.')
   let s:lines = {}
-  let s:lines[s:line] = l:current_line
+  let s:lines[s:line] = current_line
 
-  while l:pos < l:max
-    let l:char = a:string[l:pos]
+  while pos < max
+    let char = a:string[pos]
 
-    if l:char !~ '[[:cntrl:]]'"{{{
-      let l:newstr .= l:char
-      let l:pos += 1
+    if char !~ '[[:cntrl:]]'"{{{
+      let newstr .= char
+      let pos += 1
       continue
       "}}}
-    elseif l:char == "\<C-h>""{{{
+    elseif char == "\<C-h>""{{{
       " Print rest string.
-      call s:output_string(l:newstr)
-      let l:newstr = ''
+      call s:output_string(newstr)
+      let newstr = ''
 
-      if l:pos + 1 < l:max && a:string[l:pos+1] == "\<C-h>"
+      if pos + 1 < max && a:string[pos+1] == "\<C-h>"
         " <C-h><C-h>
         call s:control.delete_multi_backword_char()
-        let l:pos += 2
+        let pos += 2
       else
         " <C-h>
         call s:control.delete_backword_char()
-        let l:pos += 1
+        let pos += 1
       endif
 
       continue
       "}}}
-    elseif l:char == "\<ESC>""{{{
+    elseif char == "\<ESC>""{{{
       " Check escape sequence.
-      let l:checkstr = a:string[l:pos+1 :]
-      if l:checkstr == ''
+      let checkstr = a:string[pos+1 :]
+      if checkstr == ''
         break
       endif
 
       " Check CSI pattern.
-      if l:checkstr =~ '^\[[0-9;]*.'
-        let l:matchstr = matchstr(l:checkstr, '^\[[0-9;]*.')
+      if checkstr =~ '^\[[0-9;]*.'
+        let matchstr = matchstr(checkstr, '^\[[0-9;]*.')
 
-        if has_key(s:escape_sequence_csi, l:matchstr[-1:])
-          call s:output_string(l:newstr)
-          let l:newstr = ''
+        if has_key(s:escape_sequence_csi, matchstr[-1:])
+          call s:output_string(newstr)
+          let newstr = ''
 
-          call call(s:escape_sequence_csi[l:matchstr[-1:]], [l:matchstr], s:escape)
+          call call(s:escape_sequence_csi[matchstr[-1:]], [matchstr], s:escape)
 
-          let l:pos += len(l:matchstr) + 1
+          let pos += len(matchstr) + 1
           continue
         endif
       endif
 
       " Check simple pattern.
-      let l:checkchar1 = l:checkstr[0]
-      if has_key(s:escape_sequence_simple_char1, l:checkchar1)"{{{
-        call s:output_string(l:newstr)
-        let l:newstr = ''
+      let checkchar1 = checkstr[0]
+      if has_key(s:escape_sequence_simple_char1, checkchar1)"{{{
+        call s:output_string(newstr)
+        let newstr = ''
 
-        call call(s:escape_sequence_simple_char1[l:checkchar1], [''], s:escape)
+        call call(s:escape_sequence_simple_char1[checkchar1], [''], s:escape)
 
-        let l:pos += 2
+        let pos += 2
         continue
       endif"}}}
-      let l:checkchar2 = l:checkstr[: 1]
-      if l:checkchar2 != '' && has_key(s:escape_sequence_simple_char2, l:checkchar2)"{{{
-        call s:output_string(l:newstr)
-        let l:newstr = ''
+      let checkchar2 = checkstr[: 1]
+      if checkchar2 != '' && has_key(s:escape_sequence_simple_char2, checkchar2)"{{{
+        call s:output_string(newstr)
+        let newstr = ''
 
-        call call(s:escape_sequence_simple_char2[l:checkchar2], [''], s:escape)
+        call call(s:escape_sequence_simple_char2[checkchar2], [''], s:escape)
 
-        let l:pos += 3
+        let pos += 3
         continue
       endif"}}}
 
-      let l:matched = 0
+      let matched = 0
       " Check match pattern.
-      for l:pattern in keys(s:escape_sequence_match)"{{{
-        if l:checkstr =~ l:pattern
-          let l:matched = 1
+      for pattern in keys(s:escape_sequence_match)"{{{
+        if checkstr =~ pattern
+          let matched = 1
 
           " Print rest string.
-          call s:output_string(l:newstr)
-          let l:newstr = ''
+          call s:output_string(newstr)
+          let newstr = ''
 
-          let l:matchstr = matchstr(l:checkstr, l:pattern)
+          let matchstr = matchstr(checkstr, pattern)
 
-          call call(s:escape_sequence_match[l:pattern], [l:matchstr], s:escape)
+          call call(s:escape_sequence_match[pattern], [matchstr], s:escape)
 
-          let l:pos += len(l:matchstr) + 1
+          let pos += len(matchstr) + 1
           break
         endif
       endfor"}}}
 
-      if l:matched
+      if matched
         continue
       endif"}}}
-    elseif has_key(s:control_sequence, l:char)"{{{
+    elseif has_key(s:control_sequence, char)"{{{
       " Check other pattern.
       " Print rest string.
-      call s:output_string(l:newstr)
-      let l:newstr = ''
+      call s:output_string(newstr)
+      let newstr = ''
 
-      call call(s:control_sequence[l:char], [], s:control)
+      call call(s:control_sequence[char], [], s:control)
 
-      let l:pos += 1
+      let pos += 1
       continue
     endif"}}}
 
-    let l:newstr .= l:char
-    let l:pos += 1
+    let newstr .= char
+    let pos += 1
   endwhile
 
   " Print rest string.
-  call s:output_string(l:newstr)
+  call s:output_string(newstr)
 
   " Set lines.
-  for l:linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
-    call setline(l:linenr, s:lines[l:linenr])
+  for linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
+    call setline(linenr, s:lines[linenr])
   endfor
   let s:lines = {}
 
-  let l:oldpos = getpos('.')
-  let l:oldpos[1] = s:line
-  let l:oldpos[2] = s:col
+  let oldpos = getpos('.')
+  let oldpos[1] = s:line
+  let oldpos[2] = s:col
 
   if b:interactive.type ==# 'terminal'
-    let b:interactive.save_cursor = l:oldpos
+    let b:interactive.save_cursor = oldpos
 
     if s:col >= len(getline(s:line))
       " Append space.
@@ -244,7 +244,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   " Move pos.
-  call setpos('.', l:oldpos)
+  call setpos('.', oldpos)
 
   redraw
 endfunction"}}}
@@ -267,14 +267,14 @@ function! vimshell#terminal#clear_highlight()"{{{
     call vimshell#terminal#init()
   endif
 
-  for l:syntax_names in values(b:interactive.terminal.syntax_names)
+  for syntax_names in values(b:interactive.terminal.syntax_names)
     if s:use_conceal()
-      execute 'highlight clear' l:syntax_names
-      execute 'syntax clear' l:syntax_names
+      execute 'highlight clear' syntax_names
+      execute 'syntax clear' syntax_names
     else
-      for l:syntax_name in values(l:syntax_names)
-        execute 'highlight clear' l:syntax_name
-        execute 'syntax clear' l:syntax_name
+      for syntax_name in values(syntax_names)
+        execute 'highlight clear' syntax_name
+        execute 'syntax clear' syntax_name
       endfor
     endif
   endfor
@@ -307,14 +307,14 @@ function! s:output_string(string)"{{{
     return
   endif
 
-  let l:string = b:interactive.terminal.is_error ?
+  let string = b:interactive.terminal.is_error ?
         \ '!!!' . a:string . '!!!' : a:string
 
   if b:interactive.terminal.current_character_set ==# 'Line Drawing'
     " Convert characters.
-    let l:string = ''
+    let string = ''
     for c in split(a:string, '\zs')
-      let l:string .= has_key(s:drawing_character_table, c)?
+      let string .= has_key(s:drawing_character_table, c)?
             \ s:drawing_character_table[c] : c
     endfor
   endif
@@ -322,24 +322,24 @@ function! s:output_string(string)"{{{
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
-  let l:left_line = matchstr(s:lines[s:line], '^.*\%' . s:col . 'c')
-  let l:right_line = matchstr(s:lines[s:line], '\%' . s:col+len(l:string) . 'c.*$')
+  let left_line = matchstr(s:lines[s:line], '^.*\%' . s:col . 'c')
+  let right_line = matchstr(s:lines[s:line], '\%' . s:col+len(string) . 'c.*$')
 
-  let s:lines[s:line] = l:left_line . l:string . l:right_line
+  let s:lines[s:line] = left_line . string . right_line
 
-  let s:col += len(l:string)
+  let s:col += len(string)
 endfunction"}}}
 function! s:sortfunc(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction"}}}
 function! s:scroll_up(number)"{{{
-  let l:line = b:interactive.terminal.region_bottom
-  let l:end = b:interactive.terminal.region_top - a:number
-  while l:line >= l:end
-    let s:lines[l:line] = has_key(s:lines, l:line - a:number) ?
-          \ s:lines[l:line - a:number] : getline(l:line - a:number)
+  let line = b:interactive.terminal.region_bottom
+  let end = b:interactive.terminal.region_top - a:number
+  while line >= end
+    let s:lines[line] = has_key(s:lines, line - a:number) ?
+          \ s:lines[line - a:number] : getline(line - a:number)
 
-    let l:line -= 1
+    let line -= 1
   endwhile
 
   let i = 0
@@ -352,13 +352,13 @@ function! s:scroll_up(number)"{{{
   endwhile
 endfunction"}}}
 function! s:scroll_down(number)"{{{
-  let l:line = b:interactive.terminal.region_top
-  let l:end = b:interactive.terminal.region_bottom - a:number
-  while l:line <= l:end
-    let s:lines[l:line] = has_key(s:lines, l:line + a:number) ?
-          \ s:lines[l:line + a:number] : getline(l:line + a:number)
+  let line = b:interactive.terminal.region_top
+  let end = b:interactive.terminal.region_bottom - a:number
+  while line <= end
+    let s:lines[line] = has_key(s:lines, line + a:number) ?
+          \ s:lines[line + a:number] : getline(line + a:number)
 
-    let l:line += 1
+    let line += 1
   endwhile
 
   let i = 0
@@ -376,9 +376,9 @@ function! s:clear_highlight_line(linenr)"{{{
   endif
 
   if has_key(b:interactive.terminal.syntax_names, a:linenr)
-    for [l:col, l:prev_syntax] in items(b:interactive.terminal.syntax_names[a:linenr])
-      execute 'highlight clear' l:prev_syntax
-      execute 'syntax clear' l:prev_syntax
+    for [col, prev_syntax] in items(b:interactive.terminal.syntax_names[a:linenr])
+      execute 'highlight clear' prev_syntax
+      execute 'syntax clear' prev_syntax
     endfor
   endif
 endfunction"}}}
@@ -435,194 +435,194 @@ function! s:escape.highlight(matchstr)"{{{
     endif
   endif
 
-  let l:highlight = ''
-  let l:highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
-  let l:cnt = 0
-  if empty(l:highlight_list)
+  let highlight = ''
+  let highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
+  let cnt = 0
+  if empty(highlight_list)
     " Default.
-    let l:highlight_list = [ 0 ]
+    let highlight_list = [ 0 ]
   endif
-  for l:color_code in map(l:highlight_list, 'str2nr(v:val)')
-    if has_key(s:highlight_table, l:color_code)"{{{
+  for color_code in map(highlight_list, 'str2nr(v:val)')
+    if has_key(s:highlight_table, color_code)"{{{
       " Use table.
-      let l:highlight .= s:highlight_table[l:color_code]
-    elseif 30 <= l:color_code && l:color_code <= 37
+      let highlight .= s:highlight_table[color_code]
+    elseif 30 <= color_code && color_code <= 37
       " Foreground color.
-      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 30, g:vimshell_escape_colors[l:color_code - 30])
-    elseif l:color_code == 38
-      if len(l:highlight_list) - l:cnt < 3
+      let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 30, g:vimshell_escape_colors[color_code - 30])
+    elseif color_code == 38
+      if len(highlight_list) - cnt < 3
         " Error.
         break
       endif
 
       " Foreground 256 colors.
-      let l:color = l:highlight_list[l:cnt + 2]
-      if l:color >= 232
+      let color = highlight_list[cnt + 2]
+      if color >= 232
         " Grey scale.
-        let l:gcolor = s:grey_table[(l:color - 232)]
-        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
-      elseif l:color >= 16
+        let gcolor = s:grey_table[(color - 232)]
+        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', color, gcolor, gcolor, gcolor)
+      elseif color >= 16
         " RGB.
-        let l:gcolor = l:color - 16
-        let l:red = s:color_table[l:gcolor / 36]
-        let l:green = s:color_table[(l:gcolor % 36) / 6]
-        let l:blue = s:color_table[l:gcolor % 6]
+        let gcolor = color - 16
+        let red = s:color_table[gcolor / 36]
+        let green = s:color_table[(gcolor % 36) / 6]
+        let blue = s:color_table[gcolor % 6]
 
-        let l:highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
+        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', color, red, green, blue)
       else
-        let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color, g:vimshell_escape_colors[l:color])
+        let highlight .= printf(' ctermfg=%d guifg=%s', color, g:vimshell_escape_colors[color])
       endif
       break
-    elseif 40 <= l:color_code && l:color_code <= 47 
+    elseif 40 <= color_code && color_code <= 47 
       " Background color.
-      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 40, g:vimshell_escape_colors[l:color_code - 40])
-    elseif l:color_code == 48
-      if len(l:highlight_list) - l:cnt < 3
+      let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 40, g:vimshell_escape_colors[color_code - 40])
+    elseif color_code == 48
+      if len(highlight_list) - cnt < 3
         " Error.
         break
       endif
 
       " Background 256 colors.
-      let l:color = l:highlight_list[l:cnt + 2]
-      if l:color >= 232
+      let color = highlight_list[cnt + 2]
+      if color >= 232
         " Grey scale.
-        let l:gcolor = s:grey_table[(l:color - 232)]
-        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:gcolor, l:gcolor, l:gcolor)
-      elseif l:color >= 16
+        let gcolor = s:grey_table[(color - 232)]
+        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', color, gcolor, gcolor, gcolor)
+      elseif color >= 16
         " RGB.
-        let l:gcolor = l:color - 16
-        let l:red = s:color_table[l:gcolor / 36]
-        let l:green = s:color_table[(l:gcolor % 36) / 6]
-        let l:blue = s:color_table[l:gcolor % 6]
+        let gcolor = color - 16
+        let red = s:color_table[gcolor / 36]
+        let green = s:color_table[(gcolor % 36) / 6]
+        let blue = s:color_table[gcolor % 6]
 
-        let l:highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', l:color, l:red, l:green, l:blue)
+        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', color, red, green, blue)
       else
-        let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color, g:vimshell_escape_colors[l:color])
+        let highlight .= printf(' ctermbg=%d guibg=%s', color, g:vimshell_escape_colors[color])
       endif
       break
-    elseif 90 <= l:color_code && l:color_code <= 97
+    elseif 90 <= color_code && color_code <= 97
       " Foreground color(high intensity).
-      let l:highlight .= printf(' ctermfg=%d guifg=%s', l:color_code - 82, g:vimshell_escape_colors[l:color_code - 82])
-    elseif 100 <= l:color_code && l:color_code <= 107
+      let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 82, g:vimshell_escape_colors[color_code - 82])
+    elseif 100 <= color_code && color_code <= 107
       " Background color(high intensity).
-      let l:highlight .= printf(' ctermbg=%d guibg=%s', l:color_code - 92, g:vimshell_escape_colors[l:color_code - 92])
+      let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 92, g:vimshell_escape_colors[color_code - 92])
     endif"}}}
 
-    let l:cnt += 1
+    let cnt += 1
   endfor
 
-  if l:highlight == ''
+  if highlight == ''
     return
   endif
 
   if s:use_conceal()
-    let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-    let l:syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
+    let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+    let syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
           \ 'contains=vimshellEscapeSequenceConceal', a:matchstr)
 
-    execute 'syntax region' l:syntax_name l:syntax_command
-    execute 'highlight' l:syntax_name l:highlight
+    execute 'syntax region' syntax_name syntax_command
+    execute 'highlight' syntax_name highlight
 
-    let b:interactive.terminal.syntax_names[a:matchstr] = l:syntax_name
+    let b:interactive.terminal.syntax_names[a:matchstr] = syntax_name
 
     " Note: When use concealed text, wrapped text is wrong...
     setlocal nowrap
   else
-    let l:syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-    let l:syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
+    let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+    let syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
 
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
     endif
     if has_key(b:interactive.terminal.syntax_names[s:line], s:col)
       " Clear previous highlight.
-      let l:prev_syntax = b:interactive.terminal.syntax_names[s:line][s:col]
-      execute 'highlight clear' l:prev_syntax
-      execute 'syntax clear' l:prev_syntax
+      let prev_syntax = b:interactive.terminal.syntax_names[s:line][s:col]
+      execute 'highlight clear' prev_syntax
+      execute 'syntax clear' prev_syntax
     endif
-    let b:interactive.terminal.syntax_names[s:line][s:col] = l:syntax_name
+    let b:interactive.terminal.syntax_names[s:line][s:col] = syntax_name
 
-    execute 'syntax region' l:syntax_name l:syntax_command
-    execute 'highlight link' l:syntax_name 'Normal'
-    execute 'highlight' l:syntax_name l:highlight
+    execute 'syntax region' syntax_name syntax_command
+    execute 'highlight link' syntax_name 'Normal'
+    execute 'highlight' syntax_name highlight
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
-  let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
 
-  let s:line = empty(l:args) ? 1 : l:args[0]
+  let s:line = empty(args) ? 1 : args[0]
   if !has_key(s:lines, s:line)
     let s:lines[s:line] = ''
   endif
 
-  let l:width = empty(l:args) ? 1 : l:args[1]
-  if l:width > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - l:width)
+  let width = empty(args) ? 1 : args[1]
+  if width > len(s:lines[s:line])+1
+    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - width)
   endif
-  let s:col = vimshell#util#strwidthpart_len(s:lines[s:line], l:width)
+  let s:col = vimshell#util#strwidthpart_len(s:lines[s:line], width)
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
-  let l:args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
 
-  let l:top = empty(l:args) ? 0 : l:args[0]
-  let l:bottom = empty(l:args) ? 0 : l:args[1]
+  let top = empty(args) ? 0 : args[0]
+  let bottom = empty(args) ? 0 : args[1]
 
-  if l:top == 1
-    if (vimshell#iswin() && l:bottom == 25)
-          \|| (!vimshell#iswin() && l:bottom == b:interactive.height)
+  if top == 1
+    if (vimshell#iswin() && bottom == 25)
+          \|| (!vimshell#iswin() && bottom == b:interactive.height)
       " Clear scrolling region.
-      let [l:top, l:bottom] = [0, 0]
+      let [top, bottom] = [0, 0]
     endif
   endif
 
-  let b:interactive.terminal.region_top = l:top
-  let b:interactive.terminal.region_bottom = l:bottom
+  let b:interactive.terminal.region_top = top
+  let b:interactive.terminal.region_bottom = bottom
 endfunction"}}}
 function! s:escape.clear_line(matchstr)"{{{
   " Clear previous highlight.
   call s:clear_highlight_line(s:line)
 
-  let l:param = matchstr(a:matchstr, '\d\+')
-  if l:param == '' || l:param == '0'
+  let param = matchstr(a:matchstr, '\d\+')
+  if param == '' || param == '0'
     " Clear right line.
     let s:lines[s:line] = (s:col == 1) ? '' : s:lines[s:line][ : s:col - 2]
-  elseif l:param == '1'
+  elseif param == '1'
     " Clear left line.
     let s:lines[s:line] = s:lines[s:line][s:col - 1 :]
     let s:col = 1
-  elseif l:param == '2'
+  elseif param == '2'
     " Clear whole line.
     let s:lines[s:line] = ''
     let s:col = 1
   endif
 endfunction"}}}
 function! s:escape.clear_screen(matchstr)"{{{
-  let l:param = matchstr(a:matchstr, '\d\+')
-  if l:param == '' || l:param == '0'
+  let param = matchstr(a:matchstr, '\d\+')
+  if param == '' || param == '0'
     " Clear screen from cursor down.
     call s:escape.clear_line(0)
-    for l:linenr in filter(keys(s:lines), 'v:val > s:line')
+    for linenr in filter(keys(s:lines), 'v:val > s:line')
       " Clear previous highlight.
       call s:clear_highlight_line(s:line)
 
       " Clear line.
-      let s:lines[l:linenr] = ''
+      let s:lines[linenr] = ''
     endfor
-  elseif l:param == '1'
+  elseif param == '1'
     " Clear screen from cursor up.
     call s:escape.clear_line(1)
-    for l:linenr in filter(keys(s:lines), 'v:val < s:line')
+    for linenr in filter(keys(s:lines), 'v:val < s:line')
       " Clear previous highlight.
       call s:clear_highlight_line(s:line)
 
       " Clear line.
-      let s:lines[l:linenr] = ''
+      let s:lines[linenr] = ''
     endfor
-  elseif l:param == '2'
+  elseif param == '2'
     " Clear entire screen.
-    let l:reg = @x
+    let reg = @x
     1,$ delete x
-    let @x = l:reg
+    let @x = reg
 
     let s:lines = {}
     let s:line = 1
@@ -674,13 +674,13 @@ function! s:escape.move_right(matchstr)"{{{
     let n = 1
   endif
 
-  let l:line = s:lines[s:line]
-  if s:col+n > len(l:line)+1
-    let s:lines[s:line] .= repeat(' ', s:col+n - len(l:line)+1)
-    let l:line = s:lines[s:line]
+  let line = s:lines[s:line]
+  if s:col+n > len(line)+1
+    let s:lines[s:line] .= repeat(' ', s:col+n - len(line)+1)
+    let line = s:lines[s:line]
   endif
 
-  let s:col += vimshell#util#strwidthpart_len(l:line[s:col - 1 :], n)
+  let s:col += vimshell#util#strwidthpart_len(line[s:col - 1 :], n)
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
@@ -688,8 +688,8 @@ function! s:escape.move_left(matchstr)"{{{
     let n = 1
   endif
 
-  let l:line = s:lines[s:line]
-  let s:col -= vimshell#util#strwidthpart_len_reverse(l:line[: s:col - 2], n)
+  let line = s:lines[s:line]
+  let s:col -= vimshell#util#strwidthpart_len_reverse(line[: s:col - 2], n)
   if s:col < 1
     let s:col = 1
   endif
@@ -702,8 +702,8 @@ function! s:escape.move_down_head(matchstr)"{{{
   let s:col = 1
 endfunction"}}}
 function! s:escape.move_up_head(matchstr)"{{{
-  let l:param = matchstr(a:matchstr, '\d\+')
-  if l:param != '0'
+  let param = matchstr(a:matchstr, '\d\+')
+  if param != '0'
     call s:scroll_up(a:matchstr)
   endif
   let s:col = 1
@@ -715,8 +715,8 @@ function! s:escape.scroll_down1(matchstr)"{{{
   call s:scroll_down(1)
 endfunction"}}}
 function! s:escape.move_col(matchstr)"{{{
-  let l:num = matchstr(a:matchstr, '\d\+')
-  let s:col = l:num
+  let num = matchstr(a:matchstr, '\d\+')
+  let s:col = num
   if s:col < 1
     let s:col = 1
   endif
@@ -728,13 +728,13 @@ function! s:escape.restore_pos(matchstr)"{{{
   let [s:line, s:col] = b:interactive.terminal.save_pos
 endfunction"}}}
 function! s:escape.change_title(matchstr)"{{{
-  let l:title = matchstr(a:matchstr, '^k\zs.\{-}\ze\e\\')
-  if empty(l:title)
-    let l:title = matchstr(a:matchstr, '^][02];\zs.\{-}\ze'."\<C-g>")
+  let title = matchstr(a:matchstr, '^k\zs.\{-}\ze\e\\')
+  if empty(title)
+    let title = matchstr(a:matchstr, '^][02];\zs.\{-}\ze'."\<C-g>")
   endif
 
-  let &titlestring = l:title
-  let b:interactive.terminal.titlestring = l:title
+  let &titlestring = title
+  let b:interactive.terminal.titlestring = title
 endfunction"}}}
 function! s:escape.print_control_sequence(matchstr)"{{{
   call s:output_string("\<ESC>")
@@ -744,15 +744,15 @@ function! s:escape.change_cursor_shape(matchstr)"{{{
     return
   endif
 
-  let l:arg = matchstr(a:matchstr, '\d\+')
+  let arg = matchstr(a:matchstr, '\d\+')
 
-  if l:arg == 0 || l:arg == 1
+  if arg == 0 || arg == 1
     set guicursor=i:block-Cursor/lCursor
-  elseif l:arg == 2
+  elseif arg == 2
     set guicursor=i:block-Cursor/lCursor-blinkon0
-  elseif l:arg == 3
+  elseif arg == 3
     set guicursor=i:hor20-Cursor/lCursor
-  elseif l:arg == 4
+  elseif arg == 4
     set guicursor=i:hor20-Cursor/lCursor-blinkon0
   endif
 endfunction"}}}

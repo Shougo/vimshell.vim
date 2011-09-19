@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2011.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,16 +52,16 @@ function! s:source.hooks.on_syntax(args, context)"{{{
   highlight default link uniteSource__VimshellHistorySpaces Comment
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context)"{{{
-  let l:cnt = 0
+  let cnt = 0
 
-  for l:candidate in a:context.candidates
-    let l:candidate.abbr = substitute(l:candidate.word, '\s\+$', '>-', '')
-    let l:candidate.kind = 'completion'
-    let l:candidate.action__complete_word = l:candidate.word
-    let l:candidate.action__complete_pos = a:context.source__cur_keyword_pos
-    let l:candidate.action__source_history_number = l:cnt
+  for candidate in a:context.candidates
+    let candidate.abbr = substitute(candidate.word, '\s\+$', '>-', '')
+    let candidate.kind = 'completion'
+    let candidate.action__complete_word = candidate.word
+    let candidate.action__complete_pos = a:context.source__cur_keyword_pos
+    let candidate.action__source_history_number = cnt
 
-    let l:cnt += 1
+    let cnt += 1
   endfor
 endfunction"}}}
 
@@ -94,8 +94,8 @@ let s:source.action_table.delete = {
       \ 'is_selectable' : 1,
       \ }
 function! s:source.action_table.delete.func(candidates)"{{{
-  for l:candidate in a:candidates
-    call filter(s:current_histories, 'v:val !=# l:candidate.action__complete_word')
+  for candidate in a:candidates
+    call filter(s:current_histories, 'v:val !=# candidate.action__complete_word')
   endfor
 endfunction"}}}
 
@@ -105,9 +105,9 @@ let s:source.action_table.edit = {
       \ 'is_quit' : 0,
       \ }
 function! s:source.action_table.edit.func(candidate)"{{{
-  let l:history = input('Please edit history: ', a:candidate.action__complete_word)
-  if l:history != ''
-    let s:current_histories[a:candidate.action__source_history_number] = l:history
+  let history = input('Please edit history: ', a:candidate.action__complete_word)
+  if history != ''
+    let s:current_histories[a:candidate.action__source_history_number] = history
   endif
 endfunction"}}}
 

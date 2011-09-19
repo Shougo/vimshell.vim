@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: gendoc.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Dec 2010.
+" Last Modified: 19 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,14 +37,14 @@ function! s:command.execute(command, args, fd, context)"{{{
   endif
 
   " Get description.
-  let l:command_name = fnamemodify(a:args[0], ':t:r')
-  let l:output = split(vimproc#system(a:args).vimproc#get_last_errmsg(), '\n')
-  let l:description = empty(l:output) ? '' : l:output[0]
+  let command_name = fnamemodify(a:args[0], ':t:r')
+  let output = split(vimproc#system(a:args).vimproc#get_last_errmsg(), '\n')
+  let description = empty(output) ? '' : output[0]
 
   " Set cached doc.
-  let l:cached_doc = vimshell#help#get_cached_doc()
-  let l:cached_doc[l:command_name] = l:description
-  call vimshell#help#set_cached_doc(l:cached_doc)
+  let cached_doc = vimshell#help#get_cached_doc()
+  let cached_doc[command_name] = description
+  call vimshell#help#set_cached_doc(cached_doc)
 endfunction"}}}
 
 function! vimshell#commands#gendoc#define()
