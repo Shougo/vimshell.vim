@@ -429,13 +429,13 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		Note: Todo
 		
 
-view {filename} [{pattern}]				*vimshell-internal-view*
+view [{options}...] {filenames}... 			*vimshell-internal-view*
 		Todo
 
-vi [{filename} [{pattern}]]				*vimshell-internal-vi*
+vi [{options}...] [{filenames}...]			*vimshell-internal-vi*
 		Same as |vimshell-internal-vim|.
 
-vim [{filename} [{pattern}]]				*vimshell-internal-vim*
+vim [{options}...] [{filenames}...]			*vimshell-internal-vim*
 		Todo
 
 vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
@@ -616,6 +616,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-09-19
+- vim and view internal commands allow multiple files.
 
 2011-09-18
 - Fixed hangup bugs.

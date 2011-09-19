@@ -727,23 +727,21 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		バッファの分割方向を指定する。このオプションが省略された場合、
 		|g:vimshell_split_command|が使用される。
 
-view [{options}...] {filename} [{pattern}]		*vimshell-internal-view*
-		{filename}を読み取り専用で別バッファに開く。ファイルの行数がウ
+view [{options}...] {filenames}... 			*vimshell-internal-view*
+		{filenames}を読み取り専用で別バッファに開く。ファイルの行数がウ
 		インドウサイズよりも少ない場合、別バッファを開かず、catのように
 		動作する。ファイルの中身をちょっと見てみたいときに便利である。
-		{pattern}を指定すると、その{pattern}を検索して現在位置とする。
 		--split={split-command}
 		バッファの分割方向を指定する。このオプションが省略された場合、
 		|g:vimshell_split_command|が使用される。
 
-vi [{options}...] [{filename} [{pattern}]]		*vimshell-internal-vi*
+vi [{options}...] [{filenames}...]			*vimshell-internal-vi*
 		|vimshell-internal-vim|と同じ動作をする。
 
-vim [{options}...] [{filename} [{pattern}]]		*vimshell-internal-vim*
-		{filename}を別バッファに開く。カレントディレクトリにある
+vim [{options}...] [{filenames}...]			*vimshell-internal-vim*
+		{filenames}を別バッファに開く。カレントディレクトリにある
 		ファイルを手軽に編集したいときに便利である。
-		{filename}を省略すると、無名バッファを開く。
-		{pattern}を指定すると、その{pattern}を検索して現在位置とする。
+		{filenames}を省略すると、無名バッファを開く。
 
 		--split={split-command}
 		バッファの分割方向を指定する。このオプションが省略された場合、

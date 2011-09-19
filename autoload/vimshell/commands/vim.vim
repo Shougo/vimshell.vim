@@ -36,24 +36,22 @@ function! s:command_vim.execute(program, args, fd, context)"{{{
         \ '--split' : g:vimshell_split_command,
         \ })
 
-  let l:filename = empty(l:args) ? a:fd.stdin : l:args[0]
-
   " Save current directiory.
   let l:cwd = getcwd()
 
   let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
 
-  try
-    if l:filename == ''
-      enew
-    elseif len(a:args) > 1
-      execute 'edit' '+'.a:args[1] l:filename
-    else
-      edit `=l:filename`
-    endif
-  catch
-    echohl Error | echomsg v:errmsg | echohl None
-  endtry
+  for l:filename in empty(l:args) ? [a:fd.stdin] : l:args
+    try
+      if l:filename == ''
+        silent enew
+      else
+        silent edit `=l:filename`
+      endif
+    catch
+      echohl Error | echomsg v:errmsg | echohl None
+    endtry
+  endfor
 
   let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 

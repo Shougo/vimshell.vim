@@ -43,13 +43,13 @@ function! s:command.execute(program, args, fd, context)"{{{
     endif
 
     " Read from stdin.
-    let l:filename = a:fd.stdin
+    let l:filenames = [a:fd.stdin]
   else
-    let l:filename = l:args[0]
+    let l:filenames = l:args
   endif
 
-  if !isdirectory(l:filename)
-    let l:lines = readfile(l:filename)
+  if len(l:filenames) == 1 && !isdirectory(l:filenames[0])
+    let l:lines = readfile(l:filenames[0])
     if len(l:lines) < winheight(0)
       " Print lines if one screen.
       for l:line in l:lines
@@ -65,15 +65,13 @@ function! s:command.execute(program, args, fd, context)"{{{
 
   let [l:new_pos, l:old_pos] = vimshell#split(l:options['--split'])
 
-  try
-    if len(a:args) > 1
-      execute 'edit +setlocal\ readonly' '+'.a:args[1] l:filename
-    else
-      edit +setlocal\ readonly `=l:filename`
-    endif
-  catch
-    echohl Error | echomsg v:errmsg | echohl None
-  endtry
+  for l:filename in l:filenames
+    try
+      silent edit +setlocal\ readonly `=l:filename`
+    catch
+      echohl Error | echomsg v:errmsg | echohl None
+    endtry
+  endfor
 
   let [l:new_pos[2], l:new_pos[3]] = [bufnr('%'), getpos('.')]
 
