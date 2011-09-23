@@ -31,6 +31,7 @@ Interface		|vimshell-interface|
   Variables		  |vimshell-variables|
   Functions		  |vimshell-functions|
   Key mappings		  |vimshell-key-mappings|
+    Global Key mappings	    |vimshell-key-mappings|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
@@ -406,6 +407,8 @@ g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_c
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
+Global plugin key mappings.
+
 <Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
 			vimshellを画面分割して起動する。すでにvimshellバッファ
 			が存在する場合はそちらに切り換える。
@@ -421,6 +424,20 @@ KEY MAPPINGS 						*vimshell-key-mappings*
 <Plug>(vimshell_create)					*<Plug>(vimshell_create)*
 			vimshellを起動する。すでにvimshellバッファが存在してい
 			ても、新しくvimshellバッファを作成する。
+
+Normal mode key mappings.
+
+Insert mode key mappings.
+
+Normal mode mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<TAB>			<Plug>(vimfiler_move_to_other_window)
+
+Insert mode mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<TAB>			<Plug>(vimfiler_move_to_other_window)
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
