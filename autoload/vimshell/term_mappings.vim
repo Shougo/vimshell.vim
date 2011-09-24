@@ -26,12 +26,18 @@
 
 function! vimshell#term_mappings#define_default_mappings()"{{{
   " Plugin key-mappings."{{{
-  nnoremap <buffer><silent> <Plug>(vimshell_term_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_term_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_term_start_insert)       :<C-u>call <SID>start_insert()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_term_execute_line)       :<C-u>call <SID>execute_line()<CR>
-  inoremap <buffer><silent><expr> <Plug>(vimshell_term_send_escape) vimshell#term_mappings#send_key("\<ESC>")
-  inoremap <buffer><silent> <Plug>(vimshell_term_send_input)       <C-o>:call vimshell#interactive#send_input()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_interrupt)
+        \ :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_exit)
+        \ :<C-u>call vimshell#interactive#quit_buffer()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_start_insert)
+        \ :<C-u>call <SID>start_insert()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_term_execute_line)
+        \ :<C-u>call <SID>execute_line()<CR>
+  inoremap <buffer><silent><expr> <Plug>(vimshell_term_send_escape)
+        \ vimshell#term_mappings#send_key("\<ESC>")
+  inoremap <buffer><silent> <Plug>(vimshell_term_send_input)
+        \ <C-o>:call vimshell#interactive#send_input()<CR>
   "}}}
 
   for lhs in [
@@ -39,41 +45,57 @@ function! vimshell#term_mappings#define_default_mappings()"{{{
         \ 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         \ 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N',
         \ 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-        \ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 
-        \ '!', '@', '#', '$', '^', '&', '*', '(', ')', '-', '_', '=', '+', '\', '`', '~', 
+        \ '1', '2', '3', '4', '5', '6', '7', '8', '9', '0',
+        \ '!', '@', '#', '$', '^', '&', '*', '(', ')',
+        \ '-', '_', '=', '+', '\', '`', '~',
         \ '[', ']', '{', '}', ':', ';', '''', '"', ',', '<', '.', '>', '/', '?',
         \ ]
 
-    execute 'inoremap <buffer><silent><expr>' lhs 'vimshell#term_mappings#send_key('. string(lhs) .')'
+    execute 'inoremap <buffer><silent><expr>' lhs
+          \ 'vimshell#term_mappings#send_key('. string(lhs) .')'
     "execute 'inoremap <buffer><silent>' lhs printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(lhs))
   endfor
-  
+
   for [key, value] in items({
-        \ '<C-a>' : "\<C-a>", '<C-b>' : "\<C-b>", '<C-c>' : "\<C-c>", '<C-d>' : "\<C-d>", '<C-e>' : "\<C-e>", '<C-f>' : "\<C-f>", '<C-g>' : "\<C-g>",
-        \ '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>", '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>", '<C-m>' : "\<LF>", '<C-n>' : "\<C-n>",
-        \ '<C-o>' : "\<C-o>", '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>", '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
-        \ '<C-v>' : "\<C-v>", '<C-w>' : "\<C-w>", '<C-x>' : "\<C-x>", '<C-y>' : "\<C-y>", '<C-z>' : "\<C-z>",
+        \ '<C-a>' : "\<C-a>", '<C-b>' : "\<C-b>", '<C-c>' : "\<C-c>",
+        \ '<C-d>' : "\<C-d>", '<C-e>' : "\<C-e>", '<C-f>' : "\<C-f>",
+        \ '<C-g>' : "\<C-g>", '<C-h>' : "\<C-h>", '<C-i>' : "\<C-i>",
+        \ '<C-j>' : "\<C-j>", '<C-k>' : "\<C-k>", '<C-l>' : "\<C-l>",
+        \ '<C-m>' : "\<LF>",  '<C-n>' : "\<C-n>", '<C-o>' : "\<C-o>",
+        \ '<C-p>' : "\<C-p>", '<C-q>' : "\<C-q>", '<C-r>' : "\<C-r>",
+        \ '<C-s>' : "\<C-s>", '<C-t>' : "\<C-t>", '<C-u>' : "\<C-u>",
+        \ '<C-v>' : "\<C-v>", '<C-w>' : "\<C-w>", '<C-x>' : "\<C-x>",
+        \ '<C-y>' : "\<C-y>", '<C-z>' : "\<C-z>",
         \ '<C-^>' : "\<C-^>", '<C-_>' : "\<C-_>", '<C-\>' : "\<C-\>",
-        \ '<Bar>' : '|', '<Space>' : ' ',
+        \ '<Bar>' : '|',      '<Space>' : ' ',
         \ })
-    
-    execute 'inoremap <buffer><silent>' key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(value))
+
+    execute 'inoremap <buffer><silent>' key
+          \ printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', char2nr(value))
   endfor
-  
+
   for [key, value] in items({
-        \ '<Home>' : "\<ESC>OH", '<End>' : "\<ESC>OF", '<Del>' : "\<ESC>[3~", '<BS>' : "\<C-h>",
-        \ '<Up>' : "\<ESC>[A", '<Down>' : "\<ESC>[B", '<Left>' : "\<ESC>[D", '<Right>' : "\<ESC>[C",
-        \ '<PageUp>' : "\<ESC>[5~", '<PageDown>' : "\<ESC>[6~",
-        \ '<F1>' : "\<ESC>[11~", '<F2>' : "\<ESC>[12~", '<F3>' : "\<ESC>[13~", '<F4>' : "\<ESC>[14~",
-        \ '<F5>' : "\<ESC>[15~", '<F6>' : "\<ESC>[17~", '<F7>' : "\<ESC>[18~", '<F8>' : "\<ESC>[19~",
-        \ '<F9>' : "\<ESC>[20~", '<F10>' : "\<ESC>[21~", '<F11>' : "\<ESC>[23~", '<F12>' : "\<ESC>[24~",
+        \ '<Home>'   : "\<ESC>OH",   '<End>'      : "\<ESC>OF",
+        \ '<Del>'    : "\<ESC>[3~",  '<BS>'       : "\<C-h>",
+        \ '<Up>'     : "\<ESC>[A",   '<Down>'     : "\<ESC>[B",
+        \ '<Left>'   : "\<ESC>[D",   '<Right>'    : "\<ESC>[C",
+        \ '<PageUp>' : "\<ESC>[5~",  '<PageDown>' : "\<ESC>[6~",
+        \ '<F1>'     : "\<ESC>[11~", '<F2>'       : "\<ESC>[12~",
+        \ '<F3>'     : "\<ESC>[13~", '<F4>'       : "\<ESC>[14~",
+        \ '<F5>'     : "\<ESC>[15~", '<F6>'       : "\<ESC>[17~",
+        \ '<F7>'     : "\<ESC>[18~", '<F8>'       : "\<ESC>[19~",
+        \ '<F9>'     : "\<ESC>[20~", '<F10>'      : "\<ESC>[21~",
+        \ '<F11>'    : "\<ESC>[23~", '<F12>'      : "\<ESC>[24~",
         \ '<Insert>' : "\<ESC>[2~",
         \ })
-    
-    execute 'inoremap <buffer><silent>' key printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>', string(map(split(value, '\zs'), 'char2nr(v:val)')))
+
+    execute 'inoremap <buffer><silent>' key
+          \ printf('<C-o>:call vimshell#interactive#send_char(%s)<CR>',
+          \     string(map(split(value, '\zs'), 'char2nr(v:val)')))
   endfor
-  
-  if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
+
+  if exists('g:vimshell_no_default_keymappings')
+        \ && g:vimshell_no_default_keymappings
     return
   endif
 

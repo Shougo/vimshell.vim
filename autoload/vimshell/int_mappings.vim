@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 24 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,38 +26,64 @@
 
 function! vimshell#int_mappings#define_default_mappings()"{{{
   " Plugin key-mappings."{{{
-  inoremap <buffer><silent> <Plug>(vimshell_int_previous_history)  <ESC>:<C-u>call <SID>previous_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_next_history)  <ESC>:<C-u>call <SID>next_command()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_int_move_head)  <ESC>:<C-u>call <SID>move_head()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_line)  <SID>delete_backward_line()
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)  vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)       <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)  <SID>delete_backward_char(0)
-  " 3 == char2nr("\<C-c>")
-  inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)  <SID>delete_backward_char(1)
-  inoremap <buffer><silent> <Plug>(vimshell_int_send_input)  <C-o>:call vimshell#interactive#send_input()<CR>
-  inoremap <buffer><expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
-  inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)  <C-o>:call <SID>command_complete()<CR>
-  inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
+  nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)
+        \ :<C-u>call <SID>previous_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)
+        \ :<C-u>call <SID>next_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)
+        \ :<C-u>call vimshell#execute_current_line(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)
+        \ :<C-u>call <SID>paste_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_hangup)
+        \ :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)
+        \ :<C-u>call vimshell#interactive#quit_buffer()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)
+        \ :<C-u>call <SID>restart_command()<CR>
+  nnoremap <buffer><expr> <Plug>(vimshell_int_change_line)
+        \ (vimshell#interactive#get_prompt() == '') ? 'ddO' :
+        \ printf('0%dlc$', vimshell#util#strchars(
+        \   vimshell#interactive#get_prompt()))
+  nmap <buffer>  <Plug>(vimshell_int_delete_line)
+        \ <Plug>(vimshell_int_change_line)<ESC>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_enter)
+        \ :<C-u>call <SID>insert_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_head)
+        \ :<C-u>call <SID>insert_head()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_append_enter)
+        \ :<C-u>call <SID>append_enter()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_append_end)
+        \ :<C-u>call <SID>append_end()<CR>
+  nnoremap <silent><buffer> <Plug>(vimshell_int_clear)
+        \ :<C-u>call <SID>clear()<CR>
 
-  nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)  :<C-u>call vimshell#execute_current_line(0)<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_hangup)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_int_restart_command)       :<C-u>call <SID>restart_command()<CR>
-  nnoremap <buffer><expr> <Plug>(vimshell_int_change_line) vimshell#interactive#get_prompt() == '' ? 'ddO' : printf('0%dlc$', vimshell#util#strchars(vimshell#interactive#get_prompt()))
-  nmap <buffer>  <Plug>(vimshell_int_delete_line) <Plug>(vimshell_int_change_line)<ESC>
-  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_int_insert_head)  :<C-u>call <SID>insert_head()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_int_append_enter)  :<C-u>call <SID>append_enter()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_int_append_end)  :<C-u>call <SID>append_end()<CR>
-  nnoremap <silent><buffer> <Plug>(vimshell_int_clear)  :<C-u>call <SID>clear()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_int_move_head)
+        \ <ESC>:<C-u>call <SID>move_head()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_line)
+        \ <SID>delete_backward_line()
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)
+        \ vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
+  inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)
+        \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)
+        \ <SID>delete_backward_char(0)
+  " 3 == char2nr("\<C-c>")
+  inoremap <buffer><silent> <Plug>(vimshell_int_interrupt)
+        \ <C-o>:call vimshell#interactive#send_char(3)<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_another_delete_backward_char)
+        \ <SID>delete_backward_char(1)
+  inoremap <buffer><silent> <Plug>(vimshell_int_send_input)
+        \ <C-o>:call vimshell#interactive#send_input()<CR>
+  inoremap <buffer><expr> <SID>(bs-ctrl-])
+        \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
+  inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)
+        \ <C-o>:call <SID>command_complete()<CR>
+  inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)
+        \ col('.') == col('$') ? "" : "\<ESC>lDa"
   "}}}
 
-  if (exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings)
+  if (exists('g:vimshell_no_default_keymappings')
+        \ && g:vimshell_no_default_keymappings)
     return
   endif
 
@@ -87,10 +113,13 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete(!0)
+  inoremap <buffer> <expr><silent> <C-l>
+        \ unite#sources#vimshell_history#start_complete(!0)
   imap <buffer> <C-v>  <Plug>(vimshell_int_send_input)
   inoremap <buffer> <C-n>     <C-n>
-  imap <buffer><expr> <TAB>  pumvisible() ? "\<C-n>" : "\<Plug>(vimshell_int_command_complete)"
+  imap <buffer><expr> <TAB>
+        \ pumvisible() ? "\<C-n>" :
+        \ "\<Plug>(vimshell_int_command_complete)"
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.

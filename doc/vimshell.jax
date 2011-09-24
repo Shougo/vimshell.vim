@@ -31,7 +31,8 @@ Interface		|vimshell-interface|
   Variables		  |vimshell-variables|
   Functions		  |vimshell-functions|
   Key mappings		  |vimshell-key-mappings|
-    Global Key mappings	    |vimshell-key-mappings|
+    Vimshell buffer key mappings    |vimshell-buffer-key-mappings|
+    Interactive buffer key mappings |vimshell-interactive-buffer-key-mappings|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
@@ -407,8 +408,6 @@ g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_c
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
-Global plugin key mappings.
-
 <Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
 			vimshellを画面分割して起動する。すでにvimshellバッファ
 			が存在する場合はそちらに切り換える。
@@ -425,19 +424,260 @@ Global plugin key mappings.
 			vimshellを起動する。すでにvimshellバッファが存在してい
 			ても、新しくvimshellバッファを作成する。
 
+VIMSHELL BUFFER KEY MAPPINGS 				*vimshell-buffer-key-mappings*
+
 Normal mode key mappings.
+
+<Plug>(vimshell_enter)					*<Plug>(vimshell_enter)*
+			入力されたコマンドを実行する。
+
+<Plug>(vimshell_previous_prompt)			*<Plug>(vimshell_previous_prompt)*
+			カーソルよりも前のプロンプトへ移動する。
+
+<Plug>(vimshell_next_prompt)				*<Plug>(vimshell_next_prompt)*
+			カーソルよりも後のプロンプトへ移動する。
+
+<Plug>(vimshell_delete_previous_output)			*<Plug>(vimshell_delete_previous_output)*
+			カーソル前方の出力を削除する。
+
+<Plug>(vimshell_paste_prompt)				*<Plug>(vimshell_paste_prompt)*
+			カーソル行のコマンドをプロンプトにペーストする。
+
+<Plug>(vimshell_move_end_argument)			*<Plug>(vimshell_move_end_argument)*
+			コマンドの最終引数へ移動する。
+
+<Plug>(vimshell_hide)					*<Plug>(vimshell_hide)*
+			vimshellバッファを隠す。
+
+<Plug>(vimshell_exit)					*<Plug>(vimshell_exit)*
+			vimshellバッファを終了する。
+
+<Plug>(vimshell_change_line)				*<Plug>(vimshell_change_line)*
+			行全体を修正する。
+
+<Plug>(vimshell_delete_line)				*<Plug>(vimshell_delete_line)*
+			行全体を削除する。
+
+<Plug>(vimshell_hangup)					*<Plug>(vimshell_hangup)*
+			実行中のコマンドを強制的に終了する。
+
+<Plug>(vimshell_insert_head)				*<Plug>(vimshell_insert_head)*
+<Plug>(vimshell_insert_enter)				*<Plug>(vimshell_insert_enter)*
+<Plug>(vimshell_append_enter)				*<Plug>(vimshell_append_enter)*
+<Plug>(vimshell_append_end)				*<Plug>(vimshell_append_end)*
+			挿入モードへ移行する。
+
+<Plug>(vimshell_clear)					*<Plug>(vimshell_clear)*
+			再描画する。
+
+<Plug>(vimshell_move_head)				*<Plug>(vimshell_move_head)*
+			行頭へ移動する。
+
+<Plug>(vimshell_execute_by_background)			*<Plug>(vimshell_execute_by_background)*
+			実行中のコマンドをiexeバッファで起動する。
+
+Visual mode key mappings.
+<Plug>(vimshell_select_previous_prompt)			*v_<Plug>(vimshell_select_previous_prompt)*
+			カーソルよりも前のプロンプトを選択する。
+
+<Plug>(vimshell_select_next_prompt)			*v_<Plug>(vimshell_select_next_prompt)*
+			カーソルよりも後のプロンプトを選択する。
 
 Insert mode key mappings.
 
-Normal mode mappings.
-{lhs}			{rhs}
---------		-----------------------------
-<TAB>			<Plug>(vimfiler_move_to_other_window)
+<Plug>(vimshell_command_complete)			*i_<Plug>(vimshell_command_complete)*
+			補完を呼び出す。
 
-Insert mode mappings.
+<Plug>(vimshell_push_current_line)			*i_<Plug>(vimshell_push_current_line)*
+			実行中のコマンドを一時的にスタックにpushする。
+
+<Plug>(vimshell_insert_last_word)			*i_<Plug>(vimshell_insert_last_word)*
+			コマンドの最終引数に文字を挿入する。
+
+<Plug>(vimshell_run_help)				*i_<Plug>(vimshell_run_help)*
+			内部コマンドのヘルプを見る。
+
+<Plug>(vimshell_move_head)				*i_<Plug>(vimshell_move_head)*
+			行の先頭へ移動する。
+
+<Plug>(vimshell_delete_backward_line)			*i_<Plug>(vimshell_delete_backward_line)*
+			カーソルより後方の行を削除する。
+
+<Plug>(vimshell_delete_backward_word)			*i_<Plug>(vimshell_delete_backward_word)*
+			コマンド行を一語削除する。
+
+<Plug>(vimshell_enter)					*i_<Plug>(vimshell_enter)*
+			コマンドを実行する。
+
+<Plug>(vimshell_interrupt)				*i_<Plug>(vimshell_interrupt)*
+			実行中のコマンドに割り込みを送信する。
+
+<Plug>(vimshell_move_previous_window)			*i_<Plug>(vimshell_move_previous_window)*
+			前のウインドウへ戻る。
+
+<Plug>(vimshell_delete_backward_char)			*i_<Plug>(vimshell_delete_backward_char)*
+<Plug>(vimshell_another_delete_backward_char)		*i_<Plug>(vimshell_another_delete_backward_char)*
+			コマンド行を一文字削除する。
+
+<Plug>(vimshell_delete_forward_line)			*i_<Plug>(vimshell_delete_forward_line)*
+			カーソルより前方の行を削除する。
+
+<Plug>(vimshell_clear)					*i_<Plug>(vimshell_clear)*
+			vimshellバッファを再描画する。
+
+<Plug>(vimshell_execute_by_background)			*i_<Plug>(vimshell_execute_by_background)*
+			実行中のコマンドをiexeバッファで実行する。
+
+Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
-<TAB>			<Plug>(vimfiler_move_to_other_window)
+<CR>			<Plug>(vimshell_enter)
+q			<Plug>(vimshell_hide)
+Q			<Plug>(vimshell_exit)
+<C-p>			<Plug>(vimshell_previous_prompt)
+<C-n>			<Plug>(vimshell_next_prompt)
+<C-k>			<Plug>(vimshell_delete_previous_output)
+<C-y>			<Plug>(vimshell_paste_prompt)
+E			<Plug>(vimshell_move_end_argument)
+cc			<Plug>(vimshell_change_line)
+dd			<Plug>(vimshell_delete_line)
+I			<Plug>(vimshell_insert_head)
+A			<Plug>(vimshell_append_end)
+i			<Plug>(vimshell_insert_enter)
+a			<Plug>(vimshell_append_enter)
+^			<Plug>(vimshell_move_head)
+<C-c>			<Plug>(vimshell_hangup)
+<C-l>			<Plug>(vimshell_clear)
+<C-z>			<Plug>(vimshell_execute_by_background)
+
+Visual mode default key mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<C-p>			<Plug>(vimshell_select_previous_prompt)
+<C-n>			<Plug>(vimshell_select_next_prompt)
+
+Insert mode default key mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<CR>			<Plug>(vimshell_enter)
+<C-l>			vimshell/history sourceの起動
+<TAB>			<Plug>(vimshell_command_complete)
+<C-a>			<Plug>(vimshell_move_head)
+<C-u>			<Plug>(vimshell_delete_backward_line)
+<C-w>			<Plug>(vimshell_delete_backward_word)
+<C-z>	(while execute)	<Plug>(vimshell_execute_by_background)
+	(other)		<Plug>(vimshell_push_current_line)
+<C-t>			<Plug>(vimshell_insert_last_word)
+<C-x><C-h>		<Plug>(vimshell_run_help)
+<C-c>			<Plug>(vimshell_interrupt)
+<C-h>			<Plug>(vimshell_delete_backward_char)
+<BS>			<Plug>(vimshell_delete_backward_char)
+<C-k>			<Plug>(vimshell_delete_forward_line)
+<C-x>			<Plug>(vimshell_move_previous_window)
+
+VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 		*vimshell-interactive-buffer-key-mappings*
+
+Normal mode key mappings.
+
+<Plug>(vimshell_int_execute_line)			*<Plug>(vimshell_int_execute_line)*
+			カーソル位置の入力をコマンドに送信する。
+
+<Plug>(vimshell_int_previous_prompt)			*<Plug>(vimshell_int_previous_prompt)*
+			カーソルよりも前のプロンプトへ移動する。
+
+<Plug>(vimshell_int_next_prompt)			*<Plug>(vimshell_int_next_prompt)*
+			カーソルよりも後のプロンプトへ移動する。
+
+<Plug>(vimshell_int_paste_prompt)			*<Plug>(vimshell_int_paste_prompt)*
+			カーソル位置の入力を最終行にペーストする。
+
+<Plug>(vimshell_int_hangup)				*<Plug>(vimshell_int_hangup)*
+			強制的にコマンドを終了する。
+
+<Plug>(vimshell_int_exit)				*<Plug>(vimshell_int_exit)*
+			バッファと実行中のコマンドを削除する。
+
+<Plug>(vimshell_int_restart_command)			*<Plug>(vimshell_int_restart_command)*
+			コマンドを再起動する。
+
+<Plug>(vimshell_int_change_line)			*<Plug>(vimshell_int_change_line)*
+			行全体を変更する。
+
+<Plug>(vimshell_int_delete_line)			*<Plug>(vimshell_int_delete_line)*
+			行全体を削除する。
+
+<Plug>(vimshell_int_insert_enter)			*<Plug>(vimshell_int_insert_enter)*
+<Plug>(vimshell_int_insert_head)			*<Plug>(vimshell_int_insert_head)*
+<Plug>(vimshell_int_append_enter)			*<Plug>(vimshell_int_append_enter)*
+<Plug>(vimshell_int_append_end)				*<Plug>(vimshell_int_append_end)*
+			Insert modeに移行する。
+
+<Plug>(vimshell_int_clear)				*<Plug>(vimshell_int_clear)*
+			バッファを再描画する。
+
+Insert mode key mappings.
+
+<Plug>(vimshell_int_move_head)				*i_<Plug>(vimshell_int_move_head)*
+			コマンド行の先頭に移動する。
+
+<Plug>(vimshell_int_delete_backward_line)		*i_<Plug>(vimshell_int_delete_backward_line)*
+			カーソルより後方の行を削除する。
+
+<Plug>(vimshell_int_delete_backward_word)		*i_<Plug>(vimshell_int_delete_backward_word)*
+			コマンド行を一語削除する。
+
+<Plug>(vimshell_int_execute_line)			*i_<Plug>(vimshell_int_execute_line)*
+			コマンドにカーソル行を送信する。
+
+<Plug>(vimshell_int_delete_backward_char)		*i_<Plug>(vimshell_int_delete_backward_char)*
+<Plug>(vimshell_int_another_delete_backward_char)	*i_<Plug>(vimshell_int_another_delete_backward_char)*
+			コマンド行を一文字削除する。
+
+<Plug>(vimshell_int_send_input)				*i_<Plug>(vimshell_int_send_input)*
+			コマンドに任意の入力を送信する。
+
+<Plug>(vimshell_int_interrupt)				*i_<Plug>(vimshell_int_interrupt)*
+			実行中のコマンドに割り込みを送信する。
+
+<Plug>(vimshell_int_command_complete)			*i_<Plug>(vimshell_int_command_complete)*
+			補完を行う。
+
+<Plug>(vimshell_int_delete_forward_line)		*i_<Plug>(vimshell_int_delete_forward_line)*
+			カーソルより前方の行を削除する。
+
+Normal mode default key mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<C-p>			<Plug>(vimshell_int_previous_prompt)
+<C-n>			<Plug>(vimshell_int_next_prompt)
+<CR>			<Plug>(vimshell_int_execute_line)
+<C-y>			<Plug>(vimshell_int_paste_prompt)
+<C-z>			<Plug>(vimshell_int_restart_command)
+<C-c>			<Plug>(vimshell_int_hangup)
+q			<Plug>(vimshell_int_exit)
+cc			<Plug>(vimshell_int_change_line)
+dd			<Plug>(vimshell_int_delete_line)
+I			<Plug>(vimshell_int_insert_head)
+A			<Plug>(vimshell_int_append_end)
+i			<Plug>(vimshell_int_insert_enter)
+a			<Plug>(vimshell_int_append_enter)
+<C-l>			<Plug>(vimshell_int_clear)
+
+Insert mode default key mappings.
+{lhs}			{rhs}
+--------		-----------------------------
+<C-h>			<Plug>(vimshell_int_delete_backward_char)
+<BS>			<Plug>(vimshell_int_delete_backward_char)
+<C-a>			<Plug>(vimshell_int_move_head)
+<C-u>			<Plug>(vimshell_int_delete_backward_line)
+<C-w>			<Plug>(vimshell_int_delete_backward_word)
+<C-k>			<Plug>(vimshell_int_delete_forward_line)
+<CR>			<Plug>(vimshell_int_execute_line)
+<C-c>			<Plug>(vimshell_int_interrupt)
+<C-l>			vimshell/history sourceの起動
+<C-v>			<Plug>(vimshell_int_send_input)
+<C-n>			<C-n>
+<TAB>			補完候補の選択か補完を行う
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*

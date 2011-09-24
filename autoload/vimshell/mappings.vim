@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 24 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,47 +27,85 @@
 " Define default mappings.
 function! vimshell#mappings#define_default_mappings()"{{{
   " Plugin keymappings"{{{
-  nnoremap <buffer><silent> <Plug>(vimshell_enter)  i<C-g>u<ESC>:<C-u>call vimshell#execute_current_line(0)<CR><ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)  :<C-u>call <SID>previous_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)  :<C-u>call <SID>next_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)  :<C-u>call <SID>delete_previous_output()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)  :<C-u>call <SID>paste_prompt()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument) :<C-u>call <SID>move_end_argument()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_hide) :<C-u>call <SID>hide()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_exit) :<C-u>call <SID>exit()<CR>
-  nnoremap <buffer><expr> <Plug>(vimshell_change_line) vimshell#check_prompt() ? printf('0%dlc$', vimshell#util#strchars(vimshell#get_prompt())) : 'ddO'
-  nmap  <buffer> <Plug>(vimshell_delete_line) <Plug>(vimshell_change_line)<ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>move_head()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_hangup)       :<C-u>call <SID>hangup(0)<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)  :<C-u>call <SID>insert_enter()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)  :<C-u>call <SID>insert_head()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_append_enter)  :<C-u>call <SID>append_enter()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_append_end)  :<C-u>call <SID>append_end()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_clear)  :<C-u>call <SID>clear(0)<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_move_head)  :<C-u>call <SID>move_head()<CR><ESC>l
-  nnoremap <buffer><silent> <Plug>(vimshell_execute_by_background)  :<C-u>call <SID>execute_by_background(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_enter)
+        \ i<C-g>u<ESC>:<C-u>call vimshell#execute_current_line(0)<CR><ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)
+        \ :<C-u>call <SID>previous_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)
+        \ :<C-u>call <SID>next_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)
+        \ :<C-u>call <SID>delete_previous_output()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)
+        \ :<C-u>call <SID>paste_prompt()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument)
+        \ :<C-u>call <SID>move_end_argument()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_hide)
+        \ :<C-u>call <SID>hide()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_exit)
+        \ :<C-u>call <SID>exit()<CR>
+  nnoremap <buffer><expr> <Plug>(vimshell_change_line)
+        \ vimshell#check_prompt() ?
+        \ printf('0%dlc$', vimshell#util#strchars(
+        \ vimshell#get_prompt())) : 'ddO'
+  nmap  <buffer> <Plug>(vimshell_delete_line)
+        \ <Plug>(vimshell_change_line)<ESC>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
+        \ :<C-u>call <SID>move_head()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_hangup)
+        \ :<C-u>call <SID>hangup(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)
+        \ :<C-u>call <SID>insert_enter()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
+        \ :<C-u>call <SID>insert_head()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_append_enter)
+        \ :<C-u>call <SID>append_enter()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_append_end)
+        \ :<C-u>call <SID>append_end()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_clear)
+        \ :<C-u>call <SID>clear(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_move_head)
+        \ :<C-u>call <SID>move_head()<CR><ESC>l
+  nnoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
+        \ :<C-u>call <SID>execute_by_background(0)<CR>
 
-  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)  <SID>select_previous_prompt()
-  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)  <SID>select_next_prompt()
+  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)
+        \ <SID>select_previous_prompt()
+  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)
+        \ <SID>select_next_prompt()
 
-  inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete) pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
-        \ <SID>expand_wildcard() : vimshell#complete#command_complete#complete()
-  inoremap <buffer><silent> <Plug>(vimshell_push_current_line)  <ESC>:call <SID>push_current_line()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)  <ESC>:call <SID>insert_last_word()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_run_help)  <ESC>:call <SID>run_help()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_move_head)  <ESC>:call <SID>move_head()<CR>
-  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)  <SID>delete_backward_line()
-  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)  vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
-  inoremap <buffer><silent> <Plug>(vimshell_enter)  <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
-  " inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call vimshell#interactive#send_char(3)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_interrupt)       <C-o>:call <SID>hangup(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)       <ESC><C-w>p
+  inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete)
+        \ pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
+        \ <SID>expand_wildcard() :
+        \ vimshell#complete#command_complete#complete()
+  inoremap <buffer><silent> <Plug>(vimshell_push_current_line)
+        \ <ESC>:call <SID>push_current_line()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)
+        \ <ESC>:call <SID>insert_last_word()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_run_help)
+        \ <ESC>:call <SID>run_help()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_move_head)
+        \ <ESC>:call <SID>move_head()<CR>
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)
+        \ <SID>delete_backward_line()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)
+        \ vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
+  inoremap <buffer><silent> <Plug>(vimshell_enter)
+        \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_interrupt)
+        \ <C-o>:call <SID>hangup(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)
+        \ <ESC><C-w>p
 
-  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_char)  <SID>delete_backward_char()
-  inoremap <buffer><silent><expr> <Plug>(vimshell_another_delete_backward_char)  <SID>delete_another_backward_char()
-  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_forward_line)  col('.') == col('$') ? "" : "\<ESC>lDa"
-  inoremap <buffer><silent> <Plug>(vimshell_clear)  <ESC>:call <SID>clear(1)<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_execute_by_background)  <ESC>:call <SID>execute_by_background(1)<CR>
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_char)
+        \ <SID>delete_backward_char()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_another_delete_backward_char)
+        \ <SID>delete_another_backward_char()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_delete_forward_line)
+        \ col('.') == col('$') ? "" : "\<ESC>lDa"
+  inoremap <buffer><silent> <Plug>(vimshell_clear)
+        \ <ESC>:call <SID>clear(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
+        \ <ESC>:call <SID>execute_by_background(1)<CR>
   "}}}
 
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
