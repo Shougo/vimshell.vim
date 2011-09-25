@@ -509,30 +509,6 @@ vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
 vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
 			Todo
 
-------------------------------------------------------------------------------
-BUFFER KEY MAPPINGS 					*vimshell-buffer-key-mappings*
-
-Please refer to vimshell#mappings#define_default_mappings() in
-"autoload/vimshell/mappings.vim".
-
-Todo
-
-------------------------------------------------------------------------------
-INTERACTIVE KEY MAPPINGS 				*vimshell-interactive-key-mappings*
-
-Please refer to vimshell#int_mappings#define_default_mappings() in
-"autoload/vimshell/int_mappings.vim".
-
-Todo
-
-------------------------------------------------------------------------------
-TERMINAL KEY MAPPINGS 					*vimshell-terminal-key-mappings*
-
-Please refer to vimshell#term_mappings#define_default_mappings() in
-"autoload/vimshell/term_mappings.vim".
-
-Todo
-
 ==============================================================================
 EXAMPLES						*vimshell-examples*
 >
@@ -873,6 +849,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-09-25
+- Fixed tags.
 
 2011-09-24
 - Improved documentation.

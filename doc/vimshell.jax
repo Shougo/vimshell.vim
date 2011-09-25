@@ -698,33 +698,6 @@ vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
 vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
 			{hook-point}の{hook-name}関数を削除する。
 
-------------------------------------------------------------------------------
-BUFFER KEY MAPPINGS 					*vimshell-buffer-key-mappings*
-
-vimshellバッファで使えるキーマッピングについては、
-autoload/vimshell/mappings.vimのvimshell#mappings#define_default_mappings()
-を参照する。
-
-Todo
-
-------------------------------------------------------------------------------
-INTERACTIVE KEY MAPPINGS 				*vimshell-interactive-key-mappings*
-
-interactiveバッファで使えるキーマッピングについては、
-autoload/vimshell/int_mappings.vimのvimshell#int_mappings#define_default_mappings()
-を参照する。
-
-Todo
-
-------------------------------------------------------------------------------
-TERMINAL KEY MAPPINGS 					*vimshell-terminal-key-mappings*
-
-terminalバッファで使えるキーマッピングについては、
-autoload/vimshell/term_mappings.vimのvimshell#term_mappings#define_default_mappings()
-を参照する。
-
-Todo
-
 ==============================================================================
 EXAMPLES						*vimshell-examples*
 >
