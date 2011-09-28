@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2011.
+" Last Modified: 28 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -230,27 +230,24 @@ function! vimshell#interactive#execute_process_out(is_insert)"{{{
   endif
 
   " Check cache.
-  if b:interactive.stderr_cache != ''
-    call vimshell#interactive#error_buffer(b:interactive.fd, b:interactive.stderr_cache)
-    let b:interactive.stderr_cache = ''
-  endif
-
+  let read = b:interactive.stderr_cache
   if !b:interactive.process.stderr.eof
-    let read = b:interactive.process.stderr.read(1000, 40)
+    let read .= b:interactive.process.stderr.read(1000, 0)
+  endif
+  if read != ''
     call vimshell#interactive#error_buffer(b:interactive.fd, read)
   endif
+  let b:interactive.stderr_cache = ''
 
   " Check cache.
-  if b:interactive.stdout_cache != ''
-    call vimshell#interactive#print_buffer(b:interactive.fd,
-          \ b:interactive.stdout_cache)
-    let b:interactive.stdout_cache = ''
-  endif
-
+  let read = b:interactive.stdout_cache
   if !b:interactive.process.stdout.eof
-    let read = b:interactive.process.stdout.read(1000, 40)
+    let read .= b:interactive.process.stdout.read(1000, 0)
+  endif
+  if read != ''
     call vimshell#interactive#print_buffer(b:interactive.fd, read)
   endif
+  let b:interactive.stdout_cache = ''
 
   call s:set_output_pos(a:is_insert)
 
@@ -620,7 +617,7 @@ function! s:cache_output(interactive)"{{{
   if a:interactive.process.stdout.eof
     let outputed = 1
   else
-    let read = a:interactive.process.stdout.read(1000, 40)
+    let read = a:interactive.process.stdout.read(1000, 0)
     if read != ''
       let outputed = 1
     endif
@@ -630,7 +627,7 @@ function! s:cache_output(interactive)"{{{
   if a:interactive.process.stderr.eof
     let outputed = 1
   else
-    let read = a:interactive.process.stderr.read(1000, 40)
+    let read = a:interactive.process.stderr.read(1000, 0)
     if read != ''
       let outputed = 1
     endif
