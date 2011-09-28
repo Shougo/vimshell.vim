@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: repeat.vim
+" FILE: time.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2010
+" Last Modified: 28 Sep 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,29 +25,29 @@
 "=============================================================================
 
 let s:command = {
-      \ 'name' : 'repeat',
+      \ 'name' : 'time',
       \ 'kind' : 'internal',
-      \ 'description' : 'repeat {cnt} {command}',
+      \ 'description' : 'time {command}',
       \}
 function! s:command.execute(program, args, fd, context)"{{{
   " Repeat command.
 
-  if len(a:args) < 2 || a:args[0] !~ '\d\+'
-    call vimshell#error_line(a:fd, 'repeat: Arguments error.')
+  if len(a:args) < 1
+    call vimshell#error_line(a:fd, 'time Arguments error.')
     return
   endif
 
-  " Repeat.
-  let max = a:args[0]
-  let i = 0
-  while i < max
-    let commands = vimproc#parser#parse_pipe(a:args)
-    call vimshell#parser#execute_command(commands, a:context)
+  let context = a:context
+  let context.is_interactive = 0
 
-    let i += 1
-  endwhile
+  let start = reltime()
+
+  " Execute.
+  call vimshell#execute_internal_command('exe', a:args, a:fd, context)
+
+  call vimshell#print(a:fd, printf('time = %s', reltimestr(reltime(start))))
 endfunction"}}}
 
-function! vimshell#commands#repeat#define()
+function! vimshell#commands#time#define()
   return s:command
 endfunction

@@ -957,6 +957,9 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		バッファの分割方向を指定する。このオプションが省略された場合、
 		|g:vimshell_split_command|が使用される。
 
+time {command}						*vimshell-internal-time*
+		{command}を同期的に実行し、実行時間を表示する。
+
 view [{options}...] {filenames}... 			*vimshell-internal-view*
 		{filenames}を読み取り専用で別バッファに開く。ファイルの行数がウ
 		インドウサイズよりも少ない場合、別バッファを開かず、catのように

@@ -662,6 +662,9 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		Note: Todo
 		
 
+time {command}						*vimshell-internal-time*
+		Todo
+
 view [{options}...] {filenames}... 			*vimshell-internal-view*
 		Todo
 
@@ -849,6 +852,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-09-28
+- Added time internal command.
 
 2011-09-25
 - Fixed tags.
