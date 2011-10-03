@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 03 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -193,8 +193,7 @@ function! s:vimshell_execute(args)"{{{
         \}
   call vimshell#set_context(context)
 
-  " No split.
-  let args = insert(vimproc#parser#split_args(a:args), '--split=')
+  let args = vimproc#parser#split_args(a:args)
 
   call vimshell#execute_internal_command('bg',
         \ args, context.fd, context)
@@ -214,7 +213,7 @@ function! s:vimshell_interactive(args)"{{{
     let command_line = a:args
   endif
 
-  let args = insert(vimproc#parser#split_args(command_line), '--split=')
+  let args = vimproc#parser#split_args(command_line)
 
   let context = {
         \ 'has_head_spaces' : 0,

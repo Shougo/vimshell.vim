@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jun 2011.
+" Last Modified: 03 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -47,10 +47,11 @@ syn match   EarthquakeRemark      '^\[\$\a\+\]'
 syn match   EarthquakeRemark      '\$\a\+'
 syn match   EarthquakeHashTag     '#\h\w*'
 syn match   EarthquakeDate        '^(\d\+:\d\+:\d\+)'
-syn match   EarthquakeMessage     '^updated => '
+syn match   EarthquakeMessage     '^:\h\w* '
 syn region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
 
 syn keyword EarthquakeKeyword
+      \ :help :update :reply
       \ :delete :retweet :recent :search :eval :exit :reconnect
       \ :restart :thread :plugin_install :alias
 
