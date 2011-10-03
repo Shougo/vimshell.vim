@@ -51,9 +51,12 @@ syn match   EarthquakeMessage     '^:\h\w* '
 syn region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
 
 syn keyword EarthquakeKeyword
-      \ :help :update :reply
-      \ :delete :retweet :recent :search :eval :exit :reconnect
-      \ :restart :thread :plugin_install :alias
+      \ :exit :help :restart :eval :update :reply :status
+      \ :delete :mentions :follow :unfollow :recent :user :search
+      \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweeted_of_me
+      \ :block :unblock :report_spam :messages :sent_messages
+      \ :reconnect :thread :update_profile_image :browse
+      \ :sh :plugin_install :edit_config :alias :reauthorize
 
 augroup vimshell-int-earthquake
   autocmd!
