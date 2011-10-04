@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimdiff {filename1} {filename2}',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
@@ -38,7 +38,7 @@ function! s:command.execute(program, args, fd, context)"{{{
 
   if len(args) != 2
     " Error.
-    call vimshell#error_line(a:fd, 'Usage: vimdiff file1 file2')
+    call vimshell#error_line(a:context.fd, 'Usage: vimdiff file1 file2')
     return
   endif
 

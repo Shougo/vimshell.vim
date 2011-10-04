@@ -29,13 +29,13 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gcd [{directory-path}]',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Change the global working directory.
 
   let dir = empty(a:args)? getcwd() : a:args[0]
   let b:vimshell.current_dir = dir
 
-  return vimshell#execute_internal_command('cd', [ dir ], a:fd, a:context)
+  return vimshell#execute_internal_command('cd', [ dir ], a:context)
 endfunction"}}}
 
 function! vimshell#commands#gcd#define()

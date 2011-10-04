@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'dirs [{max}]',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Print directory stack.
 
   let cnt = 0
@@ -49,7 +49,9 @@ function! s:command.execute(command, args, fd, context)"{{{
   endif
 
   while cnt < max
-    call vimshell#print_line(a:fd, printf('%2d: %s', cnt, fnamemodify(b:vimshell.directory_stack[cnt], ':~')))
+    call vimshell#print_line(a:context.fd,
+          \ printf('%2d: %s', cnt,
+          \ fnamemodify(b:vimshell.directory_stack[cnt], ':~')))
     let cnt += 1
   endwhile
 endfunction"}}}

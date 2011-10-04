@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: histdel.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'histdel {history-number}',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Delete from history.
 
   if !empty(a:args)
@@ -49,7 +49,7 @@ function! s:command.execute(command, args, fd, context)"{{{
 
     call vimshell#history#write(new_hist)
   else
-    call vimshell#error_line(a:fd, 'histdel: Arguments required.')
+    call vimshell#error_line(a:context.fd, 'histdel: Arguments required.')
   endif
 endfunction"}}}
 

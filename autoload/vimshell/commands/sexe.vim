@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'sexe {command}',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   let [args, options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})
@@ -54,15 +54,15 @@ function! s:command.execute(program, args, fd, context)"{{{
   endif
 
   " Set redirection.
-  if a:fd.stdin == ''
+  if a:context.fd.stdin == ''
     let stdin = ''
-  elseif a:fd.stdin == '/dev/null'
+  elseif a:context.fd.stdin == '/dev/null'
     let null = tempname()
     call writefile([], null)
 
     let stdin = '<' . null
   else
-    let stdin = '<' . a:fd.stdin
+    let stdin = '<' . a:context.fd.stdin
   endif
 
   echo 'Running command.'
@@ -78,11 +78,11 @@ function! s:command.execute(program, args, fd, context)"{{{
     let result = iconv(result, options['--encoding'], &encoding)
   endif
 
-  call vimshell#print(a:fd, result)
+  call vimshell#print(a:context.fd, result)
   redraw
   echo ''
 
-  if a:fd.stdin == '/dev/null'
+  if a:context.fd.stdin == '/dev/null'
     call delete(null)
   endif
 

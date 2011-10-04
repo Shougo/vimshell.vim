@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,7 +45,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   if !executable(commands[0].args[0])
-    return vimshell#execute_internal_command('view', commands[0].args, a:context.fd, a:context)
+    return vimshell#execute_internal_command('view', commands[0].args, a:context)
   endif
 
   " Background execute.

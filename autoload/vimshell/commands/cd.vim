@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'cd {directory-path} [{substitute-pattern}]',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Change the working directory.
 
   if empty(a:args)
@@ -39,7 +39,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     " Substitute current directory.
     let dir = substitute(getcwd(), a:args[0], a:args[1], 'g')
   elseif len(a:args) > 2
-    call vimshell#error_line(a:fd, 'cd: Too many arguments.')
+    call vimshell#error_line(a:context.fd, 'cd: Too many arguments.')
     return
   else
     " Filename escape.
@@ -57,8 +57,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     call vimshell#cd(b:vimshell.current_dir)
   elseif dir =~ '^-\d*$'
     " Popd.
-    return vimshell#execute_internal_command('popd', [ dir[1:] ], 
-          \ a:fd,
+    return vimshell#execute_internal_command('popd', [ dir[1:] ],
           \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(dir)
     " Move to parent directory.
@@ -69,7 +68,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     let dirs = split(globpath(&cdpath, dir), '\n')
 
     if empty(dirs)
-      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', dir))
+      call vimshell#error_line(a:context.fd, printf('cd: File "%s" is not found.', dir))
       return
     endif
 
@@ -81,7 +80,7 @@ function! s:command.execute(command, args, fd, context)"{{{
       let b:vimshell.current_dir = fnamemodify(dirs[0], ':p')
       call vimshell#cd(b:vimshell.current_dir)
     else
-      call vimshell#error_line(a:fd, printf('cd: File "%s" is not found.', dir))
+      call vimshell#error_line(a:context.fd, printf('cd: File "%s" is not found.', dir))
       return
     endif
   endif
@@ -97,7 +96,7 @@ function! s:command.execute(command, args, fd, context)"{{{
   if a:context.is_interactive
     " Call chpwd hook.
     let context = a:context
-    let context.fd = a:fd
+    let context.fd = a:context.fd
     call vimshell#hook#call('chpwd', context, getcwd())
   endif
 endfunction"}}}

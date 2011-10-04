@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'clear',
       \}
-function! s:command.execute(command, args, fd, context)
+function! s:command.execute(args, context)
   " Clean up the screen.
   % delete _
 
