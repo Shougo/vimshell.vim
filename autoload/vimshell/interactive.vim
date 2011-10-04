@@ -294,8 +294,8 @@ function! vimshell#interactive#exit()"{{{
     try
       " Kill process.
       " 15 == SIGTERM
-      call sub.kill(15)
-      call sub.waitpid()
+      call b:interactive.process.kill(15)
+      call b:interactive.process.waitpid()
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)

@@ -857,6 +857,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved earthquake syntax.
 - Fixed history execution.
 - Improved buffering.
+- Fixed vimshell#interactive#exit().
 
 2011-10-03
 - Fixed :VimShellExecute and :VimShellInteractive split behavior.
