@@ -30,13 +30,14 @@ let s:command = {
       \ 'description' : 'shell',
       \}
 function! s:command.execute(args, context)"{{{
-  " Starts shell.
-  if vimshell#iswin() && g:vimshell_use_ckw && has('gui_running')
-    " Use ckw.
-    silent execute printf('!start ckw -e %s', &shell)
-  else
-    shell
+  " Starts shell in terminal.
+  if g:vimshell_use_terminal_command == ''
+    call vimshell#error_line(a:context.fd,
+          \ 'Please set g:vimshell_use_terminal_command variable.')
   endif
+
+  call vimproc#system_bg(printf('%s %s',
+        \ g:vimshell_use_terminal_command, &shell))
 endfunction"}}}
 
 function! vimshell#commands#shell#define()

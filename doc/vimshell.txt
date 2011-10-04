@@ -859,6 +859,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved buffering.
 - Fixed vimshell#interactive#exit().
 - Refactored internal commands.
+- Added g:vimshell_use_terminal_command option.
+- Improved shell internal command.
 
 2011-10-03
 - Fixed :VimShellExecute and :VimShellInteractive split behavior.

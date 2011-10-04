@@ -58,8 +58,8 @@ endif
 if !exists('g:vimshell_max_list')
   let g:vimshell_max_list = 100
 endif
-if !exists('g:vimshell_use_ckw')
-  let g:vimshell_use_ckw = 0
+if !exists('g:vimshell_use_terminal_command')
+  let g:vimshell_use_terminal_command = ''
 endif
 if !exists('g:vimshell_split_height')
   let g:vimshell_split_height = 30

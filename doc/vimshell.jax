@@ -221,12 +221,13 @@ g:vimshell_max_list					*g:vimshell_max_list*
 			
 			初期値は100である。
 
-g:vimshell_use_ckw					*g:vimshell_use_ckw*
-			|vimshell-internal-shell|を実行する際に、ckwを利用し
-			てシェルを起動するかどうかを制御する。 Windows環境
-			以外では無視される。
+g:vimshell_use_terminal_command				*g:vimshell_use_terminal_command*
+			|vimshell-internal-shell|を実行する際に、シェルを起動す
+			る端末プログラムを指定する。
+			Windows環境では、"ckw -e", Linux環境では
+			"gnome-terminal -e"などが値の候補となるだろう。
 			
-			初期値は0である。
+			初期値は""である。
 
 g:vimshell_split_height					*g:vimshell_split_height*
 			|:VimShellPop|の分割高さを指定する。指定する値は
@@ -931,10 +932,9 @@ repeat {cnt} {command}					*vimshell-internal-repeat*
 		{command}を{cnt}回実行する。
 
 shell 							*vimshell-internal-shell*
-		|:shell|を用いて'shell'を起動する。Windows上のGVimでかつ
-		|g:vimshell_use_ckw|が設定されている場合、DOSプロンプトではなく、
-		ckw上でシェルを起動する。シグナルやトラップなど、vimshellでは
-		対応できない用途にも対応することができる。
+		|g:vimshell_use_terminal_command|を用いて'shell'を起動する。シ
+		グナルやトラップなど、vimshellでは対応できない用途にも対応する
+		ことができる。
 
 source {files}						*vimshell-internal-source*
 		Windows環境では、"cmd.exe", 他の環境では、'shell'を利用して、
