@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'history [{search-string}]',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   let histories = vimshell#history#read()
 
   let arguments = join(a:args, ' ')
@@ -61,7 +61,7 @@ function! s:command.execute(command, args, fd, context)"{{{
   endfor
 
   for [cnt, hist] in list[: max-1]
-    call vimshell#print_line(a:fd, printf('%3d: %s', cnt, hist))
+    call vimshell#print_line(a:context.fd, printf('%3d: %s', cnt, hist))
   endfor
 endfunction"}}}
 

@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'mkcd {directory-name}',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Make directory and change the working directory.
 
   if empty(a:args)
@@ -39,7 +39,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     " Substitute current directory.
     let arguments = substitute(getcwd(), a:args[0], a:args[1], 'g')
   elseif len(a:args) > 2
-    call vimshell#error_line(a:fd, 'mkcd: Too many arguments.')
+    call vimshell#error_line(a:context.fd, 'mkcd: Too many arguments.')
     return
   else
     " Filename escape.
@@ -51,7 +51,7 @@ function! s:command.execute(command, args, fd, context)"{{{
     call mkdir(arguments)
   endif
 
-  return vimshell#execute_internal_command('cd', a:args, a:fd, a:context)
+  return vimshell#execute_internal_command('cd', a:args, a:context)
 endfunction"}}}
 
 function! vimshell#commands#mkcd#define()

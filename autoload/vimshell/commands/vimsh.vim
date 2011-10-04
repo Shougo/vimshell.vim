@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimsh [{filename}]',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Create new vimshell or execute script.
   if empty(a:args)
     let bufnr = bufnr('%')
@@ -77,7 +77,7 @@ function! s:command.execute(program, args, fd, context)"{{{
       endwhile
     else
       " Error.
-      call vimshell#error_line(a:fd, printf('vimsh: Not found the script "%s".', filename))
+      call vimshell#error_line(a:context.fd, printf('vimsh: Not found the script "%s".', filename))
     endif
   endif
 endfunction"}}}

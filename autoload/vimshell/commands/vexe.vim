@@ -29,11 +29,11 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'vexe {expression}',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Execute vim command.
 
   let context = a:context
-  let context.fd = a:fd
+  let context.fd = a:context.fd
   call vimshell#set_context(context)
   
   let temp = tempname()
@@ -49,7 +49,7 @@ function! s:command.execute(program, args, fd, context)"{{{
   call delete(temp)
 
   for line in output
-    call vimshell#print_line(a:fd, line)
+    call vimshell#print_line(a:context.fd, line)
   endfor
 endfunction"}}}
 

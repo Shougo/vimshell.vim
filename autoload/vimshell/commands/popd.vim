@@ -29,12 +29,12 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'popd [{directory-stack-number}]',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Pop directory.
 
   if empty(b:vimshell.directory_stack)
     " Error.
-    call vimshell#error_line(a:fd, 'popd: Directory stack is empty.')
+    call vimshell#error_line(a:context.fd, 'popd: Directory stack is empty.')
     return
   endif
 
@@ -47,18 +47,18 @@ function! s:command.execute(program, args, fd, context)"{{{
     let pop = 0
   else
     " Error.
-    call vimshell#error_line(a:fd, 'popd: Arguments error.')
+    call vimshell#error_line(a:context.fd, 'popd: Arguments error.')
     return
   endif
 
   if pop >= len(b:vimshell.directory_stack)
     " Overflow.
-    call vimshell#error_line(a:fd, printf("popd: Not found '%d' in directory stack.", pop))
+    call vimshell#error_line(a:context.fd, printf("popd: Not found '%d' in directory stack.", pop))
     return
   endif
 
-  return vimshell#execute_internal_command('cd', [ b:vimshell.directory_stack[pop] ], 
-        \ a:fd, a:context)
+  return vimshell#execute_internal_command('cd',
+        \ [ b:vimshell.directory_stack[pop] ], a:context)
 endfunction"}}}
 function! s:command.complete(args)"{{{
   return vimshell#complete#helper#directory_stack(a:args[-1])

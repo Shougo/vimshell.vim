@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'view [{filename}]',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
@@ -37,13 +37,13 @@ function! s:command.execute(program, args, fd, context)"{{{
         \ })
 
   if empty(args)
-    if a:fd.stdin == ''
-      vimshell#error_line(a:fd, 'view: Filename required.')
+    if a:context.fd.stdin == ''
+      vimshell#error_line(a:context.fd, 'view: Filename required.')
       return
     endif
 
     " Read from stdin.
-    let filenames = [a:fd.stdin]
+    let filenames = [a:context.fd.stdin]
   else
     let filenames = args
   endif
@@ -53,7 +53,7 @@ function! s:command.execute(program, args, fd, context)"{{{
     if len(lines) < winheight(0)
       " Print lines if one screen.
       for line in lines
-        call vimshell#print_line(a:fd, line)
+        call vimshell#print_line(a:context.fd, line)
       endfor
 
       return

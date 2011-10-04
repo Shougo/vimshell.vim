@@ -303,7 +303,7 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
 
   if line =~ '^\s*-\s*$'
     " Popd.
-    call vimshell#execute_internal_command('cd', ['-'], {}, {})
+    call vimshell#execute_internal_command('cd', ['-'], {})
   elseif line =~ '^\s*$'
     " Call emptycmd filter.
     let line = vimshell#hook#call_filter('emptycmd', context, line)

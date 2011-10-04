@@ -29,10 +29,10 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'pwd',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Print the working directory.
 
-  call vimshell#print_line(a:fd, getcwd())
+  call vimshell#print_line(a:context.fd, getcwd())
 endfunction"}}}
 
 function! vimshell#commands#pwd#define()

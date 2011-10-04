@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'h [{pattern}]',
       \}
-function! s:command.execute(command, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
   " Execute from history.
 
   let histories = vimshell#history#read()
@@ -42,7 +42,7 @@ function! s:command.execute(command, args, fd, context)"{{{
 
     if num >= len(histories)
       " Error.
-      call vimshell#error_line(a:fd, 'h: Not found in history.')
+      call vimshell#error_line(a:context.fd, 'h: Not found in history.')
       return
     endif
 
@@ -58,7 +58,7 @@ function! s:command.execute(command, args, fd, context)"{{{
 
     if !exists('hist')
       " Error.
-      call vimshell#error_line(a:fd, 'h: Not found in history.')
+      call vimshell#error_line(a:context.fd, 'h: Not found in history.')
       return
     endif
   endif
@@ -70,7 +70,7 @@ function! s:command.execute(command, args, fd, context)"{{{
 
   let context = a:context
   let context.is_interactive = 0
-  let context.fd = a:fd
+  let context.fd = a:context.fd
   try
     call vimshell#parser#eval_script(hist, context)
   catch /.*/

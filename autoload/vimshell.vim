@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -187,7 +187,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
 
   " Load rc file.
   if filereadable(g:vimshell_vimshrc_path)
-    call vimshell#execute_internal_command('vimsh', [g:vimshell_vimshrc_path], {},
+    call vimshell#execute_internal_command('vimsh', [g:vimshell_vimshrc_path],
           \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
     let b:vimshell.loaded_vimshrc = 1
   endif
@@ -269,24 +269,23 @@ endfunction"}}}
 function! vimshell#available_commands()"{{{
   return s:internal_commands
 endfunction"}}}
-function! vimshell#execute_internal_command(command, args, fd, context)"{{{
+function! vimshell#execute_internal_command(command, args, context)"{{{
   if empty(s:internal_commands)
     call s:init_internal_commands()
   endif
-
-  if empty(a:fd)
-    let fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-  else
-    let fd = a:fd
-  endif
-
-  let commands = [ { 'args' : insert(a:args, a:command), 'fd' : fd } ]
 
   if empty(a:context)
     let context = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
   else
     let context = a:context
   endif
+
+  if !has_key(context, 'fd') || empty(context.fd)
+    let context.fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
+  endif
+
+  let commands = [ { 'args' : insert(a:args, a:command),
+        \            'fd' : context.fd } ]
 
   return vimshell#parser#execute_command(commands, context)
 endfunction"}}}

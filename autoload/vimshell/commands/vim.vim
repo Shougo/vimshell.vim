@@ -29,7 +29,7 @@ let s:command_vim = {
       \ 'kind' : 'internal',
       \ 'description' : 'vim [{filename}]',
       \}
-function! s:command_vim.execute(program, args, fd, context)"{{{
+function! s:command_vim.execute(args, context)"{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
@@ -41,7 +41,7 @@ function! s:command_vim.execute(program, args, fd, context)"{{{
 
   let [new_pos, old_pos] = vimshell#split(options['--split'])
 
-  for filename in empty(args) ? [a:fd.stdin] : args
+  for filename in empty(args) ? [a:context.fd.stdin] : args
     try
       if filename == ''
         silent enew

@@ -29,11 +29,11 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'let ${var-name} = {expression}',
       \}
-function! s:command.execute(program, args, fd, context)"{{{
+function! s:command.execute(args, context)"{{{
     let args = join(a:args)
 
     if args !~ '^$$\?\h\w*'
-        call vimshell#error_line(a:fd, 'let: Wrong syntax.')
+        call vimshell#error_line(a:context.fd, 'let: Wrong syntax.')
         return
     endif
 

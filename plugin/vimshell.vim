@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Oct 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -195,8 +195,7 @@ function! s:vimshell_execute(args)"{{{
 
   let args = vimproc#parser#split_args(a:args)
 
-  call vimshell#execute_internal_command('bg',
-        \ args, context.fd, context)
+  call vimshell#execute_internal_command('bg', args, context)
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
@@ -223,8 +222,7 @@ function! s:vimshell_interactive(args)"{{{
         \}
   call vimshell#set_context(context)
 
-  call vimshell#execute_internal_command('iexe',
-        \ args, context.fd, context)
+  call vimshell#execute_internal_command('iexe', args, context)
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
   let context = {
@@ -236,7 +234,7 @@ function! s:vimshell_terminal(args)"{{{
   call vimshell#set_context(context)
 
   call vimshell#execute_internal_command('texe',
-        \ vimproc#parser#split_args(a:args), context.fd, context)
+        \ vimproc#parser#split_args(a:args), context)
 endfunction"}}}
 function! s:vimshell_popup(args)"{{{
   if &filetype ==# 'vimshell'
