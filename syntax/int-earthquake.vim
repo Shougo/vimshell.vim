@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Oct 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,27 +30,27 @@ elseif exists('b:current_syntax')
   finish
 endif
 
-syn region  EarthquakeInputLine  start='^⚡ ' end='\n' oneline contains=EarthquakePrompt,EarthquakeString,EarthquakeCommand
+syntax region  EarthquakeInputLine  start='^⚡ ' end='\n' oneline contains=EarthquakePrompt,EarthquakeString,EarthquakeCommand
 
-syn match   EarthquakeURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-syn match   EarthquakeString      '.*' contained contains=EarthquakeReply,EarthquakeRemark
-syn match   EarthquakeCommand     ':\w*' contained
-syn match   EarthquakePrompt      '^\s*⚡ ' contained
-syn match   EarthquakeReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
-syn match   EarthquakeName        '\s[[:alnum:]_-]\+:\s'
-syn match   EarthquakeConstants   '[+-]\?\<\d\+\>'
-syn match   EarthquakeConstants   '[+-]\?\<0x\x\+\>'
-syn match   EarthquakeConstants   '[+-]\?\<0\o\+\>'
-syn match   EarthquakeConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
-syn match   EarthquakeConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syn match   EarthquakeRemark      '^\[\$\a\+\]'
-syn match   EarthquakeRemark      '\$\a\+'
-syn match   EarthquakeHashTag     '#\h\w*'
-syn match   EarthquakeDate        '^(\d\+:\d\+:\d\+)'
-syn match   EarthquakeMessage     '^:\h\w* '
-syn region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
+syntax match   EarthquakeURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+syntax match   EarthquakeString      '.*' contained contains=EarthquakeReply,EarthquakeRemark
+syntax match   EarthquakeCommand     ':\w*' contained
+syntax match   EarthquakePrompt      '^\s*⚡ ' contained
+syntax match   EarthquakeReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syntax match   EarthquakeName        '\s[[:alnum:]_-]\+:\s'
+syntax match   EarthquakeConstants   '[+-]\?\<\d\+\>'
+syntax match   EarthquakeConstants   '[+-]\?\<0x\x\+\>'
+syntax match   EarthquakeConstants   '[+-]\?\<0\o\+\>'
+syntax match   EarthquakeConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
+syntax match   EarthquakeConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
+syntax match   EarthquakeRemark      '^\[\$\a\+\]'
+syntax match   EarthquakeRemark      '\$\a\+'
+syntax match   EarthquakeHashTag     '#\h\w*'
+syntax match   EarthquakeDate        '^(\d\+:\d\+:\d\+)'
+syntax match   EarthquakeMessage     '^:\?\h\w* \|^\[\h\w*\] '
+syntax region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
 
-syn keyword EarthquakeKeyword
+syntax keyword EarthquakeKeyword
       \ :exit :help :restart :eval :update :reply :status
       \ :delete :mentions :follow :unfollow :recent :user :search
       \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweeted_of_me
@@ -65,28 +65,28 @@ augroup END
 
 function! s:color_scheme()"{{{
   if has('gui_running')
-    hi EarthquakePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+    highlight EarthquakePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
   else
-    hi def link EarthquakePrompt Identifier
+    highlight def link EarthquakePrompt Identifier
   endif
 endfunction"}}}
 
 call s:color_scheme()
 
-hi def link EarthquakeConstants Constant
-hi def link EarthquakeCommand Statement
-hi def link EarthquakeKeyword Statement
+highlight def link EarthquakeConstants Constant
+highlight def link EarthquakeCommand Statement
+highlight def link EarthquakeKeyword Statement
 if has('gui_running')
-  hi EarthquakeURI gui=UNDERLINE guifg=#6699ff guibg=NONE
+  highlight EarthquakeURI gui=UNDERLINE guifg=#6699ff guibg=NONE
 else
-  hi def link EarthquakeURI Comment
+  highlight def link EarthquakeURI Comment
 endif
-hi def link EarthquakeReply PreProc
-hi def link EarthquakeName Type
-hi def link EarthquakeMessage Constant
-hi def link EarthquakeError Error
-hi def link EarthquakeDate Constant
-hi def link EarthquakeHashTag Comment
-hi def link EarthquakeRemark Identifier
+highlight def link EarthquakeReply PreProc
+highlight def link EarthquakeName Type
+highlight def link EarthquakeMessage Constant
+highlight def link EarthquakeError Error
+highlight def link EarthquakeDate Constant
+highlight def link EarthquakeHashTag Comment
+highlight def link EarthquakeRemark Identifier
 
 let b:current_syntax = 'int_earthquake'

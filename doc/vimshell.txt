@@ -853,6 +853,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-04
+- Improved earthquake syntax.
+
 2011-10-03
 - Fixed :VimShellExecute and :VimShellInteractive split behavior.
 - Improved earthquake syntax.
