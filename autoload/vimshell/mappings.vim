@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2011.
+" Last Modified: 04 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -285,6 +285,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
       call vimshell#terminal#clear_highlight()
       normal! k
+      call append('.', '')
     endif
   endif
 
