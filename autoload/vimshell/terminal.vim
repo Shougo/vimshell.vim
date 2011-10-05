@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 05 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -58,44 +58,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
-    " Strip <CR>.
-    let string = substitute(substitute(a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
-
-    let lines = string =~ '\r' ?
-          \ split(string, '\n', 1) : split(string, '\n', 1)
-
-    if a:is_error
-      call map(lines, '"!!!".v:val."!!!"')
-    endif
-
-    if string =~ '\r'
-      for line in lines
-        call append('.', '')
-        normal! j
-
-        for l in split(line, '\r', 1)
-          call setline('.', l)
-          redraw
-        endfor
-      endfor
-    else
-      " Optimized print.
-      if vimshell#iswin()
-            \ && has_key(b:interactive, 'command')
-            \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
-            \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
-        call append('.', lines)
-        execute 'normal!' len(lines).'j$'
-      else
-        if line('.') != b:interactive.echoback_linenr
-          call setline('.', current_line . lines[0])
-        endif
-
-        call append('.', lines[1:])
-      endif
-      execute 'normal!' (len(lines)-1).'j$'
-    endif
-
+    call s:optimized_print(a:string, a:is_error)
     return
   endif
 
@@ -285,6 +248,54 @@ function! vimshell#terminal#clear_highlight()"{{{
     " Restore wrap.
     let &l:wrap = b:interactive.terminal.wrap
   endif
+endfunction"}}}
+
+function! s:optimized_print(string, is_error)"{{{
+  " Strip <CR>.
+  let string = substitute(substitute(a:string, "\<C-g>", '', 'g'),
+        \ '\r\+\n', '\n', 'g')
+
+  let lines = split(string, '\n', 1)
+
+  if string =~ '\r'
+    for line in lines
+      call append('.', '')
+      normal! j
+
+      let ls = split(line, '\r', 1)
+
+      if a:is_error
+        call map(ls, '"!!!".v:val."!!!"')
+      endif
+
+      for l in ls
+        call setline('.', l)
+        redraw
+      endfor
+    endfor
+
+    return
+  endif
+
+  if a:is_error
+    call map(lines, '"!!!".v:val."!!!"')
+  endif
+
+  " Optimized print.
+  if vimshell#iswin()
+        \ && has_key(b:interactive, 'command')
+        \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
+        \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
+    call append('.', lines)
+    execute 'normal!' len(lines).'j$'
+  else
+    if line('.') != b:interactive.echoback_linenr
+      call setline('.', getline('.') . lines[0])
+    endif
+
+    call append('.', lines[1:])
+  endif
+  execute 'normal!' (len(lines)-1).'j$'
 endfunction"}}}
 
 function! s:init_terminal()"{{{

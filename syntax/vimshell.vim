@@ -68,7 +68,6 @@ if has('conceal')
   " Supported conceal features.
   syn match   VimShellErrorHidden            '!!!' contained conceal
   syn match   VimShellUserPromptHidden       '^\[%\] ' contained conceal
-  syn match   VimShellErrorHidden            '!!!$' conceal
 else
   syn match   VimShellErrorHidden            '!!!' contained
   syn match   VimShellUserPromptHidden       '^\[%\] ' contained
