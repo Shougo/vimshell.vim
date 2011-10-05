@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 05 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,7 +54,7 @@ syntax keyword EarthquakeKeyword
       \ :exit :help :restart :eval :update :reply :status
       \ :delete :mentions :follow :unfollow :recent :user :search
       \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweeted_of_me
-      \ :block :unblock :report_spam :messages :sent_messages
+      \ :block :unblock :report_spam :messages :sent_messages :message
       \ :reconnect :thread :update_profile_image :browse
       \ :sh :plugin_install :edit_config :alias :reauthorize
 
