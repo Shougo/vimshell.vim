@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jun 2011.
+" Last Modified: 05 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -68,6 +68,7 @@ if has('conceal')
   " Supported conceal features.
   syn match   VimShellErrorHidden            '!!!' contained conceal
   syn match   VimShellUserPromptHidden       '^\[%\] ' contained conceal
+  syn match   VimShellErrorHidden            '!!!$' conceal
 else
   syn match   VimShellErrorHidden            '!!!' contained
   syn match   VimShellUserPromptHidden       '^\[%\] ' contained
