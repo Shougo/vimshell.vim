@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 06 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -496,7 +496,8 @@ endfunction"}}}
 function! vimshell#set_prompt_command(string)"{{{
   if !vimshell#check_prompt()
     " Search prompt.
-    let [lnum, col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+    let [lnum, col] = searchpos('^'
+          \ . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
   else
     let lnum = '.'
   endif
@@ -528,7 +529,13 @@ function! vimshell#get_current_args(...)"{{{
   return args
 endfunction"}}}
 function! vimshell#get_prompt_linenr()"{{{
-  let [line, col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bcW')
+  if b:interactive.type !=# 'interactive'
+        \ && b:interactive.type !=# 'vimshell'
+    return 0
+  endif
+
+  let [line, col] = searchpos('^' .
+        \ vimshell#escape_match(vimshell#get_prompt()), 'nbcW')
   return line
 endfunction"}}}
 function! vimshell#check_prompt(...)"{{{

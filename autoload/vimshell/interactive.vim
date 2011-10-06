@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 06 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -85,6 +85,8 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
   if in !~ "\<C-d>$"
     let in .= "\<LF>"
   endif
+
+  let b:interactive.prompt_nr = line('.')
 
   call s:send_string(in, a:is_insert, line('.'))
 endfunction"}}}
@@ -463,6 +465,8 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
     call b:interactive.process.stdin.write(in . "\<NL>")
   endif
 
+  call s:check_scrollback()
+
   let b:interactive.output_pos = getpos('.')
 
   if has_key(b:interactive, 'prompt_history')
@@ -492,6 +496,8 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   " Print buffer.
   call vimshell#terminal#print(string, 1)
 
+  call s:check_scrollback()
+
   let b:interactive.output_pos = getpos('.')
 
   redraw
@@ -501,6 +507,20 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     let b:interactive.prompt_history[line('.')] = getline('.')
   endif
 endfunction"}}}
+
+function! s:check_scrollback()
+  let prompt_nr = get(b:interactive, 'prompt_nr', 0)
+  let output_lines = line('.') - prompt_nr
+  if output_lines > g:vimshell_scrollback_limit
+    let pos = getpos('.')
+    " Delete output.
+    execute printf('silent %d,%ddelete _', prompt_nr+1,
+          \ (line('.')-g:vimshell_scrollback_limit+1))
+    if pos != getpos('.')
+      call setpos('.', pos)
+    endif
+  endif
+endfunction
 
 " Autocmd functions.
 function! vimshell#interactive#check_insert_output()"{{{

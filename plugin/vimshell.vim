@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 06 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -110,6 +110,11 @@ endif
 if !exists('g:vimshell_no_save_history_commands')
   let g:vimshell_no_save_history_commands = { 'history' : 1, 'h' : 1, 'histdel' : 1 }
 endif
+if !exists('g:vimshell_scrollback_limit')
+  let g:vimshell_scrollback_limit = 1000
+endif
+
+" For interactive commands.
 if !exists('g:vimshell_interactive_no_save_history_commands')
   let g:vimshell_interactive_no_save_history_commands = {}
 endif

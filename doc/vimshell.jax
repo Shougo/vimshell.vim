@@ -307,6 +307,12 @@ g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			
 			初期値は{ 'history' : 1, 'h' : 1, 'histdel' : 1 }です。
 
+g:vimshell_scrollback_limit				*g:vimshell_scrollback_limit*
+			コマンドの出力が表示される最大サイズを指定する。
+			出力がこのサイズを越えると、古いヒストリが切り詰められる。
+			
+			初期値は1000である。
+
 g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
 			|vimshell-internal-iexe|において、ヒストリを保存しな
 			いコマンド名をキーとしたディクショナリ。存在しな

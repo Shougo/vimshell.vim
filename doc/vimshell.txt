@@ -188,6 +188,9 @@ g:vimshell_cd_command					*g:vimshell_cd_command*
 g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
 			Todo
 
+g:vimshell_scrollback_limit				*g:vimshell_scrollback_limit*
+			Todo
+
 g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
 			Todo
 
@@ -852,6 +855,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-10-06
+- Added g:vimshell_scrollback_limit option.
 
 2011-10-05
 - Improved vimshell#terminal#print().

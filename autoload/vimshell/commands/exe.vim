@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 06 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -137,6 +137,7 @@ function! s:init_process(commands, context, options)"{{{
   let b:interactive.encoding = a:options['--encoding']
   let b:interactive.is_pty = !vimshell#iswin()
   let b:interactive.echoback_linenr = -1
+  let b:interactive.prompt_nr = line('.')
   let b:interactive.stdout_cache = ''
   let b:interactive.stderr_cache = ''
   let b:interactive.cmdline = join(cmdline, '|')

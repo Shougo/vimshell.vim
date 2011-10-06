@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 06 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -146,6 +146,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'is_pty' : (!vimshell#iswin() || use_cygpty),
         \ 'args' : args,
         \ 'echoback_linenr' : 0,
+        \ 'prompt_nr' : line('.'),
         \ 'width' : winwidth(0),
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
