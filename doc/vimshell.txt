@@ -666,7 +666,7 @@ texe [{options}...] {command}				*vimshell-internal-texe*
 		
 
 time {command}						*vimshell-internal-time*
-		Todo
+		Runs {command} synchronously and shows how long did it take.
 
 view [{options}...] {filenames}... 			*vimshell-internal-view*
 		Todo
