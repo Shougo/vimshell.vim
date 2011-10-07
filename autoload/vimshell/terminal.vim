@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2011.
+" Last Modified: 07 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -284,8 +284,9 @@ function! s:optimized_print(string, is_error)"{{{
   " Optimized print.
   if vimshell#iswin()
         \ && has_key(b:interactive, 'command')
-        \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
-        \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
+        \ && !get(g:vimshell_interactive_echoback_commands,
+        \        b:interactive.command, 0)
+    " no echoback command.
     call append('.', lines)
     execute 'normal!' len(lines).'j$'
   else
@@ -304,8 +305,9 @@ function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
     if vimshell#iswin()
           \ && has_key(b:interactive, 'command')
-          \ && has_key(g:vimshell_interactive_no_echoback_commands, b:interactive.command)
-          \ && g:vimshell_interactive_no_echoback_commands[b:interactive.command]
+          \ && !get(g:vimshell_interactive_echoback_commands,
+          \        b:interactive.command, 0)
+      " no echoback command.
       let s:line += 1
       let s:lines[s:line] = a:string
       let s:col = len(a:string)

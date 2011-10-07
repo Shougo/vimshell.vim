@@ -206,7 +206,7 @@ g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter
 g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
 			Todo
 
-g:vimshell_interactive_no_echoback_commands		*g:vimshell_interactive_no_echoback_commands*
+g:vimshell_interactive_echoback_commands		*g:vimshell_interactive_echoback_commands*
 			Todo
 
 g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
@@ -855,6 +855,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-10-07
+- Added g:vimshell_interactive_echoback_commands option.
 
 2011-10-06
 - Added g:vimshell_scrollback_limit option.
