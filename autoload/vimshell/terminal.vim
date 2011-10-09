@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2011.
+" Last Modified: 09 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -117,7 +117,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
           call s:output_string(newstr)
           let newstr = ''
 
-          call call(s:escape_sequence_csi[matchstr[-1:]], [matchstr], s:escape)
+          call call(s:escape_sequence_csi[matchstr[-1:]],
+                \ [matchstr], s:escape)
 
           let pos += len(matchstr) + 1
           continue
@@ -332,15 +333,7 @@ function! s:output_string(string)"{{{
     endfor
   endif
 
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = ''
-  endif
-  let left_line = matchstr(s:lines[s:line], '^.*\%' . s:col . 'c')
-  let right_line = matchstr(s:lines[s:line], '\%' . s:col+len(string) . 'c.*$')
-
-  let s:lines[s:line] = left_line . string . right_line
-
-  let s:col += len(string)
+  call s:set_screen_string(s:line, s:col, string)
 endfunction"}}}
 function! s:sortfunc(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
@@ -399,6 +392,46 @@ function! s:use_conceal()"{{{
   return has('conceal') && b:interactive.type !=# 'terminal'
 endfunction"}}}
 
+function! s:get_real_pos(line, col)"{{{
+  let col = 0
+  let real_col = 0
+  let current_line = s:lines[a:line]
+  for c in split(s:lines[s:line], '\zs')
+    let len = vimshell#util#wcswidth(c)
+    if c == "\<ESC>"
+          \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
+      " Skip.
+      let real_col += len(matchstr(current_line, '\e\[[0-9;]*m', real_col))
+    else
+      let real_col += len(c)
+    endif
+
+    let col += len
+    if col > a:col
+      break
+    endif
+  endfor
+
+  return [a:line, real_col]
+endfunction"}}}
+function! s:get_screen_character(line, col)"{{{
+  let [line, col] = s:get_real_pos(a:line, a:col)
+  return s:lines[line, col]
+endfunction"}}}
+function! s:set_screen_string(line, col, string)"{{{
+  let [line, col] = s:get_real_pos(a:line, a:col)
+
+  if !has_key(s:lines, line)
+    let s:lines[line] = ''
+  endif
+  let current_line = s:lines[line]
+  let len = vimshell#util#wcswidth(a:string)
+  let s:lines[s:line] = current_line[ : col]  .  a:string
+        \             . current_line[col+len :]
+
+  let s:col += len
+endfunction"}}}
+
 " Escape sequence functions.
 let s:escape = {}
 function! s:escape.ignore(matchstr)"{{{
@@ -433,8 +466,8 @@ let s:highlight_table = {
 function! s:escape.highlight(matchstr)"{{{
   if g:vimshell_disable_escape_highlight
         \ || (b:interactive.type == 'interactive' &&
-        \     has_key(g:vimshell_interactive_monochrome_commands, b:interactive.command)
-        \     && g:vimshell_interactive_monochrome_commands[b:interactive.command])
+        \     get(g:vimshell_interactive_monochrome_commands,
+        \         b:interactive.command, 0))
     return
   endif
 
@@ -529,7 +562,8 @@ function! s:escape.highlight(matchstr)"{{{
   endif
 
   if s:use_conceal()
-    let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
+    let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
+          \ . '_' . s:line . '_' . s:col
     let syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
           \ 'contains=vimshellEscapeSequenceConceal', a:matchstr)
 
@@ -541,15 +575,18 @@ function! s:escape.highlight(matchstr)"{{{
     " Note: When use concealed text, wrapped text is wrong...
     setlocal nowrap
   else
-    let syntax_name = 'EscapeSequenceAt_' . bufnr('%') . '_' . s:line . '_' . s:col
-    let syntax_command = printf('start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
+    let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
+          \ . '_' . s:line . '_' . s:col
+    let syntax_command = printf(
+          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
 
     if !has_key(b:interactive.terminal.syntax_names, s:line)
       let b:interactive.terminal.syntax_names[s:line] = {}
     endif
     if has_key(b:interactive.terminal.syntax_names[s:line], s:col)
       " Clear previous highlight.
-      let prev_syntax = b:interactive.terminal.syntax_names[s:line][s:col]
+      let prev_syntax =
+            \ b:interactive.terminal.syntax_names[s:line][s:col]
       execute 'highlight clear' prev_syntax
       execute 'syntax clear' prev_syntax
     endif
