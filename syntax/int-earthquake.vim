@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Oct 2011.
+" Last Modified: 10 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,12 +43,13 @@ syntax match   EarthquakeConstants   '[+-]\?\<0x\x\+\>'
 syntax match   EarthquakeConstants   '[+-]\?\<0\o\+\>'
 syntax match   EarthquakeConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
 syntax match   EarthquakeConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   EarthquakeRemark      '^\[\$\a\+\]'
+syntax match   EarthquakeRemark      '\[\$\a\+\]'
 syntax match   EarthquakeRemark      '\$\a\+'
 syntax match   EarthquakeHashTag     '#\h\w*'
 syntax match   EarthquakeDate        '^(\d\+:\d\+:\d\+)'
 syntax match   EarthquakeMessage     '^:\?\h\w* \|^\[\h\w*\] '
 syntax region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
+syntax match   EarthquakeCommandOutput '^\s\ze\['
 
 syntax keyword EarthquakeKeyword
       \ :exit :help :restart :eval :update :reply :status
@@ -81,6 +82,7 @@ if has('gui_running')
 else
   highlight def link EarthquakeURI Comment
 endif
+
 highlight def link EarthquakeReply PreProc
 highlight def link EarthquakeName Type
 highlight def link EarthquakeMessage Constant
@@ -88,5 +90,6 @@ highlight def link EarthquakeError Error
 highlight def link EarthquakeDate Constant
 highlight def link EarthquakeHashTag Comment
 highlight def link EarthquakeRemark Identifier
+highlight def link EarthquakeCommandOutput Todo
 
 let b:current_syntax = 'int_earthquake'

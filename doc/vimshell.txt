@@ -856,6 +856,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-10
+- Improved earthquake highlight.
+
 2011-10-09
 - Improved escape sequence output.
 
