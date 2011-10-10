@@ -858,6 +858,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-10-10
 - Improved earthquake highlight.
+- Refactored initialize options.
 
 2011-10-09
 - Improved escape sequence output.

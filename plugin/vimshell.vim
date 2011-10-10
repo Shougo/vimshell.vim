@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2011.
+" Last Modified: 10 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,122 +49,93 @@ if exists('g:VimShell_EnableInteractive')
 endif
 "}}}
 " Global options definition."{{{
-if !exists('g:vimshell_ignore_case')
-  let g:vimshell_ignore_case = &ignorecase
-endif
-if !exists('g:vimshell_smart_case')
-  let g:vimshell_smart_case = 0
-endif
-if !exists('g:vimshell_max_list')
-  let g:vimshell_max_list = 100
-endif
-if !exists('g:vimshell_use_terminal_command')
-  let g:vimshell_use_terminal_command = ''
-endif
-if !exists('g:vimshell_split_height')
-  let g:vimshell_split_height = 30
-endif
-if !exists('g:vimshell_temporary_directory')
-  let g:vimshell_temporary_directory = expand('~/.vimshell')
-endif
+let g:vimshell_ignore_case =
+      \ get(g:, 'vimshell_ignore_case', &ignorecase)
+let g:vimshell_smart_case =
+      \ get(g:, 'vimshell_smart_case', &smartcase)
+let g:vimshell_max_list =
+      \ get(g:, 'vimshell_max_list', 100)
+let g:vimshell_use_terminal_command =
+      \ get(g:, 'vimshell_use_terminal_command', '')
+let g:vimshell_split_height =
+      \ get(g:, 'vimshell_split_height', 30)
+let g:vimshell_temporary_directory =
+      \ get(g:, 'vimshell_temporary_directory', expand('~/.vimshell'))
 if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
   call mkdir(fnamemodify(g:vimshell_temporary_directory, ':p'), 'p')
 endif
-if !exists('g:vimshell_max_command_history')
-  let g:vimshell_max_command_history = 1000
-endif
-if !exists('g:vimshell_max_directory_stack')
-  let g:vimshell_max_directory_stack = 100
-endif
-if !exists('g:vimshell_vimshrc_path')
-  let g:vimshell_vimshrc_path = expand('~/.vimshrc')
-endif
-let g:vimshell_vimshrc_path = expand(g:vimshell_vimshrc_path)
+let g:vimshell_max_command_history =
+      \ get(g:, 'vimshell_max_command_history', 1000)
+let g:vimshell_max_directory_stack =
+      \ get(g:, 'vimshell_max_directory_stack', 100)
+let g:vimshell_vimshrc_path =
+      \ get(g:, 'vimshell_vimshrc_path', expand('~/.vimshrc'))
 if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))
   call mkdir(fnamemodify(g:vimshell_vimshrc_path, ':p:h'), 'p')
 endif
-if !exists('g:vimshell_escape_colors')
-  let g:vimshell_escape_colors = [
-        \'#6c6c6c', '#ff6666', '#66ff66', '#ffd30a', '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0',
-        \'#383838', '#ff4444', '#44ff44', '#ffb30a', '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
-        \]
-endif
-if !exists('g:vimshell_disable_escape_highlight')
-  let g:vimshell_disable_escape_highlight = 0
-endif
-if !exists('g:vimshell_cat_command')
-  let g:vimshell_cat_command = 'cat'
-endif
-if !exists('g:vimshell_environment_term')
-  let g:vimshell_environment_term = 'vt100'
-endif
-if !exists('g:vimshell_split_command')
-  let g:vimshell_split_command = 'nicely'
-endif
-if !exists('g:vimshell_cd_command')
-  let g:vimshell_cd_command = 'lcd'
-endif
-if !exists('g:vimshell_external_history_path')
-  let g:vimshell_external_history_path = ''
-endif
-if !exists('g:vimshell_no_save_history_commands')
-  let g:vimshell_no_save_history_commands = { 'history' : 1, 'h' : 1, 'histdel' : 1 }
-endif
-if !exists('g:vimshell_scrollback_limit')
-  let g:vimshell_scrollback_limit = 1000
-endif
+let g:vimshell_escape_colors =
+      \ get(g:, 'vimshell_escape_colors', [
+        \ '#6c6c6c', '#ff6666', '#66ff66', '#ffd30a',
+        \ '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0',
+        \ '#383838', '#ff4444', '#44ff44', '#ffb30a',
+        \ '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
+        \])
+let g:vimshell_disable_escape_highlight =
+      \ get(g:, 'vimshell_disable_escape_highlight', 0)
+let g:vimshell_cat_command =
+      \ get(g:, 'vimshell_cat_command', 'cat')
+let g:vimshell_environment_term =
+      \ get(g:, 'vimshell_environment_term', 'vt100')
+let g:vimshell_split_command =
+      \ get(g:, 'vimshell_split_command', 'nicely')
+let g:vimshell_cd_command =
+      \ get(g:, 'vimshell_cd_command', 'lcd')
+let g:vimshell_external_history_path =
+      \ get(g:, 'vimshell_external_history_path', '')
+let g:vimshell_no_save_history_commands =
+      \ get(g:, 'vimshell_no_save_history_commands', {
+      \     'history' : 1, 'h' : 1, 'histdel' : 1
+      \ })
+let g:vimshell_scrollback_limit =
+      \ get(g:, 'vimshell_scrollback_limit', 1000)
 
 " For interactive commands.
-if !exists('g:vimshell_interactive_no_save_history_commands')
-  let g:vimshell_interactive_no_save_history_commands = {}
-endif
-if !exists('g:vimshell_interactive_update_time')
-  let g:vimshell_interactive_update_time = 500
-endif
-if !exists('g:vimshell_interactive_command_options')
-  let g:vimshell_interactive_command_options = {}
-endif
-if !exists('g:vimshell_interactive_interpreter_commands')
-  let g:vimshell_interactive_interpreter_commands = {}
-endif
-if !exists('g:vimshell_interactive_encodings')
-  let g:vimshell_interactive_encodings = {}
-endif
-if !exists('g:vimshell_interactive_prompts')
-  let g:vimshell_interactive_prompts = {}
-endif
-if !exists('g:vimshell_interactive_echoback_commands')
-  if has('win32') || has('win64')
-    let g:vimshell_interactive_echoback_commands = {
-          \ 'bash' : 1, 'bc' : 1,
-          \}
-  else
-    let g:vimshell_interactive_no_echoback_commands = {}
-  endif
-endif
-if !exists('g:vimshell_terminal_cursor')
-  let g:vimshell_terminal_cursor = 'i:block-Cursor/lCursor'
-endif
-if !exists('g:vimshell_terminal_commands')
-  let g:vimshell_terminal_commands = {
-        \ 'more' : 1, 'screen' : 1, 'tmux' : 1,
-        \ 'vi' : 1, 'emacs' : 1, 'sl' : 1,
-        \}
-endif
-if !exists('g:vimshell_interactive_monochrome_commands')
-  let g:vimshell_interactive_monochrome_commands = {}
-endif
+let g:vimshell_interactive_no_save_history_commands =
+      \ get(g:, 'vimshell_no_save_history_commands', {})
+let g:vimshell_interactive_update_time =
+      \ get(g:, 'vimshell_update_time', 500)
+let g:vimshell_interactive_command_options =
+      \ get(g:, 'vimshell_command_options', {})
+let g:vimshell_interactive_interpreter_commands =
+      \ get(g:, 'vimshell_interpreter_commands', {})
+let g:vimshell_interactive_encodings =
+      \ get(g:, 'vimshell_interactive_encodings', {})
+let g:vimshell_interactive_prompts =
+      \ get(g:, 'vimshell_interactive_prompts', {})
+let g:vimshell_interactive_echoback_commands =
+      \ get(g:, 'vimshell_interactive_echoback_commands',
+      \ (has('win32') || has('win64')) ? {
+      \   'bash' : 1, 'bc' : 1,
+      \   } : {})
+let g:vimshell_interactive_monochrome_commands =
+      \ get(g:, 'vimshell_interactive_monochrome_commands', {})
+
+" For terminal commands.
+let g:vimshell_terminal_cursor =
+      \ get(g:, 'vimshell_terminal_cursor', 'i:block-Cursor/lCursor')
+let g:vimshell_terminal_commands =
+      \ get(g:, 'vimshell_terminal_commands', {
+      \     'more' : 1, 'screen' : 1, 'tmux' : 1,
+      \     'vi' : 1, 'emacs' : 1, 'sl' : 1,
+      \ })
 
 " For Cygwin commands.
-if !exists('g:vimshell_interactive_cygwin_commands')
-  let g:vimshell_interactive_cygwin_commands = {}
-endif
-if !exists('g:vimshell_interactive_cygwin_path')
-  let g:vimshell_interactive_cygwin_path = 'c:/cygwin/bin'
-endif
-if !exists('g:vimshell_interactive_cygwin_home')
-  let g:vimshell_interactive_cygwin_home = ''
-endif
+let g:vimshell_interactive_cygwin_commands =
+      \ get(g:, 'vimshell_interactive_cygwin_commands', {})
+let g:vimshell_interactive_cygwin_path =
+      \ get(g:, 'vimshell_interactive_cygwin_path', 'c:/cygwin/bin')
+let g:vimshell_interactive_cygwin_home =
+      \ get(g:, 'vimshell_interactive_cygwin_home', '')
 "}}}
 
 command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)

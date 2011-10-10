@@ -213,7 +213,7 @@ g:vimshell_smart_case					*g:vimshell_smart_case*
 			際に、大文字が入力されていれば大文字小文字を無視しなく
 			なる。
 			
-			初期値は0である。
+			初期値は&smartcaseである。
 
 g:vimshell_max_list					*g:vimshell_max_list*
 			vimshellの補完候補の最大数である。補完候補の数がこれを
