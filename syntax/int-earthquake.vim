@@ -90,6 +90,6 @@ highlight def link EarthquakeError Error
 highlight def link EarthquakeDate Constant
 highlight def link EarthquakeHashTag Comment
 highlight def link EarthquakeRemark Identifier
-highlight def link EarthquakeCommandOutput Todo
+highlight def link EarthquakeCommandOutput Underlined
 
 let b:current_syntax = 'int_earthquake'
