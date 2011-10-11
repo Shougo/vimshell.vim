@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-if v:version < 720
+if v:version < 702
   echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
   finish
 elseif exists('g:loaded_vimshell')
