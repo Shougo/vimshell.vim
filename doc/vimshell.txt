@@ -856,6 +856,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-12
+- Supported editor(experimental).
+
 2011-10-11
 - Fixed for Vim 7.2.
 

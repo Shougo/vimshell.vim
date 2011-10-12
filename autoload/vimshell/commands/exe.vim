@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Oct 2011.
+" Last Modified: 12 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -105,6 +105,10 @@ function! s:init_process(commands, context, options)"{{{
     call vimshell#interactive#force_exit()
   endif
 
+  let editor = has('clientserver') && executable('gvim') ?
+        \ 'gvim --remote-wait-silent'
+        \ : g:vimshell_cat_command
+
   " Set environment variables.
   let environments_save = vimshell#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
@@ -113,12 +117,11 @@ function! s:init_process(commands, context, options)"{{{
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'execute',
-        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$EDITOR' : editor,
         \ '$PAGER' : g:vimshell_cat_command,
         \})
 
   " Initialize.
-  " let sub = vimproc#plineopen3(a:commands)
   let sub = vimproc#ptyopen(a:commands)
 
   " Restore environment variables.
