@@ -108,6 +108,9 @@ function! s:init_process(commands, context, options)"{{{
   let editor = has('clientserver') && executable('gvim') ?
         \ 'gvim --remote-wait-silent'
         \ : g:vimshell_cat_command
+  " let editor = has('clientserver') ?
+  "       \ v:progname . ' --servername=' . v:servername . ' --remote-tab-wait'
+  "       \ : g:vimshell_cat_command
 
   " Set environment variables.
   let environments_save = vimshell#set_variables({
