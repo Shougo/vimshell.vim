@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Oct 2011.
+" Last Modified: 13 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,6 +28,10 @@ if v:version < 702
   echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
   finish
 elseif exists('g:loaded_vimshell')
+  finish
+elseif $SUDO_USER != ''
+  echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
+  echoerr 'vimshell is disabled.'
   finish
 endif
 
