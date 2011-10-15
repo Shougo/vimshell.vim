@@ -862,6 +862,7 @@ CHANGELOG						*vimshell-changelog*
 2011-10-15
 - Added build internal command.
 - Fixed for echodoc.
+- Added completion in build internal command.
 
 2011-10-13
 - Detect sudo vim.

@@ -49,6 +49,15 @@ function! s:command.execute(args, context)"{{{
   endif
 endfunction"}}}
 
+function! s:command.complete(args)"{{{
+  if len(a:args) == 1
+    return vimshell#complete#helper#keyword_simple_filter(
+          \ unite#sources#build#get_builders_name(), a:args[-1])
+  endif
+
+  return []
+endfunction"}}}
+
 function! vimshell#commands#build#define()
   return s:command
 endfunction
