@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: help.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 15 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ let s:doc_dict = {
 function! s:doc_dict.search(cur_text)"{{{
   " Get command name.
   try
-    let args = vimshell#get_current_args(a:cur_text)
+    let args = vimshell#get_current_args(vimshell#get_cur_text())
   catch /^Exception:/
     return []
   endtry
@@ -44,16 +44,12 @@ function! s:doc_dict.search(cur_text)"{{{
   let command = fnamemodify(args[0], ':t:r')
 
   let commands = vimshell#available_commands()
-  if command == ''
-    return []
-  elseif !has_key(commands, command)
-    if !has_key(s:cached_doc, command)
-      return []
-    endif
-
+  if has_key(s:cached_doc, command)
     let description = s:cached_doc[command]
-  else
+  elseif has_key(commands, command)
     let description = commands[command].description
+  else
+    return []
   endif
 
   let usage = [{ 'text' : 'Usage: ', 'highlight' : 'Identifier' }]
