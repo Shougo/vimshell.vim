@@ -790,6 +790,10 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		バッファの分割方向を指定する。このオプションが省略された場合、
 		|g:vimshell_split_command|が使用される。
 
+build [{builder-name}, [{args}...]]			*vimshell-internal-build*
+		":Unite build:{builder-name}:{args}"を実行する。
+		{builder-name}を省略すると、builderが検出される。
+
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		カレントディレクトリを{directory-path}に変更する。引数が空の場
 		合、ホームディレクトリへ移動する。 引数が二つ与えられた場合、

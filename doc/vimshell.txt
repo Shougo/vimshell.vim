@@ -580,6 +580,9 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		--filetype = {filetype-name}
 		Todo
 
+build [{builder-name}, [{args}...]]			*vimshell-internal-build*
+		Todo
+
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 		Todo
 
@@ -855,6 +858,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-10-15
+- Added build internal command.
 
 2011-10-13
 - Detect sudo vim.
