@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: build.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Oct 2011.
+" Last Modified: 16 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ function! s:command.execute(args, context)"{{{
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]
 
   call unite#start([insert(args, 'build')],
-        \ { 'no_quit' : 1, 'buffer_name' : 'build' })
+        \ { 'no_quit' : 1, 'buffer_name' : 'build'.tabpagenr() })
 
   let new_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]
 

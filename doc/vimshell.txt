@@ -859,6 +859,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-16
+- Improved build internal command.
+
 2011-10-15
 - Added build internal command.
 - Fixed for echodoc.
