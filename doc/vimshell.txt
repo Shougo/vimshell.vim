@@ -861,6 +861,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-10-16
 - Improved build internal command.
+- Fixed delete buffer behavior.
 
 2011-10-15
 - Added build internal command.

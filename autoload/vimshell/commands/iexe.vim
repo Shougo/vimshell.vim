@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Oct 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -222,10 +222,10 @@ call vimshell#set_dictionary_helper(g:vimshell_interactive_monochrome_commands, 
 
 function! s:default_settings()"{{{
   " Common.
-  setlocal nocompatible
+  setlocal buftype=nofile
+  setlocal bufhidden=hide
   setlocal nolist
   setlocal modifiable
-  setlocal buftype=nofile
   setlocal noswapfile
   setlocal tabstop=8
   setlocal foldcolumn=0

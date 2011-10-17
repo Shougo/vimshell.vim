@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -187,8 +187,8 @@ function! s:on_execute()"{{{
 endfunction"}}}
 function! s:on_exit()"{{{
   if !b:interactive.process.is_valid
-    bdelete
-  endif  
+    call vimshell#util#delete_buffer()
+  endif
 endfunction "}}}
 function! s:event_bufwin_enter()"{{{
   if has('conceal')

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Oct 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,8 +70,9 @@ endfunction"}}}
 " User utility functions.
 function! s:default_settings()"{{{
   " Common.
-  setlocal nolist
+  setlocal bufhidden=hide
   setlocal buftype=nofile
+  setlocal nolist
   setlocal noswapfile
   setlocal tabstop=8
   setlocal foldcolumn=0
@@ -610,34 +611,6 @@ function! vimshell#cd(directory)"{{{
 endfunction"}}}
 function! vimshell#compare_number(i1, i2)"{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
-endfunction"}}}
-function! vimshell#alternate_buffer()"{{{
-  if bufnr('%') != bufnr('#') && buflisted(bufnr('#'))
-    buffer #
-    return
-  endif
-
-  " Search other buffer.
-  let cnt = 0
-  let pos = 1
-  let current = 0
-  while pos <= bufnr('$')
-    if buflisted(pos)
-      if pos == bufnr('%')
-        let current = cnt
-      endif
-
-      let cnt += 1
-    endif
-
-    let pos += 1
-  endwhile
-
-  if current > cnt / 2
-    bprevious
-  else
-    bnext
-  endif
 endfunction"}}}
 function! vimshell#imdisable()"{{{
   " Disable input method.

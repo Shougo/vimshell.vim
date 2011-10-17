@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -176,11 +176,11 @@ let s:update_time_save = &updatetime
 function! s:default_settings()"{{{
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
-  
+
   " Common.
-  setlocal nocompatible
-  setlocal nolist
+  setlocal bufhidden=hide
   setlocal buftype=nofile
+  setlocal nolist
   setlocal noswapfile
   setlocal tabstop=8
   setlocal foldcolumn=0

@@ -37,9 +37,9 @@ function! s:command.execute(args, context)"{{{
     if winnr('$') != 1
       close
     else
-      call vimshell#alternate_buffer()
+      call vimshell#util#alternate_buffer()
     endif
-    execute 'bdelete!'. vimsh_buf
+    call vimshell#util#delete_buffer(vimsh_buf)
   endif
 
   stopinsert

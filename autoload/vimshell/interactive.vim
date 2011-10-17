@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Oct 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -280,7 +280,7 @@ endfunction"}}}
 
 function! vimshell#interactive#quit_buffer()"{{{
   if !b:interactive.process.is_valid
-    bdelete
+    call vimshell#util#delete_buffer()
   else
     call vimshell#echo_error('Process is running. Press <C-c> to kill process.')
   endif
@@ -312,7 +312,7 @@ function! vimshell#interactive#exit()"{{{
 
     if exists("b:interactive.is_close_immediately") && b:interactive.is_close_immediately
       " Close buffer immediately.
-      bdelete
+      call vimshell#util#delete_buffer()
     else
       syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
       hi def link InteractiveMessage WarningMsg
