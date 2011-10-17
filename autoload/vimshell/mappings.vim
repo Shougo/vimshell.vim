@@ -649,8 +649,7 @@ function! s:hangup(is_insert)"{{{
 endfunction"}}}
 function! s:insert_enter()"{{{
   if !vimshell#head_match(getline('.'), vimshell#get_prompt())
-    $
-    startinsert!
+    startinsert
     return
   endif
 
