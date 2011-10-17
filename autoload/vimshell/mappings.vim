@@ -285,7 +285,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
       call vimshell#terminal#clear_highlight()
       normal! k
-      call append('.', '')
     endif
   endif
 

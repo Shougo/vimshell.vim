@@ -673,18 +673,20 @@ function! vimshell#next_prompt(context, is_insert)"{{{
   if line('.') == line('$')
     call vimshell#print_prompt(a:context)
     call vimshell#start_insert(a:is_insert)
-  else
-    call search('^' . vimshell#escape_match(vimshell#get_prompt()).'.\?', 'We')
-    if a:is_insert
-      if vimshell#get_prompt_command() == ''
-        startinsert!
-      else
-        normal! l
-      endif
-    endif
-
-    stopinsert
+    return
   endif
+
+  " Search prompt.
+  call search('^' . vimshell#escape_match(vimshell#get_prompt()).'.\?', 'We')
+  if a:is_insert
+    if vimshell#get_prompt_command() == ''
+      startinsert!
+    else
+      normal! l
+    endif
+  endif
+
+  stopinsert
 endfunction"}}}
 function! vimshell#split(command)"{{{
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]

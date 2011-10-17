@@ -296,8 +296,8 @@ function! s:optimized_print(string, is_error)"{{{
     endif
 
     call append('.', lines[1:])
+    execute 'normal!' (len(lines)-1).'j$'
   endif
-  execute 'normal!' (len(lines)-1).'j$'
 endfunction"}}}
 
 function! s:init_terminal()"{{{
