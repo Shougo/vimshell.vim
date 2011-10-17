@@ -859,6 +859,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-17
+- Fixed s:get_real_pos() error.
+
 2011-10-16
 - Improved build internal command.
 - Fixed delete buffer behavior.

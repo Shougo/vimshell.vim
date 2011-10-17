@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Oct 2011.
+" Last Modified: 17 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -395,8 +395,8 @@ endfunction"}}}
 function! s:get_real_pos(line, col)"{{{
   let col = 0
   let real_col = 0
-  let current_line = s:lines[a:line]
-  for c in split(s:lines[s:line], '\zs')
+  let current_line = get(s:lines, a:line, '')
+  for c in split(current_line, '\zs')
     let len = vimshell#util#wcswidth(c)
     if c == "\<ESC>"
           \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
