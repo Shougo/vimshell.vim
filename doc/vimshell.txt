@@ -863,6 +863,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed s:get_real_pos() error.
 - Improved insert enter behavior.
 - Fixed vimshell output bug.
+- Improved $EDITOR problem.
 
 2011-10-16
 - Improved build internal command.

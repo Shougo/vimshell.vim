@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 21 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,7 +120,7 @@ function! s:command.execute(commands, context)"{{{
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'interactive',
-        \ '$EDITOR' : g:vimshell_cat_command,
+        \ '$EDITOR' : vimshell#get_editor_name(),
         \ '$PAGER' : g:vimshell_cat_command,
         \})
 
