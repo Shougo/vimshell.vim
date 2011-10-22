@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 23 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -71,7 +71,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let pos = 0
   let max = len(a:string)
   let s:line = line('.')
-  "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ? 
+  "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ?
         "\ (col('.') < 1 ? 1 : col('.') - 1) : col('.'))
   let s:col = col('.')
   let s:lines = {}
@@ -195,19 +195,14 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let s:lines = {}
 
   let oldpos = getpos('.')
-  let oldpos[1] = s:line
-  let oldpos[2] = s:col
+  let [oldpos[1], oldpos[2]] = s:get_real_pos(s:line, s:col)
 
   if b:interactive.type ==# 'terminal'
     let b:interactive.save_cursor = oldpos
-
-    if s:col >= len(getline(s:line))
-      " Append space.
-      call setline(s:line, getline(s:line) . ' ')
-    endif
   endif
 
   " Move pos.
+  call s:set_screen_pos(oldpos[1], oldpos[2])
   call setpos('.', oldpos)
 
   redraw
@@ -420,16 +415,22 @@ function! s:get_screen_character(line, col)"{{{
 endfunction"}}}
 function! s:set_screen_string(line, col, string)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
+  call s:set_screen_pos(line, col)
 
-  if !has_key(s:lines, line)
-    let s:lines[line] = ''
-  endif
   let current_line = s:lines[line]
   let len = vimshell#util#wcswidth(a:string)
   let s:lines[s:line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
 
   let s:col += len
+endfunction"}}}
+function! s:set_screen_pos(line, col)"{{{
+  if !has_key(s:lines, a:line)
+    let s:lines[a:line] = repeat(' ', a:col-1)
+  endif
+  if a:col > len(s:lines[a:line])+1
+    let s:lines[a:line] .= repeat(' ', a:col - len(s:lines[a:line])+1)
+  endif
 endfunction"}}}
 
 " Escape sequence functions.
@@ -600,16 +601,11 @@ endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
   let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
 
-  let s:line = empty(args) ? 1 : args[0]
-  if !has_key(s:lines, s:line)
-    let s:lines[s:line] = ''
-  endif
+  let s:line = get(args, 0, 1)
+  let s:col = get(args, 1, 1)
 
-  let width = empty(args) ? 1 : args[1]
-  if width > len(s:lines[s:line])+1
-    let s:lines[s:line] .= repeat(' ', len(s:lines[s:line])+1 - width)
-  endif
-  let s:col = vimshell#util#strwidthpart_len(s:lines[s:line], width)
+  let [line, col] = s:get_real_pos(s:line, s:col)
+  call s:set_screen_pos(line, col)
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
   let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
@@ -632,17 +628,20 @@ function! s:escape.clear_line(matchstr)"{{{
   " Clear previous highlight.
   call s:clear_highlight_line(s:line)
 
+  let [line, col] = s:get_real_pos(s:line, s:col)
+  call s:set_screen_pos(line, col)
+
   let param = matchstr(a:matchstr, '\d\+')
   if param == '' || param == '0'
     " Clear right line.
-    let s:lines[s:line] = (s:col == 1) ? '' : s:lines[s:line][ : s:col - 2]
+    let s:lines[line] = (col == 1) ? '' : s:lines[line][ : col - 2]
   elseif param == '1'
     " Clear left line.
-    let s:lines[s:line] = s:lines[s:line][s:col - 1 :]
+    let s:lines[line] = s:lines[s:line][s:col - 1 :]
     let s:col = 1
   elseif param == '2'
     " Clear whole line.
-    let s:lines[s:line] = ''
+    let s:lines[line] = ''
     let s:col = 1
   endif
 endfunction"}}}
@@ -687,17 +686,14 @@ function! s:escape.move_up(matchstr)"{{{
     let n = 1
   endif
 
-  if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
+  if b:interactive.terminal.region_top <= s:line
+        \ && s:line <= b:interactive.terminal.region_bottom
     " Scroll up n lines.
     call s:scroll_up(n)
   else
     let s:line -= n
     if s:line < 1
       let s:line = 1
-    endif
-
-    if !has_key(s:lines, s:line)
-      let s:lines[s:line] = repeat(' ', s:col-1)
     endif
   endif
 endfunction"}}}
@@ -712,10 +708,6 @@ function! s:escape.move_down(matchstr)"{{{
     call s:scroll_down(n)
   else
     let s:line += n
-
-    if !has_key(s:lines, s:line)
-      let s:lines[s:line] = repeat(' ', s:col-1)
-    endif
   endif
 endfunction"}}}
 function! s:escape.move_right(matchstr)"{{{
@@ -724,13 +716,7 @@ function! s:escape.move_right(matchstr)"{{{
     let n = 1
   endif
 
-  let line = s:lines[s:line]
-  if s:col+n > len(line)+1
-    let s:lines[s:line] .= repeat(' ', s:col+n - len(line)+1)
-    let line = s:lines[s:line]
-  endif
-
-  let s:col += vimshell#util#strwidthpart_len(line[s:col - 1 :], n)
+  let s:col += n
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
@@ -738,8 +724,7 @@ function! s:escape.move_left(matchstr)"{{{
     let n = 1
   endif
 
-  let line = s:lines[s:line]
-  let s:col -= vimshell#util#strwidthpart_len_reverse(line[: s:col - 2], n)
+  let s:col -= n
   if s:col < 1
     let s:col = 1
   endif
