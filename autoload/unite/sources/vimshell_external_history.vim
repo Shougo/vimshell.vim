@@ -50,7 +50,8 @@ function! s:source.hooks.on_init(args, context) "{{{
         \ g:unite_source_vimshell_external_history_path) ?
         \ readfile(g:unite_source_vimshell_external_history_path) : []
   call map(a:context.source__current_histories,
-        \ 'substitute(v:val, "^[:[:digit:]; ]*", "", "g")')
+        \ 'substitute(v:val,
+        \"^\\%(\\d\\+/\\)\\+[:[:digit:]; ]\\+\\|^[:[:digit:]; ]\\+", "", "g")')
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
