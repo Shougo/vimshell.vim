@@ -26,8 +26,8 @@
 
 " Variables  "{{{
 call unite#util#set_default('g:unite_source_vimshell_external_history_path',
-      \ $SHELL == 'zsh' ? expand('~/.zsh-history') :
-      \ $SHELL == 'bash' ? expand('~/.bash_history') :
+      \ fnamemodify($SHELL, ':t') ==# 'zsh' ? expand('~/.zsh-history') :
+      \ fnamemodify($SHELL, ':t') ==# 'bash' ? expand('~/.bash_history') :
       \ expand('~/.history')
       \)
 "}}}

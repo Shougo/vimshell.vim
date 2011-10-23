@@ -870,6 +870,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed terminal behavior.
 - Improved external_history source.
 - Improved termtter color scheme.
+- Fixed shell detect.
 
 2011-10-22
 - Improved move cursor.
