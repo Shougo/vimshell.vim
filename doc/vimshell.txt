@@ -869,6 +869,7 @@ CHANGELOG						*vimshell-changelog*
 - Added vimshell/external_history source.
 - Fixed terminal behavior.
 - Improved external_history source.
+- Improved termtter color scheme.
 
 2011-10-22
 - Improved move cursor.
