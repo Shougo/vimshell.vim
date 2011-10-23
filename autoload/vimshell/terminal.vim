@@ -195,14 +195,18 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let s:lines = {}
 
   let oldpos = getpos('.')
+  " Get real pos(0 origin).
   let [oldpos[1], oldpos[2]] = s:get_real_pos(s:line, s:col)
+  call s:set_screen_pos(oldpos[1], oldpos[2])
+
+  " Convert to 1 origin.
+  let oldpos[2] += 1
 
   if b:interactive.type ==# 'terminal'
     let b:interactive.save_cursor = oldpos
   endif
 
   " Move pos.
-  call s:set_screen_pos(oldpos[1], oldpos[2])
   call setpos('.', oldpos)
 
   redraw
@@ -387,8 +391,13 @@ function! s:use_conceal()"{{{
   return has('conceal') && b:interactive.type !=# 'terminal'
 endfunction"}}}
 
+" Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
-  let col = 0
+  if a:col <= 1
+    return [a:line, 0]
+  endif
+
+  let col = 1
   let real_col = 0
   let current_line = get(s:lines, a:line, '')
   for c in split(current_line, '\zs')
@@ -402,7 +411,7 @@ function! s:get_real_pos(line, col)"{{{
     endif
 
     let col += len
-    if col > a:col
+    if col >= a:col
       break
     endif
   endfor
@@ -411,7 +420,7 @@ function! s:get_real_pos(line, col)"{{{
 endfunction"}}}
 function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
-  return s:lines[line, col]
+  return s:lines[line][col]
 endfunction"}}}
 function! s:set_screen_string(line, col, string)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
@@ -426,10 +435,10 @@ function! s:set_screen_string(line, col, string)"{{{
 endfunction"}}}
 function! s:set_screen_pos(line, col)"{{{
   if !has_key(s:lines, a:line)
-    let s:lines[a:line] = repeat(' ', a:col-1)
+    let s:lines[a:line] = repeat(' ', a:col)
   endif
-  if a:col > len(s:lines[a:line])+1
-    let s:lines[a:line] .= repeat(' ', a:col - len(s:lines[a:line])+1)
+  if a:col > len(s:lines[a:line])
+    let s:lines[a:line] .= repeat(' ', a:col - len(s:lines[a:line]))
   endif
 endfunction"}}}
 
@@ -634,10 +643,10 @@ function! s:escape.clear_line(matchstr)"{{{
   let param = matchstr(a:matchstr, '\d\+')
   if param == '' || param == '0'
     " Clear right line.
-    let s:lines[line] = (col == 1) ? '' : s:lines[line][ : col - 2]
+    let s:lines[line] = (col <= 0) ? '' : s:lines[line][ : col - 1]
   elseif param == '1'
     " Clear left line.
-    let s:lines[line] = s:lines[s:line][s:col - 1 :]
+    let s:lines[line] = s:lines[s:line][col :]
     let s:col = 1
   elseif param == '2'
     " Clear whole line.

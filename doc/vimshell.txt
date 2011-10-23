@@ -867,6 +867,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-10-23
 - Added vimshell/external_history source.
+- Fixed terminal behavior.
 
 2011-10-22
 - Improved move cursor.
