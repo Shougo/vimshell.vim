@@ -412,6 +412,12 @@ g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_c
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
+g:unite_source_vimshell_external_history_path		*g:unite_source_vimshell_external_history_path*
+			|vimshell/external_history| sourceが認識するヒストリフ
+			ァイルを指定する。
+			
+			初期値では、$SHELLに応じて設定される。
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
@@ -1248,16 +1254,27 @@ UNITE SOURCES						*vimshell-unite-sources*
 							*vimshell-unite-source-vimshell-history*
 vimshell/history
 		vimshellのヒストリを候補とする。インタラクティブバッファでも
-		有効。候補はcompletion kindである。普通、mapping内で
+		有効。候補はvimshell/history kindである。普通、mapping内で
 		|unite#sources#vimshell_history#start_complete()|を呼び出し
 		て使用する。
-		デフォルトでは、<C-l>がvimshell/historyの呼び出しとなる。
+		デフォルトでは、<C-l>がvimshell/history,
+		vimshell/external_historyの呼び出しとなる。
 		例：
 >
 		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
 <
+							*vimshell-unite-source-vimshell-external_history*
+vimshell/external_history
+		外部シェルのヒストリを候補とする。インタラクティブバッファでも
+		有効。履歴を編集しても、もとのファイルに変更は反映されない。
+		ヒストリファイルは$SHELLから自動で認識するが、
+		|g:unite_source_vimshell_external_history_path|で設定することも
+		できる。
+		普通、mapping内で
+		|unite#sources#vimshell_history#start_complete()|を呼び出して使
+		用する。
 
-source別アクション
+kind別アクション
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
 	execute		履歴の実行

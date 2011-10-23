@@ -227,6 +227,9 @@ g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
 g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
 			Todo
 
+g:unite_source_vimshell_external_history_path		*g:unite_source_vimshell_external_history_path*
+			Todo
+
 ------------------------------------------------------------------------------
 KEY MAPPINGS 						*vimshell-key-mappings*
 
@@ -842,8 +845,11 @@ vimshell/history
 >
 		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
 <
+							*vimshell-unite-source-vimshell-external_history*
+vimshell/external_history
+		Todo
 
-actions:
+kind actions:
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
 	execute		Execute history
@@ -858,6 +864,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2011-10-23
+- Added vimshell/external_history source.
 
 2011-10-22
 - Improved move cursor.

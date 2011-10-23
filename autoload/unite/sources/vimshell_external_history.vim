@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: vimshell_history.vim
+" FILE: vimshell_external_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 23 Oct 2011.
 " License: MIT license  {{{
@@ -24,26 +24,34 @@
 " }}}
 "=============================================================================
 
-function! unite#sources#vimshell_history#define() "{{{
+" Variables  "{{{
+call unite#util#set_default('g:unite_source_vimshell_external_history_path',
+      \ $SHELL == 'zsh' ? expand('~/.zsh-history') :
+      \ $SHELL == 'bash' ? expand('~/.bash_history') :
+      \ expand('~/.history')
+      \)
+"}}}
+
+function! unite#sources#vimshell_external_history#define() "{{{
   return s:source
 endfunction "}}}
 
 let s:source = {
-      \ 'name': 'vimshell/history',
-      \ 'hooks' : {},
+      \ 'name': 'vimshell/external_history',
       \ 'max_candidates' : 100,
+      \ 'hooks' : {},
       \ 'action_table' : {},
-      \ 'syntax' : 'uniteSource__VimshellHistory',
+      \ 'syntax' : 'uniteSource__VimshellExternalHistory',
       \ 'is_listed' : 0,
       \ }
 
 function! s:source.hooks.on_init(args, context) "{{{
-  let a:context.source__current_histories =
-        \ copy(vimshell#history#read())
+  let a:context.source__current_histories = filereadable(
+        \ g:unite_source_vimshell_external_history_path) ?
+        \ readfile(g:unite_source_vimshell_external_history_path) : []
+  call map(a:context.source__current_histories,
+        \ 'substitute(v:val, "^[:[:digit:]; ]*", "", "g")')
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
-endfunction"}}}
-function! s:source.hooks.on_close(args, context) "{{{
-  call vimshell#history#write(a:context.source__current_histories)
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
@@ -69,23 +77,6 @@ endfunction"}}}
 function! s:source.gather_candidates(args, context) "{{{
   return map(copy(a:context.source__current_histories),
         \ '{ "word" : v:val }')
-endfunction "}}}
-
-function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
-  if !exists(':Unite')
-    echoerr 'unite.vim is not installed.'
-    echoerr 'Please install unite.vim Ver.1.5 or above.'
-    return ''
-  elseif unite#version() < 300
-    echoerr 'Your unite.vim is too old.'
-    echoerr 'Please install unite.vim Ver.3.0 or above.'
-    return ''
-  endif
-
-  return unite#start_complete(['vimshell/history', 'vimshell/external_history'], {
-        \ 'start_insert' : a:is_insert,
-        \ 'input' : vimshell#get_cur_text(),
-        \ })
 endfunction "}}}
 
 " vim: foldmethod=marker
