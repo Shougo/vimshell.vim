@@ -865,6 +865,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-24
+- Fixed terminal problem.
+
 2011-10-23
 - Added vimshell/external_history source.
 - Fixed terminal behavior.

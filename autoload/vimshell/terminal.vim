@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 24 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
   " echomsg a:string
 
-  if &filetype ==# 'vimshell' && empty(b:vimshell.continuation) && vimshell#check_prompt()
+  if &filetype ==# 'vimshell' &&
+        \ empty(b:vimshell.continuation) && vimshell#check_prompt()
     " Move line.
     call append(line('.'), '')
     normal! j
@@ -192,24 +193,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
   for linenr in sort(map(keys(s:lines), 'str2nr(v:val)'), 's:sortfunc')
     call setline(linenr, s:lines[linenr])
   endfor
-  let s:lines = {}
 
-  let oldpos = getpos('.')
-  " Get real pos(0 origin).
-  let [oldpos[1], oldpos[2]] = s:get_real_pos(s:line, s:col)
-  call s:set_screen_pos(oldpos[1], oldpos[2])
-
-  " Convert to 1 origin.
-  let oldpos[2] += 1
-
-  if b:interactive.type ==# 'terminal'
-    let b:interactive.save_cursor = oldpos
-  endif
-
-  " Move pos.
-  call setpos('.', oldpos)
-
-  redraw
+  call s:set_cursor()
 endfunction"}}}
 function! vimshell#terminal#set_title()"{{{
   if !has_key(b:interactive, 'terminal')
@@ -274,6 +259,9 @@ function! s:optimized_print(string, is_error)"{{{
       endfor
     endfor
 
+    normal! $
+    let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+    call s:set_cursor()
     return
   endif
 
@@ -297,6 +285,28 @@ function! s:optimized_print(string, is_error)"{{{
     call append('.', lines[1:])
     execute 'normal!' (len(lines)-1).'j$'
   endif
+
+  normal! $
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  call s:set_cursor()
+endfunction"}}}
+function! s:set_cursor()"{{{
+  let oldpos = getpos('.')
+  " Get real pos(0 origin).
+  let [oldpos[1], oldpos[2]] = s:get_real_pos(s:line, s:col)
+  call s:set_screen_pos(oldpos[1], oldpos[2])
+
+  " Convert to 1 origin.
+  let oldpos[2] += 1
+
+  if b:interactive.type ==# 'terminal'
+    let b:interactive.save_cursor = oldpos
+  endif
+
+  " Move pos.
+  call setpos('.', oldpos)
+
+  redraw
 endfunction"}}}
 
 function! s:init_terminal()"{{{
@@ -418,6 +428,32 @@ function! s:get_real_pos(line, col)"{{{
 
   return [a:line, real_col]
 endfunction"}}}
+function! s:get_virtual_col(line, col)"{{{
+  if a:col <= 1
+    return [a:line, 1]
+  endif
+
+  let col = 1
+  let real_col = 0
+  let current_line = get(s:lines, a:line, '')
+  for c in split(current_line, '\zs')
+    let len = vimshell#util#wcswidth(c)
+    if c == "\<ESC>"
+          \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
+      " Skip.
+      let real_col += len(matchstr(current_line, '\e\[[0-9;]*m', real_col))
+    else
+      let real_col += len(c)
+    endif
+
+    let col += len
+    if real_col >= a:col
+      break
+    endif
+  endfor
+
+  return [a:line, col]
+endfunction"}}}
 function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   return s:lines[line][col]
@@ -428,7 +464,7 @@ function! s:set_screen_string(line, col, string)"{{{
 
   let current_line = s:lines[line]
   let len = vimshell#util#wcswidth(a:string)
-  let s:lines[s:line] = current_line[ : col]  .  a:string
+  let s:lines[line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
 
   let s:col += len
