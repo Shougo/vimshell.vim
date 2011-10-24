@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2011.
+" Last Modified: 24 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,6 +53,8 @@ if exists('g:VimShell_EnableInteractive')
 endif
 "}}}
 " Global options definition."{{{
+let g:vimshell_enable_debug =
+      \ get(g:, 'vimshell_enable_debug', 0)
 let g:vimshell_ignore_case =
       \ get(g:, 'vimshell_ignore_case', &ignorecase)
 let g:vimshell_smart_case =

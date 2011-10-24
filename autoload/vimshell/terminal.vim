@@ -46,7 +46,9 @@ function! vimshell#terminal#init()"{{{
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
-  " echomsg a:string
+  if g:vimshell_enable_debug
+    echomsg a:string
+  endif
 
   if &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) && vimshell#check_prompt()
@@ -71,10 +73,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let newstr = ''
   let pos = 0
   let max = len(a:string)
-  let s:line = line('.')
-  "let s:col = (mode() ==# 'i' && b:interactive.type !=# 'terminal' ?
-        "\ (col('.') < 1 ? 1 : col('.') - 1) : col('.'))
-  let s:col = col('.')
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
   let s:lines = {}
   let s:lines[s:line] = current_line
 
@@ -879,9 +878,10 @@ function! s:control.delete_backword_char()"{{{
       let s:lines[s:line] = getline(s:line)
     endif
 
-    let s:col = len(s:lines[s:line])
+    let [line, s:col] = s:get_virtual_col(s:line, len(s:lines[s:line]))
     return
   endif
+
   call s:escape.move_left(1)
 endfunction"}}}
 function! s:control.delete_multi_backword_char()"{{{
