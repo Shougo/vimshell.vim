@@ -867,6 +867,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-10-24
 - Fixed terminal problem.
+- Fixed print error.
 
 2011-10-23
 - Added vimshell/external_history source.

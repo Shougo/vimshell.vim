@@ -60,6 +60,10 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let current_line = getline('.')
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  let s:lines = {}
+  let s:lines[s:line] = current_line
+
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
     call s:optimized_print(a:string, a:is_error)
     return
@@ -73,9 +77,6 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let newstr = ''
   let pos = 0
   let max = len(a:string)
-  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
-  let s:lines = {}
-  let s:lines[s:line] = current_line
 
   while pos < max
     let char = a:string[pos]
