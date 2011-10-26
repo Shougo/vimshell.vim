@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2011.
+" Last Modified: 26 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -170,6 +170,11 @@ endfunction"}}}
 function! vimshell#commands#texe#define()
   return s:command
 endfunction
+function! vimshell#commands#texe#restore_cursor()
+  if exists('+guicursor')
+    let &guicursor = s:guicursor_save
+  endif
+endfunction
 
 let s:update_time_save = &updatetime
 
@@ -189,7 +194,7 @@ function! s:default_settings()"{{{
     setlocal conceallevel=3
     setlocal concealcursor=n
   endif
-  
+
   " For Terminal
   setlocal nowrap
   setlocal nopaste
@@ -257,14 +262,12 @@ function! s:insert_enter()"{{{
 endfunction"}}}
 function! s:insert_leave()"{{{
   setlocal nomodifiable
-  
+
   if &updatetime < s:update_time_save
     let &updatetime = s:update_time_save
   endif
 
-  if exists('+guicursor')
-    let &guicursor = s:guicursor_save
-  endif
+  call vimshell#commands#texe#restore_cursor()
 endfunction"}}}
 function! s:event_bufwin_enter()"{{{
   if has('conceal')

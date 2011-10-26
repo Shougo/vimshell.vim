@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 26 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -280,6 +280,9 @@ endfunction"}}}
 
 function! vimshell#interactive#quit_buffer()"{{{
   if !b:interactive.process.is_valid
+    if b:interactive.type ==# 'terminal'
+      call vimshell#commands#texe#restore_cursor()
+    endif
     call vimshell#util#delete_buffer()
   else
     call vimshell#echo_error('Process is running. Press <C-c> to kill process.')
@@ -358,35 +361,40 @@ function! vimshell#interactive#force_exit()"{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#hang_up(afile)"{{{
-  if type(getbufvar(a:afile, 'interactive')) != type('')
-    let vimproc = getbufvar(a:afile, 'interactive')
-    if vimproc.process.is_valid
-      " Kill process.
-      try
-        " 15 == SIGTERM
-        call vimproc.process.kill(15)
-        call vimproc.process.waitpid()
-      catch
-        " Error.
-        call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-        call vimshell#interactive#exit()
-      endtry
+  let interactive = getbufvar(a:afile, 'interactive')
+  if type(interactive) == type('')
+    return
+  endif
+
+  if interactive.process.is_valid
+    " Kill process.
+    try
+      " 15 == SIGTERM
+      call interactive.process.kill(15)
+      call interactive.process.waitpid()
+    catch
+      " Error.
+      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      call vimshell#interactive#exit()
+    endtry
+  endif
+  let interactive.process.is_valid = 0
+
+  if bufname('%') == a:afile && interactive.type !=# 'vimshell'
+    if interactive.type ==# 'terminal'
+      call vimshell#commands#texe#restore_cursor()
     endif
-    let vimproc.process.is_valid = 0
+    syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
+    hi def link InteractiveMessage WarningMsg
 
-    if bufname('%') == a:afile && getbufvar(a:afile, '&filetype') !=# 'vimshell'
-      syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
-      hi def link InteractiveMessage WarningMsg
+    setlocal modifiable
 
-      setlocal modifiable
+    call append('$', '*Killed*')
+    $
+    normal! $
 
-      call append('$', '*Killed*')
-      $
-      normal! $
-
-      stopinsert
-      setlocal nomodifiable
-    endif
+    stopinsert
+    setlocal nomodifiable
   endif
 endfunction"}}}
 function! vimshell#interactive#decode_signal(signal)"{{{

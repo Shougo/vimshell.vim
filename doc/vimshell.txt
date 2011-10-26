@@ -868,6 +868,7 @@ CHANGELOG						*vimshell-changelog*
 2011-10-26
 - Fixed exit internal command.
 - Fixed highlight.
+- Improved texe.
 
 2011-10-24
 - Fixed terminal problem.
