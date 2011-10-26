@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Oct 2011.
+" Last Modified: 26 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -91,7 +91,7 @@ let g:vimshell_disable_escape_highlight =
 let g:vimshell_cat_command =
       \ get(g:, 'vimshell_cat_command', 'cat')
 let g:vimshell_environment_term =
-      \ get(g:, 'vimshell_environment_term', 'vt100')
+      \ get(g:, 'vimshell_environment_term', 'xterm')
 let g:vimshell_split_command =
       \ get(g:, 'vimshell_split_command', 'nicely')
 let g:vimshell_cd_command =
