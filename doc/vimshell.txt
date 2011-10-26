@@ -865,6 +865,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-26
+- Fixed exit internal command.
+
 2011-10-24
 - Fixed terminal problem.
 - Fixed print error.

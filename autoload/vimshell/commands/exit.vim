@@ -32,14 +32,10 @@ let s:command = {
 function! s:command.execute(args, context)"{{{
   " Exit vimshell.
   if a:context.is_interactive
-    let vimsh_buf = bufnr('%')
-    " Switch buffer.
-    if winnr('$') != 1
+    call vimshell#util#delete_buffer()
+    if bufnr('$') != 1
       close
-    else
-      call vimshell#util#alternate_buffer()
     endif
-    call vimshell#util#delete_buffer(vimsh_buf)
   endif
 
   stopinsert
