@@ -398,7 +398,7 @@ function! s:clear_highlight_line(linenr)"{{{
   endif
 endfunction"}}}
 function! s:use_conceal()"{{{
-  return has('conceal') && b:interactive.type !=# 'terminal'
+  return has('conceal')
 endfunction"}}}
 
 " Note: Real pos is 0 origin.
@@ -474,10 +474,6 @@ function! s:get_virtual_col(line, col)"{{{
 
   return [a:line, col]
 endfunction"}}}
-function! s:get_virtual_len(string)"{{{
-  return vimshell#util#wcswidth(
-        \ substitute(a:string, '\e\[[0-9;]*m', '', 'g'))
-endfunction"}}}
 function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   return s:lines[line][col]
@@ -491,6 +487,9 @@ function! s:set_screen_string(line, col, string)"{{{
   let s:lines[line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
   let [s:line, s:col] = s:get_virtual_col(line, col+len)
+  if g:vimshell_enable_debug
+    echomsg string([a:col, col, s:col, a:string])
+  endif
 endfunction"}}}
 function! s:set_screen_pos(line, col)"{{{
   if !has_key(s:lines, a:line)
