@@ -431,6 +431,11 @@ function! s:get_real_pos(line, col)"{{{
     endif
   endfor
 
+  " current_line is too short.
+  if col < a:col
+    let real_col += a:col - col
+  endif
+
   return [a:line, real_col]
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
@@ -461,6 +466,11 @@ function! s:get_virtual_col(line, col)"{{{
       break
     endif
   endfor
+
+  " current_line is too short.
+  if real_col < a:col
+    let col += a:col - real_col
+  endif
 
   return [a:line, col]
 endfunction"}}}
