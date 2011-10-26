@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Oct 2011.
+" Last Modified: 26 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,8 +60,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let current_line = getline('.')
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
-  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
   let s:lines = {}
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
   let s:lines[s:line] = current_line
 
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
@@ -403,24 +403,29 @@ endfunction"}}}
 
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
-  if a:col <= 1
-    return [a:line, 0]
-  endif
-
-  let col = 1
+  " a:col : virtual col.
+  let col = 0
   let real_col = 0
+  let skip_cnt = 0
   let current_line = get(s:lines, a:line, '')
   for c in split(current_line, '\zs')
+    if skip_cnt > 0
+      let skip_cnt -= 1
+      continue
+    endif
+
     let len = vimshell#util#wcswidth(c)
     if c == "\<ESC>"
           \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
       " Skip.
-      let real_col += len(matchstr(current_line, '\e\[[0-9;]*m', real_col))
+      let sequence = matchstr(current_line, '\e\[[0-9;]*m', real_col)
+      let skip_cnt = len(sequence)-1
+      let real_col += len(sequence)
     else
       let real_col += len(c)
+      let col += len
     endif
 
-    let col += len
     if col >= a:col
       break
     endif
@@ -429,30 +434,39 @@ function! s:get_real_pos(line, col)"{{{
   return [a:line, real_col]
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
-  if a:col <= 1
-    return [a:line, 1]
-  endif
-
+  " a:col : real col.
   let col = 1
   let real_col = 0
+  let skip_cnt = 0
   let current_line = get(s:lines, a:line, '')
   for c in split(current_line, '\zs')
+    if skip_cnt > 0
+      let skip_cnt -= 1
+      continue
+    endif
+
     let len = vimshell#util#wcswidth(c)
     if c == "\<ESC>"
           \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
       " Skip.
-      let real_col += len(matchstr(current_line, '\e\[[0-9;]*m', real_col))
+      let sequence = matchstr(current_line, '\e\[[0-9;]*m', real_col)
+      let skip_cnt = len(sequence)-1
+      let real_col += len(sequence)
     else
       let real_col += len(c)
+      let col += len
     endif
 
-    let col += len
     if real_col >= a:col
       break
     endif
   endfor
 
   return [a:line, col]
+endfunction"}}}
+function! s:get_virtual_len(string)"{{{
+  return vimshell#util#wcswidth(
+        \ substitute(a:string, '\e\[[0-9;]*m', '', 'g'))
 endfunction"}}}
 function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
@@ -466,12 +480,11 @@ function! s:set_screen_string(line, col, string)"{{{
   let len = vimshell#util#wcswidth(a:string)
   let s:lines[line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
-
-  let s:col += len
+  let [s:line, s:col] = s:get_virtual_col(line, col+len)
 endfunction"}}}
 function! s:set_screen_pos(line, col)"{{{
   if !has_key(s:lines, a:line)
-    let s:lines[a:line] = repeat(' ', a:col)
+    let s:lines[a:line] = ''
   endif
   if a:col > len(s:lines[a:line])
     let s:lines[a:line] .= repeat(' ', a:col - len(s:lines[a:line]))
@@ -528,7 +541,8 @@ function! s:escape.highlight(matchstr)"{{{
   endif
 
   let highlight = ''
-  let highlight_list = split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
+  let highlight_list =
+        \ split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
   let cnt = 0
   if empty(highlight_list)
     " Default.
@@ -540,7 +554,8 @@ function! s:escape.highlight(matchstr)"{{{
       let highlight .= s:highlight_table[color_code]
     elseif 30 <= color_code && color_code <= 37
       " Foreground color.
-      let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 30, g:vimshell_escape_colors[color_code - 30])
+      let highlight .= printf(' ctermfg=%d guifg=%s',
+            \ color_code - 30, g:vimshell_escape_colors[color_code - 30])
     elseif color_code == 38
       if len(highlight_list) - cnt < 3
         " Error.
@@ -552,7 +567,8 @@ function! s:escape.highlight(matchstr)"{{{
       if color >= 232
         " Grey scale.
         let gcolor = s:grey_table[(color - 232)]
-        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', color, gcolor, gcolor, gcolor)
+        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x',
+              \ color, gcolor, gcolor, gcolor)
       elseif color >= 16
         " RGB.
         let gcolor = color - 16
@@ -560,14 +576,17 @@ function! s:escape.highlight(matchstr)"{{{
         let green = s:color_table[(gcolor % 36) / 6]
         let blue = s:color_table[gcolor % 6]
 
-        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x', color, red, green, blue)
+        let highlight .= printf(' ctermfg=%d guifg=#%02x%02x%02x',
+              \ color, red, green, blue)
       else
-        let highlight .= printf(' ctermfg=%d guifg=%s', color, g:vimshell_escape_colors[color])
+        let highlight .= printf(' ctermfg=%d guifg=%s',
+              \ color, g:vimshell_escape_colors[color])
       endif
       break
-    elseif 40 <= color_code && color_code <= 47 
+    elseif 40 <= color_code && color_code <= 47
       " Background color.
-      let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 40, g:vimshell_escape_colors[color_code - 40])
+      let highlight .= printf(' ctermbg=%d guibg=%s',
+            \ color_code - 40, g:vimshell_escape_colors[color_code - 40])
     elseif color_code == 48
       if len(highlight_list) - cnt < 3
         " Error.
@@ -579,7 +598,8 @@ function! s:escape.highlight(matchstr)"{{{
       if color >= 232
         " Grey scale.
         let gcolor = s:grey_table[(color - 232)]
-        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', color, gcolor, gcolor, gcolor)
+        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x',
+              \ color, gcolor, gcolor, gcolor)
       elseif color >= 16
         " RGB.
         let gcolor = color - 16
@@ -587,17 +607,21 @@ function! s:escape.highlight(matchstr)"{{{
         let green = s:color_table[(gcolor % 36) / 6]
         let blue = s:color_table[gcolor % 6]
 
-        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x', color, red, green, blue)
+        let highlight .= printf(' ctermbg=%d guibg=#%02x%02x%02x',
+              \ color, red, green, blue)
       else
-        let highlight .= printf(' ctermbg=%d guibg=%s', color, g:vimshell_escape_colors[color])
+        let highlight .= printf(' ctermbg=%d guibg=%s',
+              \ color, g:vimshell_escape_colors[color])
       endif
       break
     elseif 90 <= color_code && color_code <= 97
       " Foreground color(high intensity).
-      let highlight .= printf(' ctermfg=%d guifg=%s', color_code - 82, g:vimshell_escape_colors[color_code - 82])
+      let highlight .= printf(' ctermfg=%d guifg=%s',
+            \ color_code - 82, g:vimshell_escape_colors[color_code - 82])
     elseif 100 <= color_code && color_code <= 107
       " Background color(high intensity).
-      let highlight .= printf(' ctermbg=%d guibg=%s', color_code - 92, g:vimshell_escape_colors[color_code - 92])
+      let highlight .= printf(' ctermbg=%d guibg=%s',
+            \ color_code - 92, g:vimshell_escape_colors[color_code - 92])
     endif"}}}
 
     let cnt += 1
@@ -607,9 +631,11 @@ function! s:escape.highlight(matchstr)"{{{
     return
   endif
 
+  let [line, col] = s:get_real_pos(s:line, s:col)
+  let col += 1
   if s:use_conceal()
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
-          \ . '_' . s:line . '_' . s:col
+          \ . '_' . line . '_' . col
     let syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
           \ 'contains=vimshellEscapeSequenceConceal', a:matchstr)
 
@@ -622,21 +648,21 @@ function! s:escape.highlight(matchstr)"{{{
     setlocal nowrap
   else
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
-          \ . '_' . s:line . '_' . s:col
+          \ . '_' . line . '_' . (col+1)
     let syntax_command = printf(
-          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', s:line, s:col)
+          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', line, col)
 
-    if !has_key(b:interactive.terminal.syntax_names, s:line)
-      let b:interactive.terminal.syntax_names[s:line] = {}
+    if !has_key(b:interactive.terminal.syntax_names, line)
+      let b:interactive.terminal.syntax_names[line] = {}
     endif
-    if has_key(b:interactive.terminal.syntax_names[s:line], s:col)
+    if has_key(b:interactive.terminal.syntax_names[line], col)
       " Clear previous highlight.
       let prev_syntax =
-            \ b:interactive.terminal.syntax_names[s:line][s:col]
+            \ b:interactive.terminal.syntax_names[line][col]
       execute 'highlight clear' prev_syntax
       execute 'syntax clear' prev_syntax
     endif
-    let b:interactive.terminal.syntax_names[s:line][s:col] = syntax_name
+    let b:interactive.terminal.syntax_names[line][col] = syntax_name
 
     execute 'syntax region' syntax_name syntax_command
     execute 'highlight link' syntax_name 'Normal'
@@ -682,7 +708,7 @@ function! s:escape.clear_line(matchstr)"{{{
     let s:lines[line] = (col <= 0) ? '' : s:lines[line][ : col - 1]
   elseif param == '1'
     " Clear left line.
-    let s:lines[line] = s:lines[s:line][col :]
+    let s:lines[line] = s:lines[line][col :]
     let s:col = 1
   elseif param == '2'
     " Clear whole line.
