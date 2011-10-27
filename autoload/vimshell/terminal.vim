@@ -62,6 +62,9 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
   let s:lines = {}
   let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  if g:vimshell_enable_debug
+    echomsg '[s:line, s:col] = ' . string([s:line, s:col])
+  endif
   let s:lines[s:line] = current_line
 
   if b:interactive.type !=# 'terminal' && a:string !~ '[\e\b]'
@@ -291,7 +294,6 @@ function! s:optimized_print(string, is_error)"{{{
   call s:set_cursor()
 endfunction"}}}
 function! s:set_cursor()"{{{
-  let oldpos = getpos('.')
   " Get real pos(0 origin).
   let [line, col] = s:get_real_pos(s:line, s:col)
   call s:set_screen_pos(line, col)
@@ -299,16 +301,16 @@ function! s:set_cursor()"{{{
   " Convert to 1 origin.
   let col += 1
 
-  if b:interactive.type ==# 'terminal'
-    let b:interactive.save_cursor = oldpos
-  endif
-
   if g:vimshell_enable_debug
     echomsg 'set cursor = ' . string([line, col])
   endif
 
   " Move pos.
   call cursor(line, col)
+
+  if b:interactive.type ==# 'terminal'
+    let b:interactive.save_cursor = getpos('.')
+  endif
 
   redraw
 endfunction"}}}
@@ -411,7 +413,7 @@ function! s:get_real_pos(line, col)"{{{
   let col = 1
   let real_col = 0
   let skip_cnt = 0
-  let current_line = get(s:lines, a:line, '')
+  let current_line = get(s:lines, a:line, getline(a:line))
   for c in split(current_line, '\zs')
     if skip_cnt > 0
       let skip_cnt -= 1
@@ -447,7 +449,7 @@ function! s:get_virtual_col(line, col)"{{{
   let col = 1
   let real_col = 0
   let skip_cnt = 0
-  let current_line = get(s:lines, a:line, '')
+  let current_line = get(s:lines, a:line, getline(a:line))
   for c in split(current_line, '\zs')
     if skip_cnt > 0
       let skip_cnt -= 1
