@@ -867,6 +867,8 @@ CHANGELOG						*vimshell-changelog*
 
 2011-10-27
 - Fixed password input.
+- Fixed for colorcolumn.
+- Fixed terminal.
 
 2011-10-26
 - Fixed exit internal command.

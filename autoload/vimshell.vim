@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2011.
+" Last Modified: 27 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -81,6 +81,9 @@ function! s:default_settings()"{{{
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi
+  endif
+  if exists('&colorcolumn')
+    setlocal colorcolumn=
   endif
 
   " For vimshell.

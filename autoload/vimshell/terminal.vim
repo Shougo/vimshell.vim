@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2011.
+" Last Modified: 27 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -404,7 +404,7 @@ endfunction"}}}
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
   " a:col : virtual col.
-  let col = 0
+  let col = 1
   let real_col = 0
   let skip_cnt = 0
   let current_line = get(s:lines, a:line, '')
@@ -426,7 +426,7 @@ function! s:get_real_pos(line, col)"{{{
       let col += len
     endif
 
-    if col >= a:col
+    if col > a:col
       break
     endif
   endfor
@@ -462,7 +462,7 @@ function! s:get_virtual_col(line, col)"{{{
       let col += len
     endif
 
-    if real_col >= a:col
+    if real_col > a:col
       break
     endif
   endfor
@@ -488,6 +488,7 @@ function! s:set_screen_string(line, col, string)"{{{
         \             . current_line[col+len :]
   let [s:line, s:col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
+    echomsg current_line[col :]
     echomsg string([a:col, col, s:col, a:string])
   endif
 endfunction"}}}
