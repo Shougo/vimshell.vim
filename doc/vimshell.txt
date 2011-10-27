@@ -872,6 +872,8 @@ CHANGELOG						*vimshell-changelog*
 - Fixed exit internal command.
 - Fixed highlight.
 - Improved texe.
+- Changed g:vimshell_environment_term default value.
+- Fixed column bugs.
 
 2011-10-24
 - Fixed terminal problem.

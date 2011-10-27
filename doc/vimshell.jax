@@ -283,7 +283,7 @@ g:vimshell_cat_command					*g:vimshell_cat_command*
 g:vimshell_environment_term				*g:vimshell_environment_term*
 			vimshellが$TERMにセットする端末情報である。
 			
-			初期値は"vt100"である。
+			初期値は"xterm"である。
 
 g:vimshell_split_command				*g:vimshell_split_command*
 			vimshellが画面を分割するときに用いるExコマンドである。
