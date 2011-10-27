@@ -293,18 +293,22 @@ endfunction"}}}
 function! s:set_cursor()"{{{
   let oldpos = getpos('.')
   " Get real pos(0 origin).
-  let [oldpos[1], oldpos[2]] = s:get_real_pos(s:line, s:col)
-  call s:set_screen_pos(oldpos[1], oldpos[2])
+  let [line, col] = s:get_real_pos(s:line, s:col)
+  call s:set_screen_pos(line, col)
 
   " Convert to 1 origin.
-  let oldpos[2] += 1
+  let col += 1
 
   if b:interactive.type ==# 'terminal'
     let b:interactive.save_cursor = oldpos
   endif
 
+  if g:vimshell_enable_debug
+    echomsg 'set cursor = ' . string([line, col])
+  endif
+
   " Move pos.
-  call setpos('.', oldpos)
+  call cursor(line, col)
 
   redraw
 endfunction"}}}
@@ -478,6 +482,10 @@ function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   return s:lines[line][col]
 endfunction"}}}
+function! s:get_virtual_wcswidth(string)"{{{
+  return vimshell#util#wcswidth(
+        \ substitute(a:string, '\e\[[0-9;]*m', '', 'g'))
+endfunction"}}}
 function! s:set_screen_string(line, col, string)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
@@ -486,7 +494,8 @@ function! s:set_screen_string(line, col, string)"{{{
   let len = vimshell#util#wcswidth(a:string)
   let s:lines[line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
-  let [s:line, s:col] = s:get_virtual_col(line, col+len)
+  let s:col += s:get_virtual_wcswidth(a:string)
+  " let [s:line, s:col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
     echomsg current_line[col :]
     echomsg string([a:col, col, s:col, a:string])

@@ -869,6 +869,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed password input.
 - Fixed for colorcolumn.
 - Fixed terminal.
+- Improved set cursor.
 
 2011-10-26
 - Fixed exit internal command.
