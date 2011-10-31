@@ -865,6 +865,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-10-31
+- Fixed clear line.
+
 2011-10-27
 - Fixed password input.
 - Fixed for colorcolumn.

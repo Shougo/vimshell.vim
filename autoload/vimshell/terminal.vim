@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 31 Oct 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -409,6 +409,10 @@ endfunction"}}}
 
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
+  if a:col <= 1
+    return [a:line, 0]
+  endif
+
   " a:col : virtual col.
   let col = 1
   let real_col = 0
@@ -445,6 +449,10 @@ function! s:get_real_pos(line, col)"{{{
   return [a:line, real_col]
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
+  if a:col <= 0
+    return [a:line, 1]
+  endif
+
   " a:col : real col.
   let col = 1
   let real_col = 0
