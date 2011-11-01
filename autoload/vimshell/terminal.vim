@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Oct 2011.
+" Last Modified: 01 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -409,9 +409,9 @@ endfunction"}}}
 
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
-  if a:col <= 1
-    return [a:line, 0]
-  endif
+  " if a:col <= 1
+  "   return [a:line, 0]
+  " endif
 
   " a:col : virtual col.
   let col = 1
@@ -449,9 +449,9 @@ function! s:get_real_pos(line, col)"{{{
   return [a:line, real_col]
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
-  if a:col <= 0
-    return [a:line, 1]
-  endif
+  " if a:col <= 0
+  "   return [a:line, 1]
+  " endif
 
   " a:col : real col.
   let col = 1
@@ -732,16 +732,16 @@ function! s:escape.clear_line(matchstr)"{{{
   call s:set_screen_pos(line, col)
 
   let param = matchstr(a:matchstr, '\d\+')
-  if param == '' || param == '0'
+  if s:col <= 1 || param == '2'
+    " Clear whole line.
+    let s:lines[line] = ''
+    let s:col = 1
+  elseif param == '' || param == '0'
     " Clear right line.
     let s:lines[line] = (col <= 0) ? '' : s:lines[line][ : col - 1]
   elseif param == '1'
     " Clear left line.
     let s:lines[line] = s:lines[line][col :]
-    let s:col = 1
-  elseif param == '2'
-    " Clear whole line.
-    let s:lines[line] = ''
     let s:col = 1
   endif
 endfunction"}}}
