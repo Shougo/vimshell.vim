@@ -43,6 +43,8 @@ function! vimshell#terminal#init()"{{{
     syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
     syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
   endif
+
+  let s:is_output_highlight = 0
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
@@ -409,9 +411,9 @@ endfunction"}}}
 
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
-  " if a:col <= 1
-  "   return [a:line, 0]
-  " endif
+  if a:col <= 1 && !s:is_output_highlight
+    return [a:line, 0]
+  endif
 
   " a:col : virtual col.
   let col = 1
@@ -449,9 +451,9 @@ function! s:get_real_pos(line, col)"{{{
   return [a:line, real_col]
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
-  " if a:col <= 0
-  "   return [a:line, 1]
-  " endif
+  if a:col <= 0 && !s:is_output_highlight
+    return [a:line, 1]
+  endif
 
   " a:col : real col.
   let col = 1
@@ -504,7 +506,11 @@ function! s:set_screen_string(line, col, string)"{{{
   let len = vimshell#util#wcswidth(a:string)
   let s:lines[line] = current_line[ : col]  .  a:string
         \             . current_line[col+len :]
-  let s:col += s:get_virtual_wcswidth(a:string)
+  let len2 = s:get_virtual_wcswidth(a:string)
+  let s:col += len2
+
+  let s:is_output_highlight = len != len2
+
   " let [s:line, s:col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
     echomsg current_line[col :]
@@ -703,6 +709,7 @@ function! s:escape.move_cursor(matchstr)"{{{
 
   let s:line = get(args, 0, 1)
   let s:col = get(args, 1, 1)
+  let s:is_output_highlight = 0
 
   let [line, col] = s:get_real_pos(s:line, s:col)
   call s:set_screen_pos(line, col)
@@ -732,16 +739,16 @@ function! s:escape.clear_line(matchstr)"{{{
   call s:set_screen_pos(line, col)
 
   let param = matchstr(a:matchstr, '\d\+')
-  if s:col <= 1 || param == '2'
-    " Clear whole line.
-    let s:lines[line] = ''
-    let s:col = 1
-  elseif param == '' || param == '0'
+  if param == '' || param == '0'
     " Clear right line.
     let s:lines[line] = (col <= 0) ? '' : s:lines[line][ : col - 1]
   elseif param == '1'
     " Clear left line.
     let s:lines[line] = s:lines[line][col :]
+    let s:col = 1
+  elseif param == '2'
+    " Clear whole line.
+    let s:lines[line] = ''
     let s:col = 1
   endif
 endfunction"}}}
@@ -779,12 +786,16 @@ function! s:escape.clear_screen(matchstr)"{{{
 
     call vimshell#terminal#clear_highlight()
   endif
+
+  let s:is_output_highlight = 0
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
   endif
+
+  let s:is_output_highlight = 0
 
   if b:interactive.terminal.region_top <= s:line
         \ && s:line <= b:interactive.terminal.region_bottom
@@ -803,6 +814,8 @@ function! s:escape.move_down(matchstr)"{{{
     let n = 1
   endif
 
+  let s:is_output_highlight = 0
+
   if b:interactive.terminal.region_top <= s:line && s:line <= b:interactive.terminal.region_bottom
     " Scroll down n lines.
     call s:scroll_down(n)
@@ -816,6 +829,7 @@ function! s:escape.move_right(matchstr)"{{{
     let n = 1
   endif
 
+  let s:is_output_highlight = 0
   let s:col += n
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
@@ -824,6 +838,7 @@ function! s:escape.move_left(matchstr)"{{{
     let n = 1
   endif
 
+  let s:is_output_highlight = 0
   let s:col -= n
   if s:col < 1
     let s:col = 1
@@ -911,6 +926,7 @@ function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
   let s:col = 1
+  let s:is_output_highlight = 0
 
   if b:interactive.type !=# 'terminal'
     " New line.
@@ -923,6 +939,8 @@ function! s:control.delete_backword_char()"{{{
   if s:line == b:interactive.echoback_linenr
     return
   endif
+
+  let s:is_output_highlight = 0
 
   if s:col == 1
     " Wrap above line.
@@ -945,6 +963,8 @@ function! s:control.delete_multi_backword_char()"{{{
     return
   endif
 
+  let s:is_output_highlight = 0
+
   if s:col == 1
     " Wrap above line.
     if s:line > 1
@@ -963,6 +983,7 @@ function! s:control.delete_multi_backword_char()"{{{
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:col = 1
+  let s:is_output_highlight = 0
 endfunction"}}}
 function! s:control.bell()"{{{
   echo 'Ring!'

@@ -867,6 +867,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-11-01
 - Re fixed clear line.
+- Improved terminal.
 
 2011-10-31
 - Fixed clear line.
