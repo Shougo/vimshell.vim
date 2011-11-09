@@ -33,7 +33,7 @@ function! s:command.execute(args, context)"{{{
   " Exit vimshell.
   if a:context.is_interactive
     call vimshell#util#delete_buffer()
-    if bufnr('$') != 1
+    if winnr('$') != 1
       close
     endif
   endif
