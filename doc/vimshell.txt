@@ -474,7 +474,7 @@ Normal mode default key mappings.
 <CR>			<Plug>(vimshell_int_execute_line)
 <C-y>			<Plug>(vimshell_int_paste_prompt)
 <C-z>			<Plug>(vimshell_int_restart_command)
-<C-c>			<Plug>(vimshell_int_hangup)
+<C-c>			<Plug>(vimshell_int_interrupt)
 q			<Plug>(vimshell_int_exit)
 cc			<Plug>(vimshell_int_change_line)
 dd			<Plug>(vimshell_int_delete_line)
@@ -867,6 +867,8 @@ CHANGELOG						*vimshell-changelog*
 
 2011-11-10
 - Improved password check.
+- Changed iexe C-c mappings.
+- Improved exit behavior.
 
 2011-11-09
 - Fixed exit error.

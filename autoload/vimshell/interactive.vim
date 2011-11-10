@@ -279,14 +279,23 @@ function! s:set_output_pos(is_insert)"{{{
 endfunction"}}}
 
 function! vimshell#interactive#quit_buffer()"{{{
-  if !b:interactive.process.is_valid
-    if b:interactive.type ==# 'terminal'
-      call vimshell#commands#texe#restore_cursor()
+  if b:interactive.process.is_valid
+    echohl WarningMsg
+    let input = input('Process is running. Force exit? ')
+    echohl None
+
+    if input !~? 'y\%[es]'
+      return
     endif
-    call vimshell#util#delete_buffer()
-  else
-    call vimshell#echo_error('Process is running. Press <C-c> to kill process.')
+
+    call vimshell#interactive#force_exit()
   endif
+
+  if b:interactive.type ==# 'terminal'
+    call vimshell#commands#texe#restore_cursor()
+  endif
+  call vimshell#util#delete_buffer()
+  call vimshell#echo_error('')
 endfunction"}}}
 function! vimshell#interactive#exit()"{{{
   if !b:interactive.process.is_valid

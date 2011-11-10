@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 10 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,6 +56,8 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
         \ :<C-u>call <SID>append_end()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_int_clear)
         \ :<C-u>call <SID>clear()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)
+        \ :<C-u>call vimshell#interactive#send_char(3)<CR>
 
   inoremap <buffer><silent> <Plug>(vimshell_int_move_head)
         \ <ESC>:<C-u>call <SID>move_head()<CR>
@@ -93,7 +95,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nmap <buffer> <CR>      <Plug>(vimshell_int_execute_line)
   nmap <buffer> <C-y>     <Plug>(vimshell_int_paste_prompt)
   nmap <buffer> <C-z>     <Plug>(vimshell_int_restart_command)
-  nmap <buffer> <C-c>     <Plug>(vimshell_int_hangup)
+  nmap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
   nmap <buffer> q         <Plug>(vimshell_int_exit)
   nmap <buffer> cc         <Plug>(vimshell_int_change_line)
   nmap <buffer> dd         <Plug>(vimshell_int_delete_line)
