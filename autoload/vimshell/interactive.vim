@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 10 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -503,23 +503,25 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
 endfunction"}}}
 function! s:check_password_input(string)"{{{
   let current_line = substitute(getline('.'), '!!!', '', 'g')
-  if (current_line =~ s:password_regex
-        \ || a:string =~ s:password_regex)
-        \ && (b:interactive.type == 'interactive'
-        \     || b:interactive.type == 'vimshell')
-    redraw
 
-    " Password input.
-    set imsearch=0
-    let in = inputsecret('Input Secret : ')
-
-    if b:interactive.encoding != '' && &encoding != b:interactive.encoding
-      " Convert encoding.
-      let in = iconv(in, &encoding, b:interactive.encoding)
-    endif
-
-    call b:interactive.process.stdin.write(in . "\<NL>")
+  if (current_line !~ s:password_regex
+        \ && a:string !~ s:password_regex)
+        \ || (b:interactive.type != 'interactive'
+        \     && b:interactive.type != 'vimshell')
   endif
+
+  redraw
+
+  " Password input.
+  set imsearch=0
+  let in = inputsecret('Input Secret : ')
+
+  if b:interactive.encoding != '' && &encoding != b:interactive.encoding
+    " Convert encoding.
+    let in = iconv(in, &encoding, b:interactive.encoding)
+  endif
+
+  call b:interactive.process.stdin.write(in . "\<NL>")
 endfunction"}}}
 
 function! s:check_scrollback()
