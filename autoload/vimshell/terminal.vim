@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Nov 2011.
+" Last Modified: 12 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -275,21 +275,20 @@ function! s:optimized_print(string, is_error)"{{{
   endif
 
   " Optimized print.
-  if vimshell#iswin()
-        \ && has_key(b:interactive, 'command')
-        \ && !get(g:vimshell_interactive_echoback_commands,
-        \        b:interactive.command, 0)
-    " no echoback command.
-    call append('.', lines)
-    execute 'normal!' len(lines).'j$'
-  else
-    if line('.') != b:interactive.echoback_linenr
-      call setline('.', getline('.') . lines[0])
+  if s:is_no_echoback()
+    if line('$') == 1 && getline('$') == ''
+      call setline('.', lines[0])
+    else
+      call append('.', lines[0])
     endif
 
-    call append('.', lines[1:])
-    execute 'normal!' (len(lines)-1).'j$'
+    normal! j$
+  elseif line('.') != b:interactive.echoback_linenr
+    call setline('.', getline('.') . lines[0])
   endif
+
+  call append('.', lines[1:])
+  execute 'normal!' (len(lines)-1).'j$'
 
   normal! $
   let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
@@ -316,24 +315,28 @@ function! s:set_cursor()"{{{
 
   redraw
 endfunction"}}}
+function! s:is_no_echoback()
+  return b:interactive.type ==# 'interactive'
+          \ && vimshell#iswin()
+          \ && has_key(b:interactive, 'command')
+          \ && !get(g:vimshell_interactive_echoback_commands,
+          \        b:interactive.command, 0)
+endfunction
 
 function! s:init_terminal()"{{{
 endfunction"}}}
 function! s:output_string(string)"{{{
   if s:line == b:interactive.echoback_linenr
-    if vimshell#iswin()
-          \ && has_key(b:interactive, 'command')
-          \ && !get(g:vimshell_interactive_echoback_commands,
-          \        b:interactive.command, 0)
+    if s:is_no_echoback()
       " no echoback command.
       let s:line += 1
       let s:lines[s:line] = a:string
       let s:col = len(a:string)
-      return
-    else
-      return
     endif
+
+    return
   endif
+
   if a:string == ''
     return
   endif

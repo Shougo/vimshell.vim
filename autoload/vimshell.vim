@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Oct 2011.
+" Last Modified: 12 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -351,7 +351,7 @@ function! vimshell#print_prompt(...)"{{{
     " Insert user prompt line.
     for user in split(vimshell#get_user_prompt(), "\\n")
       let secondary = '[%] ' . eval(user)
-      if line('$') == 1 && getline('.') == ''
+      if getline('$') == ''
         call setline('$', secondary)
       else
         call append('$', secondary)
@@ -381,7 +381,7 @@ function! vimshell#print_prompt(...)"{{{
   endif
 
   " Insert prompt line.
-  if line('$') == 1 && getline('.') == ''
+  if getline('$') == ''
     call setline('$', new_prompt)
   else
     call append('$', new_prompt)
