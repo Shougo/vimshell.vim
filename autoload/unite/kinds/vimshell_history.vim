@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 15 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,11 +48,15 @@ let s:kind.action_table.delete = {
       \ }
 function! s:kind.action_table.delete.func(candidates)"{{{
   let current_histories =
-        \ unite#get_context().source__current_histories
+        \ a:candidates[0].action__current_histories
   for candidate in a:candidates
     call filter(current_histories,
           \ 'v:val !=# candidate.action__complete_word')
   endfor
+
+  if !a:candidates[0].action__is_external
+    call vimshell#history#write(current_histories)
+  endif
 endfunction"}}}
 
 let s:kind.action_table.edit = {
@@ -62,12 +66,16 @@ let s:kind.action_table.edit = {
       \ }
 function! s:kind.action_table.edit.func(candidate)"{{{
   let current_histories =
-        \ unite#get_context().source__current_histories
+        \ a:candidate.action__current_histories
   let history = input('Please edit history: ',
         \ a:candidate.action__complete_word)
   if history != ''
     let current_histories[
           \ a:candidate.action__source_history_number] = history
+  endif
+
+  if !a:candidate.action__is_external
+    call vimshell#history#write(current_histories)
   endif
 endfunction"}}}
 

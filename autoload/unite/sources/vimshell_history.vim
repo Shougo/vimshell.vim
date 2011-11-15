@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 15 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,12 +38,7 @@ let s:source = {
       \ }
 
 function! s:source.hooks.on_init(args, context) "{{{
-  let a:context.source__current_histories =
-        \ copy(vimshell#history#read())
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
-endfunction"}}}
-function! s:source.hooks.on_close(args, context) "{{{
-  call vimshell#history#write(a:context.source__current_histories)
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
@@ -52,6 +47,7 @@ function! s:source.hooks.on_syntax(args, context)"{{{
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context)"{{{
   let cnt = 0
+  let histories = vimshell#history#read()
 
   for candidate in a:context.candidates
     let candidate.abbr =
@@ -61,13 +57,15 @@ function! s:source.hooks.on_post_filter(args, context)"{{{
     let candidate.action__complete_pos =
           \ a:context.source__cur_keyword_pos
     let candidate.action__source_history_number = cnt
+    let candidate.action__current_histories = histories
+    let candidate.action__is_external = 0
 
     let cnt += 1
   endfor
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return map(copy(a:context.source__current_histories),
+  return map(copy(vimshell#history#read()),
         \ '{ "word" : v:val }')
 endfunction "}}}
 

@@ -867,6 +867,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-11-14
 - Fixed print prompt.
+- Fixed vimshell history error.
 
 2011-11-12
 - Fixed output problem.

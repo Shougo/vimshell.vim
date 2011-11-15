@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_external_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2011.
+" Last Modified: 15 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,6 +70,9 @@ function! s:source.hooks.on_post_filter(args, context)"{{{
     let candidate.action__complete_pos =
           \ a:context.source__cur_keyword_pos
     let candidate.action__source_history_number = cnt
+    let candidate.action__current_histories =
+          \ a:context.source__current_histories
+    let candidate.action__is_external = 1
 
     let cnt += 1
   endfor
