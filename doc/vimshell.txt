@@ -865,7 +865,10 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
-2011-11-14
+2011-11-16
+- Detect autochdir option.
+
+2011-11-15
 - Fixed print prompt.
 - Fixed vimshell history error.
 

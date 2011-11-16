@@ -34,6 +34,7 @@ function! s:command.execute(args, context)"{{{
   if g:vimshell_use_terminal_command == ''
     call vimshell#error_line(a:context.fd,
           \ 'Please set g:vimshell_use_terminal_command variable.')
+    return
   endif
 
   call vimproc#system_bg(printf('%s %s',

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Nov 2011.
+" Last Modified: 16 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,6 +120,14 @@ function! vimshell#create_shell(split_flag, directory)"{{{
     echoerr 'Please close command line buffer.'
     return
   endif
+
+  " Detect autochdir option."{{{
+  if &autochdir
+    echoerr 'Detected autochdir!'
+    echoerr 'vimshell don''t work if you set autochdir option.'
+    return
+  endif
+  "}}}
 
   " Create new buffer.
   let prefix = vimshell#iswin() ? '[vimshell]' : '*vimshell*'
