@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Nov 2011.
+" Last Modified: 16 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,7 +37,11 @@ let s:source = {
       \ 'is_listed' : 0,
       \ }
 
+let s:current_histories = []
+
 function! s:source.hooks.on_init(args, context) "{{{
+  call unite#sources#vimshell_history#_change_histories(
+        \ vimshell#history#read())
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
@@ -45,9 +49,14 @@ function! s:source.hooks.on_syntax(args, context)"{{{
         \ containedin=uniteSource__VimshellHistory
   highlight default link uniteSource__VimshellHistorySpaces Comment
 endfunction"}}}
+function! s:source.hooks.on_close(args, context) "{{{
+  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
+  if vimshell#history#read() != s:current_histories
+    call vimshell#history#write(s:current_histories)
+  endif
+endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context)"{{{
   let cnt = 0
-  let histories = vimshell#history#read()
 
   for candidate in a:context.candidates
     let candidate.abbr =
@@ -57,7 +66,7 @@ function! s:source.hooks.on_post_filter(args, context)"{{{
     let candidate.action__complete_pos =
           \ a:context.source__cur_keyword_pos
     let candidate.action__source_history_number = cnt
-    let candidate.action__current_histories = histories
+    let candidate.action__current_histories = s:current_histories
     let candidate.action__is_external = 0
 
     let cnt += 1
@@ -65,7 +74,7 @@ function! s:source.hooks.on_post_filter(args, context)"{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return map(copy(vimshell#history#read()),
+  return map(copy(s:current_histories),
         \ '{ "word" : v:val }')
 endfunction "}}}
 
@@ -86,4 +95,8 @@ function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
         \ })
 endfunction "}}}
 
-" vim: foldmethod=marker
+function! unite#sources#vimshell_history#_change_histories(histories) "{{{
+  let s:current_histories = a:histories
+endfunction "}}}
+
+" ies foldmethod=marker

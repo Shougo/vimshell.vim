@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Nov 2011.
+" Last Modified: 16 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ function! s:kind.action_table.delete.func(candidates)"{{{
   endfor
 
   if !a:candidates[0].action__is_external
-    call vimshell#history#write(current_histories)
+    call unite#sources#vimshell_history#_change_histories(current_histories)
   endif
 endfunction"}}}
 
@@ -75,7 +75,7 @@ function! s:kind.action_table.edit.func(candidate)"{{{
   endif
 
   if !a:candidate.action__is_external
-    call vimshell#history#write(current_histories)
+    call unite#sources#vimshell_history#_change_histories(current_histories)
   endif
 endfunction"}}}
 
