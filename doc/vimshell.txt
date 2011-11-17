@@ -852,8 +852,9 @@ vimshell/external_history
 kind actions:
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
-	execute		Execute history
-	edit		Edit history
+	execute		Execute history.
+			If you selected several histories, "; " will be inserted.
+	edit		Edit history.
 	delete		Delete history.
 
 ==============================================================================
