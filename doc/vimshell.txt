@@ -868,6 +868,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-11-17
 - Selectable history execute action.
+- Fixed :VimShellInteractive error.
 
 2011-11-16
 - Detect autochdir option.

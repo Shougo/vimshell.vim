@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2011.
+" Last Modified: 17 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -179,7 +179,7 @@ function! s:vimshell_execute(args)"{{{
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
-    call vimshell#commands#iexe#init()
+    call vimshell#commands#iexe#dummy()
 
     " Search interpreter.
     if &filetype == '' || !has_key(g:vimshell_interactive_interpreter_commands, &filetype)

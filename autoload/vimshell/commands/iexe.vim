@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2011.
+" Last Modified: 17 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -298,6 +298,9 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
     call vimshell#restore_pos(a:new_pos)
   endif
 endfunction"}}}
+
+function! vimshell#commands#iexe#dummy()
+endfunction
 
 function! s:insert_enter()"{{{
   if &updatetime > g:vimshell_interactive_update_time
