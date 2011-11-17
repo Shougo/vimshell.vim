@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2011.
+" Last Modified: 17 Nov 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -81,9 +81,13 @@ endfunction"}}}
 
 let s:kind.action_table.execute = {
       \ 'description' : 'execute history',
+      \ 'is_selectable' : 1,
       \ }
-function! s:kind.action_table.execute.func(candidate)"{{{
-  call unite#take_action('insert', a:candidate)
+function! s:kind.action_table.execute.func(candidates)"{{{
+  let candidate = deepcopy(a:candidates[0])
+  let candidate.action__complete_word =
+        \ join(map(copy(a:candidates), 'v:val.action__complete_word'), '; ')
+  call unite#take_action('insert', candidate)
 
   call vimshell#execute_current_line(unite#get_context().complete)
 endfunction"}}}
