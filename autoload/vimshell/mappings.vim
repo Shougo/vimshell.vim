@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Oct 2011.
+" Last Modified: 02 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -261,8 +261,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
       call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
       " Search cursor file.
-      let filename = substitute(substitute(vimshell#get_cursor_filename(),
-            \ '\\', '/', 'g'), ' ', '\\ ', 'g')
+      let filename = substitute(
+            \ vimshell#get_cursor_filename(), '\\', '/', 'g')
       call s:open_file(filename)
     endif
 
@@ -617,7 +617,15 @@ function! s:open_file(filename)"{{{
   if filename =~ '^\%(https\?\|ftp\)://'
     " Open URI.
     call setline('$', vimshell#get_prompt() . 'open ' . filename)
-  elseif isdirectory(substitute(filename, '\\ ', ' ', 'g'))
+  endif
+
+  while filename =~ '\s'
+        \ && !filereadable(substitute(filename, '\\ ', ' ', 'g'))
+        \ && !isdirectory(substitute(filename, '\\ ', ' ', 'g'))
+    let filename = substitute(filename, '^\S*\s', '', '')
+  endwhile
+
+  if isdirectory(substitute(filename, '\\ ', ' ', 'g'))
     " Change directory.
     call setline('$', vimshell#get_prompt() . 'cd ' . filename)
   else
