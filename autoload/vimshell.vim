@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Nov 2011.
+" Last Modified: 06 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -870,6 +870,8 @@ function! s:event_bufwin_enter()"{{{
     setlocal conceallevel=3
     setlocal concealcursor=nvi
   endif
+
+  setlocal nolist
 
   if !exists('b:vimshell') ||
         \ !isdirectory(b:vimshell.current_dir)
