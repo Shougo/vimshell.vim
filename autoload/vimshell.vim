@@ -659,12 +659,16 @@ function! vimshell#execute_current_line(is_insert)"{{{
 endfunction"}}}
 function! vimshell#get_cursor_filename()"{{{
   let filename_pattern = (b:interactive.type ==# 'vimshell') ?
-        \ '\%([[:alnum:];/?:@&=+$,_.!~*''|()-]\+[ ]\)*[[:alnum:];/?:@&=+$,_.!~*''|()-]\+' :
-        \ '[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-  let filename = matchstr(getline('.')[: col('.')-1], filename_pattern . '$')
-        \ . matchstr(getline('.')[col('.') :], '^'.filename_pattern)
+        \'\s\?\%(\f\+\s\)*\f\+' :
+        \'[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+  let cur_text = matchstr(getline('.'), '^.*\%'
+        \ . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let next_text = matchstr('a'.getline('.')[len(cur_text) :],
+        \ '^'.filename_pattern)[1:]
+  let filename = matchstr(cur_text, filename_pattern . '$') . next_text
 
-  if has('conceal') && b:interactive.type ==# 'vimshell' && filename =~ '\[\%[%\]]\|^%$'
+  if has('conceal') && b:interactive.type ==# 'vimshell'
+        \ && filename =~ '\[\%[%\]]\|^%$'
     " Skip user prompt.
     let filename = matchstr(getline('.'), filename_pattern, 3)
   endif

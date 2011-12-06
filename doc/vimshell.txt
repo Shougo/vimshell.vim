@@ -869,6 +869,9 @@ CHANGELOG						*vimshell-changelog*
 2011-12-06
 - set nolist.
 
+2011-12-02
+- Fixed vimshell#get_cursor_filename().
+
 2011-11-17
 - Selectable history execute action.
 - Fixed :VimShellInteractive error.
