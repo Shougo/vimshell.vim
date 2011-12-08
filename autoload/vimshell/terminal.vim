@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2011.
+" Last Modified: 08 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -248,27 +248,45 @@ function! s:optimized_print(string, is_error)"{{{
   let lines = split(string, '\n', 1)
 
   if string =~ '\r'
-    for line in lines
+    call s:print_with_redraw(a:is_error, lines)
+  else
+    call s:print_simple(a:is_error, lines)
+  endif
+
+  normal! $
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  call s:set_cursor()
+endfunction"}}}
+function! s:print_with_redraw(is_error, lines)"{{{
+  let cnt = 1
+  for line in a:lines
+    if cnt != 1 ||
+          \ (s:is_no_echoback() && getline('$') != '')
       call append('.', '')
       normal! j
+    endif
 
-      let ls = split(line, '\r', 1)
+    let ls = split(line, '\r', 1)
 
-      if a:is_error
-        call map(ls, '"!!!".v:val."!!!"')
+    if a:is_error
+      call map(ls, '"!!!".v:val."!!!"')
+    endif
+
+    for l in ls
+      if cnt != 1 || s:is_no_echoback()
+        call setline('.', l)
+      else
+        call setline('.', getline('.') . l)
       endif
 
-      for l in ls
-        call setline('.', l)
-        redraw
-      endfor
+      redraw
     endfor
 
-    normal! $
-    let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
-    call s:set_cursor()
-    return
-  endif
+    let cnt += 1
+  endfor
+endfunction"}}}
+function! s:print_simple(is_error, lines)"{{{
+  let lines = a:lines
 
   if a:is_error
     call map(lines, '"!!!".v:val."!!!"')
@@ -287,12 +305,10 @@ function! s:optimized_print(string, is_error)"{{{
     call setline('.', getline('.') . lines[0])
   endif
 
-  call append('.', lines[1:])
-  execute 'normal!' (len(lines)-1).'j$'
+  let lines = lines[1:]
 
-  normal! $
-  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
-  call s:set_cursor()
+  call append('.', lines)
+  execute 'normal!' (len(lines)).'j$'
 endfunction"}}}
 function! s:set_cursor()"{{{
   " Get real pos(0 origin).
