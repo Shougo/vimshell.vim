@@ -273,12 +273,7 @@ function! s:print_with_redraw(is_error, lines)"{{{
     endif
 
     for l in ls
-      if cnt != 1 || s:is_no_echoback()
-        call setline('.', l)
-      else
-        call setline('.', getline('.') . l)
-      endif
-
+      call setline('.', l)
       redraw
     endfor
 
