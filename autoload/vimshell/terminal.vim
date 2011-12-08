@@ -934,6 +934,15 @@ endfunction"}}}
 function! s:escape.reset(matchstr)"{{{
   call vimshell#terminal#init()
 endfunction"}}}
+function! s:escape.delete_chars(matchstr)"{{{
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+
+  call s:escape.move_left(n)
+  call s:output_string(repeat(' ', n))
+endfunction"}}}
 
 " Control sequence functions.
 let s:control = {}
@@ -1039,6 +1048,7 @@ let s:escape_sequence_csi = {
       \ 'f' : s:escape.move_cursor,
       \ 'J' : s:escape.clear_screen,
       \ 'K' : s:escape.clear_line,
+      \ 'P' : s:escape.delete_chars,
       \
       \ 'g' : s:escape.ignore,
       \ 'c' : s:escape.ignore,
