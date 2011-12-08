@@ -868,6 +868,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-12-08
 - Improved redraw.
+- Fixed print.
 
 2011-12-06
 - set nolist.

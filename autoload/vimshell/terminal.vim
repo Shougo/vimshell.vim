@@ -47,6 +47,10 @@ function! vimshell#terminal#init()"{{{
   let s:is_output_highlight = 0
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
+  if !has_key(b:interactive, 'terminal')
+    call vimshell#terminal#init()
+  endif
+
   setlocal modifiable
   if g:vimshell_enable_debug
     echomsg a:string
@@ -63,7 +67,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
   let s:lines = {}
-  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.')-1)
   if g:vimshell_enable_debug
     echomsg '[s:line, s:col] = ' . string([s:line, s:col])
   endif
@@ -74,9 +78,6 @@ function! vimshell#terminal#print(string, is_error)"{{{
     return
   endif
 
-  if !has_key(b:interactive, 'terminal')
-    call vimshell#terminal#init()
-  endif
   let b:interactive.terminal.is_error = a:is_error
 
   let newstr = ''
@@ -254,7 +255,7 @@ function! s:optimized_print(string, is_error)"{{{
   endif
 
   normal! $
-  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.'))
+  let [s:line, s:col] = s:get_virtual_col(line('.'), col('.')-1)
   call s:set_cursor()
 endfunction"}}}
 function! s:print_with_redraw(is_error, lines)"{{{
