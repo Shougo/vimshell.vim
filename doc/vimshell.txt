@@ -868,6 +868,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-12-09
 - Improved redraw.
+- Optimized redraw.
 
 2011-12-08
 - Improved redraw.

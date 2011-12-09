@@ -426,7 +426,7 @@ function! s:clear_highlight_line(linenr)"{{{
   endif
 endfunction"}}}
 function! s:use_conceal()"{{{
-  return has('conceal')
+  return has('conceal') && b:interactive.type !=# 'terminal'
 endfunction"}}}
 
 " Note: Real pos is 0 origin.
@@ -449,11 +449,10 @@ function! s:get_col(line, col, is_virtual)"{{{
   " not -> a:col : virtual col.
   let col = 1
   let real_col = 0
-  let skip_cnt = 0
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
   if current_line !~ '\e\[[0-9;]*m'
     " Optimized.
-    for c in split(current_line, '\zs')
+    for c in split(current_line[: a:col*3], '\zs')
       let real_col += len(c)
       let col += vimshell#util#wcswidth(c)
 
@@ -463,6 +462,7 @@ function! s:get_col(line, col, is_virtual)"{{{
       endif
     endfor
   else
+    let skip_cnt = 0
     for c in split(current_line, '\zs')
       if skip_cnt > 0
         let skip_cnt -= 1
@@ -470,7 +470,7 @@ function! s:get_col(line, col, is_virtual)"{{{
       endif
 
       if c == "\<ESC>"
-            \ && current_line[real_col :] =~ '\e\[[0-9;]*m'
+            \ && current_line[real_col :] =~ '^\e\[[0-9;]*m'
         " Skip.
         let sequence = matchstr(current_line, '^\e\[[0-9;]*m', real_col)
         let skip_cnt = len(sequence)-1
