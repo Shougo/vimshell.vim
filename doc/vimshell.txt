@@ -866,6 +866,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-12-09
+- Improved redraw.
+
 2011-12-08
 - Improved redraw.
 - Fixed print.
