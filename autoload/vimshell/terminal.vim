@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Dec 2011.
+" Last Modified: 10 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -449,7 +449,23 @@ function! s:get_col(line, col, is_virtual)"{{{
   " not -> a:col : virtual col.
   let col = 1
   let real_col = 0
+
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
+  if current_line =~ '^ \+'
+    " Optimized.
+    let spaces = len(matchstr(current_line, '^ \+'))
+    let col += spaces
+    let real_col += spaces
+
+    let check_col = a:is_virtual ? real_col : col
+    if check_col > a:col
+      let col -= check_col - a:col
+      let real_col -= check_col - a:col
+    endif
+
+    let current_line = current_line[real_col :]
+  endif
+
   if current_line !~ '\e\[[0-9;]*m'
     " Optimized.
     for c in split(current_line[: a:col*3], '\zs')
@@ -723,6 +739,18 @@ function! s:escape.move_cursor(matchstr)"{{{
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
 endfunction"}}}
+function! s:escape.move_cursor_column(matchstr)"{{{
+  let n = matchstr(a:matchstr, '\d\+')
+  if n == ''
+    let n = 1
+  endif
+
+  let s:virtual.col = n
+  let s:is_output_highlight = 0
+
+  let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
+  call s:set_screen_pos(line, col)
+endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
   let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
 
@@ -825,7 +853,8 @@ function! s:escape.move_down(matchstr)"{{{
 
   let s:is_output_highlight = 0
 
-  if b:interactive.terminal.region_top <= s:virtual.line && s:virtual.line <= b:interactive.terminal.region_bottom
+  if b:interactive.terminal.region_top <= s:virtual.line
+        \ && s:virtual.line <= b:interactive.terminal.region_bottom
     " Scroll down n lines.
     call s:scroll_down(n)
   else
@@ -1046,6 +1075,7 @@ let s:escape_sequence_csi = {
       \
       \ 'g' : s:escape.ignore,
       \ 'c' : s:escape.ignore,
+      \ 'd' : s:escape.move_cursor_column,
       \ 'y' : s:escape.ignore,
       \ 'q' : s:escape.ignore,
       \}
