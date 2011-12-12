@@ -389,6 +389,7 @@ function! vimshell#print_prompt(...)"{{{
         let prompts_save = {}
         let prompts_save.right_prompt = right_prompt
         let prompts_save.user_prompt_last = user_prompt_last
+        let prompts_save.winwidth = winwidth(0)
         let b:vimshell.prompts_save[line('$')] = prompts_save
       endif
     endif
@@ -893,6 +894,7 @@ function! s:event_bufwin_enter()"{{{
   " Redraw right prompt.
   for [line, prompts] in items(b:vimshell.prompts_save)
     if getline(line) =~ '^\[%] .*\S$'
+          \ && prompts.winwidth != winwidth(0)
       let right_prompt = prompts.right_prompt
       let user_prompt_last = prompts.user_prompt_last
 
