@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int_earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Oct 2011.
+" Last Modified: 12 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,11 +52,11 @@ syntax region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
 syntax match   EarthquakeCommandOutput '^\s\ze\['
 
 syntax keyword EarthquakeKeyword
-      \ :exit :help :restart :eval :update :reply :status
-      \ :delete :mentions :follow :unfollow :recent :user :search
-      \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweeted_of_me
+      \ :exit :help :restart :eval :aa :update :reply :status
+      \ :delete :mentions :follow :unfollow :recent :user :search :filter
+      \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweets_of_me
       \ :block :unblock :report_spam :messages :sent_messages :message
-      \ :reconnect :thread :update_profile_image :browse
+      \ :reconnect :thread :update_profile_image :open :browse
       \ :sh :plugin_install :edit_config :alias :reauthorize
 
 augroup vimshell-int-earthquake

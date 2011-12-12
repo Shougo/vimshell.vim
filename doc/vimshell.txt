@@ -868,6 +868,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-12-12
 - Improved right prompt redraw.
+- Improved earthquake syntax.
 
 2011-12-10
 - Improved terminal.
