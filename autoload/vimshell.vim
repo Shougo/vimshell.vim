@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Dec 2011.
+" Last Modified: 12 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -171,6 +171,7 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell.directory_stack = []
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.continuation = {}
+  let b:vimshell.prompts_save = {}
 
   " Default settings.
   call s:default_settings()
@@ -384,6 +385,11 @@ function! vimshell#print_prompt(...)"{{{
         else
           call append('$', secondary)
         endif
+
+        let prompts_save = {}
+        let prompts_save.right_prompt = right_prompt
+        let prompts_save.user_prompt_last = user_prompt_last
+        let b:vimshell.prompts_save[line('$')] = prompts_save
       endif
     endif
   endif
@@ -883,6 +889,24 @@ function! s:event_bufwin_enter()"{{{
   endif
 
   call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
+
+  " Redraw right prompt.
+  for [line, prompts] in items(b:vimshell.prompts_save)
+    if getline(line) =~ '^\[%] .*\S$'
+      let right_prompt = prompts.right_prompt
+      let user_prompt_last = prompts.user_prompt_last
+
+      let winwidth = winwidth(0) - 10
+      let padding_len =
+            \ (len(user_prompt_last)+
+            \  len(right_prompt)+1
+            \          > winwidth) ?
+            \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
+      let secondary = printf('%s%s%s', user_prompt_last,
+            \ repeat(' ', padding_len), right_prompt)
+      call setline(line, secondary)
+    endif
+  endfor
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
