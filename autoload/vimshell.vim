@@ -373,7 +373,7 @@ function! vimshell#print_prompt(...)"{{{
       if right_prompt != ''
         let user_prompt_last = (vimshell#get_user_prompt() != '') ?
               \   getline('$') : '[%] '
-        let winwidth = winwidth(0) - 10
+        let winwidth = (winwidth(0)+1)/2*2 - 5
         let padding_len =
               \ (len(user_prompt_last)+len(vimshell#get_right_prompt())+1
               \          > winwidth) ?
@@ -389,7 +389,7 @@ function! vimshell#print_prompt(...)"{{{
         let prompts_save = {}
         let prompts_save.right_prompt = right_prompt
         let prompts_save.user_prompt_last = user_prompt_last
-        let prompts_save.winwidth = winwidth(0)
+        let prompts_save.winwidth = winwidth
         let b:vimshell.prompts_save[line('$')] = prompts_save
       endif
     endif
@@ -892,13 +892,13 @@ function! s:event_bufwin_enter()"{{{
   call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
 
   " Redraw right prompt.
+  let winwidth = (winwidth(0)+1)/2*2 - 5
   for [line, prompts] in items(b:vimshell.prompts_save)
     if getline(line) =~ '^\[%] .*\S$'
-          \ && prompts.winwidth != winwidth(0)
+          \ && prompts.winwidth != winwidth
       let right_prompt = prompts.right_prompt
       let user_prompt_last = prompts.user_prompt_last
 
-      let winwidth = winwidth(0) - 10
       let padding_len =
             \ (len(user_prompt_last)+
             \  len(right_prompt)+1
