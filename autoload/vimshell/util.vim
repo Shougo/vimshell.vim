@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2011.
+" Last Modified: 19 Dec 2011.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,13 +97,13 @@ else
 endif
 
 function! vimshell#util#alternate_buffer()"{{{
-  if bufnr('%') != bufnr('#') && buflisted(bufnr('#'))
+  if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
     buffer #
     return
   endif
 
   let listed_buffer_len = len(filter(range(1, bufnr('$')),
-        \ 'buflisted(v:val) && v:val != bufnr("%")'))
+        \ 's:buflisted(v:val) && v:val != bufnr("%")'))
   if listed_buffer_len <= 1
     enew
     return
@@ -113,7 +113,7 @@ function! vimshell#util#alternate_buffer()"{{{
   let pos = 1
   let current = 0
   while pos <= bufnr('$')
-    if buflisted(pos)
+    if s:buflisted(pos)
       if pos == bufnr('%')
         let current = cnt
       endif
@@ -135,5 +135,9 @@ function! vimshell#util#delete_buffer(...)"{{{
   call vimshell#util#alternate_buffer()
   execute 'bdelete!' bufnr
 endfunction"}}}
+function! s:buflisted(bufnr)
+  return !exists('t:unite_buffer_dictionary') ?
+        \ has_key(t:unite_buffer_dictionary, a:bufnr) : buflisted(a:bufnr)
+endfunction
 
 " vim: foldmethod=marker
