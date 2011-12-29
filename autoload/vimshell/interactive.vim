@@ -126,6 +126,12 @@ function! s:send_region(line1, line2, string)"{{{
     return
   endif
 
+  let string = a:string
+  if string == ''
+    let string = join(getline(a:line1, a:line2), "\<LF>")
+  endif
+  let string .= "\<LF>"
+
   let winnr = bufwinnr(s:last_interactive_bufnr)
   if winnr <= 0
     " Open buffer.
@@ -145,12 +151,6 @@ function! s:send_region(line1, line2, string)"{{{
         \ && type !=# 'vimshell'
     return
   endif
-
-  let string = a:string
-  if string == ''
-    let string = join(getline(a:line1, a:line2), "\<LF>")
-  endif
-  let string .= "\<LF>"
 
   if type ==# 'interactive'
     " Save prompt.

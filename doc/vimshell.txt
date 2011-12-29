@@ -871,6 +871,7 @@ CHANGELOG						*vimshell-changelog*
 
 2011-12-19
 - Improved check buflisted().
+- Fixed updatetime problem.
 
 2011-12-12
 - Improved right prompt redraw.
