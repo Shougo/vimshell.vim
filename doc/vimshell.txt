@@ -866,6 +866,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2011-12-29
+- Fixed updatetime problem.
+
 2011-12-12
 - Improved right prompt redraw.
 - Improved earthquake syntax.
