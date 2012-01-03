@@ -68,8 +68,10 @@ function! s:command.execute(args, context)"{{{
         try
           call vimshell#parser#eval_script(script, context)
         catch
-          let message = (v:exception !~# '^Vim:')? v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({}, printf('%s(%d): %s', join(a:args), i, message))
+          let message = (v:exception !~# '^Vim:')?
+                \ v:exception : v:exception . ' ' . v:throwpoint
+          call vimshell#error_line({},
+                \ printf('%s(%d): %s', join(a:args), i, message))
           return
         endtry
 
@@ -77,7 +79,8 @@ function! s:command.execute(args, context)"{{{
       endwhile
     else
       " Error.
-      call vimshell#error_line(a:context.fd, printf('vimsh: Not found the script "%s".', filename))
+      call vimshell#error_line(a:context.fd,
+            \ printf('vimsh: Not found the script "%s".', filename))
     endif
   endif
 endfunction"}}}

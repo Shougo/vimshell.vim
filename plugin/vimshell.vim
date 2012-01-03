@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2011.
+" Last Modified: 03 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -161,7 +161,8 @@ nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '
 
 " Command functions:
 function! s:execute_completefunc(lead, cmd, pos)"{{{
-  silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(a:lead, a:cmd, a:pos)
+  silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(
+        \ a:lead, a:cmd, a:pos)
   return keys
 endfunction"}}}
 function! s:vimshell_execute(args)"{{{
@@ -173,36 +174,52 @@ function! s:vimshell_execute(args)"{{{
         \}
   call vimshell#set_context(context)
 
-  let args = vimproc#parser#split_args(a:args)
+  try
+    let args = vimproc#parser#split_args(a:args)
 
-  call vimshell#execute_internal_command('bg', args, context)
+    call vimshell#execute_internal_command('bg', args, context)
+  catch
+    let message = (v:exception !~# '^Vim:')?
+          \ v:exception : v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    return
+  endtry
 endfunction"}}}
 function! s:vimshell_interactive(args)"{{{
   if a:args == ''
     call vimshell#commands#iexe#dummy()
 
     " Search interpreter.
-    if &filetype == '' || !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
+    if &filetype == '' ||
+          \ !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
       echoerr 'Interpreter is not found.'
       return
     endif
 
-    let command_line = g:vimshell_interactive_interpreter_commands[&filetype]
+    let command_line =
+          \ g:vimshell_interactive_interpreter_commands[&filetype]
   else
     let command_line = a:args
   endif
 
-  let args = vimproc#parser#split_args(command_line)
+  try
+    let args = vimproc#parser#split_args(command_line)
 
-  let context = {
-        \ 'has_head_spaces' : 0,
-        \ 'is_interactive' : 0,
-        \ 'is_single_command' : 1,
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
-        \}
-  call vimshell#set_context(context)
+    let context = {
+          \ 'has_head_spaces' : 0,
+          \ 'is_interactive' : 0,
+          \ 'is_single_command' : 1,
+          \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+          \}
+    call vimshell#set_context(context)
 
-  call vimshell#execute_internal_command('iexe', args, context)
+    call vimshell#execute_internal_command('iexe', args, context)
+  catch
+    let message = (v:exception !~# '^Vim:')?
+          \ v:exception : v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    return
+  endtry
 endfunction"}}}
 function! s:vimshell_terminal(args)"{{{
   let context = {
@@ -213,8 +230,15 @@ function! s:vimshell_terminal(args)"{{{
         \}
   call vimshell#set_context(context)
 
-  call vimshell#execute_internal_command('texe',
-        \ vimproc#parser#split_args(a:args), context)
+  try
+    call vimshell#execute_internal_command('texe',
+          \ vimproc#parser#split_args(a:args), context)
+  catch
+    let message = (v:exception !~# '^Vim:')?
+          \ v:exception : v:exception . ' ' . v:throwpoint
+    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    return
+  endtry
 endfunction"}}}
 function! s:vimshell_popup(args)"{{{
   if &filetype ==# 'vimshell'
