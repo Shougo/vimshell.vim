@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Dec 2011.
+" Last Modified: 03 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,8 +43,6 @@ function! vimshell#terminal#init()"{{{
     syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
     syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
   endif
-
-  let s:is_output_highlight = 0
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
   if !has_key(b:interactive, 'terminal')
@@ -53,7 +51,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
   setlocal modifiable
   if g:vimshell_enable_debug
-    echomsg a:string
+    echomsg 'print string = ' . string(a:string)
   endif
 
   if &filetype ==# 'vimshell' &&
@@ -431,14 +429,16 @@ endfunction"}}}
 
 " Note: Real pos is 0 origin.
 function! s:get_real_pos(line, col)"{{{
-  if a:col <= 1 && !s:is_output_highlight
+  let current_line = get(s:virtual.lines, a:line, getline(a:line))
+  if a:col <= 1 && current_line !~ '\e\[[0-9;]*m'
     return [a:line, 0]
   endif
 
   return s:get_col(a:line, a:col, 0)
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
-  if a:col <= 0 && !s:is_output_highlight
+  let current_line = get(s:virtual.lines, a:line, getline(a:line))
+  if a:col <= 0 && current_line !~ '\e\[[0-9;]*m'
     return [a:line, 1]
   endif
 
@@ -534,12 +534,12 @@ function! s:set_screen_string(line, col, string)"{{{
   let len2 = s:get_virtual_wcswidth(a:string)
   let s:virtual.col += len2
 
-  let s:is_output_highlight = len != len2
-
   " let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
-    echomsg current_line[col :]
-    echomsg string([a:col, col, s:virtual.col, a:string])
+    echomsg 'current_line = ' . current_line
+    echomsg 'current_line[col:] = ' . current_line[col :]
+    echomsg '[virt_col, real_col, string] = ' .
+          \ string([a:col, col, s:virtual.col, a:string])
   endif
 endfunction"}}}
 function! s:set_screen_pos(line, col)"{{{
@@ -734,7 +734,6 @@ function! s:escape.move_cursor(matchstr)"{{{
 
   let s:virtual.line = get(args, 0, 1)
   let s:virtual.col = get(args, 1, 1)
-  let s:is_output_highlight = 0
 
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
@@ -746,7 +745,6 @@ function! s:escape.move_cursor_column(matchstr)"{{{
   endif
 
   let s:virtual.col = n
-  let s:is_output_highlight = 0
 
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
@@ -823,16 +821,12 @@ function! s:escape.clear_screen(matchstr)"{{{
 
     call vimshell#terminal#clear_highlight()
   endif
-
-  let s:is_output_highlight = 0
 endfunction"}}}
 function! s:escape.move_up(matchstr)"{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
   endif
-
-  let s:is_output_highlight = 0
 
   if b:interactive.terminal.region_top <= s:virtual.line
         \ && s:virtual.line <= b:interactive.terminal.region_bottom
@@ -851,8 +845,6 @@ function! s:escape.move_down(matchstr)"{{{
     let n = 1
   endif
 
-  let s:is_output_highlight = 0
-
   if b:interactive.terminal.region_top <= s:virtual.line
         \ && s:virtual.line <= b:interactive.terminal.region_bottom
     " Scroll down n lines.
@@ -867,7 +859,6 @@ function! s:escape.move_right(matchstr)"{{{
     let n = 1
   endif
 
-  let s:is_output_highlight = 0
   let s:virtual.col += n
 endfunction"}}}
 function! s:escape.move_left(matchstr)"{{{
@@ -876,7 +867,6 @@ function! s:escape.move_left(matchstr)"{{{
     let n = 1
   endif
 
-  let s:is_output_highlight = 0
   let s:virtual.col -= n
   if s:virtual.col < 1
     let s:virtual.col = 1
@@ -973,7 +963,6 @@ function! s:control.ignore()"{{{
 endfunction"}}}
 function! s:control.newline()"{{{
   let s:virtual.col = 1
-  let s:is_output_highlight = 0
 
   if b:interactive.type !=# 'terminal'
     " New line.
@@ -986,8 +975,6 @@ function! s:control.delete_backword_char()"{{{
   if s:virtual.line == b:interactive.echoback_linenr
     return
   endif
-
-  let s:is_output_highlight = 0
 
   if s:virtual.col == 1
     " Wrap above line.
@@ -1010,8 +997,6 @@ function! s:control.delete_multi_backword_char()"{{{
     return
   endif
 
-  let s:is_output_highlight = 0
-
   if s:virtual.col == 1
     " Wrap above line.
     if s:virtual.line > 1
@@ -1030,7 +1015,6 @@ function! s:control.delete_multi_backword_char()"{{{
 endfunction"}}}
 function! s:control.carriage_return()"{{{
   let s:virtual.col = 1
-  let s:is_output_highlight = 0
 endfunction"}}}
 function! s:control.bell()"{{{
   echo 'Ring!'
