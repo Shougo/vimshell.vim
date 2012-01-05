@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -154,13 +154,17 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
   hi def link InteractiveErrorHidden Error
 
   augroup vimshell
-    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
+    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(
+          \ vimshell#util#expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)  :<C-u>call <SID>on_execute()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_execute_line)
+        \ :<C-u>call <SID>on_execute()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_interrupt)
+        \ :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interactive_exit)
+        \ :<C-u>call vimshell#interactive#quit_buffer()<CR>
 
   nmap <buffer><CR>      <Plug>(vimshell_interactive_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_interactive_interrupt)

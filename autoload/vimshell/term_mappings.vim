@@ -127,7 +127,8 @@ function! s:start_insert()"{{{
 endfunction "}}}
 function! s:execute_line()"{{{
   " Search cursor file.
-  let filename = substitute(substitute(expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+  let filename = substitute(substitute(
+        \ vimshell#util#expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
 
   if &termencoding != '' && &encoding != &termencoding
     " Convert encoding.

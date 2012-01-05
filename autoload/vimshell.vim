@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -682,7 +682,7 @@ function! vimshell#get_cursor_filename()"{{{
     let filename = matchstr(getline('.'), filename_pattern, 3)
   endif
 
-  return expand(filename)
+  return vimshell#util#expand(filename)
 endfunction"}}}
 function! vimshell#is_cmdwin()"{{{
   silent! noautocmd wincmd p

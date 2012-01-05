@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
             \}
 
       " Escape word.
-      let dict.orig = dict.word
+      let dict.orig = vimshell#util#expand(dict.word)
       let dict.word = escape(dict.word, ' *?[]"={}')
 
       call add(list, dict)
@@ -60,7 +60,9 @@ endfunction"}}}
 function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let ret = []
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str),
-        \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
+        \ 'isdirectory(v:val.orig) ||
+        \  (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK"
+        \    && isdirectory(resolve(v:val.orig)))')
     let dict = keyword
     let dict.menu = 'directory'
 
@@ -72,8 +74,10 @@ endfunction"}}}
 function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   " Check dup.
   let check = {}
-  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath), 
-        \ 'isdirectory(expand(v:val.orig)) || (vimshell#iswin() && fnamemodify(expand(v:val.orig), ":e") ==? "LNK" && isdirectory(resolve(expand(v:val.orig))))')
+  for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath),
+        \ 'isdirectory(v:val.orig) || (vimshell#iswin()
+        \     && fnamemodify(v:val.orig, ":e") ==? "LNK"
+        \     && isdirectory(resolve(v:val.orig)))')
     if !has_key(check, keyword.word) && keyword.word =~ '/'
       let check[keyword.word] = keyword
     endif
@@ -145,11 +149,12 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
   if vimshell#iswin()
     let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
-          \ 'isdirectory(expand(v:val.orig)) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
+          \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
           \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(exts)
   else
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
-          \ 'isdirectory(expand(v:val.orig)) || executable(expand(v:val.orig))' : 'executable(expand(v:val.orig))'
+          \ 'isdirectory(v:val.orig) || executable(v:val.orig)'
+          \ : 'executable(v:val.orig)'
   endif
 
   call filter(files, pattern)

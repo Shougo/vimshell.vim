@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Dec 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -135,10 +135,14 @@ function! vimshell#util#delete_buffer(...)"{{{
   call vimshell#util#alternate_buffer()
   execute 'bdelete!' bufnr
 endfunction"}}}
-function! s:buflisted(bufnr)
+function! s:buflisted(bufnr)"{{{
   return exists('t:unite_buffer_dictionary') ?
         \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
-endfunction
+endfunction"}}}
+
+function! vimshell#util#expand(path)"{{{
+  return expand(escape(a:path, '*?[]"={}'))
+endfunction"}}}
 
 " vim: foldmethod=marker

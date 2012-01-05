@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2011.
+" Last Modified: 05 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,7 +38,8 @@ augroup vimshell
   autocmd VimEnter * set vb t_vb=
   autocmd CursorHold * call s:check_all_output()
   autocmd BufWinEnter,WinEnter * call s:winenter()
-  autocmd BufWinLeave,WinLeave * call s:winleave(expand('<afile>'))
+  autocmd BufWinLeave,WinLeave *
+        \ call s:winleave(vimshell#util#expand('<afile>'))
 augroup END
 
 command! -range -nargs=? VimShellSendString call s:send_region(<line1>, <line2>, <q-args>)
