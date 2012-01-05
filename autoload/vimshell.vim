@@ -361,7 +361,15 @@ function! vimshell#print_prompt(...)"{{{
   if vimshell#get_user_prompt() != '' || vimshell#get_right_prompt() != ''
     " Insert user prompt line.
     for user in split(vimshell#get_user_prompt(), "\\n")
-      let secondary = '[%] ' . eval(user)
+      try
+        let secondary = '[%] ' . eval(user)
+      catch
+        let message = v:exception . ' ' . v:throwpoint
+        echohl WarningMsg | echomsg message | echohl None
+
+        let secondary = '[%] '
+      endtry
+
       if getline('$') == ''
         call setline('$', secondary)
       else
@@ -371,7 +379,15 @@ function! vimshell#print_prompt(...)"{{{
 
     " Insert user prompt line.
     if vimshell#get_right_prompt() != ''
-      let right_prompt = eval(vimshell#get_right_prompt())
+      try
+        let right_prompt = eval(vimshell#get_right_prompt())
+      catch
+        let message = v:exception . ' ' . v:throwpoint
+        echohl WarningMsg | echomsg message | echohl None
+
+        let right_prompt = ''
+      endtry
+
       if right_prompt != ''
         let user_prompt_last = (vimshell#get_user_prompt() != '') ?
               \   getline('$') : '[%] '
@@ -754,7 +770,7 @@ function! vimshell#execute(cmdline, ...)"{{{
   let context = a:0 >= 1? a:1 : vimshell#get_context()
   try
     call vimshell#parser#eval_script(a:cmdline, context)
-  catch /.*/
+  catch
     let message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line(context.fd, message)
     return 1
