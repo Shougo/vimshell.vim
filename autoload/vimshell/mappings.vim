@@ -107,9 +107,9 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
         \ <ESC>:call <SID>execute_by_background(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_exit)
-        \ <C-o>:call <SID>exit()<CR>
+        \ <ESC>:call <SID>exit()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_hide)
-        \ <C-o>:call <SID>hide()<CR>
+        \ <ESC>:call <SID>hide()<CR>
   "}}}
 
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
