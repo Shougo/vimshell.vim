@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Dec 2011.
+" Last Modified: 08 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -106,6 +106,10 @@ function! vimshell#mappings#define_default_mappings()"{{{
         \ <ESC>:call <SID>clear(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
         \ <ESC>:call <SID>execute_by_background(1)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_exit)
+        \ <C-o>:call <SID>exit()<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_hide)
+        \ <C-o>:call <SID>hide()<CR>
   "}}}
 
   if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings

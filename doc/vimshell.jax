@@ -541,6 +541,12 @@ Insert mode key mappings.
 <Plug>(vimshell_execute_by_background)			*i_<Plug>(vimshell_execute_by_background)*
 			実行中のコマンドをiexeバッファで実行する。
 
+<Plug>(vimshell_hide)					*i_<Plug>(vimshell_hide)*
+			vimshellバッファを隠す。
+
+<Plug>(vimshell_exit)					*i_<Plug>(vimshell_exit)*
+			vimshellバッファを終了する。
+
 Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------

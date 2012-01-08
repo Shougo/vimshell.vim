@@ -349,6 +349,12 @@ Insert mode key mappings.
 <Plug>(vimshell_execute_by_background)			*i_<Plug>(vimshell_execute_by_background)*
 			Execute command by iexe.
 
+<Plug>(vimshell_hide)					*i_<Plug>(vimshell_hide)*
+			Hide vimshell buffer.
+
+<Plug>(vimshell_exit)					*i_<Plug>(vimshell_exit)*
+			Quit vimshell buffer.
+
 Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
@@ -865,6 +871,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-01-08
+- Added hide and exit mappings in insert mode.
 
 2012-01-05
 - Fixed expand() problem.
