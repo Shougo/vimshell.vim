@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 08 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -144,10 +144,11 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let winheight = a:split_flag ?
         \ winheight(0)*g:vimshell_split_height/100 : 0
   if a:split_flag
-    execute winheight 'split `=bufname`'
-  else
-    edit! `=bufname`
+    split
+    execute 'resize' winheight
   endif
+
+  edit! `=bufname`
 
   if empty(s:internal_commands)
     call s:init_internal_commands()
@@ -865,10 +866,11 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
   let winheight = a:split_flag ?
         \ winheight(0)*g:vimshell_split_height/100 : 0
   if a:split_flag
-    execute winheight 'sbuffer' a:bufnr
-  else
-    execute 'buffer' a:bufnr
+    split
+    execute 'resize' winheight
   endif
+
+  execute 'buffer' a:bufnr
 
   if a:directory != '' && isdirectory(a:directory)
     " Change current directory.
