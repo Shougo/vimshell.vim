@@ -564,6 +564,7 @@ function! s:hide()"{{{
 endfunction"}}}
 function! s:exit()"{{{
   call vimshell#util#delete_buffer()
+  call s:hide()
 endfunction"}}}
 function! s:delete_backward_char()"{{{
   if !pumvisible()
