@@ -33,10 +33,10 @@ endif
 execute 'syntax match VimShellPrompt' string('^' . vimshell#escape_match(vimshell#get_prompt()))
 execute 'syntax match VimShellPrompt' string('^' . vimshell#escape_match(vimshell#get_secondary_prompt()))
 syntax match   VimShellUserPrompt   '^\[%\] .*$' contains=VimShellUserPromptHidden
-syntax region   VimShellString   start=+'+ end=+'+ oneline
-syntax region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline
-syntax region   VimShellString   start=+`+ end=+`+ oneline
-syntax match   VimShellString   '[''"`]$' contained
+syntax region   VimShellString   start=+'+ end=+'+ oneline contained
+syntax region   VimShellString   start=+"+ end=+"+ contains=VimShellQuoted oneline contained
+syntax region   VimShellString   start=+`+ end=+`+ oneline contained
+syntax match   VimShellString   '[''"`]$' contained contained
 syntax region   VimShellError   start=+!!!+ end=+!!!+ contains=VimShellErrorHidden oneline
 syntax match   VimShellComment   '#.*$' contained
 syntax match   VimShellConstants         '[+-]\=\<\d\+\>'
