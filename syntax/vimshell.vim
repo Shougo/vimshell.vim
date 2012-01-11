@@ -61,7 +61,6 @@ else
   syntax match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
   syntax match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
-syntax region   VimShellGrep  start=+^[^!]\f\+:+ end=+.*+ oneline
 
 if has('conceal')
   " Supported conceal features.
@@ -94,7 +93,6 @@ highlight default link VimShellConstants Constant
 highlight default link VimShellSpecial PreProc
 highlight default link VimShellVariable Comment
 highlight default link VimShellComment Identifier
-highlight default link VimShellGrep Comment
 highlight default link VimShellNormal Normal
 
 highlight default link VimShellExe Statement
