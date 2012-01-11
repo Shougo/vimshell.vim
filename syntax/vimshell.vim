@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jan 2012.
+" Last Modified: 11 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,7 +61,6 @@ else
   syntax match   VimShellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
   syntax match   VimShellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
-syntax region   VimShellHistory  start=+^\s*\d\+:\s[^[:space:]]+ end=+.*+ oneline
 syntax region   VimShellGrep  start=+^[^!]\f\+:+ end=+.*+ oneline
 
 if has('conceal')
@@ -95,7 +94,6 @@ highlight default link VimShellConstants Constant
 highlight default link VimShellSpecial PreProc
 highlight default link VimShellVariable Comment
 highlight default link VimShellComment Identifier
-highlight default link VimShellHistory Comment
 highlight default link VimShellGrep Comment
 highlight default link VimShellNormal Normal
 
