@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: syntax/int_termtter.vim
+" FILE: syntax/int-termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jan 2012.
+" Last Modified: 15 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,28 +30,28 @@ elseif exists('b:current_syntax')
   finish
 endif
 
-syntax region   TermtterInputLine  start='^\s*> ' end='\n' oneline
-      \ contains=TermtterPrompt,TermtterCommand,TermtterString
+syntax region   int_termtterInputLine  start='^\s*> ' end='\n' oneline
+      \ contains=int_termtterPrompt,int_termtterCommand,int_termtterString
 
-syntax match   TermtterURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-syntax match   TermtterString      '.*' contained contains=TermtterReply,TermtterRemark
-syntax match   TermtterCommand     '\w\+' contained
-syntax match   TermtterPrompt      '^\s*> ' contained
-syntax match   TermtterReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
-syntax match   TermtterName        '\s[[:alnum:]_-]\+:\s'
-syntax match   TermtterConstants   '[+-]\?\<\d\+\>'
-syntax match   TermtterConstants   '[+-]\?\<0x\x\+\>'
-syntax match   TermtterConstants   '[+-]\?\<0\o\+\>'
-syntax match   TermtterConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
-syntax match   TermtterConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   TermtterRemark      '\[\$\a\+\]'
-syntax match   TermtterRemark      '\$\a\+'
-syntax match   TermtterHashTag     '#\h\w*'
-syntax match   TermtterDate        '^(\d\+:\d\+:\d\+)'
-syntax match   TermtterMessage     '^updated => '
-syntax region  TermtterError       start='^\s*\[ERROR\] ' end='\n' oneline
+syntax match   int_termtterURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+syntax match   int_termtterString      '.*' contained contains=int_termtterReply,int_termtterRemark
+syntax match   int_termtterCommand     '\w\+' contained
+syntax match   int_termtterPrompt      '^\s*> ' contained
+syntax match   int_termtterReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syntax match   int_termtterName        '\s[[:alnum:]_-]\+:\s'
+syntax match   int_termtterConstants   '[+-]\?\<\d\+\>'
+syntax match   int_termtterConstants   '[+-]\?\<0x\x\+\>'
+syntax match   int_termtterConstants   '[+-]\?\<0\o\+\>'
+syntax match   int_termtterConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
+syntax match   int_termtterConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
+syntax match   int_termtterRemark      '\[\$\a\+\]'
+syntax match   int_termtterRemark      '\$\a\+'
+syntax match   int_termtterHashTag     '#\h\w*'
+syntax match   int_termtterDate        '^(\d\+:\d\+:\d\+)'
+syntax match   int_termtterMessage     '^updated => '
+syntax region  int_termtterError       start='^\s*\[ERROR\] ' end='\n' oneline
 
-syntax keyword TermtterKeyword
+syntax keyword int_termtterKeyword
       \ add alias block cache cache clear create d del delete direct edit emacs_editing_mode eval exec
       \ exit fav favlist favorite favorites fib flush follow followers friends h hashtag hashtag hashtag help keyword
       \ l leave limit list list lists lm load pause plug profile quit r raw_update redo reload
@@ -65,28 +65,28 @@ augroup END
 
 function! s:color_scheme()"{{{
   if has('gui_running')
-    highlight TermtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+    highlight int_termtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
   else
-    highlight default link TermtterPrompt Identifier
+    highlight default link int_termtterPrompt Identifier
   endif
 endfunction"}}}
 
 call s:color_scheme()
 
-highlight default link TermtterConstants Constant
-highlight default link TermtterCommand Statement
-highlight default link TermtterKeyword Statement
+highlight default link int_termtterConstants Constant
+highlight default link int_termtterCommand Statement
+highlight default link int_termtterKeyword Statement
 if has('gui_running')
-  highlight TermtterURI gui=UNDERLINE guifg=#6699ff guibg=NONE
+  highlight int_termtterURI gui=UNDERLINE guifg=#6699ff guibg=NONE
 else
-  highlight default link TermtterURI Comment
+  highlight default link int_termtterURI Comment
 endif
-highlight default link TermtterReply PreProc
-highlight default link TermtterName Type
-highlight default link TermtterMessage Constant
-highlight default link TermtterError Error
-highlight default link TermtterDate Constant
-highlight default link TermtterHashTag Comment
-highlight default link TermtterRemark Identifier
+highlight default link int_termtterReply PreProc
+highlight default link int_termtterName Type
+highlight default link int_termtterMessage Constant
+highlight default link int_termtterError Error
+highlight default link int_termtterDate Constant
+highlight default link int_termtterHashTag Comment
+highlight default link int_termtterRemark Identifier
 
-let b:current_syntax = 'int_termtter'
+let b:current_syntax = 'int-termtter'

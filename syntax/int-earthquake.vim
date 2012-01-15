@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: syntax/int_earthquake.vim
+" FILE: syntax/int-earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Dec 2011.
+" Last Modified: 15 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,28 +30,29 @@ elseif exists('b:current_syntax')
   finish
 endif
 
-syntax region  EarthquakeInputLine  start='^⚡ ' end='\n' oneline contains=EarthquakePrompt,EarthquakeString,EarthquakeCommand
+syntax region  int_earthquakeInputLine  start='^⚡ ' end='\n' oneline
+      \ contains=int_earthquakePrompt,int_earthquakeString,int_earthquakeCommand
 
-syntax match   EarthquakeURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-syntax match   EarthquakeString      '.*' contained contains=EarthquakeReply,EarthquakeRemark
-syntax match   EarthquakeCommand     ':\w*' contained
-syntax match   EarthquakePrompt      '^\s*⚡ ' contained
-syntax match   EarthquakeReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
-syntax match   EarthquakeName        '\s[[:alnum:]_-]\+:\s'
-syntax match   EarthquakeConstants   '[+-]\?\<\d\+\>'
-syntax match   EarthquakeConstants   '[+-]\?\<0x\x\+\>'
-syntax match   EarthquakeConstants   '[+-]\?\<0\o\+\>'
-syntax match   EarthquakeConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
-syntax match   EarthquakeConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   EarthquakeRemark      '\[\$\a\+\]'
-syntax match   EarthquakeRemark      '\$\a\+'
-syntax match   EarthquakeHashTag     '#\h\w*'
-syntax match   EarthquakeDate        '^(\d\+:\d\+:\d\+)'
-syntax match   EarthquakeMessage     '^:\?\h\w* \|^\[\h\w*\] '
-syntax region  EarthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
-syntax match   EarthquakeCommandOutput '^\s\ze\['
+syntax match   int_earthquakeURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+syntax match   int_earthquakeString      '.*' contained contains=int_earthquakeReply,int_earthquakeRemark
+syntax match   int_earthquakeCommand     ':\w*' contained
+syntax match   int_earthquakePrompt      '^\s*⚡ ' contained
+syntax match   int_earthquakeReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syntax match   int_earthquakeName        '\s[[:alnum:]_-]\+:\s'
+syntax match   int_earthquakeConstants   '[+-]\?\<\d\+\>'
+syntax match   int_earthquakeConstants   '[+-]\?\<0x\x\+\>'
+syntax match   int_earthquakeConstants   '[+-]\?\<0\o\+\>'
+syntax match   int_earthquakeConstants   '[+-]\?\d\+#[-+]\=\w\+\>'
+syntax match   int_earthquakeConstants   '[+-]\?\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
+syntax match   int_earthquakeRemark      '\[\$\a\+\]'
+syntax match   int_earthquakeRemark      '\$\a\+'
+syntax match   int_earthquakeHashTag     '#\h\w*'
+syntax match   int_earthquakeDate        '^(\d\+:\d\+:\d\+)'
+syntax match   int_earthquakeMessage     '^:\?\h\w* \|^\[\h\w*\] '
+syntax region  int_earthquakeError       start='^\s*\[ERROR\] ' end='\n' oneline
+syntax match   int_earthquakeCommandOutput '^\s\ze\['
 
-syntax keyword EarthquakeKeyword
+syntax keyword int_earthquakeKeyword
       \ :exit :help :restart :eval :aa :update :reply :status
       \ :delete :mentions :follow :unfollow :recent :user :search :filter
       \ :favorite :unfavorite :retweet :retweeted_by_me :retweeted_to_me :retweets_of_me
@@ -59,37 +60,37 @@ syntax keyword EarthquakeKeyword
       \ :reconnect :thread :update_profile_image :open :browse
       \ :sh :plugin_install :edit_config :alias :reauthorize
 
-augroup vimshell-int-earthquake
+augroup vimshell-int_earthquake
   autocmd!
   autocmd ColorScheme <buffer>    call s:color_scheme()
 augroup END
 
 function! s:color_scheme()"{{{
   if has('gui_running')
-    highlight EarthquakePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
+    highlight int_earthquakePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
   else
-    highlight def link EarthquakePrompt Identifier
+    highlight def link int_earthquakePrompt Identifier
   endif
 endfunction"}}}
 
 call s:color_scheme()
 
-highlight def link EarthquakeConstants Constant
-highlight def link EarthquakeCommand Statement
-highlight def link EarthquakeKeyword Statement
+highlight def link int_earthquakeConstants Constant
+highlight def link int_earthquakeCommand Statement
+highlight def link int_earthquakeKeyword Statement
 if has('gui_running')
-  highlight EarthquakeURI gui=UNDERLINE guifg=#6699ff guibg=NONE
+  highlight int_earthquakeURI gui=UNDERLINE guifg=#6699ff guibg=NONE
 else
-  highlight def link EarthquakeURI Comment
+  highlight def link int_earthquakeURI Comment
 endif
 
-highlight def link EarthquakeReply PreProc
-highlight def link EarthquakeName Type
-highlight def link EarthquakeMessage Constant
-highlight def link EarthquakeError Error
-highlight def link EarthquakeDate Constant
-highlight def link EarthquakeHashTag Comment
-highlight def link EarthquakeRemark Identifier
-highlight def link EarthquakeCommandOutput Underlined
+highlight def link int_earthquakeReply PreProc
+highlight def link int_earthquakeName Type
+highlight def link int_earthquakeMessage Constant
+highlight def link int_earthquakeError Error
+highlight def link int_earthquakeDate Constant
+highlight def link int_earthquakeHashTag Comment
+highlight def link int_earthquakeRemark Identifier
+highlight def link int_earthquakeCommandOutput Underlined
 
-let b:current_syntax = 'int_earthquake'
+let b:current_syntax = 'int-earthquake'
