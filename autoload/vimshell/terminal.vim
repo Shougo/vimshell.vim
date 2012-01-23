@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jan 2012.
+" Last Modified: 23 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1064,7 +1064,7 @@ let s:escape_sequence_csi = {
       \ 'q' : s:escape.ignore,
       \}
 let s:escape_sequence_match = {
-      \ '^\[?\d[hl]' : s:escape.ignore,
+      \ '^\[?\d\+[hl]' : s:escape.ignore,
       \ '^[()][AB012UK]' : s:escape.change_character_set,
       \ '^k.\{-}\e\\' : s:escape.change_title,
       \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,

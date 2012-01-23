@@ -872,6 +872,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-01-23
+- Fixed escape sequence.
+
 2012-01-20
 - Deleted vimshell vcs support.
 
