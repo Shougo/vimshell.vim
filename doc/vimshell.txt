@@ -176,6 +176,9 @@ g:vimshell_disable_escape_highlight			*g:vimshell_disable_escape_highlight*
 g:vimshell_cat_command					*g:vimshell_cat_command*
 			Todo
 
+g:vimshell_editor_command				*g:vimshell_editor_command*
+			Todo
+
 g:vimshell_environment_term				*g:vimshell_environment_term*
 			Todo
 
@@ -871,6 +874,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-01-27
+- Added g:vimshell_editor_command option.
 
 2012-01-24
 - Supported PHP interpreter.

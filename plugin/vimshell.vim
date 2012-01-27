@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jan 2012.
+" Last Modified: 27 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -90,6 +90,13 @@ let g:vimshell_disable_escape_highlight =
       \ get(g:, 'vimshell_disable_escape_highlight', 0)
 let g:vimshell_cat_command =
       \ get(g:, 'vimshell_cat_command', 'cat')
+let g:vimshell_editor_command =
+      \ get(g:, 'vimshell_editor_command',
+      \  has('clientserver') && executable('gvim') ?
+      \   (v:servername != '' ?
+      \    (v:progname . ' --servername=' . v:servername) : 'gvim')
+      \   . ' --remote-wait-silent'
+      \   : g:vimshell_cat_command)
 let g:vimshell_environment_term =
       \ get(g:, 'vimshell_environment_term', 'xterm')
 let g:vimshell_split_command =

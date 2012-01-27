@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jan 2012.
+" Last Modified: 27 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -758,11 +758,7 @@ function! vimshell#restore_pos(pos)"{{{
   call setpos('.', a:pos[3])
 endfunction"}}}
 function! vimshell#get_editor_name()"{{{
-  return has('clientserver') && executable('gvim') ?
-        \ (v:servername != '' ?
-        \  (v:progname . ' --servername=' . v:servername) : 'gvim')
-        \ . ' --remote-wait-silent'
-        \ : g:vimshell_cat_command
+  return g:vimshell_editor_command
 endfunction"}}}
 "}}}
 

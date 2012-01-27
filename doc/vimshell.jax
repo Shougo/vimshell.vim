@@ -273,12 +273,14 @@ g:vimshell_disable_escape_highlight			*g:vimshell_disable_escape_highlight*
 			初期値は0である。
 
 g:vimshell_cat_command					*g:vimshell_cat_command*
-			vimshellは外部のページャやエディタをうまく扱えないの
-			で、$PAGERや$EDITORに|g:vimshell_cat_command|の値を
-			セットする。初期値は"cat"だが、この変数の内容を
-			変更することで、カスタマイズできる。
+			vimshellが$PAGERにセットするコマンド名を指定する。
 			
 			初期値は"cat"である。
+
+g:vimshell_editor_command				*g:vimshell_editor_command*
+			vimshellが$EDITORにセットするコマンド名を指定する。
+			
+			初期値では外部GVimを起動する。
 
 g:vimshell_environment_term				*g:vimshell_environment_term*
 			vimshellが$TERMにセットする端末情報である。
