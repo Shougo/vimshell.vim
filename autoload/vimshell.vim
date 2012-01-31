@@ -255,12 +255,8 @@ function! vimshell#switch_shell(path, ...)"{{{
     return
   endif
 
-  let path = a:path
-  if path == ''
-    let path = getcwd()
-  endif
   let path = vimshell#util#substitute_path_separator(
-        \ fnamemodify(vimshell#util#expand(path), ':p'))
+        \ fnamemodify(vimshell#util#expand(a:path), ':p'))
 
   let context = vimshell#init_context(get(a:000, 0, {}))
 

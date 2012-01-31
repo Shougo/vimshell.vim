@@ -44,7 +44,7 @@ Create plugin		|vimshell-create-plugin|
 Changelog		|vimshell-changelog|
 
 ==============================================================================
-INTRODUCTION						*vimshell-introduction*
+INTRODUCTION					*vimshell-introduction*
 
 vimshellは外部のシェルを使わず、100% Vim Scriptによって実装された究極のシェルで
 ある。 ただしeshellとは異なり、まだまだ未完成である。 一番の特徴としては、Vimの
@@ -57,7 +57,7 @@ Windowsでも動作するので安心である。ただしWindows上では一部
 異なる。
 
 ==============================================================================
-USAGE							*vimshell-usage*
+USAGE						*vimshell-usage*
 
 vimshellを起動するには、|:VimShell|コマンドを実行する。 これが面倒なら、便利な
 キーマッピングも定義されているので使用すると良い。 一部の相違点を除けば、
@@ -73,7 +73,7 @@ Note: vimshellとbash, zshは全く別のシェルであり、互換性はない
 |vimshell-internal-source|コマンドにより引き継ぐことができる。
 
 ==============================================================================
-INSTALL							*vimshell-install*
+INSTALL						*vimshell-install*
 
 http://github.com/Shougo/vimshell/tree/master より、配布ファイルをそのフォルダ
 ごとVimの'runtimepath'にコピーする。
@@ -106,223 +106,242 @@ Make方法
 Cygwin上のVim専用である。WindowsのVimでは使用することができない。
 
 ==============================================================================
-INTERFACE						*vimshell-interface*
+INTERFACE					*vimshell-interface*
 
 ------------------------------------------------------------------------------
-COMMANDS 						*vimshell-commands*
+COMMANDS 					*vimshell-commands*
 
-:VimShell {path}					*:VimShell*
-			{path}をカレントディレクトリとして、vimshellを起動する。
-			他のvimshellが起動している場合、そのvimshellにスイッ
-			チし、カレントディレクトリを{path}に変更する。{path}を
-			省略した場合、vimshellのカレントディレクトリは変更され
-			ない。
+:VimShell [{options}...] {path}			*:VimShell*
+		{path}をカレントディレクトリとして、vimshellを起動する。他の
+		vimshellが起動している場合、そのvimshellにスイッチし、カレント
+		ディレクトリを{path}に変更する。{path}を省略した場合、vimshell
+		のカレントディレクトリは変更されない。
 
-:VimShellCreate {path}					*:VimShellCreate*
-			|:VimShell|と同じだが、他のvimshellが起動している
-			場合でも、新しいvimshellバッファを作成する。
+						*vimshell-options*
+		{options}とはvimshellバッファに与えるオプションである。
+		オプションは、次のパラメータを取る。値にスペースが含まれるとき
+		は、\でエスケープしなければならない。
 
-:VimShellTab {path}					*:VimShellTab*
-			|:VimShellCreate|と同じだが、新しいタブを生成する。
+						*vimshell-options-buffer-name*
+		-buffer-name={buffer-name}
+		vimshellのバッファ名を指定する。指定しないと、'default'が使われ
+		る。
+		Note: バッファ名にスペースを含めてはならない。
 
-:VimShellPop {path}					*:VimShellPop*
-			|:VimShell|と同じだが、こちらは小さいウインドウを
-			ポップアップする。ちょっとだけvimshellの機能を使
-			いたいときに便利である。ウインドウを分割する高さは
-			|g:vimshell_split_height|で決定される。
-			現在vimshellバッファに居るときは、vimshellバッファを閉
-			じる。
+						*vimshell-options-toggle*
+		-toggle
+		同一バッファ名のvimshellウインドウが表示されている場合は、閉じる。
 
-:VimShellExecute {command}				*:VimShellExecute*
-			vimshellを起動せずに、{command}で指定された実行
-			ファイルをバックグラウンドで起動する。vimshellを
-			GNU screenのように使える。
+						*vimshell-options-create*
+		-vimshell
+		既に開いているvimshellバッファは再利用せず、新しく生成する。
 
-:VimShellInteractive [{command}]			*:VimShellInteractive*
-			vimshellを起動せずに、{command}で指定された
-			インタプリタを起動する。EmacsのM-x 
-			{interpreter-name}のように使える。{command}
-			を省略すると、
-			|g:vimshell_interactive_interpreter_commands|の値が
-			使われる。
+:VimShellCreate [{options}...] {path}		*:VimShellCreate*
+		|:VimShell|と同じだが、他のvimshellが起動している場合でも、新し
+		いvimshellバッファを作成する。
 
-:VimShellTerminal {command}				*:VimShellTerminal*
-			vimshellを起動せずに、{command}で指定された端末プログラ
-			ムを起動する。Emacsのansi-termのように使用できる。ただ
-			しまだ未完成である。
+:VimShellTab [{options}...] {path}		*:VimShellTab*
+		|:VimShellCreate|と同じだが、新しいタブを生成する。
 
-:VimShellSendString {string}				*:VimShellSendString*
-			vimshell, iexe, texeの裏ウインドウのインタプリタに選
-			択文字列を送信する。まるで|quickrun|を使っているかの
-			ようにインタプリタを操作できる。
+:VimShellPop [{options}...] {path}		*:VimShellPop*
+		|:VimShell|と同じだが、こちらは小さいウインドウをポップアップす
+		る。ちょっとだけvimshellの機能を使いたいときに便利である。ウイ
+		ンドウを分割する高さは|g:vimshell_split_height|で決定される。現
+		在vimshellバッファに居るときは、vimshellバッファを閉じる。
 
-:VimShellSendBuffer {bufname}				*:VimShellSendBuffer*
-			裏ウインドウを{bufname}として設定する。{bufname}が
-			画面に表示されていない場合、自動的に開く。
+:VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
+		|:VimShell|と同じだが、カレントディレクトリに移動する。
+
+:VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
+		|:VimShell|と同じだが、バッファのディレクトリに移動する。
+
+:VimShellExecute {command}			*:VimShellExecute*
+		vimshellを起動せずに、{command}で指定された実行ファイルをバック
+		グラウンドで起動する。vimshellをGNU screenのように使える。
+
+:VimShellInteractive [{command}]		*:VimShellInteractive*
+		vimshellを起動せずに、{command}で指定されたインタプリタを起動す
+		る。EmacsのM-x {interpreter-name}のように使える。{command}を省
+		略すると、|g:vimshell_interactive_interpreter_commands|の値が使
+		われる。
+
+:VimShellTerminal {command}			*:VimShellTerminal*
+		vimshellを起動せずに、{command}で指定された端末プログラムを起動
+		する。Emacsのansi-termのように使用できる。ただしまだ未完成であ
+		る。
+
+:VimShellSendString {string}			*:VimShellSendString*
+		vimshell, iexe, texeの裏ウインドウのインタプリタに選択文字列を
+		送信する。まるで|quickrun|を使っているかのようにインタプリタを
+		操作できる。
+
+:VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
+		裏ウインドウを{bufname}として設定する。{bufname}が画面に表示さ
+		れていない場合、自動的に開く。
 
 ------------------------------------------------------------------------------
-VARIABLES 						*vimshell-variables*
+VARIABLES 					*vimshell-variables*
 
-g:vimshell_prompt					*g:vimshell_prompt*
+g:vimshell_prompt				*g:vimshell_prompt*
 			vimshellのプロンプト文字列を設定する。これは一度し
-			か評価されない。
-			
-			セキュリティの関係上、vimshellの関数を呼び出す前に値
-			を設定しなければ無効になる。
-			初期値は'vimshell% 'である。
+		か評価されない。
+		
+		セキュリティの関係上、vimshellの関数を呼び出す前に値
+		を設定しなければ無効になる。
+		初期値は'vimshell% 'である。
 
-g:vimshell_user_prompt					*g:vimshell_user_prompt*
-			この変数にVim Scriptの式を文字列として代入することで、
-			ユーザーが追加で表示されるプロンプトを定義できる。
-			|g:vimshell_prompt|と違い、固定文字列でなくても良い。
-			ユーザープロンプトを\nで区切ることで、 複数行のユー
-			ザープロンプトが表示できる。
-			
-			例えば、このように毎回カレントディレクトリを表示する
-			ようにすれば便利である。
+g:vimshell_user_prompt				*g:vimshell_user_prompt*
+		この変数にVim Scriptの式を文字列として代入することで、
+		ユーザーが追加で表示されるプロンプトを定義できる。
+		|g:vimshell_prompt|と違い、固定文字列でなくても良い。
+		ユーザープロンプトを\nで区切ることで、 複数行のユー
+		ザープロンプトが表示できる。
+		
+		例えば、このように毎回カレントディレクトリを表示する
+		ようにすれば便利である。
 >
-			let g:vimshell_user_prompt = 'getcwd()'
+		let g:vimshell_user_prompt = 'getcwd()'
 <
-			セキュリティの関係上、vimshellの関数を呼び出す前に値
-			を設定しなければ無効になる。
-			初期値は空である。
+		セキュリティの関係上、vimshellの関数を呼び出す前に値
+		を設定しなければ無効になる。
+		初期値は空である。
 
-g:vimshell_right_prompt					*g:vimshell_right_prompt*
-			zsh風の右プロンプトである。Vim Scriptの式を文字列として
-			代入する。|g:vimshell_user_prompt|に似ているが、ウイン
-			ドウの大きさを計算し、自動的に最適な位置にプロンプトを
-			表示する。
-			セキュリティの関係上、vimshellの関数を呼び出す前に値
-			を設定しなければ無効になる。
-			初期値は空である。
+g:vimshell_right_prompt				*g:vimshell_right_prompt*
+		zsh風の右プロンプトである。Vim Scriptの式を文字列として
+		代入する。|g:vimshell_user_prompt|に似ているが、ウイン
+		ドウの大きさを計算し、自動的に最適な位置にプロンプトを
+		表示する。
+		セキュリティの関係上、vimshellの関数を呼び出す前に値
+		を設定しなければ無効になる。
+		初期値は空である。
 
-g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
-			vimshellのデフォルトマッピングをすべて無効化する。
-			新しくマッピングしない限り、vimshellの機能が使えなく
-			なるので、初心者にはお勧めできない。内部動作を知
-			り尽くしている上級者向けのオプションである。
+g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
+		vimshellのデフォルトマッピングをすべて無効化する。
+		新しくマッピングしない限り、vimshellの機能が使えなく
+		なるので、初心者にはお勧めできない。内部動作を知
+		り尽くしている上級者向けのオプションである。
 
-g:vimshell_ignore_case					*g:vimshell_ignore_case*
-			vimshellが補完候補を検索する際に、大文字小文字を無視
-			するかを制御する。
-			
-			初期値は&ignorecaseである。
+g:vimshell_ignore_case				*g:vimshell_ignore_case*
+		vimshellが補完候補を検索する際に、大文字小文字を無視
+		するかを制御する。
+		
+		初期値は&ignorecaseである。
 
-g:vimshell_smart_case					*g:vimshell_smart_case*
-			このオプションが有効だと、vimshellが補完候補を検索する
-			際に、大文字が入力されていれば大文字小文字を無視しなく
-			なる。
-			
-			初期値は&smartcaseである。
+g:vimshell_smart_case				*g:vimshell_smart_case*
+		このオプションが有効だと、vimshellが補完候補を検索する
+		際に、大文字が入力されていれば大文字小文字を無視しなく
+		なる。
+		
+		初期値は&smartcaseである。
 
-g:vimshell_max_list					*g:vimshell_max_list*
-			vimshellの補完候補の最大数である。補完候補の数がこれを
-			越えると、勝手に候補を切り詰める。
-			
-			初期値は100である。
+g:vimshell_max_list				*g:vimshell_max_list*
+		vimshellの補完候補の最大数である。補完候補の数がこれを
+		越えると、勝手に候補を切り詰める。
+		
+		初期値は100である。
 
-g:vimshell_use_terminal_command				*g:vimshell_use_terminal_command*
-			|vimshell-internal-shell|を実行する際に、シェルを起動す
-			る端末プログラムを指定する。
-			Windows環境では、"ckw -e", Linux環境では
-			"gnome-terminal -e"などが値の候補となるだろう。
-			
-			初期値は""である。
+g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
+		|vimshell-internal-shell|を実行する際に、シェルを起動す
+		る端末プログラムを指定する。
+		Windows環境では、"ckw -e", Linux環境では
+		"gnome-terminal -e"などが値の候補となるだろう。
+		
+		初期値は""である。
 
-g:vimshell_split_height					*g:vimshell_split_height*
-			|:VimShellPop|の分割高さを指定する。指定する値は
-			|winheight(0)|に対するパーセントになる。
-			
-			初期値は30である。
+g:vimshell_split_height				*g:vimshell_split_height*
+		|:VimShellPop|の分割高さを指定する。指定する値は
+		|winheight(0)|に対するパーセントになる。
+		
+		初期値は30である。
 
-g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
-			vimshellが使用する一時ディレクトリを指定する。ヒストリ
-			ファイルもこのディレクトリ下に保存される。
-			
-			初期値はexpand('~/.vimshell')である。
+g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
+		vimshellが使用する一時ディレクトリを指定する。ヒストリ
+		ファイルもこのディレクトリ下に保存される。
+		
+		初期値はexpand('~/.vimshell')である。
 
-g:vimshell_max_command_history				*g:vimshell_max_command_history*
-			vimshellが保存するヒストリの最大数を指定する。
-			
-			初期値は1000である。
+g:vimshell_max_command_history			*g:vimshell_max_command_history*
+		vimshellが保存するヒストリの最大数を指定する。
+		
+		初期値は1000である。
 
-g:vimshell_max_directory_stack				*g:vimshell_max_directory_stack*
-			vimshellが保存するディレクトリスタックの最大数を指定する。
-			
-			初期値は100である。
+g:vimshell_max_directory_stack			*g:vimshell_max_directory_stack*
+		vimshellが保存するディレクトリスタックの最大数を指定する。
+		
+		初期値は100である。
 
-g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
-			vimshellが最初に読み込むシェルの設定ファイル.vimshrc
-			を指定する。これはbashでいう.bashrcに似ている。そ
-			のファイルの中でエイリアスを定義すると便利である。
-			
-			初期値はexpand('~/.vimshrc')です。
+g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
+		vimshellが最初に読み込むシェルの設定ファイル.vimshrc
+		を指定する。これはbashでいう.bashrcに似ている。そ
+		のファイルの中でエイリアスを定義すると便利である。
+		
+		初期値はexpand('~/.vimshrc')です。
 
-g:vimshell_escape_colors				*g:vimshell_escape_colors*
-			エスケープシーケンスの色づけにおいて、 対応する色の
-			リストである。0~8番目が普通の色、9~15番目が高輝度の色
-			に対応している。
-			
-			初期値はplugin/vimshell.vimを参照せよ。
+g:vimshell_escape_colors			*g:vimshell_escape_colors*
+		エスケープシーケンスの色づけにおいて、 対応する色の
+		リストである。0~8番目が普通の色、9~15番目が高輝度の色
+		に対応している。
+		
+		初期値はplugin/vimshell.vimを参照せよ。
 
-g:vimshell_disable_escape_highlight			*g:vimshell_disable_escape_highlight*
-			エスケープシーケンスの色づけをするかどうかを制御する。
-			これは重い処理なので、無効化すればvimshellが高速化する。
-			値を真にすると無効になる。
-			
-			初期値は0である。
+g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
+		エスケープシーケンスの色づけをするかどうかを制御する。
+		これは重い処理なので、無効化すればvimshellが高速化する。
+		値を真にすると無効になる。
+		
+		初期値は0である。
 
-g:vimshell_cat_command					*g:vimshell_cat_command*
-			vimshellが$PAGERにセットするコマンド名を指定する。
-			
-			初期値は"cat"である。
+g:vimshell_cat_command				*g:vimshell_cat_command*
+		vimshellが$PAGERにセットするコマンド名を指定する。
+		
+		初期値は"cat"である。
 
-g:vimshell_editor_command				*g:vimshell_editor_command*
-			vimshellが$EDITORにセットするコマンド名を指定する。
-			
-			初期値では外部GVimを起動する。
+g:vimshell_editor_command			*g:vimshell_editor_command*
+		vimshellが$EDITORにセットするコマンド名を指定する。
+		
+		初期値では外部GVimを起動する。
 
-g:vimshell_environment_term				*g:vimshell_environment_term*
-			vimshellが$TERMにセットする端末情報である。
-			
-			初期値は"xterm"である。
+g:vimshell_environment_term			*g:vimshell_environment_term*
+		vimshellが$TERMにセットする端末情報である。
+		
+		初期値は"xterm"である。
 
-g:vimshell_split_command				*g:vimshell_split_command*
-			vimshellが画面を分割するときに用いるExコマンドである。
-			これを"nicely"にすると、vimshellがウインドウの大きさを
-			見て最適な画面分割を行う。
-			空文字列にすると、分割しない。
-			"tabnew"にすると、新しいタブで開く。
-			"vsplit"で縦方向に分割する。
-			
-			初期値は"nicely"である。
+g:vimshell_split_command			*g:vimshell_split_command*
+		vimshellが画面を分割するときに用いるExコマンドである。
+		これを"nicely"にすると、vimshellがウインドウの大きさを
+		見て最適な画面分割を行う。
+		空文字列にすると、分割しない。
+		"tabnew"にすると、新しいタブで開く。
+		"vsplit"で縦方向に分割する。
+		
+		初期値は"nicely"である。
 
-g:vimshell_cd_command					*g:vimshell_cd_command*
-			vimshellがカレントディレクトリを変更するときに用いるEx
-			コマンドである。|`=|を解釈しなければならない。
-			
-			初期値は"lcd"である。
+g:vimshell_cd_command				*g:vimshell_cd_command*
+		vimshellがカレントディレクトリを変更するときに用いるEx
+		コマンドである。|`=|を解釈しなければならない。
+		
+		初期値は"lcd"である。
 
-g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
-			ヒストリを保存しないコマンド名をキーとしたディクショ
-			ナリ。存在しないと無視される。
-			
+g:vimshell_no_save_history_commands		*g:vimshell_no_save_history_commands*
+		ヒストリを保存しないコマンド名をキーとしたディクショ
+		ナリ。存在しないと無視される。
+		
 			初期値は{ 'history' : 1, 'h' : 1, 'histdel' : 1 }です。
 
-g:vimshell_scrollback_limit				*g:vimshell_scrollback_limit*
+g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 			コマンドの出力が表示される最大サイズを指定する。
 			出力がこのサイズを越えると、古いヒストリが切り詰められる。
 			
 			初期値は1000である。
 
-g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
+g:vimshell_interactive_no_save_history_commands	*g:vimshell_interactive_no_save_history_commands*
 			|vimshell-internal-iexe|において、ヒストリを保存しな
 			いコマンド名をキーとしたディクショナリ。存在しな
 			いと無視される。
 			
 			初期値は{}である。
 
-g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
+g:vimshell_interactive_update_time		*g:vimshell_interactive_update_time*
 			|vimshell-internal-iexe|がInsert mode中において、自
 			動更新を行うタイミングを制御する。
 			|vimshell-internal-iexe|はこのオプションに基づき、
@@ -330,7 +349,7 @@ g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
 			
 			初期値は500である。
 
-g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options*
+g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			|vimshell-internal-iexe|で起動するコマンドに与えるオ
 			プションを指定する。 Windows環境などで特殊なオプショ
@@ -340,7 +359,7 @@ g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
-g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter_commands*
+g:vimshell_interactive_interpreter_commands	*g:vimshell_interactive_interpreter_commands*
 			ファイルタイプをキーとするディクショナリ変数になっていて、
 			|:VimShellInteractive|の引数を省略した際のインタプリ
 			タ名を指定する。
@@ -348,7 +367,7 @@ g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
-g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
+g:vimshell_interactive_encodings		*g:vimshell_interactive_encodings*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			|vimshell-internal-iexe|で起動するコマンドのエンコー
 			ディングを指定する。
@@ -356,7 +375,7 @@ g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
-g:vimshell_interactive_echoback_commands		*g:vimshell_interactive_echoback_commands*
+g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_commands*
 			インタプリタ名をキーとするディクショナリ変数になってい
 			て、|vimshell-internal-iexe|実行時にエコーバックするか
 			どうかを指定する。1ならiexe側でエコーバック処理をしない。
@@ -365,14 +384,14 @@ g:vimshell_interactive_echoback_commands		*g:vimshell_interactive_echoback_comma
 			初期値は複雑なので、plugin/vimshell.vimを参照
 			せよ。
 
-g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
+g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
 			|vimshell-internal-texe|で使用するカーソル形状を指定
 			する。'guicursor'を一時的に変更するので、GVim環境
 			でのみ意味がある。
 			
 			初期値は'i:block-Cursor/lCursor'である。
 
-g:vimshell_terminal_commands				*g:vimshell_terminal_commands*
+g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
 			コマンド名をキーとするディクショナリ変数となっている。
 			値が真であるコマンドを実行する際には、自動的に
 			|vimshell-internal-texe|が使用される。
@@ -380,7 +399,7 @@ g:vimshell_terminal_commands				*g:vimshell_terminal_commands*
 			初期値は複雑なので、plugin/vimshell.vimを参照
 			せよ。
 
-g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
+g:vimshell_interactive_cygwin_commands		*g:vimshell_interactive_cygwin_commands*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			fakecygpty経由で起動するコマンドを指定する。sshな
 			ど、Cygwin上でないとうまく動作しないコマンドを
@@ -391,7 +410,7 @@ g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
-g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
+g:vimshell_interactive_cygwin_path		*g:vimshell_interactive_cygwin_path*
 			fakecygpty経由のプログラムを実行する際に参照するパス
 			を指定する。 |vimshell-internal-iexe|は第一引数に
 			fakecygptyを指定されたとき、 $PATHではなく、
@@ -400,153 +419,153 @@ g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
 			
 			初期値は'c:/cygwin/bin'である。
 
-g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
+g:vimshell_interactive_cygwin_home		*g:vimshell_interactive_cygwin_home*
 			fakecygpty経由のプログラムを実行する際に使用する
 			$HOMEを指定する。''を指定すると現在の$HOMEをそのま
 			ま利用する。
 			
 			初期値は''である。
 
-g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
+g:vimshell_interactive_monochrome_commands	*g:vimshell_interactive_monochrome_commands*
 			コマンド名をキーとするディクショナリ変数になっていて、
 			vimshellによる色分けを無効化するコマンドを指定する。
 			
 			初期値は複雑なので、autoload/vimshell/commands/iexe.vimを参照
 			せよ。
 
-g:unite_source_vimshell_external_history_path		*g:unite_source_vimshell_external_history_path*
+g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_history_path*
 			|vimshell/external_history| sourceが認識するヒストリフ
 			ァイルを指定する。
 			
 			初期値では、$SHELLに応じて設定される。
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 						*vimshell-key-mappings*
+KEY MAPPINGS 					*vimshell-key-mappings*
 
-<Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
+<Plug>(vimshell_split_switch)			*<Plug>(vimshell_split_switch)*
 			vimshellを画面分割して起動する。すでにvimshellバッファ
 			が存在する場合はそちらに切り換える。
 
-<Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
+<Plug>(vimshell_split_create)			*<Plug>(vimshell_split_create)*
 			vimshellを画面分割して起動する。すでにvimshellバッファ
 			が存在していても、新しくvimshellバッファを作成する。
 
-<Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
+<Plug>(vimshell_switch)				*<Plug>(vimshell_switch)*
 			vimshellを起動する。すでにvimshellバッファが存在する場
 			合はそちらに切り換える。
 
-<Plug>(vimshell_create)					*<Plug>(vimshell_create)*
+<Plug>(vimshell_create)				*<Plug>(vimshell_create)*
 			vimshellを起動する。すでにvimshellバッファが存在してい
 			ても、新しくvimshellバッファを作成する。
 
-VIMSHELL BUFFER KEY MAPPINGS 				*vimshell-buffer-key-mappings*
+VIMSHELL BUFFER KEY MAPPINGS 			*vimshell-buffer-key-mappings*
 
 Normal mode key mappings.
 
-<Plug>(vimshell_enter)					*<Plug>(vimshell_enter)*
+<Plug>(vimshell_enter)				*<Plug>(vimshell_enter)*
 			入力されたコマンドを実行する。
 
-<Plug>(vimshell_previous_prompt)			*<Plug>(vimshell_previous_prompt)*
+<Plug>(vimshell_previous_prompt)		*<Plug>(vimshell_previous_prompt)*
 			カーソルよりも前のプロンプトへ移動する。
 
-<Plug>(vimshell_next_prompt)				*<Plug>(vimshell_next_prompt)*
+<Plug>(vimshell_next_prompt)			*<Plug>(vimshell_next_prompt)*
 			カーソルよりも後のプロンプトへ移動する。
 
-<Plug>(vimshell_delete_previous_output)			*<Plug>(vimshell_delete_previous_output)*
+<Plug>(vimshell_delete_previous_output)		*<Plug>(vimshell_delete_previous_output)*
 			カーソル前方の出力を削除する。
 
-<Plug>(vimshell_paste_prompt)				*<Plug>(vimshell_paste_prompt)*
+<Plug>(vimshell_paste_prompt)			*<Plug>(vimshell_paste_prompt)*
 			カーソル行のコマンドをプロンプトにペーストする。
 
-<Plug>(vimshell_move_end_argument)			*<Plug>(vimshell_move_end_argument)*
+<Plug>(vimshell_move_end_argument)		*<Plug>(vimshell_move_end_argument)*
 			コマンドの最終引数へ移動する。
 
-<Plug>(vimshell_hide)					*<Plug>(vimshell_hide)*
+<Plug>(vimshell_hide)				*<Plug>(vimshell_hide)*
 			vimshellバッファを隠す。
 
-<Plug>(vimshell_exit)					*<Plug>(vimshell_exit)*
+<Plug>(vimshell_exit)				*<Plug>(vimshell_exit)*
 			vimshellバッファを終了する。
 
-<Plug>(vimshell_change_line)				*<Plug>(vimshell_change_line)*
+<Plug>(vimshell_change_line)			*<Plug>(vimshell_change_line)*
 			行全体を修正する。
 
-<Plug>(vimshell_delete_line)				*<Plug>(vimshell_delete_line)*
+<Plug>(vimshell_delete_line)			*<Plug>(vimshell_delete_line)*
 			行全体を削除する。
 
-<Plug>(vimshell_hangup)					*<Plug>(vimshell_hangup)*
+<Plug>(vimshell_hangup)				*<Plug>(vimshell_hangup)*
 			実行中のコマンドを強制的に終了する。
 
-<Plug>(vimshell_insert_head)				*<Plug>(vimshell_insert_head)*
-<Plug>(vimshell_insert_enter)				*<Plug>(vimshell_insert_enter)*
-<Plug>(vimshell_append_enter)				*<Plug>(vimshell_append_enter)*
-<Plug>(vimshell_append_end)				*<Plug>(vimshell_append_end)*
+<Plug>(vimshell_insert_head)			*<Plug>(vimshell_insert_head)*
+<Plug>(vimshell_insert_enter)			*<Plug>(vimshell_insert_enter)*
+<Plug>(vimshell_append_enter)			*<Plug>(vimshell_append_enter)*
+<Plug>(vimshell_append_end)			*<Plug>(vimshell_append_end)*
 			挿入モードへ移行する。
 
-<Plug>(vimshell_clear)					*<Plug>(vimshell_clear)*
+<Plug>(vimshell_clear)				*<Plug>(vimshell_clear)*
 			再描画する。
 
-<Plug>(vimshell_move_head)				*<Plug>(vimshell_move_head)*
+<Plug>(vimshell_move_head)			*<Plug>(vimshell_move_head)*
 			行頭へ移動する。
 
-<Plug>(vimshell_execute_by_background)			*<Plug>(vimshell_execute_by_background)*
+<Plug>(vimshell_execute_by_background)		*<Plug>(vimshell_execute_by_background)*
 			実行中のコマンドをiexeバッファで起動する。
 
 Visual mode key mappings.
-<Plug>(vimshell_select_previous_prompt)			*v_<Plug>(vimshell_select_previous_prompt)*
+<Plug>(vimshell_select_previous_prompt)		*v_<Plug>(vimshell_select_previous_prompt)*
 			カーソルよりも前のプロンプトを選択する。
 
-<Plug>(vimshell_select_next_prompt)			*v_<Plug>(vimshell_select_next_prompt)*
+<Plug>(vimshell_select_next_prompt)		*v_<Plug>(vimshell_select_next_prompt)*
 			カーソルよりも後のプロンプトを選択する。
 
 Insert mode key mappings.
 
-<Plug>(vimshell_command_complete)			*i_<Plug>(vimshell_command_complete)*
+<Plug>(vimshell_command_complete)		*i_<Plug>(vimshell_command_complete)*
 			補完を呼び出す。
 
-<Plug>(vimshell_push_current_line)			*i_<Plug>(vimshell_push_current_line)*
+<Plug>(vimshell_push_current_line)		*i_<Plug>(vimshell_push_current_line)*
 			実行中のコマンドを一時的にスタックにpushする。
 
-<Plug>(vimshell_insert_last_word)			*i_<Plug>(vimshell_insert_last_word)*
+<Plug>(vimshell_insert_last_word)		*i_<Plug>(vimshell_insert_last_word)*
 			コマンドの最終引数に文字を挿入する。
 
-<Plug>(vimshell_run_help)				*i_<Plug>(vimshell_run_help)*
+<Plug>(vimshell_run_help)			*i_<Plug>(vimshell_run_help)*
 			内部コマンドのヘルプを見る。
 
-<Plug>(vimshell_move_head)				*i_<Plug>(vimshell_move_head)*
+<Plug>(vimshell_move_head)			*i_<Plug>(vimshell_move_head)*
 			行の先頭へ移動する。
 
-<Plug>(vimshell_delete_backward_line)			*i_<Plug>(vimshell_delete_backward_line)*
+<Plug>(vimshell_delete_backward_line)		*i_<Plug>(vimshell_delete_backward_line)*
 			カーソルより後方の行を削除する。
 
-<Plug>(vimshell_delete_backward_word)			*i_<Plug>(vimshell_delete_backward_word)*
+<Plug>(vimshell_delete_backward_word)		*i_<Plug>(vimshell_delete_backward_word)*
 			コマンド行を一語削除する。
 
-<Plug>(vimshell_enter)					*i_<Plug>(vimshell_enter)*
+<Plug>(vimshell_enter)				*i_<Plug>(vimshell_enter)*
 			コマンドを実行する。
 
-<Plug>(vimshell_interrupt)				*i_<Plug>(vimshell_interrupt)*
+<Plug>(vimshell_interrupt)			*i_<Plug>(vimshell_interrupt)*
 			実行中のコマンドに割り込みを送信する。
 
-<Plug>(vimshell_move_previous_window)			*i_<Plug>(vimshell_move_previous_window)*
+<Plug>(vimshell_move_previous_window)		*i_<Plug>(vimshell_move_previous_window)*
 			前のウインドウへ戻る。
 
-<Plug>(vimshell_delete_backward_char)			*i_<Plug>(vimshell_delete_backward_char)*
-<Plug>(vimshell_another_delete_backward_char)		*i_<Plug>(vimshell_another_delete_backward_char)*
+<Plug>(vimshell_delete_backward_char)		*i_<Plug>(vimshell_delete_backward_char)*
+<Plug>(vimshell_another_delete_backward_char)	*i_<Plug>(vimshell_another_delete_backward_char)*
 			コマンド行を一文字削除する。
 
-<Plug>(vimshell_delete_forward_line)			*i_<Plug>(vimshell_delete_forward_line)*
+<Plug>(vimshell_delete_forward_line)		*i_<Plug>(vimshell_delete_forward_line)*
 			カーソルより前方の行を削除する。
 
-<Plug>(vimshell_clear)					*i_<Plug>(vimshell_clear)*
+<Plug>(vimshell_clear)				*i_<Plug>(vimshell_clear)*
 			vimshellバッファを再描画する。
 
-<Plug>(vimshell_execute_by_background)			*i_<Plug>(vimshell_execute_by_background)*
+<Plug>(vimshell_execute_by_background)		*i_<Plug>(vimshell_execute_by_background)*
 			実行中のコマンドをiexeバッファで実行する。
 
-<Plug>(vimshell_hide)					*i_<Plug>(vimshell_hide)*
+<Plug>(vimshell_hide)				*i_<Plug>(vimshell_hide)*
 			vimshellバッファを隠す。
 
-<Plug>(vimshell_exit)					*i_<Plug>(vimshell_exit)*
+<Plug>(vimshell_exit)				*i_<Plug>(vimshell_exit)*
 			vimshellバッファを終了する。
 
 Normal mode default key mappings.
@@ -596,65 +615,66 @@ Insert mode default key mappings.
 <C-k>			<Plug>(vimshell_delete_forward_line)
 <C-x>			<Plug>(vimshell_move_previous_window)
 
-VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 		*vimshell-interactive-buffer-key-mappings*
+VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 	*vimshell-interactive-buffer-key-mappings*
 
 Normal mode key mappings.
 
-<Plug>(vimshell_int_execute_line)			*<Plug>(vimshell_int_execute_line)*
+<Plug>(vimshell_int_execute_line)		*<Plug>(vimshell_int_execute_line)*
 			カーソル位置の入力をコマンドに送信する。
 
-<Plug>(vimshell_int_previous_prompt)			*<Plug>(vimshell_int_previous_prompt)*
+<Plug>(vimshell_int_previous_prompt)		*<Plug>(vimshell_int_previous_prompt)*
 			カーソルよりも前のプロンプトへ移動する。
 
-<Plug>(vimshell_int_next_prompt)			*<Plug>(vimshell_int_next_prompt)*
+<Plug>(vimshell_int_next_prompt)		*<Plug>(vimshell_int_next_prompt)*
 			カーソルよりも後のプロンプトへ移動する。
 
-<Plug>(vimshell_int_paste_prompt)			*<Plug>(vimshell_int_paste_prompt)*
+<Plug>(vimshell_int_paste_prompt)		*<Plug>(vimshell_int_paste_prompt)*
 			カーソル位置の入力を最終行にペーストする。
 
-<Plug>(vimshell_int_hangup)				*<Plug>(vimshell_int_hangup)*
+<Plug>(vimshell_int_hangup)			*<Plug>(vimshell_int_hangup)*
 			強制的にコマンドを終了する。
 
-<Plug>(vimshell_int_exit)				*<Plug>(vimshell_int_exit)*
+<Plug>(vimshell_int_exit)			*<Plug>(vimshell_int_exit)*
 			バッファと実行中のコマンドを削除する。
 
-<Plug>(vimshell_int_restart_command)			*<Plug>(vimshell_int_restart_command)*
+<Plug>(vimshell_int_restart_command)		*<Plug>(vimshell_int_restart_command)*
 			コマンドを再起動する。
 
-<Plug>(vimshell_int_change_line)			*<Plug>(vimshell_int_change_line)*
+<Plug>(vimshell_int_change_line)		*<Plug>(vimshell_int_change_line)*
 			行全体を変更する。
 
-<Plug>(vimshell_int_delete_line)			*<Plug>(vimshell_int_delete_line)*
+<Plug>(vimshell_int_delete_line)		*<Plug>(vimshell_int_delete_line)*
 			行全体を削除する。
 
-<Plug>(vimshell_int_insert_enter)			*<Plug>(vimshell_int_insert_enter)*
-<Plug>(vimshell_int_insert_head)			*<Plug>(vimshell_int_insert_head)*
-<Plug>(vimshell_int_append_enter)			*<Plug>(vimshell_int_append_enter)*
-<Plug>(vimshell_int_append_end)				*<Plug>(vimshell_int_append_end)*
+<Plug>(vimshell_int_insert_enter)		*<Plug>(vimshell_int_insert_enter)*
+<Plug>(vimshell_int_insert_head)		*<Plug>(vimshell_int_insert_head)*
+<Plug>(vimshell_int_append_enter)		*<Plug>(vimshell_int_append_enter)*
+<Plug>(vimshell_int_append_end)			*<Plug>(vimshell_int_append_end)*
 			Insert modeに移行する。
 
-<Plug>(vimshell_int_clear)				*<Plug>(vimshell_int_clear)*
+<Plug>(vimshell_int_clear)			*<Plug>(vimshell_int_clear)*
 			バッファを再描画する。
 
 Insert mode key mappings.
 
-<Plug>(vimshell_int_move_head)				*i_<Plug>(vimshell_int_move_head)*
+<Plug>(vimshell_int_move_head)			*i_<Plug>(vimshell_int_move_head)*
 			コマンド行の先頭に移動する。
 
-<Plug>(vimshell_int_delete_backward_line)		*i_<Plug>(vimshell_int_delete_backward_line)*
+<Plug>(vimshell_int_delete_backward_line)	*i_<Plug>(vimshell_int_delete_backward_line)*
 			カーソルより後方の行を削除する。
 
-<Plug>(vimshell_int_delete_backward_word)		*i_<Plug>(vimshell_int_delete_backward_word)*
+<Plug>(vimshell_int_delete_backward_word)	*i_<Plug>(vimshell_int_delete_backward_word)*
 			コマンド行を一語削除する。
 
-<Plug>(vimshell_int_execute_line)			*i_<Plug>(vimshell_int_execute_line)*
+<Plug>(vimshell_int_execute_line)		*i_<Plug>(vimshell_int_execute_line)*
 			コマンドにカーソル行を送信する。
 
-<Plug>(vimshell_int_delete_backward_char)		*i_<Plug>(vimshell_int_delete_backward_char)*
-<Plug>(vimshell_int_another_delete_backward_char)	*i_<Plug>(vimshell_int_another_delete_backward_char)*
+<Plug>(vimshell_int_delete_backward_char)	*i_<Plug>(vimshell_int_delete_backward_char)*
+<Plug>(vimshell_int_another_delete_backward_char)
+						*i_<Plug>(vimshell_int_another_delete_backward_char)*
 			コマンド行を一文字削除する。
 
-<Plug>(vimshell_int_send_input)				*i_<Plug>(vimshell_int_send_input)*
+<Plug>(vimshell_int_send_input)			*i_<Plug>(vimshell_int_send_input)*
 			コマンドに任意の入力を送信する。
 
 <Plug>(vimshell_int_interrupt)				*i_<Plug>(vimshell_int_interrupt)*

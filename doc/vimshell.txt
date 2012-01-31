@@ -48,7 +48,7 @@ Changelog		|vimshell-changelog|
 INTRODUCTION						*vimshell-introduction*
 
 ==============================================================================
-USAGE							*vimshell-usage*
+USAGE						*vimshell-usage*
 
 You can start vimshell in ":VimShell".  Because vimshell works similar with
 a common shell, you may operate it intuitively.  But vimshell perform the
@@ -58,7 +58,7 @@ you use '\' by Windows for a path and do not work.
 ToDo
 
 ==============================================================================
-INSTALL							*vimshell-install*
+INSTALL						*vimshell-install*
 
 vimshell needs |vimproc|
 http://github.com/Shougo/vimproc
@@ -89,274 +89,274 @@ Note: "proc.dll" compiled in Cygwin environment is only Cygwin Vim. Can't use
 in Windows Vim.
 
 ==============================================================================
-INTERFACE						*vimshell-interface*
+INTERFACE					*vimshell-interface*
 
 ------------------------------------------------------------------------------
-COMMANDS 						*vimshell-commands*
+COMMANDS 					*vimshell-commands*
 
-:VimShell                                       *:VimShell*
+:VimShell					*:VimShell*
 		Run vimshell.
 
-:VimShellCreate {path}					*:VimShellCreate*
-			Todo
+:VimShellCreate {path}				*:VimShellCreate*
+		Todo
 
-:VimShellTab {path}					*:VimShellTab*
-			Todo
+:VimShellTab {path}				*:VimShellTab*
+		Todo
 
-:VimShellPop {path}					*:VimShellPop*
-			Todo
+:VimShellPop {path}				*:VimShellPop*
+		Todo
 
-:VimShellExecute {command}				*:VimShellExecute*
-			Todo
+:VimShellExecute {command}			*:VimShellExecute*
+		Todo
 
-:VimShellInteractive [{command}]			*:VimShellInteractive*
-			Todo
+:VimShellInteractive [{command}]		*:VimShellInteractive*
+		Todo
 
-:VimShellTerminal {command}				*:VimShellTerminal*
-			Todo
+:VimShellTerminal {command}			*:VimShellTerminal*
+		Todo
 
-:VimShellSendString {string}				*:VimShellSendString*
-			Todo
+:VimShellSendString {string}			*:VimShellSendString*
+		Todo
 
-:VimShellSendBuffer {bufname}				*:VimShellSendBuffer*
-			Todo
+:VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
+		Todo
 
 ------------------------------------------------------------------------------
-VARIABLES 						*vimshell-variables*
+VARIABLES 					*vimshell-variables*
 
-g:vimshell_prompt					*g:vimshell_prompt*
-			Todo
+g:vimshell_prompt				*g:vimshell_prompt*
+		Todo
 
-g:vimshell_user_prompt					*g:vimshell_user_prompt*
-			Todo
+g:vimshell_user_prompt				*g:vimshell_user_prompt*
+		Todo
 >
-			let g:vimshell_user_prompt = 'getcwd()'
+		let g:vimshell_user_prompt = 'getcwd()'
 <
-			Todo
+		Todo
 
-g:vimshell_right_prompt					*g:vimshell_right_prompt*
-			Todo
+g:vimshell_right_prompt				*g:vimshell_right_prompt*
+		Todo
 >
-g:vimshell_no_default_keymappings			*g:vimshell_no_default_keymappings*
-			Todo
+g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
+		Todo
 
-g:vimshell_ignore_case					*g:vimshell_ignore_case*
-			Todo
+g:vimshell_ignore_case				*g:vimshell_ignore_case*
+		Todo
 
-g:vimshell_smart_case					*g:vimshell_smart_case*
-			Todo
+g:vimshell_smart_case				*g:vimshell_smart_case*
+		Todo
 
-g:vimshell_max_list					*g:vimshell_max_list*
-			Todo
+g:vimshell_max_list				*g:vimshell_max_list*
+		Todo
 
-g:vimshell_use_ckw					*g:vimshell_use_ckw*
-			Todo
+g:vimshell_use_ckw				*g:vimshell_use_ckw*
+		Todo
 
-g:vimshell_split_height					*g:vimshell_split_height*
-			Todo
+g:vimshell_split_height				*g:vimshell_split_height*
+		Todo
 
-g:vimshell_temporary_directory				*g:vimshell_temporary_directory*
-			Todo
+g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
+		Todo
 
-g:vimshell_max_command_history				*g:vimshell_max_command_history*
-			Todo
+g:vimshell_max_command_history			*g:vimshell_max_command_history*
+		Todo
 
-g:vimshell_max_directory_stack				*g:vimshell_max_directory_stack*
-			Todo
+g:vimshell_max_directory_stack			*g:vimshell_max_directory_stack*
+		Todo
 
-g:vimshell_vimshrc_path					*g:vimshell_vimshrc_path*
-			Todo
+g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
+		Todo
 
-g:vimshell_escape_colors				*g:vimshell_escape_colors*
-			Todo
+g:vimshell_escape_colors			*g:vimshell_escape_colors*
+		Todo
 
-g:vimshell_disable_escape_highlight			*g:vimshell_disable_escape_highlight*
-			Todo
+g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
+		Todo
 
-g:vimshell_cat_command					*g:vimshell_cat_command*
-			Todo
+g:vimshell_cat_command				*g:vimshell_cat_command*
+		Todo
 
-g:vimshell_editor_command				*g:vimshell_editor_command*
-			Todo
+g:vimshell_editor_command			*g:vimshell_editor_command*
+		Todo
 
-g:vimshell_environment_term				*g:vimshell_environment_term*
-			Todo
+g:vimshell_environment_term			*g:vimshell_environment_term*
+		Todo
 
-g:vimshell_split_command				*g:vimshell_split_command*
-			Todo
+g:vimshell_split_command			*g:vimshell_split_command*
+		Todo
 
-g:vimshell_cd_command					*g:vimshell_cd_command*
-			Todo
+g:vimshell_cd_command				*g:vimshell_cd_command*
+		Todo
 
-g:vimshell_no_save_history_commands			*g:vimshell_no_save_history_commands*
-			Todo
+g:vimshell_no_save_history_commands		*g:vimshell_no_save_history_commands*
+		Todo
 
-g:vimshell_scrollback_limit				*g:vimshell_scrollback_limit*
-			Todo
+g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
+		Todo
 
-g:vimshell_interactive_no_save_history_commands		*g:vimshell_interactive_no_save_history_commands*
-			Todo
+g:vimshell_interactive_no_save_history_commands	*g:vimshell_interactive_no_save_history_commands*
+		Todo
 
-g:vimshell_interactive_update_time			*g:vimshell_interactive_update_time*
-			Todo
+g:vimshell_interactive_update_time		*g:vimshell_interactive_update_time*
+		Todo
 
-g:vimshell_interactive_command_options			*g:vimshell_interactive_command_options*
-			Todo
+g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
+		Todo
 
-g:vimshell_interactive_interpreter_commands		*g:vimshell_interactive_interpreter_commands*
-			Todo
+g:vimshell_interactive_interpreter_commands	*g:vimshell_interactive_interpreter_commands*
+		Todo
 
-g:vimshell_interactive_encodings			*g:vimshell_interactive_encodings*
-			Todo
+g:vimshell_interactive_encodings		*g:vimshell_interactive_encodings*
+		Todo
 
-g:vimshell_interactive_echoback_commands		*g:vimshell_interactive_echoback_commands*
-			Todo
+g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_commands*
+		Todo
 
-g:vimshell_terminal_cursor				*g:vimshell_terminal_cursor*
-			Todo
+g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
+		Todo
 
-g:vimshell_terminal_commands				*g:vimshell_terminal_commands*
-			Todo
+g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
+		Todo
 
-g:vimshell_interactive_cygwin_commands			*g:vimshell_interactive_cygwin_commands*
-			Todo
+g:vimshell_interactive_cygwin_commands		*g:vimshell_interactive_cygwin_commands*
+		Todo
 
-g:vimshell_interactive_cygwin_path			*g:vimshell_interactive_cygwin_path*
-			Todo
+g:vimshell_interactive_cygwin_path		*g:vimshell_interactive_cygwin_path*
+		Todo
 
-g:vimshell_interactive_cygwin_home			*g:vimshell_interactive_cygwin_home*
-			Todo
+g:vimshell_interactive_cygwin_home		*g:vimshell_interactive_cygwin_home*
+		Todo
 
-g:vimshell_interactive_monochrome_commands		*g:vimshell_interactive_monochrome_commands*
-			Todo
+g:vimshell_interactive_monochrome_commands	*g:vimshell_interactive_monochrome_commands*
+		Todo
 
-g:unite_source_vimshell_external_history_path		*g:unite_source_vimshell_external_history_path*
-			Todo
+g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_history_path*
+		Todo
 
 ------------------------------------------------------------------------------
-KEY MAPPINGS 						*vimshell-key-mappings*
+KEY MAPPINGS 					*vimshell-key-mappings*
 
-<Plug>(vimshell_split_switch)				*<Plug>(vimshell_split_switch)*
-			Todo
+<Plug>(vimshell_split_switch)			*<Plug>(vimshell_split_switch)*
+		Todo
 
-<Plug>(vimshell_split_create)				*<Plug>(vimshell_split_create)*
-			Todo
+<Plug>(vimshell_split_create)			*<Plug>(vimshell_split_create)*
+		Todo
 
-<Plug>(vimshell_switch)					*<Plug>(vimshell_switch)*
-			Todo
+<Plug>(vimshell_switch)				*<Plug>(vimshell_switch)*
+		Todo
 
-<Plug>(vimshell_create)					*<Plug>(vimshell_create)*
-			Todo
+<Plug>(vimshell_create)				*<Plug>(vimshell_create)*
+		Todo
 
-VIMSHELL BUFFER KEY MAPPINGS 				*vimshell-buffer-key-mappings*
+VIMSHELL BUFFER KEY MAPPINGS 			*vimshell-buffer-key-mappings*
 
 Normal mode key mappings.
 
-<Plug>(vimshell_enter)					*<Plug>(vimshell_enter)*
-			Execute command line.
+<Plug>(vimshell_enter)				*<Plug>(vimshell_enter)*
+		Execute command line.
 
-<Plug>(vimshell_previous_prompt)			*<Plug>(vimshell_previous_prompt)*
-			Move to previous prompt from cursor.
+<Plug>(vimshell_previous_prompt)		*<Plug>(vimshell_previous_prompt)*
+		Move to previous prompt from cursor.
 
-<Plug>(vimshell_next_prompt)				*<Plug>(vimshell_next_prompt)*
-			Move to next prompt from cursor.
+<Plug>(vimshell_next_prompt)			*<Plug>(vimshell_next_prompt)*
+		Move to next prompt from cursor.
 
-<Plug>(vimshell_delete_previous_output)			*<Plug>(vimshell_delete_previous_output)*
-			Delete previous output form cursor.
+<Plug>(vimshell_delete_previous_output)		*<Plug>(vimshell_delete_previous_output)*
+		Delete previous output form cursor.
 
-<Plug>(vimshell_paste_prompt)				*<Plug>(vimshell_paste_prompt)*
-			Paste cursor line to last prompt.
+<Plug>(vimshell_paste_prompt)			*<Plug>(vimshell_paste_prompt)*
+		Paste cursor line to last prompt.
 
-<Plug>(vimshell_move_end_argument)			*<Plug>(vimshell_move_end_argument)*
-			Move to command end argument.
+<Plug>(vimshell_move_end_argument)		*<Plug>(vimshell_move_end_argument)*
+		Move to command end argument.
 
-<Plug>(vimshell_hide)					*<Plug>(vimshell_hide)*
-			Hide vimshell buffer.
+<Plug>(vimshell_hide)				*<Plug>(vimshell_hide)*
+		Hide vimshell buffer.
 
-<Plug>(vimshell_exit)					*<Plug>(vimshell_exit)*
-			Quit vimshell buffer.
+<Plug>(vimshell_exit)				*<Plug>(vimshell_exit)*
+		Quit vimshell buffer.
 
-<Plug>(vimshell_change_line)				*<Plug>(vimshell_change_line)*
-			Change whole line.
+<Plug>(vimshell_change_line)			*<Plug>(vimshell_change_line)*
+		Change whole line.
 
-<Plug>(vimshell_delete_line)				*<Plug>(vimshell_delete_line)*
-			Delete whole line.
+<Plug>(vimshell_delete_line)			*<Plug>(vimshell_delete_line)*
+		Delete whole line.
 
-<Plug>(vimshell_hangup)					*<Plug>(vimshell_hangup)*
-			Terminate command.
+<Plug>(vimshell_hangup)				*<Plug>(vimshell_hangup)*
+		Terminate command.
 
-<Plug>(vimshell_insert_head)				*<Plug>(vimshell_insert_head)*
-<Plug>(vimshell_insert_enter)				*<Plug>(vimshell_insert_enter)*
-<Plug>(vimshell_append_enter)				*<Plug>(vimshell_append_enter)*
-<Plug>(vimshell_append_end)				*<Plug>(vimshell_append_end)*
-			Enter insert mode.
+<Plug>(vimshell_insert_head)			*<Plug>(vimshell_insert_head)*
+<Plug>(vimshell_insert_enter)			*<Plug>(vimshell_insert_enter)*
+<Plug>(vimshell_append_enter)			*<Plug>(vimshell_append_enter)*
+<Plug>(vimshell_append_end)			*<Plug>(vimshell_append_end)*
+		Enter insert mode.
 
-<Plug>(vimshell_clear)					*<Plug>(vimshell_clear)*
-			Redraw vimshell buffer.
+<Plug>(vimshell_clear)				*<Plug>(vimshell_clear)*
+		Redraw vimshell buffer.
 
-<Plug>(vimshell_move_head)				*<Plug>(vimshell_move_head)*
-			Move to head.
+<Plug>(vimshell_move_head)			*<Plug>(vimshell_move_head)*
+		Move to head.
 
-<Plug>(vimshell_execute_by_background)			*<Plug>(vimshell_execute_by_background)*
-			Execute command by iexe.
+<Plug>(vimshell_execute_by_background)		*<Plug>(vimshell_execute_by_background)*
+		Execute command by iexe.
 
 Visual mode key mappings.
-<Plug>(vimshell_select_previous_prompt)			*v_<Plug>(vimshell_select_previous_prompt)*
-			Select previous prompt from cursor.
+<Plug>(vimshell_select_previous_prompt)		*v_<Plug>(vimshell_select_previous_prompt)*
+		Select previous prompt from cursor.
 
-<Plug>(vimshell_select_next_prompt)			*v_<Plug>(vimshell_select_next_prompt)*
-			Select next prompt from cursor.
+<Plug>(vimshell_select_next_prompt)		*v_<Plug>(vimshell_select_next_prompt)*
+		Select next prompt from cursor.
 
 Insert mode key mappings.
 
-<Plug>(vimshell_command_complete)			*i_<Plug>(vimshell_command_complete)*
-			Start completion.
+<Plug>(vimshell_command_complete)		*i_<Plug>(vimshell_command_complete)*
+		Start completion.
 
-<Plug>(vimshell_push_current_line)			*i_<Plug>(vimshell_push_current_line)*
-			Push current line command to command line stack.
+<Plug>(vimshell_push_current_line)		*i_<Plug>(vimshell_push_current_line)*
+		Push current line command to command line stack.
 
-<Plug>(vimshell_insert_last_word)			*i_<Plug>(vimshell_insert_last_word)*
-			Insert command last word.
+<Plug>(vimshell_insert_last_word)		*i_<Plug>(vimshell_insert_last_word)*
+		Insert command last word.
 
-<Plug>(vimshell_run_help)				*i_<Plug>(vimshell_run_help)*
-			View internal command help.
+<Plug>(vimshell_run_help)			*i_<Plug>(vimshell_run_help)*
+		View internal command help.
 
-<Plug>(vimshell_move_head)				*i_<Plug>(vimshell_move_head)*
-			Move to line head.
+<Plug>(vimshell_move_head)			*i_<Plug>(vimshell_move_head)*
+		Move to line head.
 
-<Plug>(vimshell_delete_backward_line)			*i_<Plug>(vimshell_delete_backward_line)*
-			Delete backward line from cursor.
+<Plug>(vimshell_delete_backward_line)		*i_<Plug>(vimshell_delete_backward_line)*
+		Delete backward line from cursor.
 
-<Plug>(vimshell_delete_backward_word)			*i_<Plug>(vimshell_delete_backward_word)*
-			Delete backward word from cursor.
+<Plug>(vimshell_delete_backward_word)		*i_<Plug>(vimshell_delete_backward_word)*
+		Delete backward word from cursor.
 
-<Plug>(vimshell_enter)					*i_<Plug>(vimshell_enter)*
-			Execute command.
+<Plug>(vimshell_enter)				*i_<Plug>(vimshell_enter)*
+		Execute command.
 
-<Plug>(vimshell_interrupt)				*i_<Plug>(vimshell_interrupt)*
-			Send interrupt.
+<Plug>(vimshell_interrupt)			*i_<Plug>(vimshell_interrupt)*
+		Send interrupt.
 
-<Plug>(vimshell_move_previous_window)			*i_<Plug>(vimshell_move_previous_window)*
-			Move to previous window.
+<Plug>(vimshell_move_previous_window)		*i_<Plug>(vimshell_move_previous_window)*
+		Move to previous window.
 
-<Plug>(vimshell_delete_backward_char)			*i_<Plug>(vimshell_delete_backward_char)*
-<Plug>(vimshell_another_delete_backward_char)		*i_<Plug>(vimshell_another_delete_backward_char)*
-			Delete backward char from cursor.
+<Plug>(vimshell_delete_backward_char)		*i_<Plug>(vimshell_delete_backward_char)*
+<Plug>(vimshell_another_delete_backward_char)	*i_<Plug>(vimshell_another_delete_backward_char)*
+		Delete backward char from cursor.
 
-<Plug>(vimshell_delete_forward_line)			*i_<Plug>(vimshell_delete_forward_line)*
-			Delete forward line from cursor.
+<Plug>(vimshell_delete_forward_line)		*i_<Plug>(vimshell_delete_forward_line)*
+		Delete forward line from cursor.
 
-<Plug>(vimshell_clear)					*i_<Plug>(vimshell_clear)*
-			Redraw vimshell buffer.
+<Plug>(vimshell_clear)				*i_<Plug>(vimshell_clear)*
+		Redraw vimshell buffer.
 
-<Plug>(vimshell_execute_by_background)			*i_<Plug>(vimshell_execute_by_background)*
-			Execute command by iexe.
+<Plug>(vimshell_execute_by_background)		*i_<Plug>(vimshell_execute_by_background)*
+		Execute command by iexe.
 
-<Plug>(vimshell_hide)					*i_<Plug>(vimshell_hide)*
-			Hide vimshell buffer.
+<Plug>(vimshell_hide)				*i_<Plug>(vimshell_hide)*
+		Hide vimshell buffer.
 
-<Plug>(vimshell_exit)					*i_<Plug>(vimshell_exit)*
-			Quit vimshell buffer.
+<Plug>(vimshell_exit)				*i_<Plug>(vimshell_exit)*
+		Quit vimshell buffer.
 
 Normal mode default key mappings.
 {lhs}			{rhs}
@@ -405,75 +405,75 @@ Insert mode default key mappings.
 <C-k>			<Plug>(vimshell_delete_forward_line)
 <C-x>			<Plug>(vimshell_move_previous_window)
 
-VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 		*vimshell-interactive-buffer-key-mappings*
+VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 	*vimshell-interactive-buffer-key-mappings*
 
 Normal mode key mappings.
 
-<Plug>(vimshell_int_execute_line)			*<Plug>(vimshell_int_execute_line)*
-			Execute cursor line.
+<Plug>(vimshell_int_execute_line)		*<Plug>(vimshell_int_execute_line)*
+		Execute cursor line.
 
-<Plug>(vimshell_int_previous_prompt)			*<Plug>(vimshell_int_previous_prompt)*
-			Move to previous prompt from cursor.
+<Plug>(vimshell_int_previous_prompt)		*<Plug>(vimshell_int_previous_prompt)*
+		Move to previous prompt from cursor.
 
 <Plug>(vimshell_int_next_prompt)			*<Plug>(vimshell_int_next_prompt)*
-			Move to next prompt from cursor.
+		Move to next prompt from cursor.
 
 <Plug>(vimshell_int_paste_prompt)			*<Plug>(vimshell_int_paste_prompt)*
-			Paste cursor line to last prompt.
+		Paste cursor line to last prompt.
 
 <Plug>(vimshell_int_hangup)				*<Plug>(vimshell_int_hangup)*
-			Exit executing command.
+		Exit executing command.
 
 <Plug>(vimshell_int_exit)				*<Plug>(vimshell_int_exit)*
-			Exit interactive buffer.
+		Exit interactive buffer.
 
 <Plug>(vimshell_int_restart_command)			*<Plug>(vimshell_int_restart_command)*
-			Restart command.
+		Restart command.
 
 <Plug>(vimshell_int_change_line)			*<Plug>(vimshell_int_change_line)*
-			Change whole line.
+		Change whole line.
 
 <Plug>(vimshell_int_delete_line)			*<Plug>(vimshell_int_delete_line)*
-			Delete whole line.
+		Delete whole line.
 
 <Plug>(vimshell_int_insert_enter)			*<Plug>(vimshell_int_insert_enter)*
 <Plug>(vimshell_int_insert_head)			*<Plug>(vimshell_int_insert_head)*
 <Plug>(vimshell_int_append_enter)			*<Plug>(vimshell_int_append_enter)*
 <Plug>(vimshell_int_append_end)				*<Plug>(vimshell_int_append_end)*
-			Enter insert mode.
+		Enter insert mode.
 
 <Plug>(vimshell_int_clear)				*<Plug>(vimshell_int_clear)*
-			Redraw interactive buffer.
+		Redraw interactive buffer.
 
 Insert mode key mappings.
 
 <Plug>(vimshell_int_move_head)				*i_<Plug>(vimshell_int_move_head)*
-			Move to line head.
+		Move to line head.
 
 <Plug>(vimshell_int_delete_backward_line)		*i_<Plug>(vimshell_int_delete_backward_line)*
-			Delete backward line from cursor.
+		Delete backward line from cursor.
 
 <Plug>(vimshell_int_delete_backward_word)		*i_<Plug>(vimshell_int_delete_backward_word)*
-			Delete backward word from cursor.
+		Delete backward word from cursor.
 
 <Plug>(vimshell_int_execute_line)			*i_<Plug>(vimshell_int_execute_line)*
-			Execute current line.
+		Execute current line.
 
 <Plug>(vimshell_int_delete_backward_char)		*i_<Plug>(vimshell_int_delete_backward_char)*
 <Plug>(vimshell_int_another_delete_backward_char)	*i_<Plug>(vimshell_int_another_delete_backward_char)*
-			Delete backward character from cursor.
+		Delete backward character from cursor.
 
 <Plug>(vimshell_int_send_input)				*i_<Plug>(vimshell_int_send_input)*
-			Send user input.
+		Send user input.
 
 <Plug>(vimshell_int_interrupt)				*i_<Plug>(vimshell_int_interrupt)*
-			Send interrupt to command.
+		Send interrupt to command.
 
 <Plug>(vimshell_int_command_complete)			*i_<Plug>(vimshell_int_command_complete)*
-			Start completion.
+		Start completion.
 
 <Plug>(vimshell_int_delete_forward_line)		*i_<Plug>(vimshell_int_delete_forward_line)*
-			Delete forward line from cursor.
+		Delete forward line from cursor.
 
 Normal mode default key mappings.
 {lhs}			{rhs}
@@ -513,16 +513,16 @@ Insert mode default key mappings.
 FUNCTIONS 						*vimshell-functions*
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
-			Todo
+		Todo
 
 vimshell#hook#get({hook-point})				*vimshell#hook#get()*
-			Todo
+		Todo
 
 vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
-			Todo
+		Todo
 
 vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
-			Todo
+		Todo
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -613,7 +613,7 @@ eval {expression}					*vimshell-internal-eval*
 exe [{option}...] {command} 				*vimshell-internal-exe*
 		Todo
 		
-							*vimshell-execute-options*
+						*vimshell-execute-options*
 		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
 		Todo
 
@@ -846,7 +846,7 @@ UNITE SOURCES						*vimshell-unite-sources*
 
 Todo
 
-							*vimshell-unite-source-vimshell-history*
+						*vimshell-unite-source-vimshell-history*
 vimshell/history
 		Todo
 		
@@ -854,7 +854,7 @@ vimshell/history
 >
 		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
 <
-							*vimshell-unite-source-vimshell-external_history*
+						*vimshell-unite-source-vimshell-external_history*
 vimshell/external_history
 		Todo
 
@@ -862,7 +862,7 @@ kind actions:
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
 	execute		Execute history.
-			If you selected several histories, "; " will be inserted.
+		If you selected several histories, "; " will be inserted.
 	edit		Edit history.
 	delete		Delete history.
 
@@ -877,6 +877,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-01-31
 - Implemented context.
+- Fixed documentation.
 
 2012-01-27
 - Added g:vimshell_editor_command option.

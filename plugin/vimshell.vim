@@ -159,6 +159,11 @@ command! -nargs=? -complete=dir VimShellPop
       \ call s:call_vimshell({'toggle' : 1, 'split' : 1}, <q-args>)
 command! -nargs=? -complete=dir VimShellTab
       \ tabnew | call s:call_vimshell({}, <q-args>)
+command! -nargs=? -complete=dir VimShellCurrentDir
+      \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
+command! -nargs=? -complete=dir VimShellBufferDir
+      \ call s:call_vimshell({}, <q-args> . ' ' .
+      \ vimshell#util#substitute_path_separator(fnamemodify(bufname('%'), ':p:h')))
 
 command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute
       \ call s:vimshell_execute(<q-args>)
