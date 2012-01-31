@@ -37,52 +37,53 @@ function! s:command.execute(args, context)"{{{
     execute 'buffer' bufnr
 
     return
-  else
-    " Filename escape.
-    let filename = join(a:args, ' ')
-
-    if filereadable(filename)
-      let context = { 
-            \'has_head_spaces' : 0, 'is_interactive' : 0, 
-            \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-            \}
-      let i = 0
-      let lines = readfile(filename)
-      let max = len(lines)
-
-      while i < max
-        let script = lines[i]
-
-        " Parse check.
-        while i+1 < max
-          try
-            call vimshell#parser#check_script(script)
-            break
-          catch /^Exception: Quote/
-            " Join to next line.
-            let script .= "\<NL>" . lines[i+1]
-            let i += 1
-          endtry
-        endwhile
-
-        try
-          call vimshell#parser#eval_script(script, context)
-        catch
-          let message = (v:exception !~# '^Vim:')?
-                \ v:exception : v:exception . ' ' . v:throwpoint
-          call vimshell#error_line({},
-                \ printf('%s(%d): %s', join(a:args), i, message))
-          return
-        endtry
-
-        let i += 1
-      endwhile
-    else
-      " Error.
-      call vimshell#error_line(a:context.fd,
-            \ printf('vimsh: Not found the script "%s".', filename))
-    endif
   endif
+
+  " Filename escape.
+  let filename = join(a:args, ' ')
+
+  if !filereadable(filename)
+    " Error.
+    call vimshell#error_line(a:context.fd,
+          \ printf('vimsh: Not found the script "%s".', filename))
+    return
+  endif
+
+  let context = {
+        \  'has_head_spaces' : 0, 'is_interactive' : 0,
+        \  'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
+        \ }
+  let i = 0
+  let lines = readfile(filename)
+  let max = len(lines)
+
+  while i < max
+    let script = lines[i]
+
+    " Parse check.
+    while i+1 < max
+      try
+        call vimshell#parser#check_script(script)
+        break
+      catch /^Exception: Quote/
+        " Join to next line.
+        let script .= "\<NL>" . lines[i+1]
+        let i += 1
+      endtry
+    endwhile
+
+    try
+      call vimshell#parser#eval_script(script, context)
+    catch
+      let message = (v:exception !~# '^Vim:')?
+            \ v:exception : v:exception . ' ' . v:throwpoint
+      call vimshell#error_line({},
+            \ printf('%s(%d): %s', join(a:args), i, message))
+      return
+    endtry
+
+    let i += 1
+  endwhile
 endfunction"}}}
 
 function! vimshell#commands#vimsh#define()

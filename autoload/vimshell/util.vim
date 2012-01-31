@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -143,6 +143,46 @@ endfunction"}}}
 
 function! vimshell#util#expand(path)"{{{
   return expand(escape(a:path, '*?[]"={}'))
+endfunction"}}}
+
+function! vimshell#util#substitute_path_separator(...)
+  return call(s:V.substitute_path_separator, a:000)
+endfunction
+function! vimshell#util#is_win(...)
+  return call(s:V.is_windows, a:000)
+endfunction
+function! vimshell#util#escape_file_searching(...)
+  return call(s:V.escape_file_searching, a:000)
+endfunction
+
+function! vimshell#util#alternate_buffer()"{{{
+  if getbufvar('#', "&filetype") !=# "vimshell"
+        \ && s:buflisted('#')
+    buffer #
+    return
+  endif
+
+  let listed_buffer = filter(range(1, bufnr('$')),
+        \ 's:buflisted(v:val) &&
+        \  (v:val == bufnr("%") || getbufvar(v:val, "&filetype") !=# "vimshell")')
+  let current = index(listed_buffer, bufnr('%'))
+  if current < 0 || len(listed_buffer) < 3
+    enew
+    return
+  endif
+
+  execute 'buffer' ((current < len(listed_buffer) / 2) ?
+        \ listed_buffer[current+1] : listed_buffer[current-1])
+endfunction"}}}
+function! vimshell#util#delete_buffer(...)"{{{
+  let bufnr = get(a:000, 0, bufnr('%'))
+  call vimshell#util#alternate_buffer()
+  execute 'bdelete!' bufnr
+endfunction"}}}
+function! s:buflisted(bufnr)"{{{
+  return exists('t:unite_buffer_dictionary') ?
+        \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
+        \ buflisted(a:bufnr)
 endfunction"}}}
 
 " vim: foldmethod=marker

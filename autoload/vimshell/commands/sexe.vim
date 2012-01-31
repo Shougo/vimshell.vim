@@ -40,7 +40,7 @@ function! s:command.execute(args, context)"{{{
   " Execute shell command.
   let cmdline = ''
   for arg in args
-    if iswin
+    if util#is_win
       let arg = substitute(arg, '"', '\\"', 'g')
       let arg = substitute(arg, '[<>|^]', '^\0', 'g')
       let cmdline .= '"' . arg . '" '
@@ -49,7 +49,7 @@ function! s:command.execute(args, context)"{{{
     endif
   endfor
 
-  if vimshell#iswin()
+  if vimshell#util#is_win()
     let cmdline = '"' . cmdline . '"'
   endif
 

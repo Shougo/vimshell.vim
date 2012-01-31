@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: ls.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,7 +42,7 @@ function! s:command.execute(args, context)"{{{
     call insert(arguments, '-FC')
   endif
 
-  if vimshell#iswin()
+  if vimshell#util#is_win()
     call insert(arguments, 'ls.exe')
   else
     call insert(arguments, 'ls')

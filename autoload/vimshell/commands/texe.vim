@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,7 +48,7 @@ function! s:command.execute(commands, context)"{{{
     return
   endif
 
-  if vimshell#iswin()
+  if vimshell#util#is_win()
     " Use Cygwin pty.
     call insert(args, 'fakecygpty')
 
@@ -68,7 +68,7 @@ function! s:command.execute(commands, context)"{{{
 
   let cmdname = fnamemodify(args[0], ':r')
   if !has_key(options, '--encoding')
-    if vimshell#iswin()
+    if vimshell#util#is_win()
       " Use UTF-8 Cygwin.
       let options['--encoding'] = 'utf8'
     else
@@ -90,7 +90,7 @@ function! s:command.execute(commands, context)"{{{
     call vimshell#interactive#force_exit()
   endif
 
-  if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#util#is_win() && g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
     let home_save = vimshell#set_variables({
           \ '$HOME' : g:vimshell_interactive_cygwin_home, 
@@ -121,7 +121,7 @@ function! s:command.execute(commands, context)"{{{
   " Restore environment variables.
   call vimshell#restore_variables(environments_save)
 
-  if vimshell#iswin() && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#util#is_win() && g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
     call vimshell#restore_variables(home_save)
   endif
@@ -143,7 +143,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'command' : fnamemodify(vimshell#iswin() ? args[1] : args[0], ':t:r'),
+        \ 'command' : fnamemodify(vimshell#util#is_win() ? args[1] : args[0], ':t:r'),
         \ 'hook_functions_table' : {},
         \}
   call vimshell#interactive#init()
@@ -162,7 +162,7 @@ function! s:command.execute(commands, context)"{{{
   endif
 endfunction"}}}
 function! s:command.complete(args)"{{{
-  return vimshell#iswin() ?
+  return vimshell#util#is_win() ?
         \ vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
         \ vimshell#complete#helper#executables(a:args[-1])
 endfunction"}}}
@@ -217,7 +217,7 @@ function! s:init_bg(args, context)"{{{
 
   call s:default_settings()
 
-  let use_cygpty = vimshell#iswin() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  let use_cygpty = vimshell#util#is_win() && a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   execute 'set filetype=term-'.fnamemodify(use_cygpty ? a:args[1] : a:args[0], ':t:r')
 
   " Set autocommands.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -61,7 +61,7 @@ function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
   let ret = []
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str),
         \ 'isdirectory(v:val.orig) ||
-        \  (vimshell#iswin() && fnamemodify(v:val.orig, ":e") ==? "LNK"
+        \  (vimshell#util#is_win() && fnamemodify(v:val.orig, ":e") ==? "LNK"
         \    && isdirectory(resolve(v:val.orig)))')
     let dict = keyword
     let dict.menu = 'directory'
@@ -75,7 +75,7 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
   " Check dup.
   let check = {}
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath),
-        \ 'isdirectory(v:val.orig) || (vimshell#iswin()
+        \ 'isdirectory(v:val.orig) || (vimshell#util#is_win()
         \     && fnamemodify(v:val.orig, ":e") ==? "LNK"
         \     && isdirectory(resolve(v:val.orig)))')
     if !has_key(check, keyword.word) && keyword.word =~ '/'
@@ -142,11 +142,11 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
   if a:cur_keyword_str =~ '[/\\]'
     let files = vimshell#complete#helper#files(a:cur_keyword_str)
   else
-    let path = a:0 > 1 ? a:1 : vimshell#iswin() ? substitute($PATH, '\\\?;', ',', 'g') : substitute($PATH, '/\?:', ',', 'g')
+    let path = a:0 > 1 ? a:1 : vimshell#util#is_win() ? substitute($PATH, '\\\?;', ',', 'g') : substitute($PATH, '/\?:', ',', 'g')
     let files = vimshell#complete#helper#files(a:cur_keyword_str, path)
   endif
 
-  if vimshell#iswin()
+  if vimshell#util#is_win()
     let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
           \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(exts) :

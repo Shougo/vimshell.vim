@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: source.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,7 +34,7 @@ function! s:command.execute(args, context)"{{{
     return
   endif
 
-  let output = vimshell#iswin() ?
+  let output = vimshell#util#is_win() ?
         \ system(printf('cmd /c "%s& set"', join(map(a:args, '"\"".v:val."\""'), '& '))) :
         \ vimproc#system(printf('%s -c ''%s; env''', &shell, join(map(a:args, '"source ".v:val.""'), '; ')))
   let output = vimproc#util#iconv(output, vimproc#util#termencoding(), &encoding)

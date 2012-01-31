@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2012.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,6 +57,12 @@ let s:update_time_save = &updatetime
 set vb t_vb=
 
 let s:last_vimshell_bufnr = -1
+
+let s:vimshell_options = [
+      \ '-buffer-name=', '-toggle', '-create',
+      \ '-split', '-direction=',
+      \ '-winwidth=', '-winminwidth=',
+      \]
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
@@ -116,7 +122,7 @@ function! vimshell#set_dictionary_helper(variable, keys, value)"{{{
 endfunction"}}}
 
 " vimshell plugin utility functions."{{{
-function! vimshell#create_shell(split_flag, directory)"{{{
+function! vimshell#create_shell(path, ...)"{{{
   if vimshell#is_cmdwin()
     echoerr 'Command line buffer is detected!'
     echoerr 'Please close command line buffer.'
@@ -131,8 +137,17 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endif
   "}}}
 
+  let path = a:path
+  if path == ''
+    let path = getcwd()
+  endif
+  let path = vimshell#util#substitute_path_separator(
+        \ fnamemodify(vimshell#util#expand(path), ':p'))
+
+  let context = vimshell#init_context(get(a:000, 0, {}))
+
   " Create new buffer.
-  let prefix = vimshell#iswin() ? '[vimshell]' : '*vimshell*'
+  let prefix = vimshell#util#is_win() ? '[vimshell]' : '*vimshell*'
   let postfix = ' - 1'
   let cnt = 1
   while buflisted(prefix.postfix)
@@ -141,9 +156,9 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   endwhile
   let bufname = prefix.postfix
 
-  let winheight = a:split_flag ?
+  let winheight = context.split ?
         \ winheight(0)*g:vimshell_split_height/100 : 0
-  if a:split_flag
+  if context.split
     split
     execute 'resize' winheight
   endif
@@ -161,9 +176,8 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   let b:vimshell = {}
 
   " Change current directory.
-  let current = (a:directory != '')? fnamemodify(a:directory, ':p') : getcwd()
-  let b:vimshell.current_dir = current
-  call vimshell#cd(current)
+  let b:vimshell.current_dir = path
+  call vimshell#cd(path)
 
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
@@ -179,12 +193,6 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Default settings.
   call s:default_settings()
 
-  let context = {
-        \ 'has_head_spaces' : 0,
-        \ 'is_interactive' : 1,
-        \ 'is_insert' : 1,
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
-        \}
   call vimshell#set_context(context)
 
   " Set interactive variables.
@@ -240,37 +248,47 @@ function! vimshell#create_shell(split_flag, directory)"{{{
   " Set undo point.
   call feedkeys("\<C-g>u", 'n')
 endfunction"}}}
-function! vimshell#switch_shell(split_flag, directory)"{{{
+function! vimshell#switch_shell(path, ...)"{{{
   if vimshell#is_cmdwin()
     echoerr 'Command line buffer is detected!'
     echoerr 'Please close command line buffer.'
     return
   endif
 
-  let context = {
-        \ 'has_head_spaces' : 0,
-        \ 'is_interactive' : 1,
-        \ 'is_insert' : 1,
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
-        \}
+  let path = a:path
+  if path == ''
+    let path = getcwd()
+  endif
+  let path = vimshell#util#substitute_path_separator(
+        \ fnamemodify(vimshell#util#expand(path), ':p'))
+
+  let context = vimshell#init_context(get(a:000, 0, {}))
 
   " Search vimshell buffer.
   if &filetype ==# 'vimshell'
-    call s:switch_vimshell(bufnr('%'), a:split_flag, a:directory)
+    call s:switch_vimshell(bufnr('%'), context, path)
     return
+  endif
+
+  if context.toggle && !context.create
+    if vimshell#close(context.buffer_name)
+      return
+    endif
   endif
 
   if buflisted(s:last_vimshell_bufnr)
         \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
-        \ && (!exists('t:unite_buffer_dictionary') || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
-    call s:switch_vimshell(s:last_vimshell_bufnr, a:split_flag, a:directory)
+        \ && (!exists('t:unite_buffer_dictionary')
+        \    || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
+    call s:switch_vimshell(s:last_vimshell_bufnr, context, path)
     return
   else
     let cnt = 1
     while cnt <= bufnr('$')
       if getbufvar(cnt, '&filetype') ==# 'vimshell'
-        \ && (!exists('t:unite_buffer_dictionary') || has_key(t:unite_buffer_dictionary, cnt))
-        call s:switch_vimshell(cnt, a:split_flag, a:directory)
+        \ && (!exists('t:unite_buffer_dictionary')
+        \    || has_key(t:unite_buffer_dictionary, cnt))
+        call s:switch_vimshell(cnt, context, path)
         return
       endif
 
@@ -279,9 +297,86 @@ function! vimshell#switch_shell(split_flag, directory)"{{{
   endif
 
   " Create window.
-  call vimshell#create_shell(a:split_flag, a:directory)
+  call vimshell#create_shell(path, context)
 endfunction"}}}
 
+function! vimshell#init_context(context)"{{{
+  if !has_key(a:context, 'buffer_name')
+    let a:context.buffer_name = 'default'
+  endif
+  if !has_key(a:context, 'profile_name')
+    let a:context.profile_name = a:context.buffer_name
+  endif
+  if !has_key(a:context, 'no_quit')
+    let a:context.no_quit = 0
+  endif
+  if !has_key(a:context, 'toggle')
+    let a:context.toggle = 0
+  endif
+  if !has_key(a:context, 'create')
+    let a:context.create = 0
+  endif
+  if !has_key(a:context, 'simple')
+    let a:context.simple = 0
+  endif
+  if !has_key(a:context, 'double')
+    let a:context.double = 0
+  endif
+  if !has_key(a:context, 'split')
+    let a:context.split = 0
+  endif
+  if !has_key(a:context, 'winwidth')
+    let a:context.winwidth = 0
+  endif
+  if !has_key(a:context, 'winminwidth')
+    let a:context.winminwidth = 0
+  endif
+  if !has_key(a:context, 'direction')
+    let a:context.direction = ''
+  endif
+  if &l:modified && !&l:hidden
+    " Split automatically.
+    let a:context.split = 1
+  endif
+
+  " Initialize.
+  let a:context.has_head_spaces = 0
+  let a:context.is_interactive = 1
+  let a:context.is_insert = 1
+  let a:context.fd = { 'stdin' : '', 'stdout': '', 'stderr': ''}
+
+  return a:context
+endfunction"}}}
+function! vimshell#get_options()"{{{
+  return copy(s:vimshell_options)
+endfunction"}}}
+function! vimshell#close(buffer_name)"{{{
+  let buffer_name = a:buffer_name
+  if buffer_name !~ '@\d\+$'
+    " Add postfix.
+    let prefix = vimshell#util#is_win() ? '[vimshell] - ' : '*vimshell* - '
+    let prefix .= buffer_name
+    let buffer_name = prefix . s:get_postfix(prefix, 0)
+  endif
+
+  " Note: must escape file-pattern.
+  let buffer_name =
+        \ vimshell#util#escape_file_searching(buffer_name)
+
+  let quit_winnr = bufwinnr(buffer_name)
+  if quit_winnr > 0
+    " Hide unite buffer.
+    silent execute quit_winnr 'wincmd w'
+
+    if winnr('$') != 1
+      close
+    else
+      call vimshell#util#alternate_buffer()
+    endif
+  endif
+
+  return quit_winnr > 0
+endfunction"}}}
 function! vimshell#available_commands()"{{{
   return s:internal_commands
 endfunction"}}}
@@ -318,7 +413,7 @@ function! vimshell#read(fd)"{{{
     return @+
   else
     " Read from file.
-    if vimshell#iswin()
+    if vimshell#util#is_win()
       let ff = "\<CR>\<LF>"
     else
       let ff = "\<LF>"
@@ -620,11 +715,11 @@ endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
   return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
 endfunction"}}}
-function! vimshell#iswin()"{{{
+function! vimshell#util#is_win()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#resolve(filename)"{{{
-  return ((vimshell#iswin() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
+  return ((vimshell#util#is_win() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
         \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
 endfunction"}}}
 function! vimshell#get_program_pattern()"{{{
@@ -858,19 +953,19 @@ function! s:init_internal_commands()"{{{
     endif
   endfor
 endfunction"}}}
-function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
-  let winheight = a:split_flag ?
+function! s:switch_vimshell(bufnr, context, path)"{{{
+  let winheight = context.split ?
         \ winheight(0)*g:vimshell_split_height/100 : 0
-  if a:split_flag
+  if context.split
     split
     execute 'resize' winheight
   endif
 
   execute 'buffer' a:bufnr
 
-  if a:directory != '' && isdirectory(a:directory)
+  if a:path != '' && isdirectory(a:path)
     " Change current directory.
-    let current = fnamemodify(a:directory, ':p')
+    let current = fnamemodify(a:path, ':p')
     let b:vimshell.current_dir = current
     call vimshell#cd(current)
   endif
@@ -885,6 +980,32 @@ function! s:switch_vimshell(bufnr, split_flag, directory)"{{{
   call vimshell#print_prompt()
   call vimshell#start_insert()
 endfunction"}}}
+function! s:get_postfix(prefix, is_create)
+  let postfix = '@1'
+  let cnt = 1
+
+  if a:is_create
+    let tabnr = 1
+    while tabnr <= tabpagenr('$')
+      let buflist = map(tabpagebuflist(tabnr), 'bufname(v:val)')
+      if index(buflist, a:prefix.postfix) >= 0
+        let cnt += 1
+        let postfix = '@' . cnt
+      endif
+
+      let tabnr += 1
+    endwhile
+  else
+    let buflist = map(tabpagebuflist(tabpagenr()), 'bufname(v:val)')
+    for bufname in buflist
+      if stridx(bufname, a:prefix) >= 0
+        return matchstr(bufname, '@\d\+$')
+      endif
+    endfor
+  endif
+
+  return postfix
+endfunction
 
 " Auto commands function.
 function! s:event_bufwin_enter()"{{{

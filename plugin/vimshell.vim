@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Jan 2012.
+" Last Modified: 31 Jan 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -151,19 +151,31 @@ let g:vimshell_interactive_cygwin_home =
       \ get(g:, 'vimshell_interactive_cygwin_home', '')
 "}}}
 
-command! -nargs=? -complete=dir VimShell call vimshell#switch_shell(0, <q-args>)
-command! -nargs=? -complete=dir VimShellCreate call vimshell#create_shell(0, <q-args>)
-command! -nargs=? -complete=dir VimShellPop call s:vimshell_popup(<q-args>)
-command! -nargs=? -complete=dir VimShellTab tabnew | call vimshell#create_shell(0, <q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute call s:vimshell_execute(<q-args>)
-command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive call s:vimshell_interactive(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal call s:vimshell_terminal(<q-args>)
+command! -nargs=? -complete=dir VimShell
+      \ call s:call_vimshell({}, <q-args>)
+command! -nargs=? -complete=dir VimShellCreate
+      \ call s:call_vimshell({'create' : 1}, <q-args>)
+command! -nargs=? -complete=dir VimShellPop
+      \ call s:call_vimshell({'toggle' : 1, 'split' : 1}, <q-args>)
+command! -nargs=? -complete=dir VimShellTab
+      \ tabnew | call s:call_vimshell({}, <q-args>)
+
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute
+      \ call s:vimshell_execute(<q-args>)
+command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive
+      \ call s:vimshell_interactive(<q-args>)
+command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal
+      \ call s:vimshell_terminal(<q-args>)
 
 " Plugin keymappings"{{{
-nnoremap <silent> <Plug>(vimshell_split_switch)  :<C-u>call vimshell#switch_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_split_create)  :<C-u>call vimshell#create_shell(1, '')<CR>
-nnoremap <silent> <Plug>(vimshell_switch)  :<C-u>call vimshell#switch_shell(0, '')<CR>
-nnoremap <silent> <Plug>(vimshell_create)  :<C-u>call vimshell#create_shell(0, '')<CR>
+nnoremap <silent> <Plug>(vimshell_split_switch)
+      \ :<C-u>call <SID>call_vimshell({'split' : 1}, '')<CR>
+nnoremap <silent> <Plug>(vimshell_split_create)
+      \ :<C-u>call <SID>call_vimshell({'split' : 1, 'create' : 1}, '')<CR>
+nnoremap <silent> <Plug>(vimshell_switch)
+      \ :<C-u>VimShell<CR>
+nnoremap <silent> <Plug>(vimshell_create)
+      \ :<C-u>VimShellCreate<CR>
 "}}}
 
 " Command functions:
@@ -247,15 +259,29 @@ function! s:vimshell_terminal(args)"{{{
     return
   endtry
 endfunction"}}}
-function! s:vimshell_popup(args)"{{{
-  if &filetype ==# 'vimshell'
-    " Quit vimshell.
-    hide
-    return
-  endif
 
-  " Popup vimshell buffer.
-  call vimshell#switch_shell(1, a:args)
+function! s:call_vimshell(default, args)"{{{
+  let args = []
+  let options = a:default
+  for arg in split(a:args, '\%(\\\@<!\s\)\+')
+    let arg = substitute(arg, '\\\( \)', '\1', 'g')
+
+    let matched_list = filter(copy(vimshell#get_options()),
+          \  'stridx(arg, v:val) == 0')
+    for option in matched_list
+      let key = substitute(substitute(option, '-', '_', 'g'),
+            \ '=$', '', '')[1:]
+      let options[key] = (option =~ '=$') ?
+            \ arg[len(option) :] : 1
+      break
+    endfor
+
+    if empty(matched_list)
+      call add(args, arg)
+    endif
+  endfor
+
+  call vimshell#switch_shell(join(args), options)
 endfunction"}}}
 
 augroup vimshell
