@@ -959,20 +959,24 @@ function! s:init_internal_commands()"{{{
   endfor
 endfunction"}}}
 function! s:switch_vimshell(bufnr, context, path)"{{{
-  if a:context.popup
-    if g:vimshell_popup_command == ''
-      split
-      execute 'resize' winheight(0)*g:vimshell_popup_height/100
-    else
+  if bufwinnr(a:bufnr) > 0
+    execute bufwinnr(a:bufnr) 'wincmd w'
+  else
+    if a:context.popup
+      if g:vimshell_popup_command == ''
+        split
+        execute 'resize' winheight(0)*g:vimshell_popup_height/100
+      else
+        let [new_pos, old_pos] =
+              \ vimshell#split(g:vimshell_popup_command)
+      endif
+    elseif a:context.split
       let [new_pos, old_pos] =
-            \ vimshell#split(g:vimshell_popup_command)
+            \ vimshell#split(g:vimshell_split_command)
     endif
-  elseif a:context.split
-    let [new_pos, old_pos] =
-          \ vimshell#split(g:vimshell_split_command)
-  endif
 
-  execute 'buffer' a:bufnr
+    execute 'buffer' a:bufnr
+  endif
 
   if a:path != '' && isdirectory(a:path)
     " Change current directory.

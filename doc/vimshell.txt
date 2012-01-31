@@ -892,6 +892,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved args completion.
 - Improved documentation.
 - Version 9.1 development is started.
+- Improved switch vimshell behavior.
 
 ------------------------------------------------------------------------------
 ChangeLog 9.0
