@@ -152,9 +152,6 @@ g:vimshell_max_list				*g:vimshell_max_list*
 g:vimshell_use_ckw				*g:vimshell_use_ckw*
 		Todo
 
-g:vimshell_split_height				*g:vimshell_split_height*
-		Todo
-
 g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
 		Todo
 
@@ -183,6 +180,12 @@ g:vimshell_environment_term			*g:vimshell_environment_term*
 		Todo
 
 g:vimshell_split_command			*g:vimshell_split_command*
+		Todo
+
+g:vimshell_popup_command			*g:vimshell_popup_command*
+		Todo
+
+g:vimshell_popup_height				*g:vimshell_popup_height*
 		Todo
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
@@ -878,6 +881,8 @@ CHANGELOG						*vimshell-changelog*
 2012-01-31
 - Implemented context.
 - Fixed documentation.
+- Improved popup behavior.
+- Added g:vimshell_popup_command option.
 
 2012-01-27
 - Added g:vimshell_editor_command option.

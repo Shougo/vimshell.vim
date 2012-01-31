@@ -63,8 +63,6 @@ let g:vimshell_max_list =
       \ get(g:, 'vimshell_max_list', 100)
 let g:vimshell_use_terminal_command =
       \ get(g:, 'vimshell_use_terminal_command', '')
-let g:vimshell_split_height =
-      \ get(g:, 'vimshell_split_height', 30)
 let g:vimshell_temporary_directory =
       \ get(g:, 'vimshell_temporary_directory', expand('~/.vimshell'))
 if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
@@ -101,6 +99,10 @@ let g:vimshell_environment_term =
       \ get(g:, 'vimshell_environment_term', 'xterm')
 let g:vimshell_split_command =
       \ get(g:, 'vimshell_split_command', 'nicely')
+let g:vimshell_popup_command =
+      \ get(g:, 'vimshell_popup_command', '')
+let g:vimshell_popup_height =
+      \ get(g:, 'vimshell_popup_height', 30)
 let g:vimshell_cd_command =
       \ get(g:, 'vimshell_cd_command', 'lcd')
 let g:vimshell_external_history_path =
@@ -156,7 +158,7 @@ command! -nargs=? -complete=dir VimShell
 command! -nargs=? -complete=dir VimShellCreate
       \ call s:call_vimshell({'create' : 1}, <q-args>)
 command! -nargs=? -complete=dir VimShellPop
-      \ call s:call_vimshell({'toggle' : 1, 'split' : 1}, <q-args>)
+      \ call s:call_vimshell({'toggle' : 1, 'popup' : 1}, <q-args>)
 command! -nargs=? -complete=dir VimShellTab
       \ tabnew | call s:call_vimshell({}, <q-args>)
 command! -nargs=? -complete=dir VimShellCurrentDir

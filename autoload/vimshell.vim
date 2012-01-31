@@ -156,11 +156,17 @@ function! vimshell#create_shell(path, ...)"{{{
   endwhile
   let bufname = prefix.postfix
 
-  let winheight = context.split ?
-        \ winheight(0)*g:vimshell_split_height/100 : 0
-  if context.split
-    split
-    execute 'resize' winheight
+  if context.popup
+    if g:vimshell_popup_command == ''
+      split
+      execute 'resize' winheight(0)*g:vimshell_popup_height/100
+    else
+      let [new_pos, old_pos] =
+            \ vimshell#split(g:vimshell_popup_command)
+    endif
+  elseif context.split
+    let [new_pos, old_pos] =
+          \ vimshell#split(g:vimshell_split_command)
   endif
 
   edit! `=bufname`
@@ -320,6 +326,9 @@ function! vimshell#init_context(context)"{{{
   endif
   if !has_key(a:context, 'split')
     let a:context.split = 0
+  endif
+  if !has_key(a:context, 'popup')
+    let a:context.popup = 0
   endif
   if !has_key(a:context, 'winwidth')
     let a:context.winwidth = 0
@@ -950,11 +959,17 @@ function! s:init_internal_commands()"{{{
   endfor
 endfunction"}}}
 function! s:switch_vimshell(bufnr, context, path)"{{{
-  let winheight = context.split ?
-        \ winheight(0)*g:vimshell_split_height/100 : 0
-  if context.split
-    split
-    execute 'resize' winheight
+  if a:context.popup
+    if g:vimshell_popup_command == ''
+      split
+      execute 'resize' winheight(0)*g:vimshell_popup_height/100
+    else
+      let [new_pos, old_pos] =
+            \ vimshell#split(g:vimshell_popup_command)
+    endif
+  elseif a:context.split
+    let [new_pos, old_pos] =
+          \ vimshell#split(g:vimshell_split_command)
   endif
 
   execute 'buffer' a:bufnr

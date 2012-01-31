@@ -146,7 +146,7 @@ COMMANDS 					*vimshell-commands*
 :VimShellPop [{options}...] {path}		*:VimShellPop*
 		|:VimShell|と同じだが、こちらは小さいウインドウをポップアップす
 		る。ちょっとだけvimshellの機能を使いたいときに便利である。ウイ
-		ンドウを分割する高さは|g:vimshell_split_height|で決定される。現
+		ンドウを分割する高さは|g:vimshell_popup_height|で決定される。現
 		在vimshellバッファに居るときは、vimshellバッファを閉じる。
 
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
@@ -248,12 +248,6 @@ g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
 		
 		初期値は""である。
 
-g:vimshell_split_height				*g:vimshell_split_height*
-		|:VimShellPop|の分割高さを指定する。指定する値は
-		|winheight(0)|に対するパーセントになる。
-		
-		初期値は30である。
-
 g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
 		vimshellが使用する一時ディレクトリを指定する。ヒストリ
 		ファイルもこのディレクトリ下に保存される。
@@ -315,6 +309,20 @@ g:vimshell_split_command			*g:vimshell_split_command*
 		"vsplit"で縦方向に分割する。
 		
 		初期値は"nicely"である。
+
+g:vimshell_popup_command			*g:vimshell_popup_command*
+		vimshellが|:VimShellPop|で画面を分割するときに用いるExコマンド
+		である。
+		これを空にすると、"split"と|g:vimshell_popup_height|が使用され
+		る。
+
+		初期値は""である。
+
+g:vimshell_popup_height				*g:vimshell_popup_height*
+		|:VimShellPop|の分割高さを指定する。指定する値は
+		|winheight(0)|に対するパーセントになる。
+		
+		初期値は30である。
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
 		vimshellがカレントディレクトリを変更するときに用いるEx
