@@ -111,7 +111,7 @@ INTERFACE					*vimshell-interface*
 ------------------------------------------------------------------------------
 COMMANDS 					*vimshell-commands*
 
-:VimShell [{options}...] {path}			*:VimShell*
+:VimShell [{options}...] [{path}]		*:VimShell*
 		{path}をカレントディレクトリとして、vimshellを起動する。他の
 		vimshellが起動している場合、そのvimshellにスイッチし、カレント
 		ディレクトリを{path}に変更する。{path}を省略した場合、vimshell
@@ -133,21 +133,31 @@ COMMANDS 					*vimshell-commands*
 		同一バッファ名のvimshellウインドウが表示されている場合は、閉じる。
 
 						*vimshell-options-create*
-		-vimshell
+		-create
 		既に開いているvimshellバッファは再利用せず、新しく生成する。
 
-:VimShellCreate [{options}...] {path}		*:VimShellCreate*
+						*vimshell-options-split*
+		-split
+		ウインドウを分割して開く。分割するためのコマンドは
+		|g:vimshell_split_command|を使用する。
+
+						*vimshell-options-popup*
+		-popup
+		ウインドウをポップアップ分割して開く。分割するためのコマンドは
+		|g:vimshell_popup_command|を使用する。
+
+:VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		|:VimShell|と同じだが、他のvimshellが起動している場合でも、新し
 		いvimshellバッファを作成する。
 
-:VimShellTab [{options}...] {path}		*:VimShellTab*
+:VimShellTab [{options}...] [{path}]		*:VimShellTab*
 		|:VimShellCreate|と同じだが、新しいタブを生成する。
 
-:VimShellPop [{options}...] {path}		*:VimShellPop*
+:VimShellPop [{options}...] [{path}]		*:VimShellPop*
 		|:VimShell|と同じだが、こちらは小さいウインドウをポップアップす
-		る。ちょっとだけvimshellの機能を使いたいときに便利である。ウイ
-		ンドウを分割する高さは|g:vimshell_popup_height|で決定される。現
-		在vimshellバッファに居るときは、vimshellバッファを閉じる。
+		る。ちょっとだけvimshellの機能を使いたいときに便利である。分割
+		するためのコマンドは|g:vimshell_popup_command|を使用する。現在
+		vimshellバッファに居るときは、vimshellバッファを閉じる。
 
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
 		|:VimShell|と同じだが、カレントディレクトリに移動する。

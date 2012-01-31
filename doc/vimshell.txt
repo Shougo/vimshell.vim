@@ -94,16 +94,22 @@ INTERFACE					*vimshell-interface*
 ------------------------------------------------------------------------------
 COMMANDS 					*vimshell-commands*
 
-:VimShell					*:VimShell*
+:VimShell [{options}...] [{path}]		*:VimShell*
 		Run vimshell.
 
-:VimShellCreate {path}				*:VimShellCreate*
+:VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Todo
 
-:VimShellTab {path}				*:VimShellTab*
+:VimShellTab [{options}...] [{path}]		*:VimShellTab*
 		Todo
 
-:VimShellPop {path}				*:VimShellPop*
+:VimShellPop [{options}...] [{path}]		*:VimShellPop*
+		Todo
+
+:VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
+		Todo
+
+:VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
 		Todo
 
 :VimShellExecute {command}			*:VimShellExecute*
@@ -884,6 +890,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved popup behavior.
 - Added g:vimshell_popup_command option.
 - Improved args completion.
+- Improved documentation.
 
 2012-01-27
 - Added g:vimshell_editor_command option.
