@@ -153,17 +153,17 @@ let g:vimshell_interactive_cygwin_home =
       \ get(g:, 'vimshell_interactive_cygwin_home', '')
 "}}}
 
-command! -nargs=? -complete=dir VimShell
+command! -nargs=? -complete=customlist,vimshell#complete VimShell
       \ call s:call_vimshell({}, <q-args>)
-command! -nargs=? -complete=dir VimShellCreate
+command! -nargs=? -complete=customlist,vimshell#complete VimShellCreate
       \ call s:call_vimshell({'create' : 1}, <q-args>)
-command! -nargs=? -complete=dir VimShellPop
+command! -nargs=? -complete=customlist,vimshell#complete VimShellPop
       \ call s:call_vimshell({'toggle' : 1, 'popup' : 1}, <q-args>)
-command! -nargs=? -complete=dir VimShellTab
+command! -nargs=? -complete=customlist,vimshell#complete VimShellTab
       \ tabnew | call s:call_vimshell({}, <q-args>)
-command! -nargs=? -complete=dir VimShellCurrentDir
+command! -nargs=? -complete=customlist,vimshell#complete VimShellCurrentDir
       \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
-command! -nargs=? -complete=dir VimShellBufferDir
+command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
       \ call s:call_vimshell({}, <q-args> . ' ' .
       \ vimshell#util#substitute_path_separator(fnamemodify(bufname('%'), ':p:h')))
 

@@ -60,7 +60,7 @@ let s:last_vimshell_bufnr = -1
 
 let s:vimshell_options = [
       \ '-buffer-name=', '-toggle', '-create',
-      \ '-split', '-direction=',
+      \ '-split', '-popup',
       \ '-winwidth=', '-winminwidth=',
       \]
 "}}}
@@ -991,7 +991,7 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
   call vimshell#print_prompt()
   call vimshell#start_insert()
 endfunction"}}}
-function! s:get_postfix(prefix, is_create)
+function! s:get_postfix(prefix, is_create)"{{{
   let postfix = '@1'
   let cnt = 1
 
@@ -1016,7 +1016,21 @@ function! s:get_postfix(prefix, is_create)
   endif
 
   return postfix
-endfunction
+endfunction"}}}
+function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
+  let _ = []
+
+  " Option names completion.
+  let _ += filter(vimfiler#get_options(),
+        \ 'stridx(v:val, a:arglead) == 0')
+
+  " Directory name completion.
+  let _ += filter(map(split(glob(a:arglead . '*'), '\n'),
+        \ "isdirectory(v:val) ? v:val.'/' : v:val"),
+        \ 'stridx(v:val, a:arglead) == 0')
+
+  return sort(_)
+endfunction"}}}
 
 " Auto commands function.
 function! s:event_bufwin_enter()"{{{

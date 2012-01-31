@@ -883,6 +883,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed documentation.
 - Improved popup behavior.
 - Added g:vimshell_popup_command option.
+- Improved args completion.
 
 2012-01-27
 - Added g:vimshell_editor_command option.
