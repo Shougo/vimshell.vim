@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by VimScript
 
-Version: 9.0
+Version: 9.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -891,6 +891,10 @@ CHANGELOG						*vimshell-changelog*
 - Added g:vimshell_popup_command option.
 - Improved args completion.
 - Improved documentation.
+- Version 9.1 development is started.
+
+------------------------------------------------------------------------------
+ChangeLog 9.0
 
 2012-01-27
 - Added g:vimshell_editor_command option.

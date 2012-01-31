@@ -25,7 +25,7 @@
 "=============================================================================
 
 function! vimshell#version()"{{{
-  return '900'
+  return '901'
 endfunction"}}}
 
 " Check vimproc."{{{
