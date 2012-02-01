@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 01 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -587,6 +587,7 @@ function! s:escape.highlight(matchstr)"{{{
         \ || (b:interactive.type == 'interactive' &&
         \     get(g:vimshell_interactive_monochrome_commands,
         \         b:interactive.command, 0))
+        \ || b:interactive.terminal.is_error
     return
   endif
 
