@@ -139,12 +139,18 @@ COMMANDS 					*vimshell-commands*
 						*vimshell-options-split*
 		-split
 		ウインドウを分割して開く。分割するためのコマンドは
-		|g:vimshell_split_command|を使用する。
+		|vimshell-options-split-command|を使用する。
 
 						*vimshell-options-popup*
 		-popup
 		ウインドウをポップアップ分割して開く。分割するためのコマンドは
-		|g:vimshell_popup_command|を使用する。
+		|vimshell-options-split-command|を使用する。
+
+						*vimshell-options-split-command*
+		-split-command={command-name}
+		ウインドウを分割するためのコマンドを指定する。省略されると、他
+		のオプションの指定により、|g:vimshell_split_command|か
+		|g:vimshell_popup_command|か|g:vimshell_popup_height|を使用する。
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		|:VimShell|と同じだが、他のvimshellが起動している場合でも、新し

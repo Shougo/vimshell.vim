@@ -884,6 +884,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-02-02
+- Added -split-command option.
+
 2012-02-01
 - Fixed terminal for stderror escape sequence.
 

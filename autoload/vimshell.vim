@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 02 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -60,7 +60,7 @@ let s:last_vimshell_bufnr = -1
 
 let s:vimshell_options = [
       \ '-buffer-name=', '-toggle', '-create',
-      \ '-split', '-popup',
+      \ '-split', '-split-command=', '-popup',
       \ '-winwidth=', '-winminwidth=',
       \]
 "}}}
@@ -156,17 +156,9 @@ function! vimshell#create_shell(path, ...)"{{{
   endwhile
   let bufname = prefix.postfix
 
-  if context.popup
-    if g:vimshell_popup_command == ''
-      split
-      execute 'resize' winheight(0)*g:vimshell_popup_height/100
-    else
-      let [new_pos, old_pos] =
-            \ vimshell#split(g:vimshell_popup_command)
-    endif
-  elseif context.split
+  if context.split_command != ''
     let [new_pos, old_pos] =
-          \ vimshell#split(g:vimshell_split_command)
+          \ vimshell#split(context.split_command)
   endif
 
   edit! `=bufname`
@@ -329,6 +321,19 @@ function! vimshell#init_context(context)"{{{
   endif
   if !has_key(a:context, 'popup')
     let a:context.popup = 0
+  endif
+  if !has_key(a:context, 'split_command')
+    if a:context.popup && g:vimshell_popup_command == ''
+      " Default popup command.
+      let a:context.split_command = 'split | resize '
+            \ . winheight(0)*g:vimshell_popup_height/100
+    elseif a:context.popup
+      let a:context.split_command = g:vimshell_popup_command
+    elseif a:context.split
+      let a:context.split_command = g:vimshell_split_command
+    else
+      let a:context.split_command = ''
+    endif
   endif
   if !has_key(a:context, 'winwidth')
     let a:context.winwidth = 0
@@ -877,6 +882,7 @@ function! vimshell#execute(cmdline, ...)"{{{
 endfunction"}}}
 function! vimshell#set_context(context)"{{{
   let s:context = a:context
+  let b:vimshell.context = a:context
 endfunction"}}}
 function! vimshell#get_context()"{{{
   if exists('b:vimshell') && has_key(b:vimshell.continuation, 'context')
@@ -962,17 +968,9 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
   if bufwinnr(a:bufnr) > 0
     execute bufwinnr(a:bufnr) 'wincmd w'
   else
-    if a:context.popup
-      if g:vimshell_popup_command == ''
-        split
-        execute 'resize' winheight(0)*g:vimshell_popup_height/100
-      else
-        let [new_pos, old_pos] =
-              \ vimshell#split(g:vimshell_popup_command)
-      endif
-    elseif a:context.split
+    if a:context.split_command != ''
       let [new_pos, old_pos] =
-            \ vimshell#split(g:vimshell_split_command)
+            \ vimshell#split(a:context.split_command)
     endif
 
     execute 'buffer' a:bufnr
