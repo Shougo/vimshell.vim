@@ -108,7 +108,44 @@ INTERFACE					*vimshell-interface*
 COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
-		Run vimshell.
+		Run vimshell. The {path} is current directory.
+		If other vimshell buffer is exists, switch to the vimshell
+		buffer and change current directory as {path}.
+		If omit {path}, used Vim current directory (or do not change
+		current directory).
+
+						*vimshell-options*
+		{options} are options for a vimshell buffer.  You may give the
+		following parameters for a option; you must escape with \ when
+		it contains spaces.
+
+						*vimshell-options-buffer-name*
+		-buffer-name={buffer-name}
+		Specifies a buffer name. The default buffer name is 'default'.
+		Note: Buffer name must not contain spaces.
+
+						*vimshell-options-toggle*
+		-toggle
+		Close vimshell buffer window if this vimshell buffer name
+		window is exists.
+
+						*vimshell-options-create*
+		-create
+		Create new vimshell buffer.
+
+						*vimshell-options-split*
+		-split
+		Split vimshell buffer window. |vimshell-options-split-command|
+		is used.
+
+						*vimshell-options-popup*
+		-popup
+		Popup split vimshell buffer window.
+		|vimshell-options-split-command| is used.
+
+						*vimshell-options-split-command*
+		-split-command={command-name}
+		Specify split command.
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Runs vimshell as the same :VimShell, but it creates a new
@@ -540,16 +577,19 @@ Insert mode default key mappings.
 FUNCTIONS 						*vimshell-functions*
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
-		Todo
+		Defines hook functions {func-list} in {hook-point}. The old
+		hook points are overwrite.  Vimshell call {func-list} by list
+		order.
 
 vimshell#hook#get({hook-point})				*vimshell#hook#get()*
-		Todo
+		Returns {hook-point} hook as dictionary.
 
 vimshell#hook#add({hook-point}, {hook-name}, {func})	*vimshell#hook#add()*
-		Todo
+		Add {hook-name} hook {func} in {hook-point}. If {hook-name} is
+		already exists, overwrite it.
 
 vimshell#hook#remove({hook-point}, {hook-name})		*vimshell#hook#remove()*
-		Todo
+		Delete {hook-name} function in {hook-point}.
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -986,6 +1026,7 @@ CHANGELOG						*vimshell-changelog*
 - Translated tips and sources.
 - Translated hooks and alter command.
 - Translated special commands.
+- Translated functions and :VimShell.
 
 2012-02-04
 - Fixed vimshell#set_context() error.
