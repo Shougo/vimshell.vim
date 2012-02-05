@@ -63,12 +63,18 @@ little bit different to them.
 ==============================================================================
 USAGE						*vimshell-usage*
 
-You can start vimshell in ":VimShell".  Because vimshell works similar with
-a common shell, you may operate it intuitively.  But vimshell perform the
-path appointment in '/'. Vimshell is misunderstood with escape sequence when
-you use '\' by Windows for a path and do not work.
+You can start vimshell in ":VimShell", or use helpful keymap already difined.
+Because vimshell works similar witha common shell, you may operate it
+intuitively. But vimshell perform thepath appointment in '/'.
+Vimshell is misunderstood with escape sequence when you use '\' by Windows
+for a path and do not work.
 
-ToDo
+vimshell reads .vimshrc as initialize file.
+It might be helpful to add alias configurations.
+
+Note: vimshell has nothing to do with bash or zsh, so as to have no compatiblities.
+vimshell doesn't read .bashrc or .zshrc, but environment variables by
+"vimshell-internal-source".
 
 ==============================================================================
 INSTALL						*vimshell-install*
