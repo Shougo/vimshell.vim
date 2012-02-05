@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2012.
+" Last Modified: 05 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,19 +28,24 @@ function! vimshell#version()"{{{
   return '901'
 endfunction"}}}
 
+function! vimshell#echo_error(string)"{{{
+  echohl Error | echo a:string | echohl None
+endfunction"}}}
+
 " Check vimproc."{{{
 try
   let s:exists_vimproc_version = vimproc#version()
 catch
-  echoerr v:errmsg
-  echoerr v:exception
-  echoerr 'Error occured while loading vimproc.'
-  echoerr 'Please install vimproc Ver.5.0 or above.'
+  call vimshell#echo_error(v:errmsg)
+  call vimshell#echo_error(v:exception)
+  call vimshell#echo_error(v:exception)
+  call vimshell#echo_error('Error occured while loading vimproc.')
+  call vimshell#echo_error('Please install vimproc Ver.5.0 or above.')
   finish
 endtry
 if s:exists_vimproc_version < 600
-  echoerr 'Your vimproc is too old.'
-  echoerr 'Please install vimproc Ver.6.0 or above.'
+  call vimshell#echo_error('Your vimproc is too old.')
+  call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
   finish
 endif"}}}
 
@@ -124,15 +129,15 @@ endfunction"}}}
 " vimshell plugin utility functions."{{{
 function! vimshell#create_shell(path, ...)"{{{
   if vimshell#is_cmdwin()
-    echoerr 'Command line buffer is detected!'
-    echoerr 'Please close command line buffer.'
+    call vimshell#echo_error('Command line buffer is detected!')
+    call vimshell#echo_error('Please close command line buffer.')
     return
   endif
 
   " Detect autochdir option."{{{
   if &autochdir
-    echoerr 'Detected autochdir!'
-    echoerr 'vimshell don''t work if you set autochdir option.'
+    call vimshell#echo_error('Detected autochdir!')
+    call vimshell#echo_error('vimshell don''t work if you set autochdir option.')
     return
   endif
   "}}}
@@ -226,18 +231,18 @@ function! vimshell#create_shell(path, ...)"{{{
   " Check prompt value."{{{
   if vimshell#head_match(vimshell#get_prompt(), vimshell#get_secondary_prompt())
         \ || vimshell#head_match(vimshell#get_secondary_prompt(), vimshell#get_prompt())
-    echoerr printf('Head matched g:vimshell_prompt("%s")'.
+    call vimshell#echo_error(printf('Head matched g:vimshell_prompt("%s")'.
           \ ' and your g:vimshell_secondary_prompt("%s").',
           \ vimshell#get_prompt(), vimshell#get_secondary_prompt())
     finish
   elseif vimshell#head_match(vimshell#get_prompt(), '[%] ')
         \ || vimshell#head_match('[%] ', vimshell#get_prompt())
-    echoerr printf('Head matched g:vimshell_prompt("%s")'.
-          \ ' and your g:vimshell_user_prompt("[%] ").', vimshell#get_prompt())
+    call vimshell#echo_error(printf('Head matched g:vimshell_prompt("%s")'.
+          \ ' and your g:vimshell_user_prompt("[%] ").', vimshell#get_prompt()))
     finish
   elseif vimshell#head_match('[%] ', vimshell#get_secondary_prompt())
         \ || vimshell#head_match(vimshell#get_secondary_prompt(), '[%] ')
-    echoerr printf('Head matched g:vimshell_user_prompt("[%] ")'.
+    call printf('Head matched g:vimshell_user_prompt("[%] ")'.
           \ ' and your g:vimshell_secondary_prompt("%s").',
           \ vimshell#get_secondary_prompt())
     finish
@@ -248,8 +253,8 @@ function! vimshell#create_shell(path, ...)"{{{
 endfunction"}}}
 function! vimshell#switch_shell(path, ...)"{{{
   if vimshell#is_cmdwin()
-    echoerr 'Command line buffer is detected!'
-    echoerr 'Please close command line buffer.'
+    call vimshell#echo_error('Command line buffer is detected!')
+    call vimshell#echo_error('Please close command line buffer.')
     return
   endif
 
@@ -439,9 +444,6 @@ function! vimshell#print_line(fd, string)"{{{
 endfunction"}}}
 function! vimshell#error_line(fd, string)"{{{
   return vimshell#interactive#error_buffer(a:fd, a:string . "\n")
-endfunction"}}}
-function! vimshell#echo_error(string)"{{{
-  echohl Error | echo a:string | echohl None
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
   if &filetype !=# 'vimshell' || line('.') != line('$')

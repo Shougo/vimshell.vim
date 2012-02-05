@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 05 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,7 +28,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
   " vimshell#complete#helper#files(cur_keyword_str [, path])
 
   if a:0 > 1
-    echoerr 'Too many arguments.'
+    call vimshell#echo_error('Too many arguments.')
   endif
 
   if !exists('*neocomplcache#sources#filename_complete#get_complete_words')

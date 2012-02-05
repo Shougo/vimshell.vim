@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 05 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,7 +31,6 @@ elseif exists('g:loaded_vimshell')
   finish
 elseif $SUDO_USER != ''
   echoerr '"sudo vim" is detected. Please use sudo.vim or other plugins instead.'
-  echoerr 'vimshell is disabled.'
   finish
 endif
 
@@ -218,7 +217,7 @@ function! s:vimshell_interactive(args)"{{{
     " Search interpreter.
     if &filetype == '' ||
           \ !has_key(g:vimshell_interactive_interpreter_commands, &filetype)
-      echoerr 'Interpreter is not found.'
+      call vimshell#echo_error('Interpreter is not found.')
       return
     endif
 

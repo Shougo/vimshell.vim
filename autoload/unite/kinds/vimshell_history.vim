@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2011.
+" Last Modified: 05 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -97,7 +97,7 @@ let s:kind.action_table.insert = {
       \ }
 function! s:kind.action_table.insert.func(candidate)"{{{
   if !vimshell#check_prompt()
-    echoerr 'Not in command line.'
+    call vimshell#echo_error('Not in command line.')
     return
   endif
 
