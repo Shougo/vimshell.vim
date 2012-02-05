@@ -1,4 +1,4 @@
-*vimshell.txt*	Powerful shell implemented by VimScript
+*vimshell.txt*	Powerful shell implemented by Vim script
 
 Version: 9.1
 Author : Shougo <Shougo.Matsu@gmail.com>
@@ -46,6 +46,19 @@ Changelog		|vimshell-changelog|
 
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
+
+Vimshell is an extreme shell that doesn't depend on external shells but is
+written completely in pure Vim script. To be honest the implementation is not
+as mature as eshell yet. The most important characteristic of vimshell is that
+it can collaborate with other Vim plugins. Additionally, for example, vimshell
+also works on Windows where there are no good shells at all; note that you
+cannot use full set of vimshell features on Windows though. Furthermore,
+vimshell borrowed handy functionalities from other shells. Vimshell has
+built-in functionalities that you had to set up to enable if it's on zsh.
+
+Vimshell doesn't pursue being completely compatible with average shells but
+aims to be a handy shell, so some behaviours like the rule of variables are a
+little bit different to them.
 
 ==============================================================================
 USAGE						*vimshell-usage*
