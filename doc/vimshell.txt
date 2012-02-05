@@ -761,7 +761,11 @@ vexe {expression}					*vimshell-special-vexe*
 ==============================================================================
 ALTER COMMAND						*vimshell-alter-command*
 
-Todo
+Vimshell supports altercmd. Altercmd is like abbrev alias.
+Original altercmd plugin is here: [http://github.com/kana/vim-altercmd]
+
+To use altercmd, call |vimshell#altercmd#define|function in vimshell buffer.
+Usually, used in autocmd FileType.
 >
 	autocmd FileType vimshell
 	\ call vimshell#altercmd#define('g', 'git')
@@ -769,7 +773,11 @@ Todo
 ==============================================================================
 HOOK							*vimshell-hook*
 
-Todo
+Vimshell has not function feature, but can call hook function in hook points.
+So If you learned Vim script and vimshell, customizable vimshell.
+
+Next examples set hook in "chpwd". This hook execute ls internal command when
+current directory is changed.
 >
 	autocmd FileType vimshell
 	\ call vimshell#hook#add('chpwd', 'my_chpwd', 'g:my_chpwd')
@@ -778,36 +786,60 @@ Todo
 		call vimshell#execute('ls')
 	endfunction
 <
-Todo
+Default hook points are below. Hook functions arguments are {args} and {context}.
+{args} is arguments list, {context} is context information.
+But some functions arguments is {cmdline}.
 
 chpwd							*vimshell-hook-chpwd*
-		Todo
+		This hook called when changed vimshell current directory.
+		The first argument is new current directory.
 
 preparse						*vimshell-hook-preparse*
-		Todo
+		This hook called when before parse command line.
+		The first argument is {cmdline}. {cmdline} is command line string.
+		And returns changed command line string.
 
 preexec							*vimshell-hook-preexec*
-		Todo
+		This hook called when after alias parsed and before execute
+		command line.
+		The first argument is {cmdline}. {cmdline} is command line string.
+		And returns changed command line string.
 
 postexec						*vimshell-hook-postexec*
-		Todo
+		This hook called when after execute command line.
+		The first argument is {cmdline}. {cmdline} is executed command
+		line string.
 
 emptycmd						*vimshell-hook-emptycmd*
-		Todo
+		This hook called when cmdline is empty.
+		The first argument is {cmdline}. {cmdline} is command line string.
+		And returns changed command line string.
 
 notfound						*vimshell-hook-notfound*
-		Todo
+		This hook called when the command is not found.
+		The first argument is {cmdline}. {cmdline} is command line string.
+		And returns changed command line string.
 
 preprompt						*vimshell-hook-preprompt*
-		Todo
+		This hook called when after execute command line and before
+		display prompt.
 
 preinput						*vimshell-hook-preinput*
-		Todo
+		This hook called when after user input.
+		The first argument is {input}. {input} is user input string.
+		And returns changed input string.
+		Note: This hook is usually used in interactive buffer.
 
 postinput						*vimshell-hook-postinput*
-		Todo
+		This hook called when after executed user input.
+		The first argument is {input}. {input} is user input string.
+		Note: This hook is usually used in interactive buffer.
 
-		Todo
+To analyze command line, use |vimproc#parser#split_args()|or
+|vimproc#parser#split_args_through()|. These functions arguments are the
+command line string. |vimproc#parser#split_args()| evals quoted string, but
+|vimproc#parser#split_args_through()| remains quoted string.
+Note: These functions do not analyze ";", "&&", "||", pipes and redirection.
 
 ==============================================================================
 TIPS							*vimshell-tips*
@@ -922,6 +954,7 @@ CHANGELOG						*vimshell-changelog*
 2012-02-05
 - Fixed error messages.
 - Translated tips and sources.
+- Translated hooks and alter command.
 
 2012-02-04
 - Fixed vimshell#set_context() error.
