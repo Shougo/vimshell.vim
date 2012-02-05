@@ -162,28 +162,43 @@ COMMANDS 					*vimshell-commands*
 		Todo
 
 :VimShellPop [{options}...] [{path}]		*:VimShellPop*
-		Todo
+		Like as |:VimShell|, but this command popups little window.
+		It will be your help when you want to make vimshell a bit help.
+		To split it, |g:vimshell_popup_command| is suited command.
+		When you are in vimshell buffer, it closes the buffer.
+
 
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
-		Todo
+		Like as |:VimShell|, but move to current directory.
 
 :VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
-		Todo
+		Like as |:VimShell|, but move to buffer's dirrectory.
 
 :VimShellExecute {command}			*:VimShellExecute*
-		Todo
+		It does not run vimshell, but launch a terminal program you
+		Specify by {command}, and this program runs in background.
+		You can use vimshell like as GNU screen.
 
 :VimShellInteractive [{command}]		*:VimShellInteractive*
-		Todo
+		It does not run vimshell, but launch a interpreter program you
+		specify by {command}.
+		It is same as Emacs's M-x {interpreter-name}.
+		You leave out {command}, vimshell uses the value in
+		|g:vimshell_interactive_interpreter_commands|.
 
 :VimShellTerminal {command}			*:VimShellTerminal*
-		Todo
+		It does not run vimshell, but same as Emacs's ansi-term,
+		it launch a terminal program you Specify by {command}.
+		Note that this is not completed function.
 
 :VimShellSendString {string}			*:VimShellSendString*
-		Todo
+		It sends selected string to the interpreter in background window
+		of vimshell, iexe, texe.
+		You can control interpreter as if you are using |quickrun|.
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
-		Todo
+		Set background window as {bufname}.
+		When {bufname} isn't showed, it will be opened automatically.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*vimshell-variables*
