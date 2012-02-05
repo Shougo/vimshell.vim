@@ -638,13 +638,15 @@ EXAMPLES						*vimshell-examples*
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
 
-Todo
+The internal commands are internal commands in other shells.  The arguments are
+split by vimshell.
 
-Note: Todo
+Note: The internal commands do not supports pipeline.
+If you use pipe, vimshell execute external command automatically.  So following
+commands will be freeze.
 >
 		vimshell% echo hello | vim
 <
-
 bg [{option}...] {command}				*vimshell-internal-bg*
 		Todo
 		
@@ -658,50 +660,78 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		Todo
 
 build [{builder-name}, [{args}...]]			*vimshell-internal-build*
-		Todo
+		Execute ":Unite build:{builder-name}:{args}".
+		If you omit {builder-name}, detect builder automatically.
 
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
-		Todo
+		Changes current directory to {directory-path}. If omit
+		arguments, change directory to $HOME.
+		If you set {substitute-pattern}, substitute {directory-path} to
+		{substitute-pattern}.
+		If {directory-path} is not directory, change to file parent
+		directory.
+		If {directory-path} is not found, search 'cdpath'.
+		If {directory-path} starts "-", same to
+		|vimshell-internal-popd|.
 
 clear 							*vimshell-internal-clear*
 		Clear display.
 
 dirs [{max}]						*vimshell-internal-dirs*
-		Todo
+		Print directory stack items to {max} .
+		If omit {max}, used 10.
+		If press <Enter> in directory stack, change directory.
 
 echo [{argument}...]					*vimshell-internal-echo*
 		print arguments.
 
 eval {expression}					*vimshell-internal-eval*
-		Todo
+		Eval {expression} as vimshell script and print it.
 
 exe [{option}...] {command} 				*vimshell-internal-exe*
-		Todo
+		Execute {command} with arguments. Execute external command automatically.
+		Note: While executing commands, can not execute other commands.
+		Note: After vimshell Ver.9, exe can read inputs.
 		
-						*vimshell-execute-options*
-		--encoding = {encoding-name}		*vimshell-execute-options-encoding*
-		Todo
+		Note: iexe, exe, bg, texe and less interpret options changes
+		the behavior. Refer to |vimshell-execute-options|.
+		
+							*vimshell-execute-options*
+		--encoding={encoding-name}		*vimshell-execute-options-encoding*
+		If differnt from 'encoding' and {encoding-name}, vimshell will
+		convert encoding automatically.
+		If omit this option, used 'termencoding'.
 
 exit 							*vimshell-internal-exit*
 		Exit vimshell buffer.
 
 gcd [{directory-path}]					*vimshell-internal-gcd*
-		Todo
+		Changes current directory and Vim current directory.
+		If omit {directory-path}, move to Vim current directory.
 
 gendoc {command} {args}					*vimshell-internal-gendoc*
-		Todo
+		Executes {command} with {args} and saves output in
+		"g:vimshell_temporary_directory/cached-doc". You can read
+		cached outputs using |echodoc|.
+		Note: This command caches first output line only.
 
 gexe {command}						*vimshell-internal-gexe*
-		Todo
+		Execute {command} with args. Execute external command
+		automatically.
+		Differnt from exe, it is specialized GUI command.
 
 h [{pattern}]						*vimshell-internal-h*
 		Todo
 
 histdel {history-number}				*vimshell-internal-histdel*
-		Todo
+		Deletes {history-number} history. You can check history number
+		using |vimshell-internal-history| command.
 
 history [{search-string}]				*vimshell-internal-history*
-		Todo
+		Print directory stack {search-string} items.
+		If omit {search-string}, use 20. If {search-string} is string,
+		print matched string candidates.
+		If press <Enter> in history list, execute the history.
 
 iexe [{options}...] {command}				*vimshell-internal-iexe*
 		Todo
@@ -713,10 +743,11 @@ less [{options}...] {command}				*vimshell-internal-less*
 		Todo
 
 ls [{argument}...]					*vimshell-internal-ls*
-		Todo
+		Execute "ls" external command with args.
+		Note: Required external "ls" command.
 
 mkcd {directory-name}					*vimshell-internal-mkcd*
-		Todo
+		Make {directory-name} directory and |vimshell-internal-cd| it.
 
 nop 							*vimshell-internal-nop*
 		No operation.
@@ -725,7 +756,11 @@ open {filename}						*vimshell-internal-open*
 		Open {filename} by associated application.
 
 popd [{directory-stack-number}]				*vimshell-internal-popd*
-		Todo
+		Change current directory to {directory-stack-number} directory.
+		To view {directory-stack-number}, use |vimshell-internal-dirs|.
+		If omit {directory-stack-number}, used 0.
+		Note: If differnt from other shells, do not remove not
+		duplicated candidates.
 
 pwd 							*vimshell-internal-pwd*
 		Print vimshell working directory.
@@ -734,37 +769,68 @@ repeat {cnt} {command}					*vimshell-internal-repeat*
 		Execute {command} {cnt} times.
 
 shell 							*vimshell-internal-shell*
-		Todo
+		Execute 'shell' commands using |g:vimshell_use_terminal_command|.
+		This command can support some features not supported vimshell.
+		Ex: signal and trap.
 
 source {files}						*vimshell-internal-source*
-		Todo
+		Load {files} using "cmd.exe" in Windows, 'shell' in others.
+		The {files} is shell script which changes environment variables.
+		After executed the command, vimshell will use changed
+		environment variables.
 
 texe [{options}...] {command}				*vimshell-internal-texe*
-		Todo
+		Execute {command} with args.
+		Note: Execute external command automatically.
+		Differnt from exe and iexe, it execute terminal command.  This
+		command creates new buffer.
+		Note: Pipe is not supported.
 		
-		Note: Todo
+		Note: This command is under construction.
 		
+		Note: iexe, exe, bg, texe and less interpret options changes
+		the behavior. Refer to |vimshell-execute-options|.
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 time {command}						*vimshell-internal-time*
 		Runs {command} synchronously and shows how long did it take.
 
 view [{options}...] {filenames}... 			*vimshell-internal-view*
-		Todo
+		Opens {filenames} in other buffer as readonly. If lines is less
+		than window size, do not open another buffer.
+		
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 vi [{options}...] [{filenames}...]			*vimshell-internal-vi*
 		Same as |vimshell-internal-vim|.
 
 vim [{options}...] [{filenames}...]			*vimshell-internal-vim*
-		Todo
+		Opens {filenames} in other buffer.  If omit {filenames}, opens
+		unnamed buffer.
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 vimdiff {filename1} {filename2}				*vimshell-internal-vimdiff*
-		Todo
+		Compares {filename1} and {filename2} by |:vimdiff|command.
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 vimsh [{filename}]					*vimshell-internal-vimsh*
-		Todo
+		Execute {filename} vimshell script file.
+		Note: Statements is not supported.
+		If omit {filename}, opens new vimshell buffer.
 
 which {command}					*vimshell-internal-which*
-		Todo
+		Print {command} as full path. The command supports alias.
 
 whereis {command}				*vimshell-internal-whereis*
 		Print {command} by full path.
@@ -1020,6 +1086,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-02-06
+- Translated internal commands.
 
 2012-02-05
 - Fixed error messages.
