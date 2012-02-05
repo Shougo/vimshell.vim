@@ -814,14 +814,14 @@ TIPS							*vimshell-tips*
 
 directory stack						*vimshell-tips-directory-stack*
 		Vimshell supports directory stack like bash or zsh. And
-		auto_pushd automatically.  So, pushd command is not exists.
+		auto_pushd automatically.  So, pushd command does not exist.
 		To view directory stack, use |vimshell-internal-dirs|.
 		To cd from directory stack, use |vimshell-internal-popd|.
 		"cd -" is also supported.
 
 auto_cd							*vimshell-tips-auto_cd*
-		Vimshell supports auto_cd like zsh. If execute directory
-		name, vimshell move to current directory.
+		Vimshell supports auto_cd like zsh. If you execute with a
+		directory name, vimshell moves to the current directory.
 		Note: The setting is nothing.
 
 block							*vimshell-tips-block*
@@ -830,14 +830,14 @@ block							*vimshell-tips-block*
 		vimshell% echo /hoge/piyo/{hoge,hogera}
 		-> /hoge/piyo/hoge /hoge/piyo/hogera
 <
-		And supported expand numbers feature.
+		And supports expanding numbers feature.
 >
 		vimshell% echo {00..09}
 		-> 00 01 02 03 04 05 06 07 08 09
 <
 wild card						*vimshell-tips-wildcard*
-		Vimshell supports wildcard. If wildcard files is not found,
-		error is occured.
+		Vimshell supports wildcard. If wildcard files are not found,
+		an error is occured.
 >
 		vimshell% ls *.htm
 <
@@ -850,31 +850,31 @@ backquote						*vimshell-tips-backquote*
 >
 		vimshell% echo `ls`
 <
-		And supported embedded Vim script expression.
+		And embed Vim script expression.
 >
 		vimshell% echo `=3`
 <
 fakecygpty						*vimshell-tips-fakecygpty*
 		fakecygpty connects Windows pipes to Cygwin pty.
-		Note: This command is Windows only.
-		Following command is connect to Cygwin ssh command.
+		Note: This command is only on Windows.
+		Following command is to connect to Cygwin ssh command.
 >
 		> fakecygpty ssh
 <
 		fakecygpty original source code is in Meadow. But I distribute
 		the source.
 		http://github.com/Shougo/fakecygpty
-		To compile the source code, execute below command.
+		To compile the source code, execute the command below.
 >
 		$ gcc fakecygpty.c -o fakecygpty.exe
 <
 		And put fakecygpty command in $PATH directory.
 >
 encoding					*vimshell-tips-encoding*
-		If you set 'encoding' manually in Windows environment,
+		If you set 'encoding' manually on Windows environment,
 		multibyte characters may be broken.
-		Recommend set 'termencoding' Ex: "cp932" in Windows.
-		But some commands in Windows are using "utf8" characters.
+		I recommend to set 'termencoding' Ex: "cp932" on Windows.
+		But some commands on Windows are using "utf8" characters.
 		If you use that commands, use command "--encoding" option.
 >
 		vimshell% iexe --encoding=utf8 ghci
