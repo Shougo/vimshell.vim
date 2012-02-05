@@ -1,4 +1,4 @@
-*vimshell.txt*	Powerful shell implemented by VimScript
+*vimshell.txt*	Powerful shell implemented by Vim script
 
 Version: 9.1
 Author : Shougo <Shougo.Matsu@gmail.com>
@@ -47,6 +47,7 @@ Changelog		|vimshell-changelog|
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
 
+Vimshell
 ==============================================================================
 USAGE						*vimshell-usage*
 
