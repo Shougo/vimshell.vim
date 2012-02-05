@@ -798,66 +798,82 @@ postinput						*vimshell-hook-postinput*
 
 ==============================================================================
 TIPS							*vimshell-tips*
-Todo
 
 directory stack						*vimshell-tips-directory-stack*
-		Todo
+		Vimshell supports directory stack like bash or zsh. And
+		auto_pushd automatically.  So, pushd command is not exists.
+		To view directory stack, use |vimshell-internal-dirs|.
+		To cd from directory stack, use |vimshell-internal-popd|.
+		"cd -" is also supported.
 
 auto_cd							*vimshell-tips-auto_cd*
-		Todo
+		Vimshell supports auto_cd like zsh. If execute directory
+		name, vimshell move to current directory.
+		Note: The setting is nothing.
 
 block							*vimshell-tips-block*
-		Todo
+		Vimshell supports Block.
 >
 		vimshell% echo /hoge/piyo/{hoge,hogera}
 		-> /hoge/piyo/hoge /hoge/piyo/hogera
 <
-		Todo
+		And supported expand numbers feature.
 >
 		vimshell% echo {00..09}
 		-> 00 01 02 03 04 05 06 07 08 09
 <
 wild card						*vimshell-tips-wildcard*
-		Todo
+		Vimshell supports wildcard. If wildcard files is not found,
+		error is occured.
 >
 		vimshell% ls *.htm
 <
-		Todo
+		Ignore pattern is supported.
 >
 		vimshell% ls *~*.htm
 <
-		Todo
-
 backquote						*vimshell-tips-backquote*
-		コマンドの引数にコマンドの実行結果が使える。
+		You can use command output as arguments.
 >
 		vimshell% echo `ls`
 <
-		Vim scriptの埋め込みもできる。
+		And supported embedded Vim script expression.
 >
 		vimshell% echo `=3`
 <
-
 fakecygpty						*vimshell-tips-fakecygpty*
-		Todo
+		fakecygpty connects Windows pipes to Cygwin pty.
+		Note: This command is Windows only.
+		Following command is connect to Cygwin ssh command.
 >
 		> fakecygpty ssh
 <
-		Todo
+		fakecygpty original source code is in Meadow. But I distribute
+		the source.
 		http://github.com/Shougo/fakecygpty
+		To compile the source code, execute below command.
 >
 		$ gcc fakecygpty.c -o fakecygpty.exe
 <
-		Todo
+		And put fakecygpty command in $PATH directory.
 >
+encoding					*vimshell-tips-encoding*
+		If you set 'encoding' manually in Windows environment,
+		multibyte characters may be broken.
+		Recommend set 'termencoding' Ex: "cp932" in Windows.
+		But some commands in Windows are using "utf8" characters.
+		If you use that commands, use command "--encoding" option.
+>
+		vimshell% iexe --encoding=utf8 ghci
+<
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 
-Todo
-
 						*vimshell-unite-source-vimshell-history*
 vimshell/history
-		Todo
+		Nominates vimshell histories as candidates. This source is also
+		available in interactive buffer. This source is used in
+		|unite#sources#vimshell_history#start_complete()|.
 		
 		Exmaple:
 >
@@ -865,13 +881,19 @@ vimshell/history
 <
 						*vimshell-unite-source-vimshell-external_history*
 vimshell/external_history
-		Todo
+		Nominates external shell histories as candidates. This source is also
+		available in interactive buffer. This source is used in
+		|unite#sources#vimshell_history#start_complete()|.
+		Note: Edit histories is invalid.
+		Vimshell searches external history path from $SHELL
+		automatically.  You can set external history path
+		|g:unite_source_vimshell_external_history_path|.
 
 kind actions:
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
 	execute		Execute history.
-		If you selected several histories, "; " will be inserted.
+			If you selected several histories, "; " will be inserted.
 	edit		Edit history.
 	delete		Delete history.
 
@@ -886,6 +908,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-02-05
 - Fixed error messages.
+- Translated tips and sources.
 
 2012-02-04
 - Fixed vimshell#set_context() error.
