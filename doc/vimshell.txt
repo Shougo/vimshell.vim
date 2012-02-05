@@ -111,7 +111,9 @@ COMMANDS 					*vimshell-commands*
 		Run vimshell.
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
-		Todo
+		Runs vimshell as the same :VimShell, but it creates a new
+		vimshell buffer instead of activating other vimshells which
+		are up and runnig.
 
 :VimShellTab [{options}...] [{path}]		*:VimShellTab*
 		Todo
