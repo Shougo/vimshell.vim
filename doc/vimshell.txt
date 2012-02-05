@@ -145,9 +145,11 @@ VARIABLES 					*vimshell-variables*
 
 g:vimshell_prompt				*g:vimshell_prompt*
 		Todo
+		Note: This variable must be set before execute |:VimShell|.
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		Todo
+		Note: This variable must be set before execute |:VimShell|.
 >
 		let g:vimshell_user_prompt = 'getcwd()'
 <
@@ -155,6 +157,7 @@ g:vimshell_user_prompt				*g:vimshell_user_prompt*
 
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		Todo
+		Note: This variable must be set before execute |:VimShell|.
 >
 g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
 		Todo
@@ -259,16 +262,16 @@ g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_
 KEY MAPPINGS 					*vimshell-key-mappings*
 
 <Plug>(vimshell_split_switch)			*<Plug>(vimshell_split_switch)*
-		Todo
+		Split screen and switches vimshell buffer.
 
 <Plug>(vimshell_split_create)			*<Plug>(vimshell_split_create)*
-		Todo
+		Split screen and creates vimshell buffer.
 
 <Plug>(vimshell_switch)				*<Plug>(vimshell_switch)*
-		Todo
+		Switches to vimshell buffer.
 
 <Plug>(vimshell_create)				*<Plug>(vimshell_create)*
-		Todo
+		Create vimshell buffer.
 
 VIMSHELL BUFFER KEY MAPPINGS 			*vimshell-buffer-key-mappings*
 
@@ -590,8 +593,6 @@ EXAMPLES						*vimshell-examples*
 	function! s:interactive_settings()
 	endfunction
 <
-Todo
-
 ==============================================================================
 INTERNAL COMMANDS					*vimshell-internal-commands*
 
@@ -728,31 +729,58 @@ whereis {command}				*vimshell-internal-whereis*
 
 ==============================================================================
 SPECIAL COMMANDS					*vimshell-special-commands*
-Todo
+Special command is minimum parsed by vimshell. So, you can parse arguments in
+special commands. But parsing is difficult.
 
 alias {alias-name} = {command}				*vimshell-special-alias*
-		Todo
+		Defines alias. Vimshell replaces {alias-name} as {command}.
+		Differnt from other shells, "=" with spaces is valid.
+		
+		The alias can take arguments. To get arguments, use $$args
+		variable.
 >
 		vimshell% alias echo=':echo "$$args"'
 		vimshell% alias echo2=':echo "$$args[1]"'
 		vimshell% alias echo3=':echo "$$args[2:]"'
 <
 galias {global-alias-name} = {command}			*vimshell-internal-galias*
-		Todo
+		Defines global alias. Vimshell replaces {global-alias-name} as {command}.
+		Differnt from |vimshell-special-alias|, global alias in
+		arguments is expanded. This feature is like to zsh global alias.
+		
+		Note: Global alias with pipes is not supported.
 >
 		vimshell% galias G = '|grep'
 		vimshell% ls G hoge
 <
 let ${var-name} = {expression}				*vimshell-special-let*
-		Todo
+		Assigns {expression} to {var-name}.
+		You must add prefix "$" in {var-name} head.
+		Note: Shell variable is vimshell buffer local.
+		
+		To assign to environment variables, Capitalize variable name
+		head.
 >
 		vimshell% let $Hoge = $hoge
 <
+		Differnt from other shells, "=" with spaces is valid.
+		The {expression} is Vim script expression.
+		But, you must add prefix "$" in variable name head.
+		Executed status is write in "$$status".
+		The prefix "$$" means vimshell internal variables.
+
 sexe {command}						*vimshell-special-sexe*
-		Todo
+		Execute {command} in 'shell'. If the command is wrong in
+		vimshell, you can use this command. 'shell'が適切に設定されてい
+		Note: Must be set 'shell' and shell options.
+		Note: In windows, appears DOS window.
 
 vexe {expression}					*vimshell-special-vexe*
-		Todo
+		Execute {expression} as Vim script statement and prints outputs.
+		Note: After execute command, must return vimshell buffer.
+		
+		You can use prefix ":" instead of vexe.
+		Note: If you use ":", vimshell do not parse anything.
 		
 		Example:
 >
@@ -955,6 +983,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed error messages.
 - Translated tips and sources.
 - Translated hooks and alter command.
+- Translated special commands.
 
 2012-02-04
 - Fixed vimshell#set_context() error.
