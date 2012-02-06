@@ -305,7 +305,7 @@ g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
 g:vimshell_cat_command				*g:vimshell_cat_command*
 		Sets $PAGER command path.
 		
-		Initial value "cat".
+		Initial value is "cat".
 
 g:vimshell_editor_command			*g:vimshell_editor_command*
 		Sets $EDITOR command path.
@@ -325,36 +325,70 @@ g:vimshell_environment_term			*g:vimshell_environment_term*
 		Default value is "xterm".
 
 g:vimshell_split_command			*g:vimshell_split_command*
-		vimshell uses this as the Ex command to split display.
+		vimshell uses this as the Ex command to split window.
 		If you set this "nicely", vimshell adjust with window size
 		and split window preferable.
+		Empty means disable window splitting for vimshell.
+		"tabnew" means vimshell opens new tab.
+		"vsplit" means vertical splitting.
 
-
-
+		Default value is "nicely".
 
 g:vimshell_popup_command			*g:vimshell_popup_command*
-		Todo
+		vimshell uses this as the Ex command to split window in
+		|:VimShellPop|.
+		Leaving this empty, "split" and |g:vimshell_popup_height|
+		will be used.
+
+		Default value is "".
 
 g:vimshell_popup_height				*g:vimshell_popup_height*
-		Todo
+		This value is split height of |:VimShellPop|.
+		This value is ratio percent against |winheight(0)|.
+
+		Default value 30.
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
-		Todo
+		This is Ex command to change current directory.
+		|`=| will be evaluated.
+
+		Default value is "lcd".
 
 g:vimshell_no_save_history_commands		*g:vimshell_no_save_history_commands*
-		Todo
+		This is dictionary value that has keys of the command name vimshell
+		doesn't save in history.
+
+		Default value is { 'history' : 1, 'h' : 1, 'histdel' : 1}.
 
 g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
-		Todo
+		This value is the maximum size of command output.
+		Output buffer will be trim down if output is more than this value.
+
+		Default value is 1000.
 
 g:vimshell_interactive_no_save_history_commands	*g:vimshell_interactive_no_save_history_commands*
-		Todo
+		This is a dictionary value which key is a command name that won't be save on the
+		history in |vimshell-internal-iexe|.
+		If there is not exist, it will be ignored.
+
+		Default value is {}.
 
 g:vimshell_interactive_update_time		*g:vimshell_interactive_update_time*
-		Todo
+		When |vimshell-internal-iexe| is in Insert mode, this value controls
+		the timing of auto update.
+		|vimshell-internal-iexe| changes 'updatetime' based on this value.
+
+		Default value is 500.
 
 g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
-		Todo
+		This is a dictionary variable which key is command name.
+		The command |vimshell-internal-iexe| runs take this as its option.
+		This option is used in such situation that you want to use a command
+		that take some particular options or doesn't work well interactively, like
+		in windows environment.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_interpreter_commands	*g:vimshell_interactive_interpreter_commands*
 		Todo
