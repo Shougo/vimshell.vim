@@ -187,7 +187,7 @@ COMMANDS 					*vimshell-commands*
 :VimShellTerminal {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
 		it launches a terminal program you Specify by {command}.
-		Note that this is not completed function.
+		Note: This is not completed function.
 
 :VimShellSendString {string}			*:VimShellSendString*
 		It sends selected string to the interpreter in background window
