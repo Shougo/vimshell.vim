@@ -868,7 +868,10 @@ function! vimshell#get_editor_name()"{{{
   if !exists('g:vimshell_editor_command')
     " Set editor command.
     if has('clientserver') && (has('gui_running') || has('gui'))
-      let progname = has('gui_running') ? v:progname : 'vim -g'
+      let progname = has('gui_macvim')
+            \      && executable('/Applications/MacVim.app/Contents/MacOS/Vim') ?
+            \ '/Applications/MacVim.app/Contents/MacOS/Vim -g' :
+            \ has('gui_running') ? v:progname : 'vim -g'
       let g:vimshell_editor_command = printf('%s %s --remote-wait-silent',
             \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
     else
