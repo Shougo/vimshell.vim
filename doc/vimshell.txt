@@ -167,7 +167,6 @@ COMMANDS 					*vimshell-commands*
 		To split it, |g:vimshell_popup_command| is suited command.
 		When you are in vimshell buffer, it closes the buffer.
 
-
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
 		Like as |:VimShell|, but move to current directory.
 
@@ -242,14 +241,14 @@ g:vimshell_ignore_case				*g:vimshell_ignore_case*
 		This controls whether ignore case (uppercase and lowercase) or
 		not when vimshell searches the completion candidates.
 
-		Initial value is &ignorecase.
+		Initial value same to 'ignorecase'.
 
 g:vimshell_smart_case				*g:vimshell_smart_case*
 		When this option is activated, vimshell doesn't ignore
 		lettercases if uppercase is inputed while searches completion
 		candidates.
 		
-		Initial value is &smartcase.
+		Initial value same to 'smartcase'.
 
 g:vimshell_max_list				*g:vimshell_max_list*
 		Maximum number of completion candidates in vimshell.
@@ -690,22 +689,31 @@ The internal commands are internal commands in other shells.  The arguments are
 split by vimshell.
 
 Note: The internal commands do not supports pipeline.
-If you use pipe, vimshell execute external command automatically.  So following
+If you use pipe, vimshell execute external command forcibly.  So following
 commands will be freeze.
 >
 		vimshell% echo hello | vim
 <
 bg [{option}...] {command}				*vimshell-internal-bg*
-		Todo
-		
-		Example:
+		Opens new buffer and executes {command} by background.
+		Execute external command forcibly.  You can not input to
+		{command}.
+		If you press <C-c> in background buffer, kill {command}
+		execution.
+		Note: "command &" equals to "bg command"
 >
 		vimshell% ls&
 <
-		Todo
+		Note: iexe, exe, bg, texe and less interpret options changes
+		the behavior. Refer to |vimshell-execute-options|.
 		
-		--filetype = {filetype-name}
-		Todo
+		--filetype={filetype-name}
+		Changes output buffer 'filetype' to {filetype-name}.
+		If omit the option, filetype will be set "background".
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 build [{builder-name}, [{args}...]]			*vimshell-internal-build*
 		Execute ":Unite build:{builder-name}:{args}".
@@ -737,7 +745,8 @@ eval {expression}					*vimshell-internal-eval*
 		Eval {expression} as vimshell script and print it.
 
 exe [{option}...] {command} 				*vimshell-internal-exe*
-		Execute {command} with arguments. Execute external command automatically.
+		Execute {command} with arguments. Execute external command
+		forcibly.
 		Note: While executing commands, can not execute other commands.
 		Note: After vimshell Ver.9, exe can read inputs.
 		
@@ -765,11 +774,16 @@ gendoc {command} {args}					*vimshell-internal-gendoc*
 
 gexe {command}						*vimshell-internal-gexe*
 		Execute {command} with args. Execute external command
-		automatically.
+		forcibly.
 		Differnt from exe, it is specialized GUI command.
 
 h [{pattern}]						*vimshell-internal-h*
-		Todo
+		Executes {pattern} matched history. If {pattern} is number,
+		execute {pattern} number history.  If {pattern} is string,
+		execute first {pattern} matched history.  You can check history
+		number by executing |vimshell-internal-history|. If you omit
+		{pattern}, execute last command.
+		Note: This command does not add history.
 
 histdel {history-number}				*vimshell-internal-histdel*
 		Deletes {history-number} history. You can check history number
@@ -782,13 +796,38 @@ history [{search-string}]				*vimshell-internal-history*
 		If press <Enter> in history list, execute the history.
 
 iexe [{options}...] {command}				*vimshell-internal-iexe*
-		Todo
+		Opens new interactive buffer and execute {command} with args.
+		Execute external command forcibly.
+		Different from exe, this command is for interactive command.
+		Note: Interactive buffer |filetype| is int-{command}. If you
+		use |:autocmd| for interactive buffer, use "int-*" pattern.
 		
 		Note:
-		Todo
+		This command is not supports zsh right prompt.
+		If execute process from iexe, set "$VIMSHELL" to 1.
+		Should check it in your shell rc file.
+		
+		Note: iexe, exe, bg, texe and less interpret options changes
+		the behavior. Refer to |vimshell-execute-options|.
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 less [{options}...] {command}				*vimshell-internal-less*
-		Todo
+		Opens new buffer and executes {command} with arguments. Execute
+		external command forcibly. Vimshell will work like pager.
+		Note: syntax sugar:
+		{command1} | {command2} | less
+		If {command} is not executable command, execute
+		|vimshell-internal-view|.
+		
+		Note: iexe, exe, bg, texe and less interpret options changes
+		the behavior. Refer to |vimshell-execute-options|.
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
 
 ls [{argument}...]					*vimshell-internal-ls*
 		Execute "ls" external command with args.
@@ -829,7 +868,7 @@ source {files}						*vimshell-internal-source*
 
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Execute {command} with args.
-		Note: Execute external command automatically.
+		Note: Execute external command forcibly.
 		Differnt from exe and iexe, it execute terminal command.  This
 		command creates new buffer.
 		Note: Pipe is not supported.
