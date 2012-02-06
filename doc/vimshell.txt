@@ -441,10 +441,19 @@ g:vimshell_interactive_cygwin_commands		*g:vimshell_interactive_cygwin_commands*
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_path		*g:vimshell_interactive_cygwin_path*
-		Todo
+		It is assigned to the pass vimshell reffers when launching programs
+		via fakecygpty.
+		If the first argument of |vimshell-internal-iexe| is fakecygpty,
+		vimshell searches command from |g:vimshell_interactive_cygwin_path|
+		instead of $PATH.
+
+		Default value is 'c:/cygwin/bin'.
 
 g:vimshell_interactive_cygwin_home		*g:vimshell_interactive_cygwin_home*
-		Todo
+		It is assigned to $HOME of the program launched via fakecygpty.
+		Leavin '' means to use current $HOME.
+
+		Default value is ''.
 
 g:vimshell_interactive_monochrome_commands	*g:vimshell_interactive_monochrome_commands*
 		This is a dictionary variable with command name key, and the value is an
