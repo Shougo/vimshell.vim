@@ -865,6 +865,17 @@ function! vimshell#restore_pos(pos)"{{{
   call setpos('.', a:pos[3])
 endfunction"}}}
 function! vimshell#get_editor_name()"{{{
+  if !exists('g:vimshell_editor_command')
+    " Set editor command.
+    if has('clientserver') && (has('gui_running') || executable('gvim'))
+      let progname = has('gui_running') ? v:progname : 'gvim'
+      let g:vimshell_editor_command = printf('%s %s --remote-wait-silent',
+            \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
+    else
+      let g:vimshell_editor_command = g:vimshell_cat_command
+    endif
+  endif
+
   return g:vimshell_editor_command
 endfunction"}}}
 "}}}
