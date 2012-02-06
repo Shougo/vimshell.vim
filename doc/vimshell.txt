@@ -298,10 +298,20 @@ g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
 		Todo
 
 g:vimshell_cat_command				*g:vimshell_cat_command*
-		Todo
+		Sets $PAGER command path.
+		
+		Initial value "cat".
 
 g:vimshell_editor_command			*g:vimshell_editor_command*
-		Todo
+		Sets $EDITOR command path.
+		
+		Note: This variable is useful for using editor comands.
+		For example, "git commit" or "git rebase -i" commands.
+		Note: This feature required "gvim" supported |+clientserver|
+		feature.
+
+		Initial value "gvim --remote-wait-silent" or same to
+		|g:vimshell_cat_command|.
 
 g:vimshell_environment_term			*g:vimshell_environment_term*
 		Todo
