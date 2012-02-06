@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 06 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -233,7 +233,7 @@ function! vimshell#create_shell(path, ...)"{{{
         \ || vimshell#head_match(vimshell#get_secondary_prompt(), vimshell#get_prompt())
     call vimshell#echo_error(printf('Head matched g:vimshell_prompt("%s")'.
           \ ' and your g:vimshell_secondary_prompt("%s").',
-          \ vimshell#get_prompt(), vimshell#get_secondary_prompt())
+          \ vimshell#get_prompt(), vimshell#get_secondary_prompt()))
     finish
   elseif vimshell#head_match(vimshell#get_prompt(), '[%] ')
         \ || vimshell#head_match('[%] ', vimshell#get_prompt())
@@ -242,9 +242,9 @@ function! vimshell#create_shell(path, ...)"{{{
     finish
   elseif vimshell#head_match('[%] ', vimshell#get_secondary_prompt())
         \ || vimshell#head_match(vimshell#get_secondary_prompt(), '[%] ')
-    call printf('Head matched g:vimshell_user_prompt("[%] ")'.
+    call vimshell#echo_error(printf('Head matched g:vimshell_user_prompt("[%] ")'.
           \ ' and your g:vimshell_secondary_prompt("%s").',
-          \ vimshell#get_secondary_prompt())
+          \ vimshell#get_secondary_prompt()))
     finish
   endif"}}}
 
