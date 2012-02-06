@@ -385,7 +385,7 @@ g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
 		The command |vimshell-internal-iexe| runs take this as its option.
 		This option is used in such situation that you want to use a command
 		that take some particular options or doesn't work well interactively, like
-		in windows environment.
+		in windows environments.
 
 		Defalut value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
