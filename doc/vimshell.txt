@@ -310,8 +310,8 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		Note: This feature required "gvim" supported |+clientserver|
 		feature.
 
-		Initial value "gvim --remote-wait-silent" or same to
-		|g:vimshell_cat_command|.
+		Initial value "v:progname --servername=v:servername
+		--remote-wait-silent" or same to |g:vimshell_cat_command|.
 
 g:vimshell_environment_term			*g:vimshell_environment_term*
 		Todo
@@ -1206,6 +1206,7 @@ CHANGELOG						*vimshell-changelog*
 2012-02-06
 - Translated internal commands.
 - Fixed check prompt value.
+- Improved initialize g:vimshell_editor_command.
 
 2012-02-05
 - Fixed error messages.
