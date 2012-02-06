@@ -867,8 +867,8 @@ endfunction"}}}
 function! vimshell#get_editor_name()"{{{
   if !exists('g:vimshell_editor_command')
     " Set editor command.
-    if has('clientserver') && (has('gui_running') || executable('gvim'))
-      let progname = has('gui_running') ? v:progname : 'gvim'
+    if has('clientserver') && (has('gui_running') || has('gui'))
+      let progname = has('gui_running') ? v:progname : 'vim -g'
       let g:vimshell_editor_command = printf('%s %s --remote-wait-silent',
             \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
     else
