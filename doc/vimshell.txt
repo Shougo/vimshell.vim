@@ -307,8 +307,8 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		
 		Note: This variable is useful for using editor comands.
 		For example, "git commit" or "git rebase -i" commands.
-		Note: This feature required "gvim" supported |+clientserver|
-		feature.
+		Note: This feature required GUI Vim and supported
+		|+clientserver| feature.
 
 		Initial value "v:progname --servername=v:servername
 		--remote-wait-silent" or same to |g:vimshell_cat_command|.
