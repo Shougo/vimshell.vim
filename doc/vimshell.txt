@@ -1271,11 +1271,8 @@ CHANGELOG						*vimshell-changelog*
 2012-02-06
 - Translated internal commands.
 - Fixed check prompt value.
-<<<<<<< HEAD
 - Improved initialize g:vimshell_editor_command.
 - Fixed for MacVim.
-=======
->>>>>>> - Fixed check prompt value.
 
 2012-02-05
 - Fixed error messages.
