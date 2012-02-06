@@ -259,22 +259,41 @@ g:vimshell_max_list				*g:vimshell_max_list*
 		Initial value is 100.
 
 g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
-		Todo
+		When execute |vimshell-internal-shell|, this option sets 
+		terminal program execute shell.
+		"ckw -e" in Windows, "gnome-terminal -e" in Linux,
+		become a candidate of value.
+		
+		Initial value is "".
 
 g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
-		Todo
+		Set a temporaly directory used by vimshell. And history
+		file is saved in this directory.
+
+		Initial value is "expand('~/.vimshell')".
 
 g:vimshell_max_command_history			*g:vimshell_max_command_history*
-		Todo
+		Maximum number of entries in history.
+
+		Initial value is 1000. 
 
 g:vimshell_max_directory_stack			*g:vimshell_max_directory_stack*
-		Todo
+		Maximum number of directory stacks saved by vimshell.
+
+		Initial value is 100.
 
 g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
-		Todo
+		Set a setting file .vimrc read by vimshell first.
+		This is similar to .bashrc in bash. It is convinience
+		define aliases in this file. 
+
+		Initial Value is "expand('~/.vimshrc')".
 
 g:vimshell_escape_colors			*g:vimshell_escape_colors*
-		Todo
+		A list of colors correspond to coloring in escape 
+		sequence. 0-8 as normal colors, 9-15 as highlight colors.
+
+		Initial value is written in plugin/vimshell.vim. 
 
 g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
 		Todo
