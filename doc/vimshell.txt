@@ -381,7 +381,7 @@ g:vimshell_interactive_update_time		*g:vimshell_interactive_update_time*
 		Default value is 500.
 
 g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
-		This is a dictionary variable which key is command name.
+		This is a dictionary variable with command name key.
 		The command |vimshell-internal-iexe| runs take this as its option.
 		This option is used in such situation that you want to use a command
 		that take some particular options or doesn't work well interactively, like
@@ -391,16 +391,34 @@ g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_interpreter_commands	*g:vimshell_interactive_interpreter_commands*
-		Todo
+		This is a dictionary variable with filetype key and it is assignments of an
+		interpreter name without arguments of |:VimShellInteractive|.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_encodings		*g:vimshell_interactive_encodings*
-		Todo
+		This is a dictionary variable with commnad name key and it is assignments of an
+		encoding for the command which |vimshell-internal-iexe| runs.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_commands*
-		Todo
+		This is a dictionary variable with interpreter name key, and if the value is 1,
+		iexe doesn't echoback when |vimshell-internal-iexe| is running, and otherwise
+		does.
+		This value has effect only on windows.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
-		Todo
+		It is an assignment of cursor shape |vimshell-internal-texe| uses.
+		'guicursor' is temporary changed, so this value has effect only on
+		gvim environments.
+
+		Default value is 'i:block-Cursor/lCursor'.
 
 g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
 		Todo
