@@ -421,10 +421,24 @@ g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
 		Default value is 'i:block-Cursor/lCursor'.
 
 g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
-		Todo
+		This is a dictionary variable with command name key, and when you run a command
+		of which value is True, automatically |vimshell-internal-texe| is used.
+		iexe doesn't echoback when |vimshell-internal-iexe| is running, and otherwise
+		does.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_commands		*g:vimshell_interactive_cygwin_commands*
-		Todo
+		This is a dictionary variable with command name key, and the value is an
+		assignment of commands which runs via fakecygpty.
+		It is used when you launch some application that works only on Cygwin (like ssh)
+		by |vimshell-internal-iexe|.
+
+		To know about fakecygpty, you should refer |vimshell-tips-fakecygpty|.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_path		*g:vimshell_interactive_cygwin_path*
 		Todo
@@ -433,10 +447,17 @@ g:vimshell_interactive_cygwin_home		*g:vimshell_interactive_cygwin_home*
 		Todo
 
 g:vimshell_interactive_monochrome_commands	*g:vimshell_interactive_monochrome_commands*
-		Todo
+		This is a dictionary variable with command name key, and the value is an
+		assignment of commands which you want to disable hilighting.
+
+		Defalut value is complicated, so please refer
+		autoload/vimshell/commands/iexe.vim.
 
 g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_history_path*
-		Todo
+		It is assignment of a history file that |vimshell/external_history| source
+		recognizes.
+
+		Default value is set to suit for $SHELL value.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*vimshell-key-mappings*
