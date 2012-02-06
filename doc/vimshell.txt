@@ -159,7 +159,7 @@ COMMANDS 					*vimshell-commands*
 		are up and runnig.
 
 :VimShellTab [{options}...] [{path}]		*:VimShellTab*
-		Todo
+		It's same as |:VimShellCreate|, but create a new tab.
 
 :VimShellPop [{options}...] [{path}]		*:VimShellPop*
 		Like as |:VimShell|, but this command popups little window.
@@ -204,34 +204,61 @@ COMMANDS 					*vimshell-commands*
 VARIABLES 					*vimshell-variables*
 
 g:vimshell_prompt				*g:vimshell_prompt*
-		Todo
-		Note: This variable must be set before execute |:VimShell|.
+		Set vimshell prompt string. vimshell evaluate this only once.
+		
+		To make it secure, this make nothing if this is set after calling
+		vimshell functions.
+		Intial value is 'vimshell%'.
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
-		Todo
-		Note: This variable must be set before execute |:VimShell|.
+		You can define additional prompt to substitute a string for this.
+		Unlike |g:vimshell_prompt|, it can be a non-fixed string.
+		You can get multi-line prompt by seperating "user prompt" with \n.
+		
+		This example will be helpful to show current directory everytime.
 >
 		let g:vimshell_user_prompt = 'getcwd()'
 <
-		Todo
+		To make it secure, this make nothing if this is set after calling
+		vimshell functions.
+		Intial value is empty.
 
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
-		Todo
-		Note: This variable must be set before execute |:VimShell|.
->
+		It's zsh-like right prompt. This value is a string value which is
+		an expression of Vim Script. similar to |g:vimshell_user_prompt|,
+		but this calculates the window size, and show the prompt on
+		preferable position.
+		To make it secure, this make nothing if this is set after calling
+		vimshell functions.
+		Intial value is empty.
+
 g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
-		Todo
+		Disable all default keymapings in vimshell.
+		You can not use vimshell funcitons unless you set new keymappings,
+		so it is for hackers who have understood the inner behaviors,
+		and not recommend for newbies.
 
 g:vimshell_ignore_case				*g:vimshell_ignore_case*
-		Todo
+		This controls whether ignore case(uppercase and lowercase) or
+		not when vimshell searches the completion candidates.
+		
+		Initial value is &ignorecase.
 
 g:vimshell_smart_case				*g:vimshell_smart_case*
-		Todo
+		When this option is activated, vimshell doesn't ignore
+		lettercases if uppercase is inputed while searches completion
+		candidates.
+		
+		Initial value is &smartcase.
 
 g:vimshell_max_list				*g:vimshell_max_list*
-		Todo
+		Maximum number of completion candidates in vimshell.
+		If there is more completion candidates than this value,
+		candidates will be omited.
 
-g:vimshell_use_ckw				*g:vimshell_use_ckw*
+		Initial value is 100.
+
+g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
 		Todo
 
 g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
