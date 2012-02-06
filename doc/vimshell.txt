@@ -1195,6 +1195,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-02-06
 - Translated internal commands.
+- Fixed check prompt value.
 
 2012-02-05
 - Fixed error messages.
