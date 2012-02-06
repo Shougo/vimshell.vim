@@ -258,7 +258,11 @@ g:vimshell_max_list				*g:vimshell_max_list*
 		Initial value is 100.
 
 g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
+<<<<<<< HEAD
 		When executes |vimshell-internal-shell|, this option set
+=======
+		When execute |vimshell-internal-shell|, this option sets 
+>>>>>>> some variables
 		terminal program execute shell.
 		"ckw -e" in Windows, "gnome-terminal -e" in Linux,
 		become a candidate of value.
