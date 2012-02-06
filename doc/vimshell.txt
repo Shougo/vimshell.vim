@@ -295,7 +295,12 @@ g:vimshell_escape_colors			*g:vimshell_escape_colors*
 		Initial value is written in plugin/vimshell.vim.
 
 g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
-		Todo
+		This value controls whether vimshell highlights escape sequences.
+		Disabling this function make vimshell faster because processing this
+		is hard task.
+		This value is negative logic, so True means disabling.
+
+		Default value is 0.
 
 g:vimshell_cat_command				*g:vimshell_cat_command*
 		Sets $PAGER command path.
@@ -316,10 +321,16 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		--remote-wait-silent" or same to |g:vimshell_cat_command|.
 
 g:vimshell_environment_term			*g:vimshell_environment_term*
-		Todo
+		This value is $TERM on vimshell.
+		Default value is "xterm".
 
 g:vimshell_split_command			*g:vimshell_split_command*
-		Todo
+		vimshell uses this as the Ex command to split display.
+		If you set this "nicely", vimshell adjust with window size
+		and split window preferable.
+
+
+
 
 g:vimshell_popup_command			*g:vimshell_popup_command*
 		Todo
