@@ -1052,6 +1052,11 @@ function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
 
   return sort(_)
 endfunction"}}}
+function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos)"{{{
+  " Get complete words.
+  return map(vimshell#complete#command_complete#get_candidates(
+        \ a:cmdline, 0, a:arglead), 'v:val.word')
+endfunction"}}}
 
 " Auto commands function.
 function! s:event_bufwin_enter()"{{{

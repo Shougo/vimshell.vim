@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Feb 2012.
+" Last Modified: 07 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -159,11 +159,11 @@ command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
       \ call s:call_vimshell({}, <q-args> . ' ' .
       \ vimshell#util#substitute_path_separator(fnamemodify(bufname('%'), ':p:h')))
 
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellExecute
+command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellExecute
       \ call s:vimshell_execute(<q-args>)
-command! -nargs=* -complete=customlist,s:execute_completefunc VimShellInteractive
+command! -nargs=* -complete=customlist,vimshell#vimshell_execute_complete VimShellInteractive
       \ call s:vimshell_interactive(<q-args>)
-command! -nargs=+ -complete=customlist,s:execute_completefunc VimShellTerminal
+command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellTerminal
       \ call s:vimshell_terminal(<q-args>)
 
 " Plugin keymappings"{{{
@@ -178,11 +178,6 @@ nnoremap <silent> <Plug>(vimshell_create)
 "}}}
 
 " Command functions:
-function! s:execute_completefunc(lead, cmd, pos)"{{{
-  silent! let keys = vimshell#complete#vimshell_execute_complete#completefunc(
-        \ a:lead, a:cmd, a:pos)
-  return keys
-endfunction"}}}
 function! s:vimshell_execute(args)"{{{
   let context = {
         \ 'has_head_spaces' : 0,
