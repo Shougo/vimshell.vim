@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Feb 2012.
+" Last Modified: 07 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -872,7 +872,7 @@ function! vimshell#get_editor_name()"{{{
             \      && executable('/Applications/MacVim.app/Contents/MacOS/Vim') ?
             \ '/Applications/MacVim.app/Contents/MacOS/Vim -g' :
             \ has('gui_running') ? v:progname : 'vim -g'
-      let g:vimshell_editor_command = printf('%s %s --remote-wait-silent',
+      let g:vimshell_editor_command = printf('%s %s --remote-tab-wait-silent',
             \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
     else
       let g:vimshell_editor_command = g:vimshell_cat_command

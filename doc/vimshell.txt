@@ -155,15 +155,15 @@ COMMANDS 					*vimshell-commands*
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Runs vimshell as the same :VimShell, but it creates a new
-		vimshell buffer instead of activating other vimshells which
-		are up and runnig.
+		vimshell buffer instead of activating other vimshells which are
+		up and runnig.
 
 :VimShellTab [{options}...] [{path}]		*:VimShellTab*
 		It's same as |:VimShellCreate|, but creates a new tab.
 
 :VimShellPop [{options}...] [{path}]		*:VimShellPop*
-		Like as |:VimShell|, but this command popups little window.
-		It will be your help when you want to make vimshell a bit help.
+		Like as |:VimShell|, but this command popups little window.  It
+		will be your help when you want to make vimshell a bit help.
 		To split it, |g:vimshell_popup_command| is suited command.
 		When you are in vimshell buffer, it closes the buffer.
 
@@ -181,8 +181,8 @@ COMMANDS 					*vimshell-commands*
 :VimShellInteractive [{command}]		*:VimShellInteractive*
 		It does not run vimshell, but launches a interpreter program
 		you specify by {command}.  It is same as Emacs's M-x
-		{interpreter-name}.  You leave out {command}, vimshell uses
-		the value in |g:vimshell_interactive_interpreter_commands|.
+		{interpreter-name}.  You leave out {command}, vimshell uses the
+		value in |g:vimshell_interactive_interpreter_commands|.
 
 :VimShellTerminal {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
@@ -190,13 +190,13 @@ COMMANDS 					*vimshell-commands*
 		Note: This is not completed function.
 
 :VimShellSendString {string}			*:VimShellSendString*
-		It sends selected string to the interpreter in background window
-		of vimshell, iexe, texe.
-		You can control interpreter as if you are using |quickrun|.
+		It sends selected string to the interpreter in background
+		buffer of vimshell, iexe, texe.  You can control interpreter as
+		if you are using |quickrun|.
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
-		Sets background window as {bufname}.
-		When {bufname} isn't showed, it will be opened automatically.
+		Sets background buffer as {bufname}.  When {bufname} isn't
+		showed, it will be opened automatically.
 
 ------------------------------------------------------------------------------
 VARIABLES 					*vimshell-variables*
@@ -238,8 +238,9 @@ g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
 		inner behaviors, and not recommended for newbies.
 
 g:vimshell_ignore_case				*g:vimshell_ignore_case*
-		This controls whether ignore case (uppercase and lowercase) or
-		not when vimshell searches the completion candidates.
+		This variable controls whether ignore case (uppercase and
+		lowercase) or not when vimshell searches the completion
+		candidates.
 
 		Initial value same to 'ignorecase'.
 
@@ -266,8 +267,8 @@ g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
 		Initial value is "".
 
 g:vimshell_temporary_directory			*g:vimshell_temporary_directory*
-		Sets a temporaly directory used by vimshell. And history
-		file is saved in this directory.
+		Sets a temporaly directory used by vimshell. And history file
+		is saved in this directory.
 
 		Initial value is "expand('~/.vimshell')".
 
@@ -283,22 +284,22 @@ g:vimshell_max_directory_stack			*g:vimshell_max_directory_stack*
 
 g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
 		Sets a setting file read by vimshell first.
-		This is similar to .bashrc in bash. It is convinience
-		when you define aliases.
+		This is similar to .bashrc in bash. It is convinience when you
+		define aliases.
 
 		Initial Value is "expand('~/.vimshrc')".
 
 g:vimshell_escape_colors			*g:vimshell_escape_colors*
-		A list of colors correspond to coloring in escape
-		sequence. 0-8 as normal colors, 9-15 as highlight colors.
+		A list of colors correspond to coloring in escape sequence. 0-8
+		as normal colors, 9-15 as highlight colors.
 
 		Initial value is written in plugin/vimshell.vim.
 
 g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
-		This value controls whether vimshell highlights escape sequences.
-		Disabling this function make vimshell faster because processing this
-		is hard task.
-		This value is negative logic, so True means disabling.
+		This value controls whether vimshell highlights escape
+		sequences.  Disabling this function make vimshell faster
+		because processing this is hard task.
+		Note: This value is negative logic, so True means disabling.
 
 		Default value is 0.
 
@@ -316,6 +317,7 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		|+clientserver| feature.
 		Note: To reflect external editor changes, you must write opened
 		temporary buffer and execute|:bdelete| in external editor.
+		Note: You *must not* set "core.editor" variable in git config.
 
 		Initial value "v:progname --servername=v:servername
 		--remote-wait-silent" or same to |g:vimshell_cat_command|.
@@ -325,9 +327,9 @@ g:vimshell_environment_term			*g:vimshell_environment_term*
 		Default value is "xterm".
 
 g:vimshell_split_command			*g:vimshell_split_command*
-		vimshell uses this as the Ex command to split window.
-		If you set this "nicely", vimshell adjust with window size
-		and split window preferable.
+		Vimshell uses this as the Ex command to split window.  If you
+		set this "nicely", vimshell adjust with window size and split
+		window preferable.
 		Empty means disable window splitting for vimshell.
 		"tabnew" means vimshell opens new tab.
 		"vsplit" means vertical splitting.
@@ -335,7 +337,7 @@ g:vimshell_split_command			*g:vimshell_split_command*
 		Default value is "nicely".
 
 g:vimshell_popup_command			*g:vimshell_popup_command*
-		vimshell uses this as the Ex command to split window in
+		Vimshell uses this as the Ex command to split window in
 		|:VimShellPop|.
 		Leaving this empty, "split" and |g:vimshell_popup_height|
 		will be used.
@@ -349,8 +351,8 @@ g:vimshell_popup_height				*g:vimshell_popup_height*
 		Default value 30.
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
-		This is Ex command to change current directory.
-		|`=| will be evaluated.
+		This is the Ex command to change current directory.
+		The command must interpret|`=| .
 
 		Default value is "lcd".
 
@@ -367,46 +369,50 @@ g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 		Default value is 1000.
 
 g:vimshell_interactive_no_save_history_commands	*g:vimshell_interactive_no_save_history_commands*
-		This is a dictionary value which key is a command name that won't be save on the
-		history in |vimshell-internal-iexe|.
+		This is a dictionary value which key is a command name that
+		won't be save on the history in |vimshell-internal-iexe|.
 		If there is not exist, it will be ignored.
 
 		Default value is {}.
 
 g:vimshell_interactive_update_time		*g:vimshell_interactive_update_time*
-		When |vimshell-internal-iexe| is in Insert mode, this value controls
-		the timing of auto update.
-		|vimshell-internal-iexe| changes 'updatetime' based on this value.
+		When |vimshell-internal-iexe| is in Insert mode, this value
+		controls the timing of auto update.
+		|vimshell-internal-iexe| changes 'updatetime' based on this
+		value.
 
 		Default value is 500.
 
 g:vimshell_interactive_command_options		*g:vimshell_interactive_command_options*
-		This is a dictionary variable with command name key.
-		The command |vimshell-internal-iexe| runs take this as its option.
-		This option is used in such situation that you want to use a command
-		that take some particular options or doesn't work well interactively, like
-		in windows environments.
+		This is a dictionary variable with command name key.  The
+		command |vimshell-internal-iexe| runs take this as its option.
+		This option is used in such situation that you want to use a
+		command that take some particular options or doesn't work well
+		interactively, like in windows environments.
 
-		Defalut value is complicated, so please refer
+		Defalut value is too complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_interpreter_commands	*g:vimshell_interactive_interpreter_commands*
-		This is a dictionary variable with filetype key and it is assignments of an
-		interpreter name without arguments of |:VimShellInteractive|.
+		This is a dictionary variable with filetype key and it is
+		assignments of an interpreter name without arguments of
+		|:VimShellInteractive|.
 
-		Defalut value is complicated, so please refer
+		Defalut value is too complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_encodings		*g:vimshell_interactive_encodings*
-		This is a dictionary variable with commnad name key and it is assignments of an
-		encoding for the command which |vimshell-internal-iexe| runs.
+		This is a dictionary variable with commnad name key and it is
+		assignments of an encoding for the command which
+		|vimshell-internal-iexe| runs.
 
 		Defalut value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_commands*
-		This is a dictionary variable with interpreter name key, and if the value is 1,
-		iexe doesn't echoback when |vimshell-internal-iexe| is running, and otherwise
+		This is a dictionary variable with interpreter name key, and if
+		the value is 1, iexe doesn't echoback when
+		|vimshell-internal-iexe| is running, and otherwise
 		does.
 		This value has effect only on windows.
 
@@ -414,37 +420,41 @@ g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_comman
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
-		It is an assignment of cursor shape |vimshell-internal-texe| uses.
-		'guicursor' is temporary changed, so this value has effect only on
+		It is an assignment of cursor shape |vimshell-internal-texe|
+		uses.  'guicursor' is temporary changed, so this value has
+		effect only on
 		gvim environments.
 
 		Default value is 'i:block-Cursor/lCursor'.
 
 g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
-		This is a dictionary variable with command name key, and when you run a command
-		of which value is True, automatically |vimshell-internal-texe| is used.
-		iexe doesn't echoback when |vimshell-internal-iexe| is running, and otherwise
+		This is a dictionary variable with command name key, and when
+		you run a command of which value is True, automatically
+		|vimshell-internal-texe| is used.  iexe doesn't echoback when
+		|vimshell-internal-iexe| is running, and otherwise
 		does.
 
 		Defalut value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_commands		*g:vimshell_interactive_cygwin_commands*
-		This is a dictionary variable with command name key, and the value is an
-		assignment of commands which runs via fakecygpty.
-		It is used when you launch some application that works only on Cygwin (like ssh)
-		by |vimshell-internal-iexe|.
+		This is a dictionary variable with command name key, and the
+		value is an assignment of commands which runs via fakecygpty.
+		It is used when you launch some application that works only on
+		Cygwin (like ssh) by |vimshell-internal-iexe|.
 
-		To know about fakecygpty, you should refer |vimshell-tips-fakecygpty|.
+		To know about fakecygpty, you should refer
+		|vimshell-tips-fakecygpty|.
 
 		Defalut value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_path		*g:vimshell_interactive_cygwin_path*
-		It is assigned to the pass vimshell reffers when launching programs
-		via fakecygpty.
-		If the first argument of |vimshell-internal-iexe| is fakecygpty,
-		vimshell searches command from |g:vimshell_interactive_cygwin_path|
+		It is assigned to the pass vimshell reffers when launching
+		programs via fakecygpty.
+		If the first argument of |vimshell-internal-iexe| is
+		fakecygpty, vimshell searches command from
+		|g:vimshell_interactive_cygwin_path|
 		instead of $PATH.
 
 		Default value is 'c:/cygwin/bin'.
@@ -456,15 +466,16 @@ g:vimshell_interactive_cygwin_home		*g:vimshell_interactive_cygwin_home*
 		Default value is ''.
 
 g:vimshell_interactive_monochrome_commands	*g:vimshell_interactive_monochrome_commands*
-		This is a dictionary variable with command name key, and the value is an
-		assignment of commands which you want to disable hilighting.
+		This is a dictionary variable with command name key, and the
+		value is an assignment of commands which you want to disable
+		hilighting.
 
 		Defalut value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_history_path*
-		It is assignment of a history file that |vimshell/external_history| source
-		recognizes.
+		It is assignment of a history file that
+		|vimshell/external_history| source recognizes.
 
 		Default value is set to suit for $SHELL value.
 
@@ -1297,6 +1308,10 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-02-07
+- Improved g:vimshell_editor_command behavior.
+- Improved English documentation.
 
 2012-02-06
 - Translated internal commands.
