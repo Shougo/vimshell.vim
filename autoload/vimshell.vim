@@ -874,10 +874,18 @@ function! vimshell#get_editor_name()"{{{
   if !exists('g:vimshell_editor_command')
     " Set editor command.
     if has('clientserver') && (has('gui_running') || has('gui'))
-      let progname = has('gui_macvim')
-            \      && executable('/Applications/MacVim.app/Contents/MacOS/Vim') ?
-            \ '/Applications/MacVim.app/Contents/MacOS/Vim -g' :
-            \ has('gui_running') ? v:progname : 'vim -g'
+      if has('gui_macvim')
+        " MacVim check.
+        if !executable('/Applications/MacVim.app/Contents/MacOS/Vim')
+          echoerr 'You installed MacVim in not default directory! You must set g:vimshell_editor_command manually.'
+          return g:vimshell_cat_command
+        endif
+
+        let progname = '/Applications/MacVim.app/Contents/MacOS/Vim -g'
+      else
+        let progname = has('gui_running') ? v:progname : 'vim -g'
+      endif
+
       let g:vimshell_editor_command = printf('%s %s --remote-tab-wait-silent',
             \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
     else
