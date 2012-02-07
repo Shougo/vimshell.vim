@@ -174,60 +174,7 @@ function! vimshell#create_shell(path, ...)"{{{
 
   edit! `=bufname`
 
-  if empty(s:internal_commands)
-    call s:init_internal_commands()
-  endif
-
-  " Load history.
-  let g:vimshell#hist_buffer = vimshell#history#read()
-
-  " Initialize variables.
-  let b:vimshell = {}
-
-  " Change current directory.
-  let b:vimshell.current_dir = path
-  call vimshell#cd(path)
-
-  let b:vimshell.alias_table = {}
-  let b:vimshell.galias_table = {}
-  let b:vimshell.altercmd_table = {}
-  let b:vimshell.commandline_stack = []
-  let b:vimshell.variables = {}
-  let b:vimshell.system_variables = { 'status' : 0 }
-  let b:vimshell.directory_stack = []
-  let b:vimshell.prompt_current_dir = {}
-  let b:vimshell.continuation = {}
-  let b:vimshell.prompts_save = {}
-
-  " Default settings.
-  call s:default_settings()
-
-  call vimshell#set_context(context)
-
-  " Set interactive variables.
-  let b:interactive = {
-        \ 'type' : 'vimshell',
-        \ 'syntax' : 'vimshell',
-        \ 'process' : {},
-        \ 'fd' : context.fd,
-        \ 'encoding' : &encoding,
-        \ 'is_pty' : 0,
-        \ 'echoback_linenr' : -1,
-        \ 'stdout_cache' : '',
-        \ 'stderr_cache' : '',
-        \ 'hook_functions_table' : {},
-        \}
-
-  " Load rc file.
-  if filereadable(g:vimshell_vimshrc_path)
-    call vimshell#execute_internal_command('vimsh', [g:vimshell_vimshrc_path],
-          \{ 'has_head_spaces' : 0, 'is_interactive' : 0 })
-    let b:vimshell.loaded_vimshrc = 1
-  endif
-
-  setfiletype vimshell
-
-  call vimshell#help#init()
+  call s:initialize_vimshell(a:path, context)
 
   call vimshell#print_prompt(context)
 
@@ -974,6 +921,64 @@ function! vimshell#set_syntax(syntax_name)"{{{
   let b:interactive.syntax = a:syntax_name
 endfunction"}}}
 
+function! s:initialize_vimshell(path, context)"{{{
+  if empty(s:internal_commands)
+    call s:init_internal_commands()
+  endif
+
+  " Load history.
+  let g:vimshell#hist_buffer = vimshell#history#read()
+
+  " Initialize variables.
+  let b:vimshell = {}
+
+  " Change current directory.
+  let b:vimshell.current_dir = a:path
+  call vimshell#cd(a:path)
+
+  let b:vimshell.alias_table = {}
+  let b:vimshell.galias_table = {}
+  let b:vimshell.altercmd_table = {}
+  let b:vimshell.commandline_stack = []
+  let b:vimshell.variables = {}
+  let b:vimshell.system_variables = { 'status' : 0 }
+  let b:vimshell.directory_stack = []
+  let b:vimshell.prompt_current_dir = {}
+  let b:vimshell.continuation = {}
+  let b:vimshell.prompts_save = {}
+
+  " Default settings.
+  call s:default_settings()
+
+  call vimshell#set_context(a:context)
+
+  " Set interactive variables.
+  let b:interactive = {
+        \ 'type' : 'vimshell',
+        \ 'syntax' : 'vimshell',
+        \ 'process' : {},
+        \ 'fd' : a:context.fd,
+        \ 'encoding' : &encoding,
+        \ 'is_pty' : 0,
+        \ 'echoback_linenr' : -1,
+        \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
+        \ 'hook_functions_table' : {},
+        \}
+
+  " Load rc file.
+  if filereadable(g:vimshell_vimshrc_path)
+    call vimshell#execute_internal_command('vimsh',
+          \ [g:vimshell_vimshrc_path],
+          \ { 'has_head_spaces' : 0, 'is_interactive' : 0 })
+    let b:vimshell.loaded_vimshrc = 1
+  endif
+
+  setfiletype vimshell
+
+  call vimshell#help#init()
+  call vimshell#interactive#init()
+endfunction"}}}
 function! s:init_internal_commands()"{{{
   " Initialize internal commands table.
   let s:internal_commands= {}
@@ -1074,11 +1079,6 @@ endfunction"}}}
 
 " Auto commands function.
 function! s:event_bufwin_enter()"{{{
-  if &updatetime > g:vimshell_interactive_update_time
-    let s:update_time_save = &updatetime
-    let &updatetime = g:vimshell_interactive_update_time
-  endif
-
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi
@@ -1114,10 +1114,6 @@ function! s:event_bufwin_enter()"{{{
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
-
-  if &updatetime < s:update_time_save
-    let &updatetime = s:update_time_save
-  endif
 endfunction"}}}
 function! s:color_scheme()"{{{
   if has('gui_running')

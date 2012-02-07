@@ -1294,6 +1294,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-02-08
+- Improved check output behavior.
+
 2012-02-07
 - Improved g:vimshell_editor_command behavior.
 - Improved English documentation.

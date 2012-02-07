@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Feb 2012.
+" Last Modified: 08 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,6 +33,7 @@ let s:password_regex =
       \'\|Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] ' .
       \'\|^\|\n\|''s \)[Pp]assword'
 let s:character_regex = ''
+let s:update_time_save = &updatetime
 
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
@@ -569,16 +570,23 @@ function! vimshell#interactive#check_moved_output()"{{{
   endif
 endfunction"}}}
 function! s:check_all_output()"{{{
-  let winnr = 1
-  while winnr <= winnr('$')
-    if type(getbufvar(winbufnr(winnr), 'interactive')) != type('')
-      " Check output.
-      call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
-            \ winbufnr(winnr), bufnr('%'))
-    endif
+  let winnrs = filter(range(1, winnr('$')),
+        \ "type(getbufvar(winbufnr(v:val), 'interactive')) != type('')")
+  if len(winnrs) > 0 &&
+        \ &updatetime > g:vimshell_interactive_update_time
+      " Change updatetime.
+      let s:update_time_save = &updatetime
+      let &updatetime = g:vimshell_interactive_update_time
+  elseif &updatetime < s:update_time_save
+    " Restore updatetime.
+    let &updatetime = s:update_time_save
+  endif
 
-    let winnr += 1
-  endwhile
+  for winnr in winnrs
+    " Check output.
+    call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
+          \ winbufnr(winnr), bufnr('%'))
+  endfor
 
   if exists('b:interactive')
         \ && !empty(b:interactive.process) && b:interactive.process.is_valid
@@ -687,19 +695,15 @@ function! s:cache_output(interactive)"{{{
 endfunction"}}}
 
 function! s:winenter()"{{{
-  if !exists('b:interactive')
-    return
+  if exists('b:interactive')
+    call vimshell#terminal#set_title()
   endif
-
-  call vimshell#terminal#set_title()
 endfunction"}}}
 function! s:winleave(bufname)"{{{
-  if !exists('b:interactive')
-    return
+  if exists('b:interactive')
+    let s:last_interactive_bufnr = bufnr(a:bufname)
+    call vimshell#terminal#restore_title()
   endif
-
-  let s:last_interactive_bufnr = bufnr(a:bufname)
-  call vimshell#terminal#restore_title()
 endfunction"}}}
 
 " vim: foldmethod=marker
