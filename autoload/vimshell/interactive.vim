@@ -569,19 +569,19 @@ function! vimshell#interactive#check_moved_output()"{{{
   endif
 endfunction"}}}
 function! s:check_all_output()"{{{
-  let bufnr_save = bufnr('%')
-
-  let bufnr = 1
-  while bufnr <= bufnr('$')
-    if bufexists(bufnr) && bufwinnr(bufnr) > 0 && type(getbufvar(bufnr, 'interactive')) != type('')
+  let winnr = 1
+  while winnr <= winnr('$')
+    if type(getbufvar(winbufnr(winnr), 'interactive')) != type('')
       " Check output.
-      call s:check_output(getbufvar(bufnr, 'interactive'), bufnr, bufnr_save)
+      call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
+            \ winbufnr(winnr), bufnr('%'))
     endif
 
-    let bufnr += 1
+    let winnr += 1
   endwhile
 
-  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
+  if exists('b:interactive')
+        \ && !empty(b:interactive.process) && b:interactive.process.is_valid
     " Ignore key sequences.
     call feedkeys("g\<ESC>", 'n')
   endif
@@ -642,7 +642,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
     if type ==# 'terminal'
       setlocal nomodifiable
-    elseif (!a:interactive.process.stdout.eof || !a:interactive.process.stderr.eof)
+    elseif (!a:interactive.process.stdout.eof
+          \   || !a:interactive.process.stderr.eof)
           \ && is_insert
       startinsert!
     endif

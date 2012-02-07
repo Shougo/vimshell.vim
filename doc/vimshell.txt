@@ -1301,6 +1301,7 @@ CHANGELOG						*vimshell-changelog*
 - Refactored.
 - Deleted obsolute options.
 - Refactored completion system(required neocomplcache).
+- Improved update output.
 
 2012-02-06
 - Translated internal commands.
