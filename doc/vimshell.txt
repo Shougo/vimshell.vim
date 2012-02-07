@@ -1312,6 +1312,7 @@ CHANGELOG						*vimshell-changelog*
 2012-02-07
 - Improved g:vimshell_editor_command behavior.
 - Improved English documentation.
+- Deleted Japanese documentation.
 
 2012-02-06
 - Translated internal commands.
