@@ -107,6 +107,9 @@ autoload/proc.so(or proc.dll) to autoload directory.
 Note: "proc.dll" compiled in Cygwin environment is only Cygwin Vim. Can't use
 in Windows Vim.
 
+Note: To enable complete feature, required neocomplcache.
+https://github.com/Shougo/neocomplcache
+
 ==============================================================================
 INTERFACE					*vimshell-interface*
 
@@ -236,27 +239,6 @@ g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
 		You can not use vimshell funcitons unless you set new
 		key mappings, so it is for hackers who have understood the
 		inner behaviors, and not recommended for newbies.
-
-g:vimshell_ignore_case				*g:vimshell_ignore_case*
-		This variable controls whether ignore case (uppercase and
-		lowercase) or not when vimshell searches the completion
-		candidates.
-
-		Initial value same to 'ignorecase'.
-
-g:vimshell_smart_case				*g:vimshell_smart_case*
-		When this option is activated, vimshell doesn't ignore
-		lettercases if uppercase is inputed while searches completion
-		candidates.
-		
-		Initial value same to 'smartcase'.
-
-g:vimshell_max_list				*g:vimshell_max_list*
-		Maximum number of completion candidates in vimshell.
-		If there are more completion candidates than this value,
-		candidates will be omited.
-
-		Initial value is 100.
 
 g:vimshell_use_terminal_command			*g:vimshell_use_terminal_command*
 		When executes |vimshell-internal-shell|, this option set
@@ -557,6 +539,8 @@ Insert mode key mappings.
 
 <Plug>(vimshell_command_complete)		*i_<Plug>(vimshell_command_complete)*
 		Start completion.
+		Note: Required neocomplcache plugin.
+		https://github.com/Shougo/neocomplcache
 
 <Plug>(vimshell_push_current_line)		*i_<Plug>(vimshell_push_current_line)*
 		Push current line command to command line stack.
@@ -1314,6 +1298,8 @@ CHANGELOG						*vimshell-changelog*
 - Improved English documentation.
 - Deleted Japanese documentation.
 - Refactored.
+- Deleted obsolute options.
+- Refactored completion system(required neocomplcache).
 
 2012-02-06
 - Translated internal commands.

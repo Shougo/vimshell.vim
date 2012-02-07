@@ -102,7 +102,6 @@ function! s:default_settings()"{{{
   setlocal noreadonly
   setlocal iskeyword+=-,+,\\,!,~
   setlocal wrap
-  setlocal omnifunc=vimshell#complete#command_complete#omnifunc
 
   " Set autocommands.
   augroup vimshell
@@ -139,6 +138,13 @@ function! vimshell#create_shell(path, ...)"{{{
     call vimshell#echo_error('Detected autochdir!')
     call vimshell#echo_error('vimshell don''t work if you set autochdir option.')
     return
+  endif
+  "}}}
+
+  " Detect neocomplcache."{{{
+  if !g:loaded_neocomplcache
+    call vimshell#echo_error('Neocomplcache is not installed!')
+    call vimshell#echo_error('Disabled completion feature.')
   endif
   "}}}
 

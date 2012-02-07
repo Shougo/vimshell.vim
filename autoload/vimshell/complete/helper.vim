@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 07 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -248,11 +248,11 @@ function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
 endfunction"}}}
 function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str)"{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
-  if &ignorecase
-    let expr = printf('stridx(tolower(v:val), %s) == 0', string(tolower(cur_keyword)))
-  else
-    let expr = printf('stridx(v:val, %s) == 0', string(cur_keyword))
-  endif
+  let expr = &ignorecase ?
+        \ printf('stridx(tolower(v:val), %s) == 0',
+        \          string(tolower(cur_keyword))) :
+        \ printf('stridx(v:val, %s) == 0',
+        \          string(cur_keyword))
 
   return filter(a:list, expr)
 endfunction"}}}

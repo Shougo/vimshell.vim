@@ -54,12 +54,6 @@ endif
 " Global options definition."{{{
 let g:vimshell_enable_debug =
       \ get(g:, 'vimshell_enable_debug', 0)
-let g:vimshell_ignore_case =
-      \ get(g:, 'vimshell_ignore_case', &ignorecase)
-let g:vimshell_smart_case =
-      \ get(g:, 'vimshell_smart_case', &smartcase)
-let g:vimshell_max_list =
-      \ get(g:, 'vimshell_max_list', 100)
 let g:vimshell_use_terminal_command =
       \ get(g:, 'vimshell_use_terminal_command', '')
 let g:vimshell_temporary_directory =

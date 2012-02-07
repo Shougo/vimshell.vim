@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Jan 2012.
+" Last Modified: 07 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete)
         \ pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
         \ <SID>expand_wildcard() :
-        \ vimshell#complete#command_complete#complete()
+        \ exists('*neocomplcache#start_manual_complete') ?
+        \    neocomplcache#start_manual_complete() : ''
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)
         \ <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)
