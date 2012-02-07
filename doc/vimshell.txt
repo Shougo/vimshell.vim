@@ -299,10 +299,11 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		|+clientserver| feature.
 		Note: To reflect external editor changes, you must write opened
 		temporary buffer and execute|:bdelete| in external editor.
-		Note: You *must not* set "core.editor" variable in git config.
+		Note: You *must not* set "core.editor" variable in your
+		.gitconfig.
 
 		Initial value "v:progname --servername=v:servername
-		--remote-wait-silent" or same to |g:vimshell_cat_command|.
+		--remote-tab-wait-silent" or same to |g:vimshell_cat_command|.
 
 g:vimshell_environment_term			*g:vimshell_environment_term*
 		This value is $TERM on vimshell.
