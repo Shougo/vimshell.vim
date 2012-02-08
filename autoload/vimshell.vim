@@ -38,9 +38,8 @@ try
 catch
   call vimshell#echo_error(v:errmsg)
   call vimshell#echo_error(v:exception)
-  call vimshell#echo_error(v:exception)
   call vimshell#echo_error('Error occured while loading vimproc.')
-  call vimshell#echo_error('Please install vimproc Ver.5.0 or above.')
+  call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
   finish
 endtry
 if s:exists_vimproc_version < 600
