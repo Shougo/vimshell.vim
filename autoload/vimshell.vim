@@ -139,13 +139,6 @@ function! vimshell#create_shell(path, ...)"{{{
   endif
   "}}}
 
-  " Detect neocomplcache."{{{
-  if !g:loaded_neocomplcache
-    call vimshell#echo_error('Neocomplcache is not installed!')
-    call vimshell#echo_error('Disabled completion feature.')
-  endif
-  "}}}
-
   let path = a:path
   if path == ''
     let path = getcwd()

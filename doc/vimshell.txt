@@ -1298,6 +1298,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved check output behavior.
 - Fixed updatetime problem.
 - Fixed current directory problem.
+- Improved detect neocomplcache.
 
 2012-02-07
 - Improved g:vimshell_editor_command behavior.
