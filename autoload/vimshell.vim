@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Feb 2012.
+" Last Modified: 08 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,6 @@ endif
 if !exists('s:internal_commands')
   let s:internal_commands = {}
 endif
-let s:update_time_save = &updatetime
 
 " Disable bell.
 set vb t_vb=

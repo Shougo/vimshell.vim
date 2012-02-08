@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 08 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,8 +23,6 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
-
-let s:update_time_save = &updatetime
 
 let s:command = {
       \ 'name' : 'iexe',
@@ -315,13 +313,17 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
 
   " Set autocommands.
   augroup vimshell
-    autocmd InsertEnter <buffer>       call s:insert_enter()
-    autocmd InsertLeave <buffer>       call s:insert_leave()
-    autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(
-          \ vimshell#util#expand('<afile>'))
-    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
-    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
-    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
+    autocmd InsertEnter <buffer>
+          \ call s:insert_enter()
+    autocmd BufDelete <buffer>
+          \ call vimshell#interactive#hang_up(
+          \    vimshell#util#expand('<afile>'))
+    autocmd CursorHoldI <buffer>
+          \ call vimshell#interactive#check_insert_output()
+    autocmd CursorMovedI <buffer>
+          \ call vimshell#interactive#check_moved_output()
+    autocmd BufWinEnter,WinEnter <buffer>
+          \ call s:event_bufwin_enter()
   augroup END
 
   " Set send buffer.
@@ -340,19 +342,10 @@ function! vimshell#commands#iexe#dummy()
 endfunction
 
 function! s:insert_enter()"{{{
-  if &updatetime > g:vimshell_interactive_update_time
-    let s:update_time_save = &updatetime
-    let &updatetime = g:vimshell_interactive_update_time
-  endif
-
-  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
+  if winwidth(0) != b:interactive.width ||
+        \ winheight(0) != b:interactive.height
     " Set new window size.
     call b:interactive.process.set_winsize(winwidth(0), winheight(0))
-  endif
-endfunction"}}}
-function! s:insert_leave()"{{{
-  if &updatetime < s:update_time_save
-    let &updatetime = s:update_time_save
   endif
 endfunction"}}}
 function! s:event_bufwin_enter()"{{{

@@ -572,15 +572,6 @@ endfunction"}}}
 function! s:check_all_output()"{{{
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) != type('')")
-  if len(winnrs) > 0 &&
-        \ &updatetime > g:vimshell_interactive_update_time
-      " Change updatetime.
-      let s:update_time_save = &updatetime
-      let &updatetime = g:vimshell_interactive_update_time
-  elseif &updatetime < s:update_time_save
-    " Restore updatetime.
-    let &updatetime = s:update_time_save
-  endif
 
   for winnr in winnrs
     " Check output.
@@ -588,10 +579,18 @@ function! s:check_all_output()"{{{
           \ winbufnr(winnr), bufnr('%'))
   endfor
 
-  if exists('b:interactive')
-        \ && !empty(b:interactive.process) && b:interactive.process.is_valid
-    " Ignore key sequences.
-    call feedkeys("g\<ESC>", 'n')
+  if len(winnrs) > 0
+    if &updatetime > g:vimshell_interactive_update_time
+      " Change updatetime.
+      let s:update_time_save = &updatetime
+      let &updatetime = g:vimshell_interactive_update_time
+
+      " Ignore key sequences.
+      call feedkeys("g\<ESC>", 'n')
+    endif
+  elseif &updatetime < s:update_time_save
+    " Restore updatetime.
+    let &updatetime = s:update_time_save
   endif
 endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{

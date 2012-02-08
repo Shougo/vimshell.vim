@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 08 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -176,8 +176,6 @@ function! vimshell#commands#texe#restore_cursor()
   endif
 endfunction
 
-let s:update_time_save = &updatetime
-
 function! s:default_settings()"{{{
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
@@ -236,11 +234,6 @@ function! s:init_bg(args, context)"{{{
 endfunction"}}}
 
 function! s:insert_enter()"{{{
-  if &updatetime > g:vimshell_interactive_update_time
-    let s:update_time_save = &updatetime
-    let &updatetime = g:vimshell_interactive_update_time
-  endif
-
   if exists(':NeoComplCacheDisable')
     " Lock neocomplcache.
     NeoComplCacheLock
@@ -266,10 +259,6 @@ function! s:insert_enter()"{{{
 endfunction"}}}
 function! s:insert_leave()"{{{
   setlocal nomodifiable
-
-  if &updatetime < s:update_time_save
-    let &updatetime = s:update_time_save
-  endif
 
   call vimshell#commands#texe#restore_cursor()
 endfunction"}}}
