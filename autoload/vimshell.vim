@@ -173,7 +173,7 @@ function! vimshell#create_shell(path, ...)"{{{
 
   edit! `=bufname`
 
-  call s:initialize_vimshell(a:path, context)
+  call s:initialize_vimshell(path, context)
 
   call vimshell#print_prompt(context)
 
@@ -210,8 +210,11 @@ function! vimshell#switch_shell(path, ...)"{{{
     return
   endif
 
-  let path = vimshell#util#substitute_path_separator(
-        \ fnamemodify(vimshell#util#expand(a:path), ':p'))
+  let path = a:path
+  if path != ''
+    let path = vimshell#util#substitute_path_separator(
+          \ fnamemodify(vimshell#util#expand(a:path), ':p'))
+  endif
 
   let context = vimshell#init_context(get(a:000, 0, {}))
 
