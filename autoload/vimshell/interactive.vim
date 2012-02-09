@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Feb 2012.
+" Last Modified: 09 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -584,10 +584,10 @@ function! s:check_all_output()"{{{
       " Change updatetime.
       let s:update_time_save = &updatetime
       let &updatetime = g:vimshell_interactive_update_time
-
-      " Ignore key sequences.
-      call feedkeys("g\<ESC>", 'n')
     endif
+
+    " Ignore key sequences.
+    call feedkeys("g\<ESC>", 'n')
   elseif &updatetime < s:update_time_save
     " Restore updatetime.
     let &updatetime = s:update_time_save
