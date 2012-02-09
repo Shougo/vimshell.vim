@@ -1298,6 +1298,7 @@ CHANGELOG						*vimshell-changelog*
 2012-02-09
 - Fixed check output problem.
 - Improved check output.
+- Fixed completion problem.
 
 2012-02-08
 - Improved check output behavior.

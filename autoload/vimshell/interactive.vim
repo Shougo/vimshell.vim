@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2012.
+" Last Modified: 10 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,6 +39,7 @@ augroup vimshell
   autocmd VimEnter * set vb t_vb=
   autocmd CursorHold,CursorHoldI,CursorMovedI *
         \ call s:check_all_output()
+  autocmd CursorMovedI * call vimshell#interactive#check_current_output()
   autocmd BufWinEnter,WinEnter * call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(vimshell#util#expand('<afile>'))
@@ -588,8 +589,6 @@ function! s:check_all_output()"{{{
     if mode() ==# 'n'
       " Ignore key sequences.
       call feedkeys("g\<ESC>", 'n')
-    elseif mode() ==# 'i'
-      call feedkeys("\<C-r>\<ESC>", 'n')
     endif
   elseif &updatetime < s:update_time_save
     " Restore updatetime.
