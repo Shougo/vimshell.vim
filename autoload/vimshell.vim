@@ -106,6 +106,7 @@ function! s:default_settings()"{{{
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
     autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
     autocmd ColorScheme <buffer>    call s:color_scheme()
+    autocmd CursorMoved <buffer> call vimshell#interactive#check_current_output()
   augroup end
 
   call s:event_bufwin_enter()

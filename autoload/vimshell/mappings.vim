@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Feb 2012.
+" Last Modified: 09 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -359,13 +359,13 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
 
     " Error.
     call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#print_prompt(context)
+    call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return
   catch
     " Error.
     call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#print_prompt(context)
+    call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return
   endtry

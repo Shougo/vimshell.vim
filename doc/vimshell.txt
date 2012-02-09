@@ -1262,6 +1262,7 @@ vimshell/history
 		Nominates vimshell histories as candidates. This source is also
 		available in interactive buffer. This source is used in
 		|unite#sources#vimshell_history#start_complete()|.
+		Note: Default mapping is <C-l>.
 		
 		Exmaple:
 >
@@ -1296,6 +1297,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-02-09
 - Fixed check output problem.
+- Improved check output.
 
 2012-02-08
 - Improved check output behavior.

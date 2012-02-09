@@ -556,6 +556,13 @@ function! s:check_scrollback()
 endfunction
 
 " Autocmd functions.
+function! vimshell#interactive#check_current_output()"{{{
+  if exists('b:interactive') &&
+        \ !empty(b:interactive.process) && b:interactive.process.is_valid
+    " Check output.
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+  endif
+endfunction"}}}
 function! s:check_all_output()"{{{
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) != type('')")
