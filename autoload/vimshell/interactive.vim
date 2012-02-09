@@ -37,7 +37,8 @@ let s:update_time_save = &updatetime
 
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
-  autocmd CursorHold * call s:check_all_output()
+  autocmd CursorHold,CursorHoldI,CursorMovedI *
+        \ call s:check_all_output()
   autocmd BufWinEnter,WinEnter * call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(vimshell#util#expand('<afile>'))
@@ -555,29 +556,20 @@ function! s:check_scrollback()
 endfunction
 
 " Autocmd functions.
-function! vimshell#interactive#check_insert_output()"{{{
-  if exists('b:interactive') && line('.') == line('$')
-    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
-    if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
-      " Ignore key sequences.
-      call feedkeys("\<C-r>\<ESC>", 'n')
-    endif
-  endif
-endfunction"}}}
-function! vimshell#interactive#check_moved_output()"{{{
-  if exists('b:interactive') && line('.') == line('$')
-    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
-  endif
-endfunction"}}}
 function! s:check_all_output()"{{{
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) != type('')")
 
-  for winnr in winnrs
-    " Check output.
-    call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
-          \ winbufnr(winnr), bufnr('%'))
-  endfor
+  if mode() ==# 'n'
+    for winnr in winnrs
+      " Check output.
+      call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
+            \ winbufnr(winnr), bufnr('%'))
+    endfor
+  elseif mode() ==# 'i'
+        \ && exists('b:interactive') && line('.') == line('$')
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+  endif
 
   if len(winnrs) > 0
     if &updatetime > g:vimshell_interactive_update_time
@@ -586,8 +578,12 @@ function! s:check_all_output()"{{{
       let &updatetime = g:vimshell_interactive_update_time
     endif
 
-    " Ignore key sequences.
-    call feedkeys("g\<ESC>", 'n')
+    if mode() ==# 'n'
+      " Ignore key sequences.
+      call feedkeys("g\<ESC>", 'n')
+    elseif mode() ==# 'i'
+      call feedkeys("\<C-r>\<ESC>", 'n')
+    endif
   elseif &updatetime < s:update_time_save
     " Restore updatetime.
     let &updatetime = s:update_time_save

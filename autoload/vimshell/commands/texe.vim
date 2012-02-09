@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Feb 2012.
+" Last Modified: 09 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -224,8 +224,6 @@ function! s:init_bg(args, context)"{{{
     autocmd InsertLeave <buffer>       call s:insert_leave()
     autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(
           \ vimshell#util#expand('<afile>'))
-    autocmd CursorHoldI <buffer>     call vimshell#interactive#check_insert_output()
-    autocmd CursorMovedI <buffer>    call vimshell#interactive#check_moved_output()
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 
