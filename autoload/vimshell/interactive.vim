@@ -460,7 +460,7 @@ endfunction"}}}
 
 function! vimshell#interactive#print_buffer(fd, string)"{{{
   if a:string == '' || !exists('b:interactive')
-        \|| &l:nomodifiable
+        \|| &l:modifiable
     return
   endif
 
@@ -491,7 +491,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
     return
   endif
 
-  if !exists('b:interactive') || &l:nomodifiable
+  if !exists('b:interactive') || &l:modifiable
     echohl WarningMsg | echomsg a:string | echohl None
     return
   endif
