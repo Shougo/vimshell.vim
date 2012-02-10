@@ -566,7 +566,7 @@ function! vimshell#interactive#check_current_output()"{{{
 endfunction"}}}
 function! s:check_all_output()"{{{
   let winnrs = filter(range(1, winnr('$')),
-        \ "type(getbufvar(winbufnr(v:val), 'interactive')) != type('')")
+        \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})")
 
   if mode() ==# 'n'
     for winnr in winnrs
@@ -586,9 +586,11 @@ function! s:check_all_output()"{{{
       let &updatetime = g:vimshell_interactive_update_time
     endif
 
+    " Ignore key sequences.
     if mode() ==# 'n'
-      " Ignore key sequences.
       call feedkeys("g\<ESC>", 'n')
+    elseif mode() ==# 'i'
+      call feedkeys("\<C-r>\<ESC>", 'n')
     endif
   elseif &updatetime < s:update_time_save
     " Restore updatetime.
