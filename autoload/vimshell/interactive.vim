@@ -37,8 +37,10 @@ let s:update_time_save = &updatetime
 
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
-  autocmd CursorHold,CursorHoldI,CursorMovedI *
-        \ call s:check_all_output()
+  autocmd CursorMovedI *
+        \ call s:check_all_output(0)
+  autocmd CursorHold,CursorHoldI *
+        \ call s:check_all_output(1)
   autocmd CursorMovedI * call vimshell#interactive#check_current_output()
   autocmd BufWinEnter,WinEnter * call s:winenter()
   autocmd BufWinLeave,WinLeave *
@@ -564,7 +566,7 @@ function! vimshell#interactive#check_current_output()"{{{
     call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
 endfunction"}}}
-function! s:check_all_output()"{{{
+function! s:check_all_output(is_hold)"{{{
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})")
 
@@ -590,7 +592,11 @@ function! s:check_all_output()"{{{
     if mode() ==# 'n'
       call feedkeys("g\<ESC>", 'n')
     elseif mode() ==# 'i'
-      call feedkeys("\<C-r>\<ESC>", 'n')
+      let is_complete_hold = get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
+      if (a:is_hold && !is_complete_hold)
+            \ || (!a:is_hold && is_complete_hold)
+        call feedkeys("\<C-r>\<ESC>", 'n')
+      endif
     endif
   elseif &updatetime < s:update_time_save
     " Restore updatetime.
