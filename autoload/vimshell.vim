@@ -148,7 +148,7 @@ function! vimshell#create_shell(path, ...)"{{{
   let context = vimshell#init_context(get(a:000, 0, {}))
 
   " Create new buffer.
-  let prefix = vimshell#util#is_win() ? '[vimshell]' : '*vimshell*'
+  let prefix = vimshell#util#is_windows() ? '[vimshell]' : '*vimshell*'
   let postfix = ' - 1'
   let cnt = 1
   while buflisted(prefix.postfix)
@@ -315,7 +315,7 @@ function! vimshell#close(buffer_name)"{{{
   let buffer_name = a:buffer_name
   if buffer_name !~ '@\d\+$'
     " Add postfix.
-    let prefix = vimshell#util#is_win() ? '[vimshell] - ' : '*vimshell* - '
+    let prefix = vimshell#util#is_windows() ? '[vimshell] - ' : '*vimshell* - '
     let prefix .= buffer_name
     let buffer_name = prefix . s:get_postfix(prefix, 0)
   endif
@@ -374,7 +374,7 @@ function! vimshell#read(fd)"{{{
     return @+
   else
     " Read from file.
-    if vimshell#util#is_win()
+    if vimshell#util#is_windows()
       let ff = "\<CR>\<LF>"
     else
       let ff = "\<LF>"
@@ -623,11 +623,11 @@ endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
   return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
 endfunction"}}}
-function! vimshell#util#is_win()"{{{
+function! vimshell#util#is_windows()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#resolve(filename)"{{{
-  return ((vimshell#util#is_win() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
+  return ((vimshell#util#is_windows() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
         \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
 endfunction"}}}
 function! vimshell#get_program_pattern()"{{{

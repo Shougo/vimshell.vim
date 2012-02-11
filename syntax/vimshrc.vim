@@ -48,7 +48,7 @@ syntax match   vimshrcConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
 syntax match   vimshrcArguments         '\s-\=-[[:alnum:]-]\+=\=' contained
 syntax match   vimshrcQuoted            '\\.' contained
 syntax match   vimshrcSpecial           '[|<>;&;]' contained
-if vimshell#util#is_win()
+if vimshell#util#is_windows()
     syntax match   vimshrcArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
     syntax match   vimshrcDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
 else

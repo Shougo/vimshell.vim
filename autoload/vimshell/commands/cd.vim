@@ -46,7 +46,7 @@ function! s:command.execute(args, context)"{{{
     let dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
   endif
 
-  if vimshell#util#is_win()
+  if vimshell#util#is_windows()
     let dir = vimshell#resolve(dir)
   endif
 
@@ -72,7 +72,7 @@ function! s:command.execute(args, context)"{{{
       return
     endif
 
-    if vimshell#util#is_win()
+    if vimshell#util#is_windows()
       let dir = vimshell#resolve(dir)
     endif
 

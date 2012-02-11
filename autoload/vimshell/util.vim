@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -148,7 +148,7 @@ endfunction"}}}
 function! vimshell#util#substitute_path_separator(...)
   return call(s:V.substitute_path_separator, a:000)
 endfunction
-function! vimshell#util#is_win(...)
+function! vimshell#util#is_windows(...)
   return call(s:V.is_windows, a:000)
 endfunction
 function! vimshell#util#escape_file_searching(...)

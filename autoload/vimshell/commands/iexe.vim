@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ function! s:command.execute(commands, context)"{{{
     call insert(args, 'fakecygpty')
   endif
 
-  let use_cygpty = vimshell#util#is_win() && args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  let use_cygpty = vimshell#util#is_windows() && args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   if use_cygpty
     if !executable('fakecygpty')
       call vimshell#error_line(a:context.fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
@@ -78,7 +78,7 @@ function! s:command.execute(commands, context)"{{{
     endfor
   endif
 
-  if vimshell#util#is_win() && cmdname == 'cmd'
+  if vimshell#util#is_windows() && cmdname == 'cmd'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
       call vimshell#error_line(a:context.fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
@@ -141,7 +141,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'encoding' : options['--encoding'],
         \ 'is_secret': 0,
         \ 'prompt_history' : {},
-        \ 'is_pty' : (!vimshell#util#is_win() || use_cygpty),
+        \ 'is_pty' : (!vimshell#util#is_windows() || use_cygpty),
         \ 'args' : args,
         \ 'echoback_linenr' : 0,
         \ 'prompt_nr' : line('.'),
@@ -167,7 +167,7 @@ endfunction"}}}
 function! s:command.complete(args)"{{{
   if len(a:args) == 1
     return vimshell#complete#helper#executables(a:args[-1])
-  elseif vimshell#util#is_win() && len(a:args) > 1 && a:args[1] == 'fakecygpty'
+  elseif vimshell#util#is_windows() && len(a:args) > 1 && a:args[1] == 'fakecygpty'
     return vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
   endif
 
@@ -179,7 +179,7 @@ function! vimshell#commands#iexe#define()
 endfunction
 
 " Set interactive options."{{{
-if vimshell#util#is_win()
+if vimshell#util#is_windows()
   " Windows only options.
   call vimshell#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'bash,bc,gosh,python,zsh', '-i')
@@ -239,7 +239,7 @@ call vimshell#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'dosbatch', 'cmdproxy')
 call vimshell#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'scala',
-      \  vimshell#util#is_win() ? 'scala.bat' : 'scala')
+      \  vimshell#util#is_windows() ? 'scala.bat' : 'scala')
 call vimshell#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'ocaml', 'ocaml')
 call vimshell#set_dictionary_helper(

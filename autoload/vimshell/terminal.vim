@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -332,7 +332,7 @@ function! s:set_cursor()"{{{
 endfunction"}}}
 function! s:is_no_echoback()
   return b:interactive.type ==# 'interactive'
-          \ && vimshell#util#is_win()
+          \ && vimshell#util#is_windows()
           \ && has_key(b:interactive, 'command')
           \ && !get(g:vimshell_interactive_echoback_commands,
           \        b:interactive.command, 0)
@@ -757,8 +757,8 @@ function! s:escape.setup_scrolling_region(matchstr)"{{{
   let bottom = empty(args) ? 0 : args[1]
 
   if top == 1
-    if (vimshell#util#is_win() && bottom == 25)
-          \|| (!vimshell#util#is_win() && bottom == b:interactive.height)
+    if (vimshell#util#is_windows() && bottom == 25)
+          \|| (!vimshell#util#is_windows() && bottom == b:interactive.height)
       " Clear scrolling region.
       let [top, bottom] = [0, 0]
     endif

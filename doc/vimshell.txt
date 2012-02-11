@@ -1301,6 +1301,7 @@ CHANGELOG						*vimshell-changelog*
 - Changed complete source.
 - Fixed get_prompt().
 - Improved print_prompt().
+- Refactored is_windows.
 
 2012-02-09
 - Fixed check output problem.

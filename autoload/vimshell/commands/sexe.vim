@@ -49,7 +49,7 @@ function! s:command.execute(args, context)"{{{
     endif
   endfor
 
-  if vimshell#util#is_win()
+  if vimshell#util#is_windows()
     let cmdline = '"' . cmdline . '"'
   endif
 

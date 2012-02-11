@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ syntax match   vimshellSpecial           '[|<>;&;]' contained
 syntax match   vimshellVariable          '$\h\w*' contained
 syntax match   vimshellVariable          '$$\h\w*' contained
 syntax region   vimshellVariable  start=+${+ end=+}+ contained
-if vimshell#util#is_win()
+if vimshell#util#is_windows()
   syntax match   vimshellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
   syntax match   vimshellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
   syntax match   vimshellLink              '\([[:alnum:]_.-]\+\.lnk\)'
