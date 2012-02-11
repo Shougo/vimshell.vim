@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -414,57 +414,7 @@ function! vimshell#print_prompt(...)"{{{
 
   if vimshell#get_user_prompt() != '' || vimshell#get_right_prompt() != ''
     " Insert user prompt line.
-    for user in split(vimshell#get_user_prompt(), "\\n")
-      try
-        let secondary = '[%] ' . eval(user)
-      catch
-        let message = v:exception . ' ' . v:throwpoint
-        echohl WarningMsg | echomsg message | echohl None
-
-        let secondary = '[%] '
-      endtry
-
-      if getline('$') == ''
-        call setline('$', secondary)
-      else
-        call append('$', secondary)
-      endif
-    endfor
-
-    " Insert user prompt line.
-    if vimshell#get_right_prompt() != ''
-      try
-        let right_prompt = eval(vimshell#get_right_prompt())
-      catch
-        let message = v:exception . ' ' . v:throwpoint
-        echohl WarningMsg | echomsg message | echohl None
-
-        let right_prompt = ''
-      endtry
-
-      if right_prompt != ''
-        let user_prompt_last = (vimshell#get_user_prompt() != '') ?
-              \   getline('$') : '[%] '
-        let winwidth = (winwidth(0)+1)/2*2 - 5
-        let padding_len =
-              \ (len(user_prompt_last)+len(vimshell#get_right_prompt())+1
-              \          > winwidth) ?
-              \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
-        let secondary = printf('%s%s%s', user_prompt_last,
-              \ repeat(' ', padding_len), right_prompt)
-        if getline('$') == '' || vimshell#get_user_prompt() != ''
-          call setline('$', secondary)
-        else
-          call append('$', secondary)
-        endif
-
-        let prompts_save = {}
-        let prompts_save.right_prompt = right_prompt
-        let prompts_save.user_prompt_last = user_prompt_last
-        let prompts_save.winwidth = winwidth
-        let b:vimshell.prompts_save[line('$')] = prompts_save
-      endif
-    endif
+    call s:insert_user_and_right_prompt()
   endif
 
   " Insert prompt line.
@@ -1068,6 +1018,63 @@ function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos)"{{{
   " Get complete words.
   return map(vimshell#complete#command_complete#get_candidates(
         \ a:cmdline, 0, a:arglead), 'v:val.word')
+endfunction"}}}
+function! s:insert_user_and_right_prompt()"{{{
+  for user in split(vimshell#get_user_prompt(), "\\n")
+    try
+      let secondary = '[%] ' . eval(user)
+    catch
+      let message = v:exception . ' ' . v:throwpoint
+      echohl WarningMsg | echomsg message | echohl None
+
+      let secondary = '[%] '
+    endtry
+
+    if getline('$') == ''
+      call setline('$', secondary)
+    else
+      call append('$', secondary)
+    endif
+  endfor
+
+  " Insert right prompt line.
+  if vimshell#get_right_prompt() == ''
+    return
+  endif
+
+  try
+    let right_prompt = eval(vimshell#get_right_prompt())
+  catch
+    let message = v:exception . ' ' . v:throwpoint
+    echohl WarningMsg | echomsg message | echohl None
+
+    let right_prompt = ''
+  endtry
+
+  if right_prompt == ''
+    return
+  endif
+
+  let user_prompt_last = (vimshell#get_user_prompt() != '') ?
+        \   getline('$') : '[%] '
+  let winwidth = (winwidth(0)+1)/2*2 - 5
+  let padding_len =
+        \ (len(user_prompt_last)+len(vimshell#get_right_prompt())+1
+        \          > winwidth) ?
+        \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
+  let secondary = printf('%s%s%s', user_prompt_last,
+        \ repeat(' ', padding_len), right_prompt)
+  if getline('$') == '' || vimshell#get_user_prompt() != ''
+    call setline('$', secondary)
+  else
+    call append('$', secondary)
+  endif
+
+  let prompts_save = {}
+  let prompts_save.right_prompt = right_prompt
+  let prompts_save.user_prompt_last = user_prompt_last
+  let prompts_save.winwidth = winwidth
+  let b:vimshell.prompts_save[line('$')] = prompts_save
 endfunction"}}}
 
 " Auto commands function.
