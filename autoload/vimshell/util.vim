@@ -157,14 +157,13 @@ endfunction
 
 function! vimshell#util#alternate_buffer()"{{{
   if getbufvar('#', "&filetype") !=# "vimshell"
-        \ && s:buflisted('#')
+        \ && s:buflisted(bufnr('#'))
     buffer #
     return
   endif
 
   let listed_buffer = filter(range(1, bufnr('$')),
-        \ 's:buflisted(v:val) &&
-        \  (v:val == bufnr("%") || getbufvar(v:val, "&filetype") !=# "vimshell")')
+        \ "s:buflisted(v:val) || v:val == bufnr('%')")
   let current = index(listed_buffer, bufnr('%'))
   if current < 0 || len(listed_buffer) < 3
     enew
