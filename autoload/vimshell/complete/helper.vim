@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -142,7 +142,9 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
   if a:cur_keyword_str =~ '[/\\]'
     let files = vimshell#complete#helper#files(a:cur_keyword_str)
   else
-    let path = a:0 > 1 ? a:1 : vimshell#util#is_win() ? substitute($PATH, '\\\?;', ',', 'g') : substitute($PATH, '/\?:', ',', 'g')
+    let path = a:0 > 1 ? a:1 :
+          \ vimshell#util#is_win() ? substitute($PATH, '\\\?;', ',', 'g') :
+          \ substitute($PATH, '/\?:', ',', 'g')
     let files = vimshell#complete#helper#files(a:cur_keyword_str, path)
   endif
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -127,14 +127,14 @@ function! s:get_omni_list(list)"{{{
 
   " Convert string list.
   for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-    let dict = { 'word' : str, 'menu' : '[O]' }
+    let dict = { 'word' : str, 'menu' : '[sh]' }
 
     call add(omni_list, dict)
   endfor
 
   for omni in filter(a:list, 'type(v:val) != '.type(''))
     let dict = {
-          \'word' : omni.word, 'menu' : '[O]',
+          \'word' : omni.word, 'menu' : '[sh]',
           \'abbr' : has_key(omni, 'abbr')? omni.abbr : omni.word,
           \}
 
