@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2012.
+" Last Modified: 11 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -70,10 +70,6 @@ function! vimshell#interactive#get_cur_line(line, ...)"{{{
   return s:chomp_prompt(cur_line, a:line, interactive)
 endfunction"}}}
 function! vimshell#interactive#get_prompt(...)"{{{
-  if !exists('b:interactive')
-    return vimshell#get_prompt()
-  endif
-
   let line = a:0 ? a:1 : line('.')
   " Get prompt line.
   return !has_key(b:interactive.prompt_history, line) ?
@@ -592,7 +588,8 @@ function! s:check_all_output(is_hold)"{{{
     " Ignore key sequences.
     if mode() ==# 'n'
       call feedkeys("g\<ESC>", 'n')
-    elseif mode() ==# 'i'
+    elseif mode() ==# 'i' && exists('b:interactive') &&
+        \ !empty(b:interactive.process) && b:interactive.process.is_valid
       let is_complete_hold = get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
