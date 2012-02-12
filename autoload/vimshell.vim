@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 12 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -145,7 +145,7 @@ function! vimshell#create_shell(path, ...)"{{{
   let path = vimshell#util#substitute_path_separator(
         \ fnamemodify(vimshell#util#expand(path), ':p'))
 
-  let context = vimshell#init_context(get(a:000, 0, {}))
+  let context = s:initialize_context(get(a:000, 0, {}))
 
   " Create new buffer.
   let prefix = vimshell#util#is_windows() ? '[vimshell]' : '*vimshell*'
@@ -207,7 +207,7 @@ function! vimshell#switch_shell(path, ...)"{{{
           \ fnamemodify(vimshell#util#expand(a:path), ':p'))
   endif
 
-  let context = vimshell#init_context(get(a:000, 0, {}))
+  let context = s:initialize_context(get(a:000, 0, {}))
 
   " Search vimshell buffer.
   if &filetype ==# 'vimshell'
@@ -245,69 +245,6 @@ function! vimshell#switch_shell(path, ...)"{{{
   call vimshell#create_shell(path, context)
 endfunction"}}}
 
-function! vimshell#init_context(context)"{{{
-  if !has_key(a:context, 'buffer_name')
-    let a:context.buffer_name = 'default'
-  endif
-  if !has_key(a:context, 'profile_name')
-    let a:context.profile_name = a:context.buffer_name
-  endif
-  if !has_key(a:context, 'no_quit')
-    let a:context.no_quit = 0
-  endif
-  if !has_key(a:context, 'toggle')
-    let a:context.toggle = 0
-  endif
-  if !has_key(a:context, 'create')
-    let a:context.create = 0
-  endif
-  if !has_key(a:context, 'simple')
-    let a:context.simple = 0
-  endif
-  if !has_key(a:context, 'double')
-    let a:context.double = 0
-  endif
-  if !has_key(a:context, 'split')
-    let a:context.split = 0
-  endif
-  if !has_key(a:context, 'popup')
-    let a:context.popup = 0
-  endif
-  if !has_key(a:context, 'split_command')
-    if a:context.popup && g:vimshell_popup_command == ''
-      " Default popup command.
-      let a:context.split_command = 'split | resize '
-            \ . winheight(0)*g:vimshell_popup_height/100
-    elseif a:context.popup
-      let a:context.split_command = g:vimshell_popup_command
-    elseif a:context.split
-      let a:context.split_command = g:vimshell_split_command
-    else
-      let a:context.split_command = ''
-    endif
-  endif
-  if !has_key(a:context, 'winwidth')
-    let a:context.winwidth = 0
-  endif
-  if !has_key(a:context, 'winminwidth')
-    let a:context.winminwidth = 0
-  endif
-  if !has_key(a:context, 'direction')
-    let a:context.direction = ''
-  endif
-  if &l:modified && !&l:hidden
-    " Split automatically.
-    let a:context.split = 1
-  endif
-
-  " Initialize.
-  let a:context.has_head_spaces = 0
-  let a:context.is_interactive = 1
-  let a:context.is_insert = 1
-  let a:context.fd = { 'stdin' : '', 'stdout': '', 'stderr': ''}
-
-  return a:context
-endfunction"}}}
 function! vimshell#get_options()"{{{
   return copy(s:vimshell_options)
 endfunction"}}}
@@ -343,7 +280,7 @@ function! vimshell#available_commands()"{{{
 endfunction"}}}
 function! vimshell#execute_internal_command(command, args, context)"{{{
   if empty(s:internal_commands)
-    call s:init_internal_commands()
+    call s:initialize_internal_commands()
   endif
 
   if empty(a:context)
@@ -866,7 +803,7 @@ endfunction"}}}
 
 function! s:initialize_vimshell(path, context)"{{{
   if empty(s:internal_commands)
-    call s:init_internal_commands()
+    call s:initialize_internal_commands()
   endif
 
   " Load history.
@@ -922,7 +859,52 @@ function! s:initialize_vimshell(path, context)"{{{
   call vimshell#help#init()
   call vimshell#interactive#init()
 endfunction"}}}
-function! s:init_internal_commands()"{{{
+function! s:initialize_context(context)"{{{
+  let default_context = {
+    \ 'buffer_name' : 'default',
+    \ 'no_quit' : 0,
+    \ 'toggle' : 0,
+    \ 'create' : 0,
+    \ 'simple' : 0,
+    \ 'split' : 0,
+    \ 'popup' : 0,
+    \ 'winwidth' : 0,
+    \ 'winminwidth' : 0,
+    \ 'direction' : '',
+    \ }
+  let context = extend(default_context, a:context)
+
+  " Complex initializer.
+  if !has_key(context, 'profile_name')
+    let context.profile_name = context.buffer_name
+  endif
+  if !has_key(context, 'split_command')
+    if context.popup && g:vimshell_popup_command == ''
+      " Default popup command.
+      let context.split_command = 'split | resize '
+            \ . winheight(0)*g:vimshell_popup_height/100
+    elseif context.popup
+      let context.split_command = g:vimshell_popup_command
+    elseif context.split
+      let context.split_command = g:vimshell_split_command
+    else
+      let context.split_command = ''
+    endif
+  endif
+  if &l:modified && !&l:hidden
+    " Split automatically.
+    let context.split = 1
+  endif
+
+  " Initialize.
+  let context.has_head_spaces = 0
+  let context.is_interactive = 1
+  let context.is_insert = 1
+  let context.fd = { 'stdin' : '', 'stdout': '', 'stderr': ''}
+
+  return context
+endfunction"}}}
+function! s:initialize_internal_commands()"{{{
   " Initialize internal commands table.
   let s:internal_commands= {}
 
