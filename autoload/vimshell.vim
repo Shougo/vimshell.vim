@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Feb 2012.
+" Last Modified: 14 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,11 +115,7 @@ function! s:default_settings()"{{{
   call vimshell#mappings#define_default_mappings()
 endfunction"}}}
 function! vimshell#set_dictionary_helper(variable, keys, value)"{{{
-  for key in split(a:keys, ',')
-    if !has_key(a:variable, key)
-      let a:variable[key] = a:value
-    endif
-  endfor
+  return vimshell#util#set_default_dictionary_helper(a:variable, a:keys, a:value)
 endfunction"}}}
 
 " vimshell plugin utility functions."{{{
@@ -546,9 +542,8 @@ function! vimshell#check_user_prompt(...)"{{{
   return line
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program)"{{{
-  for ext in split(a:exts, ',')
-    let g:vimshell_execute_file_list[ext] = a:program
-  endfor
+  return vimshell#util#set_dictionary_helper(g:vimshell_execute_file_list,
+        \ a:exts, a:program)
 endfunction"}}}
 function! vimshell#system(...)"{{{
   let V = vital#of('vimshell')
