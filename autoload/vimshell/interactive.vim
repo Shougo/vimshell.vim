@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 15 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -598,6 +598,7 @@ function! s:check_all_output(is_hold)"{{{
       endif
     endif
   elseif &updatetime < s:update_time_save
+        \ && &filetype !=# 'unite'
     " Restore updatetime.
     let &updatetime = s:update_time_save
   endif

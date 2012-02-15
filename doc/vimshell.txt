@@ -1295,6 +1295,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-02-15
+- Fixed for unite.
+
 2012-02-14
 - Improved helper function.
 
