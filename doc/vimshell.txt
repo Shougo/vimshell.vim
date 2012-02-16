@@ -1086,7 +1086,7 @@ let ${var-name} = {expression}				*vimshell-special-let*
 
 sexe {command}						*vimshell-special-sexe*
 		Execute {command} in 'shell'. If the command is wrong in
-		vimshell, you can use this command. 'shell'が適切に設定されてい
+		vimshell, you can use this command.
 		Note: Must be set 'shell' and shell options.
 		Note: In windows, appears DOS window.
 
