@@ -176,6 +176,12 @@ function! vimshell#switch_shell(path, ...)"{{{
   call s:create_shell(path, context)
 endfunction"}}}
 function! s:create_shell(path, context)"{{{
+  let path = a:path
+  if path == ''
+    " Use current directory.
+    let path = vimshell#util#substitute_path_separator(getcwd())
+  endif
+
   let context = a:context
 
   " Create new buffer.
@@ -196,7 +202,7 @@ function! s:create_shell(path, context)"{{{
 
   edit! `=bufname`
 
-  call s:initialize_vimshell(a:path, a:context)
+  call s:initialize_vimshell(path, a:context)
 
   call vimshell#print_prompt(a:context)
 
