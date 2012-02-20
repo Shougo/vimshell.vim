@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Feb 2012.
+" Last Modified: 20 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -119,7 +119,7 @@ function! vimshell#set_dictionary_helper(variable, keys, value)"{{{
 endfunction"}}}
 
 " vimshell plugin utility functions."{{{
-function! vimshell#create_shell(path, ...)"{{{
+function! vimshell#switch_shell(path, ...)"{{{
   if vimshell#is_cmdwin()
     call vimshell#echo_error('Command line buffer is detected!')
     call vimshell#echo_error('Please close command line buffer.')
@@ -135,16 +135,52 @@ function! vimshell#create_shell(path, ...)"{{{
   "}}}
 
   let path = a:path
-  if path == ''
-    let path = getcwd()
+  if path != ''
+    let path = vimshell#util#substitute_path_separator(
+          \ fnamemodify(vimshell#util#expand(a:path), ':p'))
   endif
-  let path = vimshell#util#substitute_path_separator(
-        \ fnamemodify(vimshell#util#expand(path), ':p'))
 
   let context = s:initialize_context(get(a:000, 0, {}))
 
+  if context.create
+    " Create shell buffer.
+    call s:create_shell(path, context)
+    return
+  elseif &filetype ==# 'vimshell'
+    " Search vimshell buffer.
+    call s:switch_vimshell(bufnr('%'), context, path)
+    return
+  elseif context.toggle
+        \ && vimshell#close(context.buffer_name)
+    return
+  endif
+
+  if buflisted(s:last_vimshell_bufnr)
+        \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
+        \ && (!exists('t:unite_buffer_dictionary')
+        \    || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
+    call s:switch_vimshell(s:last_vimshell_bufnr, context, path)
+    return
+  else
+    for bufnr in filter(range(1, bufnr('$')),
+          \ "getbufvar(v:val, '&filetype') ==# 'vimshell'")
+      if (!exists('t:unite_buffer_dictionary')
+            \    || has_key(t:unite_buffer_dictionary, bufnr))
+        call s:switch_vimshell(bufnr, context, path)
+        return
+      endif
+    endfor
+  endif
+
+  " Create shell buffer.
+  call s:create_shell(path, context)
+endfunction"}}}
+function! s:create_shell(path, context)"{{{
+  let context = a:context
+
   " Create new buffer.
-  let prefix = vimshell#util#is_windows() ? '[vimshell]' : '*vimshell*'
+  let prefix = vimshell#util#is_windows() ?
+        \ '[vimshell]' : '*vimshell*'
   let postfix = ' - 1'
   let cnt = 1
   while buflisted(prefix.postfix)
@@ -153,16 +189,16 @@ function! vimshell#create_shell(path, ...)"{{{
   endwhile
   let bufname = prefix.postfix
 
-  if context.split_command != ''
+  if a:context.split_command != ''
     let [new_pos, old_pos] =
-          \ vimshell#split(context.split_command)
+          \ vimshell#split(a:context.split_command)
   endif
 
   edit! `=bufname`
 
-  call s:initialize_vimshell(path, context)
+  call s:initialize_vimshell(a:path, a:context)
 
-  call vimshell#print_prompt(context)
+  call vimshell#print_prompt(a:context)
 
   call vimshell#start_insert()
   call vimshell#interactive#set_send_buffer(bufname('%'))
@@ -189,56 +225,6 @@ function! vimshell#create_shell(path, ...)"{{{
 
   " Set undo point.
   call feedkeys("\<C-g>u", 'n')
-endfunction"}}}
-function! vimshell#switch_shell(path, ...)"{{{
-  if vimshell#is_cmdwin()
-    call vimshell#echo_error('Command line buffer is detected!')
-    call vimshell#echo_error('Please close command line buffer.')
-    return
-  endif
-
-  let path = a:path
-  if path != ''
-    let path = vimshell#util#substitute_path_separator(
-          \ fnamemodify(vimshell#util#expand(a:path), ':p'))
-  endif
-
-  let context = s:initialize_context(get(a:000, 0, {}))
-
-  " Search vimshell buffer.
-  if &filetype ==# 'vimshell'
-    call s:switch_vimshell(bufnr('%'), context, path)
-    return
-  endif
-
-  if context.toggle && !context.create
-    if vimshell#close(context.buffer_name)
-      return
-    endif
-  endif
-
-  if buflisted(s:last_vimshell_bufnr)
-        \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
-        \ && (!exists('t:unite_buffer_dictionary')
-        \    || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
-    call s:switch_vimshell(s:last_vimshell_bufnr, context, path)
-    return
-  else
-    let cnt = 1
-    while cnt <= bufnr('$')
-      if getbufvar(cnt, '&filetype') ==# 'vimshell'
-        \ && (!exists('t:unite_buffer_dictionary')
-        \    || has_key(t:unite_buffer_dictionary, cnt))
-        call s:switch_vimshell(cnt, context, path)
-        return
-      endif
-
-      let cnt += 1
-    endwhile
-  endif
-
-  " Create window.
-  call vimshell#create_shell(path, context)
 endfunction"}}}
 
 function! vimshell#get_options()"{{{
