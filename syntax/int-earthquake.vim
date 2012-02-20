@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int-earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2012.
+" Last Modified: 20 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,6 +24,8 @@
 " }}}
 "=============================================================================
 
+scriptencoding utf-8
+
 if version < 700
   syntax clear
 elseif exists('b:current_syntax')
@@ -33,12 +35,18 @@ endif
 syntax region  int_earthquakeInputLine  start='^⚡ ' end='\n' oneline
       \ contains=int_earthquakePrompt,int_earthquakeString,int_earthquakeCommand
 
-syntax match   int_earthquakeURI         '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
-syntax match   int_earthquakeString      '.*' contained contains=int_earthquakeReply,int_earthquakeRemark
-syntax match   int_earthquakeCommand     ':\w*' contained
-syntax match   int_earthquakePrompt      '^\s*⚡ ' contained
-syntax match   int_earthquakeReply       '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
-syntax match   int_earthquakeName        '\s[[:alnum:]_-]\+:\s'
+syntax match   int_earthquakeURI
+      \ '\%(https\?\|ftp\)://[[:alnum:];/?:@&=+$,_.!~*|()-]\+'
+syntax match   int_earthquakeString
+      \ '.*' contained contains=int_earthquakeReply,int_earthquakeRemark
+syntax match   int_earthquakeCommand
+      \ ':\w*' contained
+syntax match   int_earthquakePrompt
+      \ '^\s*⚡ ' contained
+syntax match   int_earthquakeReply
+      \ '@[[:alnum:]_-]\+:\?\|RT\s\|via\s\|QT\s\|(reply_to\s\[\$\h\w*\])'
+syntax match   int_earthquakeName
+      \ '\s[[:alnum:]_-]\+:\s'
 syntax match   int_earthquakeConstants   '[+-]\?\<\d\+\>'
 syntax match   int_earthquakeConstants   '[+-]\?\<0x\x\+\>'
 syntax match   int_earthquakeConstants   '[+-]\?\<0\o\+\>'

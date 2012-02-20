@@ -547,7 +547,7 @@ endfunction"}}}
 function! vimshell#trunk_string(string, max)"{{{
   return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
 endfunction"}}}
-function! vimshell#util#is_windows()"{{{
+function! vimshell#is_windows()"{{{
   return has('win32') || has('win64')
 endfunction"}}}
 function! vimshell#resolve(filename)"{{{
@@ -613,7 +613,7 @@ endfunction"}}}
 function! vimshell#get_cursor_filename()"{{{
   let filename_pattern = (b:interactive.type ==# 'vimshell') ?
         \'\s\?\%(\f\+\s\)*\f\+' :
-        \'[[:alnum:];/?:@&=+$,_.!~*''|()-]\+'
+        \'[[:alnum:];/?:@&=+$,_.!~*|()-]\+'
   let cur_text = matchstr(getline('.'), '^.*\%'
         \ . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   let next_text = matchstr('a'.getline('.')[len(cur_text) :],

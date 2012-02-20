@@ -1298,6 +1298,7 @@ CHANGELOG						*vimshell-changelog*
 2012-02-20
 - Fixed vimshell create buffer.
 - Fixed create shell.
+- Improved uri pattern.
 
 2012-02-15
 - Fixed for unite.
