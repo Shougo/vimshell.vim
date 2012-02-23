@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Feb 2012.
+" Last Modified: 24 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -538,7 +538,18 @@ function! s:check_password_input(string)"{{{
     let in = iconv(in, &encoding, b:interactive.encoding)
   endif
 
-  call b:interactive.process.stdin.write(in . "\<NL>")
+  try
+    call b:interactive.process.stdin.write(in . "\<NL>")
+  catch
+    call b:interactive.process.waitpid()
+
+    " Error.
+    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    let context = vimshell#get_context()
+    let b:vimshell.continuation = {}
+    call vimshell#print_prompt(context)
+    call vimshell#start_insert(mode() ==# 'i')
+  endtry
 endfunction"}}}
 
 function! s:check_scrollback()
