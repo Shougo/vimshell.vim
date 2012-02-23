@@ -524,6 +524,7 @@ function! s:check_password_input(string)"{{{
         \ && a:string !~ s:password_regex)
         \ || (b:interactive.type != 'interactive'
         \     && b:interactive.type != 'vimshell')
+        \ || a:string[matchend(a:string, s:password_regex) :] =~ '\n'
     return
   endif
 
