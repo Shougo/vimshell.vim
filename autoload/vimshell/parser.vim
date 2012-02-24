@@ -214,6 +214,12 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
     let i += 1
   endwhile
 
+  " Call postexec hook.
+  call vimshell#hook#call('postexec',
+        \ context, b:vimshell.continuation.script)
+
+  let b:vimshell.continuation = {}
+
   if b:interactive.syntax !=# &filetype
     " Set highlight.
     let start = searchpos('^' . vimshell#escape_match(
@@ -224,12 +230,6 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
 
     let b:interactive.syntax = &filetype
   endif
-
-  " Call postexec hook.
-  call vimshell#hook#call('postexec',
-        \ context, b:vimshell.continuation.script)
-
-  let b:vimshell.continuation = {}
 
   call vimshell#next_prompt(context, a:is_insert)
 endfunction

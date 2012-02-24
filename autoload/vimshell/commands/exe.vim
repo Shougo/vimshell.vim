@@ -35,6 +35,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'arg=' : ['--encoding'],
         \ }, {
         \ '--encoding' : &termencoding,
+        \ '--syntax' : b:interactive.syntax,
         \ })
 
   if empty(commands[0].args)
