@@ -216,7 +216,8 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
 
   if b:interactive.syntax !=# &filetype
     " Set highlight.
-    let start = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bWen')[0]
+    let start = searchpos('^' . vimshell#escape_match(
+          \ vimshell#get_prompt()), 'bWen')[0]
     if start > 0
       call s:highlight_with(start + 1, line('$'), b:interactive.syntax)
     endif
@@ -225,7 +226,8 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   endif
 
   " Call postexec hook.
-  call vimshell#hook#call('postexec', context, b:vimshell.continuation.script)
+  call vimshell#hook#call('postexec',
+        \ context, b:vimshell.continuation.script)
 
   let b:vimshell.continuation = {}
 

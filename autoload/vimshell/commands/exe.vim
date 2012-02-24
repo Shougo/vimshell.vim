@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 24 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -129,7 +129,7 @@ function! s:init_process(commands, context, options)"{{{
   endfor
 
   " Set variables.
-  let b:interactive.syntax = b:interactive.syntax
+  let b:interactive.syntax = a:options['--syntax']
   let b:interactive.process = sub
   let b:interactive.args = a:commands[0].args
   let b:interactive.fd = a:context.fd
@@ -144,5 +144,6 @@ function! s:init_process(commands, context, options)"{{{
   let b:interactive.height = winheight(0)
   let b:interactive.prompt_history = {}
   let b:interactive.echoback_linenr = 0
-  let b:interactive.command = fnamemodify(a:commands[0].args[0], ':t:r')
+  let b:interactive.command =
+        \ fnamemodify(a:commands[0].args[0], ':t:r')
 endfunction"}}}
