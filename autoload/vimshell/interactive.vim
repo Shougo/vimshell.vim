@@ -628,7 +628,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   let type = a:interactive.type
 
   if s:is_skk_enabled() ||
-        \ (&filetype ==# 'interactive'
+        \ (a:interactive.type ==# 'interactive'
         \ && line('.') != a:interactive.echoback_linenr
         \ && (vimshell#interactive#get_cur_line(
         \             line('.'), a:interactive) != ''
