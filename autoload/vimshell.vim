@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Feb 2012.
+" Last Modified: 26 Feb 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -337,7 +337,8 @@ function! vimshell#print_prompt(...)"{{{
     call remove(b:vimshell.commandline_stack, -1)
   endif
 
-  if vimshell#get_user_prompt() != '' || vimshell#get_right_prompt() != ''
+  if vimshell#get_user_prompt() != '' ||
+        \ vimshell#get_right_prompt() != ''
     " Insert user prompt line.
     call s:insert_user_and_right_prompt()
   endif
@@ -391,16 +392,22 @@ endfunction"}}}
 function! vimshell#escape_match(str)"{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
-function! vimshell#get_prompt()"{{{
+function! vimshell#get_prompt(...)"{{{
+  let line = get(a:000, 0, line('.'))
+  let interactive = get(a:000, 1,
+        \ (exists('b:interactive') ? b:interactive : {}))
+  if empty(interactive)
+    return ''
+  endif
+
   if !exists('s:prompt')
     let s:prompt = exists('g:vimshell_prompt') ?
           \ g:vimshell_prompt : 'vimshell% '
   endif
 
   return &filetype ==# 'vimshell' && empty(b:vimshell.continuation) ?
-        \ s:prompt : exists('b:interactive') ?
-        \ vimshell#interactive#get_prompt(line('.'))
-        \ : ''
+        \ s:prompt :
+        \ vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
   if !exists('s:secondary_prompt')

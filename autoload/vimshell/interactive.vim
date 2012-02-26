@@ -70,19 +70,18 @@ function! vimshell#interactive#get_cur_line(line, ...)"{{{
   return s:chomp_prompt(cur_line, a:line, interactive)
 endfunction"}}}
 function! vimshell#interactive#get_prompt(...)"{{{
-  let line = a:0 ? a:1 : line('.')
-  " Get prompt line.
-  return !has_key(b:interactive.prompt_history, line) ?
-        \ '' : b:interactive.prompt_history[line]
-endfunction"}}}
-function! s:chomp_prompt(cur_text, line, interactive)"{{{
-  let cur_text = a:cur_text
-
-  if has_key(a:interactive.prompt_history, a:line)
-    let cur_text = cur_text[len(a:interactive.prompt_history[a:line]) : ]
+  let line = get(a:000, 0, line('.'))
+  let interactive = get(a:000, 1,
+        \ exists('b:interactive') ? b:interactive : {})
+  if empty(interactive)
+    return ''
   endif
 
-  return cur_text
+  " Get prompt line.
+  return get(b:interactive.prompt_history, line, '')
+endfunction"}}}
+function! s:chomp_prompt(cur_text, line, interactive)"{{{
+  return a:cur_text[len(vimshell#get_prompt(a:line, a:interactive)): ]
 endfunction"}}}
 
 function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
@@ -628,7 +627,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   let type = a:interactive.type
 
-  if line('.') != a:interactive.echoback_linenr
+  if &filetype ==# 'interactive'
+        \ && line('.') != a:interactive.echoback_linenr
         \ && (vimshell#interactive#get_cur_line(
         \             line('.'), a:interactive) != ''
         \    || vimshell#interactive#get_cur_line(
