@@ -627,12 +627,13 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   let type = a:interactive.type
 
-  if &filetype ==# 'interactive'
+  if s:is_skk_enabled() ||
+        \ (&filetype ==# 'interactive'
         \ && line('.') != a:interactive.echoback_linenr
         \ && (vimshell#interactive#get_cur_line(
         \             line('.'), a:interactive) != ''
         \    || vimshell#interactive#get_cur_line(
-        \            line('$'), a:interactive) != '')
+        \            line('$'), a:interactive) != ''))
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       execute bufwinnr(a:bufnr_save) . 'wincmd w'
     endif
@@ -714,6 +715,10 @@ function! s:cache_output(interactive)"{{{
   endif
 
   return outputed
+endfunction"}}}
+function! s:is_skk_enabled()"{{{
+  return (exists('b:skk_on') && b:skk_on)
+        \ || (exists('*eskk#is_enabled') && eskk#is_enabled())
 endfunction"}}}
 
 function! s:winenter()"{{{

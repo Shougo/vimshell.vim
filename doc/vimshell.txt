@@ -1297,6 +1297,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-02-26
 - Improved auto update behavior.
+- Check whether skk is enabled.
 
 2012-02-24
 - Fixed password input.
