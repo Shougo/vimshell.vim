@@ -1295,6 +1295,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-02-27
+- Use nothing sorter in history source.
+
 2012-02-26
 - Improved auto update behavior.
 - Check whether skk is enabled.
