@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2012.
+" Last Modified: 03 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -653,10 +653,10 @@ function! s:hangup(is_insert)"{{{
 
   let context = {
         \ 'has_head_spaces' : 0,
-        \ 'is_interactive' : 1, 
-        \ 'is_insert' : a:is_insert, 
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-        \}
+        \ 'is_interactive' : 1,
+        \ 'is_insert' : a:is_insert,
+        \ 'fd' : { 'stdin' : '', 'stdout' : '', 'stderr' : '' },
+        \ }
 
   call vimshell#print_prompt(context)
   call vimshell#start_insert(a:is_insert)
