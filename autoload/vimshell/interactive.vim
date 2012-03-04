@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Feb 2012.
+" Last Modified: 04 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -627,13 +627,15 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   let type = a:interactive.type
 
-  if s:is_skk_enabled() ||
-        \ (a:interactive.type ==# 'interactive'
-        \ && line('.') != a:interactive.echoback_linenr
-        \ && (vimshell#interactive#get_cur_line(
+  if s:is_skk_enabled()
+        \ || (a:interactive.type ==# 'interactive'
+        \   && line('.') != a:interactive.echoback_linenr
+        \   && (vimshell#interactive#get_cur_line(
         \             line('.'), a:interactive) != ''
         \    || vimshell#interactive#get_cur_line(
         \            line('$'), a:interactive) != ''))
+        \ || (a:interactive.type ==# 'vimshell'
+        \   && empty(b:vimshell.continuation))
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       execute bufwinnr(a:bufnr_save) . 'wincmd w'
     endif

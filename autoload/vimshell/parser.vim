@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Feb 2012.
+" Last Modified: 04 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -148,10 +148,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
 endfunction
 "}}}
 function! vimshell#parser#execute_continuation(is_insert)"{{{
-  if empty(b:vimshell.continuation)
-    return
-  endif
-
   " Execute pipe.
   call vimshell#interactive#execute_process_out(a:is_insert)
 
