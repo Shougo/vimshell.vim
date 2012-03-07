@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: gexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,9 +31,7 @@ let s:command = {
       \}
 function! s:command.execute(args, context)"{{{
   let command = join(a:args)
-  if &termencoding != '' && &termencoding != &encoding
-    let command = iconv(command, &encoding, &termencoding)
-  endif
+  let command = iconv(command, &encoding, 'char')
 
   call vimproc#system_gui(command)
 endfunction"}}}

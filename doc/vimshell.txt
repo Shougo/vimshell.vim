@@ -877,7 +877,7 @@ exe [{option}...] {command} 				*vimshell-internal-exe*
 		--encoding={encoding-name}		*vimshell-execute-options-encoding*
 		If differnt from 'encoding' and {encoding-name}, vimshell will
 		convert encoding automatically.
-		If omit this option, used 'termencoding'.
+		If omit this option, used "char".
 
 exit 							*vimshell-internal-exit*
 		Exit vimshell buffer.
@@ -1248,7 +1248,6 @@ fakecygpty						*vimshell-tips-fakecygpty*
 encoding					*vimshell-tips-encoding*
 		If you set 'encoding' manually on Windows environment,
 		multibyte characters may be broken.
-		I recommend to set 'termencoding' Ex: "cp932" on Windows.
 		But some commands on Windows are using "utf8" characters.
 		If you use that commands, use command "--encoding" option.
 >
@@ -1294,6 +1293,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-03-07
+- Don't use termencoding.
 
 2012-03-04
 - Fixed interrupt problem.

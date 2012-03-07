@@ -34,7 +34,7 @@ function! s:command.execute(args, context)"{{{
         \{ 'arg=' : ['--encoding']
         \})
   if !has_key(options, '--encoding')
-    let options['--encoding'] = &termencoding
+    let options['--encoding'] = 'char'
   endif
 
   " Execute shell command.

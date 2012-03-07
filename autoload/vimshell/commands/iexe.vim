@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,7 +69,7 @@ function! s:command.execute(commands, context)"{{{
   let cmdname = fnamemodify(args[0], ':r')
   if !has_key(options, '--encoding')
     let options['--encoding'] = has_key(g:vimshell_interactive_encodings, cmdname) ?
-          \ g:vimshell_interactive_encodings[cmdname] : &termencoding
+          \ g:vimshell_interactive_encodings[cmdname] : 'char'
   endif
 
   if !use_cygpty && has_key(g:vimshell_interactive_command_options, cmdname)

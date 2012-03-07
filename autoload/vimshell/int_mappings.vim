@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2011.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -203,10 +203,8 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
     " Search cursor filename.
     let filename = vimshell#get_cursor_filename()
 
-    if &termencoding != '' && &encoding != &termencoding
-      " Convert encoding.
-      let filename = iconv(filename, &encoding, &termencoding)
-    endif
+    " Convert encoding.
+    let filename = iconv(filename, &encoding, 'char')
 
     " Execute cursor file.
     if filename =~ '^\%(https\?\|ftp\)://'

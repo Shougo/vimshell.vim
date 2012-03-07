@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2012.
+" Last Modified: 07 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ function! s:command.execute(commands, context)"{{{
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--syntax', '--split'],
         \ }, {
-        \ '--encoding' : &termencoding,
+        \ '--encoding' : 'char',
         \ '--syntax' : 'vimshell-bg',
         \ '--split' : g:vimshell_split_command,
         \ })

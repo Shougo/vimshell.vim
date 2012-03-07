@@ -130,10 +130,8 @@ function! s:execute_line()"{{{
   let filename = substitute(substitute(
         \ vimshell#util#expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
 
-  if &termencoding != '' && &encoding != &termencoding
-    " Convert encoding.
-    let filename = iconv(filename, &encoding, &termencoding)
-  endif
+  " Convert encoding.
+  let filename = iconv(filename, &encoding, 'char')
 
   " Execute cursor file.
   if filename =~ '^\%(https\?\|ftp\)://'
