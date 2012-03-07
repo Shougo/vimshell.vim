@@ -1297,6 +1297,9 @@ CHANGELOG						*vimshell-changelog*
 2012-03-07
 - Don't use termencoding.
 
+2012-03-05
+- Improved version check.
+
 2012-03-04
 - Fixed interrupt problem.
 
