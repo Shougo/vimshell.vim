@@ -1274,6 +1274,9 @@ CHANGELOG						*vimshell-changelog*
 2012-03-17
 - Improved install manual.
 
+2012-03-15
+- Improved interactive.
+
 2012-03-07
 - Don't use termencoding.
 
