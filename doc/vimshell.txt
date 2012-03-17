@@ -43,7 +43,6 @@ Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
 Changelog		|vimshell-changelog|
 
-
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
 
@@ -82,30 +81,8 @@ INSTALL						*vimshell-install*
 vimshell needs |vimproc|
 http://github.com/Shougo/vimproc
 
-Please install vimproc Ver.5.0(or later) before use vimshell.
-And make proc.so
-
-Make method:
-
-* Mingw: >
-	$ make -f make_mingw.mak
-
-* Mac OS X: >
-	$ make -f make_mac.mak
-
-* Linux BSD: >
-	$ make -f make_gcc.mak
-
-* Visual Studio: >
-	$ make -f make_msvc.mak
-
-* Cygwin: >
-	$ make -f make_cygwin.mak
-
-After compile, copy autoload/vimproc.vim and autoload/vimproc/parser.vim and
-autoload/proc.so(or proc.dll) to autoload directory.
-Note: "proc.dll" compiled in Cygwin environment is only Cygwin Vim. Can't use
-in Windows Vim.
+You must install and compile vimproc Ver.5.0(or later) before use vimshell
+(refer to |vimproc-install|).
 
 Note: To enable complete feature, required neocomplcache.
 https://github.com/Shougo/neocomplcache
@@ -1293,6 +1270,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-03-17
+- Improved install manual.
 
 2012-03-07
 - Don't use termencoding.
