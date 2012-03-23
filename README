@@ -14,7 +14,7 @@ path separator as an escape character.
 ==============================================================================
 INSTALL							*vimshell-install*
 
-vimshell requres |vimproc|
+vimshell requires |vimproc|
 http://github.com/Shougo/vimproc
 
 Please install vimproc Ver.5.0(or later) before using vimshell.
