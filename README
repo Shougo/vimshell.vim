@@ -4,19 +4,21 @@ INTRODUCTION						*vimshell-introduction*
 ==============================================================================
 USAGE							*vimshell-usage*
 
-You can start vimshell in ":VimShell".  Because vimshell works similar with
-a common shell, you may operate it intuitively.  But vimshell perform the
-path appointment in '/'. Vimshell is misunderstood with escape sequence when
-you use '\' by Windows for a path and do not work.
+You can start VimShell with ":VimShell". VimShell works just like a common 
+shell so you should be able to use it intuitively.
+
+Please note that VimShell uses '/' as a path separator regardless of 
+environment. Because of this VimShell will likely interpret the Windows '\' 
+path separator as an escape character.
 
 ==============================================================================
 INSTALL							*vimshell-install*
 
-vimshell needs |vimproc|
+vimshell requres |vimproc|
 http://github.com/Shougo/vimproc
 
-Please install vimproc Ver.5.0(or later) before use vimshell.
-And make proc.so
+Please install vimproc Ver.5.0(or later) before using vimshell.
+As part of the installation of vimproc you will need to make proc.so
 
 Make method:
 
@@ -35,8 +37,8 @@ Make method:
 * Cygwin: >
 	$ make -f make_cygwin.mak
 
-After compile, copy autoload/vimproc.vim and autoload/vimproc/parser.vim and
-autoload/proc.so(or proc.dll) to autoload directory.
-Note: "proc.dll" compiled in Cygwin environment is only Cygwin Vim. Can't use
-in Windows Vim.
+After compilation, copy autoload/vimproc.vim and autoload/vimproc/parser.vim and
+autoload/proc.so(or proc.dll) to your vim autoload directory.
+Note: "proc.dll" compiled in the Cygwin environment is only compatible with 
+Cygwin Vim and can't be used in Windows Vim.
 
