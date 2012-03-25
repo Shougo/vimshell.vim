@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Mar 2012.
+" Last Modified: 25 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -175,10 +175,13 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
     " Print exit value.
     let context = b:vimshell.continuation.context
     if b:interactive.cond ==# 'signal'
-      let message = printf('vimshell: %s %d(%s) "%s"', b:interactive.cond, b:interactive.status,
-            \ vimshell#interactive#decode_signal(b:interactive.status), b:interactive.cmdline)
+      let message = printf('vimshell: %s %d(%s) "%s"',
+            \ b:interactive.cond, b:interactive.status,
+            \ vimshell#interactive#decode_signal(b:interactive.status),
+            \   b:interactive.cmdline)
     else
-      let message = printf('vimshell: %s %d "%s"', b:interactive.cond, b:interactive.status, b:interactive.cmdline)
+      let message = printf('vimshell: %s %d "%s"',
+            \ b:interactive.cond, b:interactive.status, b:interactive.cmdline)
     endif
 
     call vimshell#error_line(context.fd, message)

@@ -962,6 +962,15 @@ source {files}						*vimshell-internal-source*
 		The {files} is shell script which changes environment variables.
 		After executed the command, vimshell will use changed
 		environment variables.
+		Note: This internal command is for ":souce file" only.
+		Note: This internal command is not used for virtualenv. Because
+		virtualenv uses shell function.
+
+source_shellcmd {shellcmd}...				*vimshell-internal-source_shellcmd*
+		Load {shellcmd} using "cmd.exe" in Windows, 'shell' in others.
+		The {shellcmd} is shell command which changes environment
+		variables.  After executed the command, vimshell will use
+		changed environment variables.
 
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Execute {command} with args.
@@ -1270,6 +1279,10 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-03-25
+- Improved update behavior.
+- Added source_shellcmd.
 
 2012-03-17
 - Improved install manual.

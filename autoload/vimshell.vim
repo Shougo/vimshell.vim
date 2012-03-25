@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2012.
+" Last Modified: 25 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -831,6 +831,7 @@ function! s:initialize_vimshell(path, context)"{{{
         \ 'type' : 'vimshell',
         \ 'syntax' : 'vimshell',
         \ 'process' : {},
+        \ 'continuation' : {},
         \ 'fd' : a:context.fd,
         \ 'encoding' : &encoding,
         \ 'is_pty' : 0,

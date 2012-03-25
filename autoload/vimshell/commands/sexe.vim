@@ -72,7 +72,9 @@ function! s:command.execute(args, context)"{{{
     let cmdline = iconv(cmdline, &encoding, options['--encoding'])
     let stdin = iconv(stdin, &encoding, options['--encoding'])
   endif
+
   let result = system(printf('%s %s', cmdline, stdin))
+
   if options['--encoding'] != '' && &encoding != options['--encoding']
     " Convert encoding.
     let result = iconv(result, options['--encoding'], &encoding)

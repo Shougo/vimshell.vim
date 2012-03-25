@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: source.vim
+" FILE: source_shellcmd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 25 Mar 2012.
 " License: MIT license  {{{
@@ -25,21 +25,35 @@
 "=============================================================================
 
 let s:command = {
-      \ 'name' : 'source',
+      \ 'name' : 'source_shellcmd',
       \ 'kind' : 'internal',
-      \ 'description' : 'source files...',
+      \ 'description' : 'source shellcmd...',
       \}
 function! s:command.execute(args, context)"{{{
   if len(a:args) < 1
     return
   endif
 
-  let args = vimshell#util#is_windows() ?
-        \ [join(map(a:args, '"\"".v:val."\""'), '& ')] :
-        \ [join(map(a:args, '"source ".v:val.""'), '; ')]
-  return vimshell#execute_internal_command('source_shellcmd', args, a:context)
+  let output = vimshell#util#is_windows() ?
+        \ system(printf('cmd /c "%s& set"',
+        \      join(map(a:args, '"\"".v:val."\""')))) :
+        \ vimproc#system(printf('%s -c ''%s; env''',
+        \ &shell, join(a:args)))
+  echomsg join(a:args)
+  echomsg output
+  let output = iconv(output, 'char', &encoding)
+  let variables = {}
+  for line in split(output, '\n\|\r\n')
+    if line =~ '^\u\w*='
+      let name = '$'.matchstr(line, '^\u\w*')
+      let val = matchstr(line, '^\u\w*=\zs.*')
+      let variables[name] = val
+    endif
+  endfor
+
+  call vimshell#set_variables(variables)
 endfunction"}}}
 
-function! vimshell#commands#source#define()
+function! vimshell#commands#source_shellcmd#define()
   return s:command
 endfunction

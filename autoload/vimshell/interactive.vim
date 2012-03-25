@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Mar 2012.
+" Last Modified: 25 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -574,7 +574,9 @@ function! vimshell#interactive#check_current_output()"{{{
 endfunction"}}}
 function! s:check_all_output(is_hold)"{{{
   let winnrs = filter(range(1, winnr('$')),
-        \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})")
+        \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
+        \  && !empty(get(getbufvar(winbufnr(v:val), 'interactive'),
+        \   'continuation', ['dummy']))")
 
   if mode() ==# 'n'
     for winnr in winnrs
