@@ -39,8 +39,8 @@ function! s:command.execute(args, context)"{{{
         \      join(map(a:args, '"\"".v:val."\""')))) :
         \ vimproc#system(printf('%s -c ''%s; env''',
         \ &shell, join(a:args)))
-  echomsg join(a:args)
-  echomsg output
+  " echomsg join(a:args)
+  " echomsg output
   let output = iconv(output, 'char', &encoding)
   let variables = {}
   for line in split(output, '\n\|\r\n')
