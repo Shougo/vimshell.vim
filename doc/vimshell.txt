@@ -972,9 +972,11 @@ source_shellcmd {shellcmd} [{args}]			*vimshell-internal-source_shellcmd*
 		The {shellcmd} is shell command which changes environment
 		variables.  After executed the command, vimshell will use
 		changed environment variables.
-		Note: For virtualenv workon alias.
+		
+		Note: For virtualenv workon alias. But workon insternal command must be
+		executable from |system()|. You must edit .zshenv/.bashenv.
 >
-		alias workon = 'source_shellcmd "source /usr/local/bin/virtualenvwrapper.sh ;" workon'
+		alias workon = 'source_shellcmd workon'
 <
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Execute {command} with args.
