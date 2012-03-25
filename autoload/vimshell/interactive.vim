@@ -575,8 +575,8 @@ endfunction"}}}
 function! s:check_all_output(is_hold)"{{{
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
-        \  && !empty(get(getbufvar(winbufnr(v:val), 'interactive'),
-        \   'continuation', ['dummy']))")
+        \  && get(get(getbufvar(winbufnr(v:val), 'interactive'),
+        \     'process', {}), 'is_valid', 0)")
 
   if mode() ==# 'n'
     for winnr in winnrs
