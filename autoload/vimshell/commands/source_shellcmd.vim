@@ -41,13 +41,14 @@ function! s:command.execute(args, context)"{{{
         \ &shell, join(a:args)))
   " echomsg join(a:args)
   " echomsg output
-  let output = iconv(output, 'char', &encoding)
   let variables = {}
-  for line in split(output, '\n\|\r\n')
+  for line in split(iconv(output, 'char', &encoding), '\n\|\r\n')
     if line =~ '^\u\w*='
       let name = '$'.matchstr(line, '^\u\w*')
       let val = matchstr(line, '^\u\w*=\zs.*')
       let variables[name] = val
+    else
+      call vimshell#print_line(a:context.fd, line)
     endif
   endfor
 
