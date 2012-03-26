@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 26 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -100,7 +100,8 @@ function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
 
   let ret = []
 
-  for keyword in vimshell#complete#helper#keyword_simple_filter(range(len(b:vimshell.directory_stack)), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(
+        \ range(len(b:vimshell.directory_stack)), a:cur_keyword_str)
     let dict = { 'word' : keyword, 'menu' : b:vimshell.directory_stack[keyword] }
 
     call add(ret, dict)
@@ -114,13 +115,18 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
   endif
 
   let ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(b:vimshell.alias_table), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(
+        \ keys(b:vimshell.alias_table), a:cur_keyword_str)
     let dict = { 'word' : keyword }
 
     if len(b:vimshell.alias_table[keyword]) > 15
-      let dict.menu = 'alias ' . printf("%s..%s", b:vimshell.alias_table[keyword][:8], b:vimshell.alias_table[keyword][-4:])
+      let dict.menu = 'alias ' .
+            \ printf("%s..%s",
+            \   b:vimshell.alias_table[keyword][:8],
+            \   b:vimshell.alias_table[keyword][-4:])
     else
-      let dict.menu = 'alias ' . b:vimshell.alias_table[keyword]
+      let dict.menu = 'alias ' .
+            \ b:vimshell.alias_table[keyword]
     endif
 
     call add(ret, dict)
@@ -131,10 +137,11 @@ endfunction"}}}
 function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
   let commands = vimshell#available_commands()
   let ret = []
-  for keyword in vimshell#complete#helper#keyword_simple_filter(keys(commands), a:cur_keyword_str)
+  for keyword in vimshell#complete#helper#keyword_simple_filter(
+        \ keys(commands), a:cur_keyword_str)
     let dict = { 'word' : keyword, 'menu' : commands[keyword].kind }
     call add(ret, dict)
-  endfor 
+  endfor
 
   return ret
 endfunction"}}}
@@ -179,7 +186,8 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
   let ret = []
   let bufnumber = 1
   while bufnumber <= bufnr('$')
-    if buflisted(bufnumber) && vimshell#head_match(bufname(bufnumber), a:cur_keyword_str)
+    if buflisted(bufnumber) &&
+          \ vimshell#head_match(bufname(bufnumber), a:cur_keyword_str)
       let keyword = bufname(bufnumber)
       let dict = { 'word' : escape(keyword, ' *?[]"={}'), 'menu' : 'buffer' }
       call add(ret, dict)
@@ -215,6 +223,19 @@ function! vimshell#complete#helper#command_args(args)"{{{
     " Args.
     return vimshell#complete#helper#args(a:args[0], a:args[1:])
   endif
+endfunction"}}}
+function! vimshell#complete#helper#variables(cur_keyword_str)"{{{
+  let _ = []
+  let _ += neocomplcache#sources#vim_complete#helper#environment(
+        \ vimshell#get_cur_text(), a:cur_keyword_str)
+
+  if a:cur_keyword_str =~ '^$\l'
+    let _ += map(keys(b:vimshell.variables), "'$' . v:val")
+  elseif a:cur_keyword_str =~ '^$$'
+    let _ += map(keys(b:vimshell.system_variables), "'$$' . v:val")
+  endif
+
+  return vimshell#complete#helper#keyword_filter(_, a:cur_keyword_str)
 endfunction"}}}
 
 function! vimshell#complete#helper#call_omnifunc(omnifunc)"{{{

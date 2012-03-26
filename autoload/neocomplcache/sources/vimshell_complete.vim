@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 26 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,11 +80,15 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
     return []
   endtry
 
-  let list = (len(args) <= 1) ?
+  let _ = (len(args) <= 1) ?
         \ s:get_complete_commands(a:cur_keyword_str) :
         \ s:get_complete_args(a:cur_keyword_str, args)
 
-  return s:get_omni_list(list)
+  if a:cur_keyword_str =~ '^\$'
+    let _ += vimshell#complete#helper#variables(a:cur_keyword_str)
+  endif
+
+  return s:get_omni_list(_)
 endfunction"}}}
 
 function! s:get_complete_commands(cur_keyword_str)"{{{
@@ -101,16 +105,16 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
     endfor
   endif
 
-  let ret = directories
+  let _ = directories
         \ + vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
         \ + vimshell#complete#helper#aliases(a:cur_keyword_str)
         \ + vimshell#complete#helper#internals(a:cur_keyword_str)
 
   if len(a:cur_keyword_str) >= 1
-    let ret += vimshell#complete#helper#executables(a:cur_keyword_str)
+    let _ += vimshell#complete#helper#executables(a:cur_keyword_str)
   endif
 
-  return ret
+  return _
 endfunction"}}}
 
 function! s:get_complete_args(cur_keyword_str, args)"{{{
