@@ -964,8 +964,7 @@ source {files}						*vimshell-internal-source*
 		environment variables.
 		Note: This internal command is for ":souce file" only.
 		Note: This internal command is not used for virtualenv. Because
-		virtualenv uses shell function. Please use
-		|vimshell-internal-source_shellcmd| instead.
+		virtualenv uses shell function.
 
 source_shellcmd {shellcmd} [{args}]			*vimshell-internal-source_shellcmd*
 		Load {shellcmd} using "cmd.exe" in Windows, 'shell' in others.
@@ -973,11 +972,9 @@ source_shellcmd {shellcmd} [{args}]			*vimshell-internal-source_shellcmd*
 		variables.  After executed the command, vimshell will use
 		changed environment variables.
 		
-		Note: For virtualenv workon alias. But workon insternal command must be
-		executable from |system()|. You must edit .zshenv/.bashenv.
->
-		alias workon = 'source_shellcmd workon'
-<
+		Note: The {shellcmd} must be executable from |system()|. You
+		may edit .zshenv/.bashenv.
+
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Execute {command} with args.
 		Note: Execute external command forcibly.
