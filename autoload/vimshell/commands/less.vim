@@ -75,7 +75,7 @@ function! s:command.execute(commands, context)"{{{
   return s:init(a:commands, a:context, options, interactive)
 endfunction"}}}
 function! s:command.complete(args)"{{{
-    return vimshell#complete#helper#command_args(a:args)
+  return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
 function! vimshell#commands#less#define()

@@ -167,11 +167,13 @@ endfunction"}}}
 function! s:command.complete(args)"{{{
   if len(a:args) == 1
     return vimshell#complete#helper#executables(a:args[-1])
-  elseif vimshell#util#is_windows() && len(a:args) > 1 && a:args[1] == 'fakecygpty'
-    return vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
+  elseif vimshell#util#is_windows() &&
+        \ len(a:args) > 1 && a:args[1] == 'fakecygpty'
+    return vimshell#complete#helper#executables(
+          \ a:args[-1], g:vimshell_interactive_cygwin_path) :
   endif
 
-  return []
+  return vimshell#complete#helper#files(a:args[-1])
 endfunction"}}}
 
 function! vimshell#commands#iexe#define()
