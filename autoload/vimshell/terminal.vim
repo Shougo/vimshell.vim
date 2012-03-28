@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 28 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,6 +50,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   setlocal modifiable
+  echomsg 'print string = ' . string(a:string)
   if g:vimshell_enable_debug
     echomsg 'print string = ' . string(a:string)
   endif
@@ -1117,6 +1118,8 @@ let s:control_sequence = {
       \ "\<C-g>" : s:control.bell,
       \ "\<C-o>" : s:control.shift_in,
       \ "\<C-n>" : s:control.shift_out,
+      \ "\<C-a>" : s:control.ignore,
+      \ "\<C-b>" : s:control.ignore,
       \}
 "}}}
 

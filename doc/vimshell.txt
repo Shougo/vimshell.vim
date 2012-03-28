@@ -1283,6 +1283,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-03-28
+- Fixed for ipython.
+
 2012-03-26
 - Implemented variables completion.
 
