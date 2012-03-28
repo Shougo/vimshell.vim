@@ -50,7 +50,6 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   setlocal modifiable
-  echomsg 'print string = ' . string(a:string)
   if g:vimshell_enable_debug
     echomsg 'print string = ' . string(a:string)
   endif
