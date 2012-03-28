@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2012.
+" Last Modified: 28 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -200,7 +200,7 @@ function! s:create_shell(path, context)"{{{
           \ vimshell#split(a:context.split_command)
   endif
 
-  edit! `=bufname`
+  silent edit! `=bufname`
 
   call s:initialize_vimshell(path, a:context)
 

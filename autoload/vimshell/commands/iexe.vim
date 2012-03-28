@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2012.
+" Last Modified: 28 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -196,6 +196,9 @@ if vimshell#util#is_windows()
   call vimshell#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'sbt',
         \  '-Djline.WindowsTerminal.directConsole=false')
+  call vimshell#set_dictionary_helper(
+        \ g:vimshell_interactive_command_options, 'ipython,ipython3',
+        \ '--TerminalInteractiveShell.readline_use=False')
 
   call vimshell#set_dictionary_helper(
         \ g:vimshell_interactive_encodings, 'gosh,fakecygpty', 'utf8')
@@ -295,7 +298,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Save current directiory.
   let cwd = getcwd()
 
-  edit `='iexe-'.substitute(join(a:interactive.args),
+  silent edit `='iexe-'.substitute(join(a:interactive.args),
         \ '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
   let [a:new_pos[2], a:new_pos[3]] = [bufnr('%'), getpos('.')]
 

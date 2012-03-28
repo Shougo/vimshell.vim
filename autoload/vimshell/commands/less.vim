@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2012.
+" Last Modified: 28 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,7 +120,8 @@ function! s:init(commands, context, options, interactive)"{{{
     let args .= join(command.args)
   endfor
 
-  edit `='less-'.substitute(args, '[<>|]', '_', 'g').'@'.(bufnr('$')+1)`
+  silent edit `='less-'.substitute(args, '[<>|]', '_', 'g')
+        \ .'@'.(bufnr('$')+1)`
 
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 

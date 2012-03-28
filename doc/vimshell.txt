@@ -1285,6 +1285,8 @@ CHANGELOG						*vimshell-changelog*
 
 2012-03-28
 - Fixed for ipython.
+- Supported ipython in Windows.
+- Silent edit.
 
 2012-03-26
 - Implemented variables completion.

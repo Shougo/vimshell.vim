@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2012.
+" Last Modified: 28 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -210,7 +210,8 @@ function! s:init_bg(args, context)"{{{
   " Save current directiory.
   let cwd = getcwd()
 
-  edit `='texe-'.fnamemodify(a:args[0], ':r').'@'.(bufnr('$')+1)`
+  silent edit `='texe-'.fnamemodify(a:args[0], ':r')
+        \ .'@'.(bufnr('$')+1)`
   call vimshell#cd(cwd)
 
   call s:default_settings()
