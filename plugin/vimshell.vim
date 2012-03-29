@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Mar 2012.
+" Last Modified: 29 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,7 +57,7 @@ let g:vimshell_enable_debug =
 let g:vimshell_use_terminal_command =
       \ get(g:, 'vimshell_use_terminal_command', '')
 let g:vimshell_temporary_directory =
-      \ get(g:, 'vimshell_temporary_directory', expand('~/.vimshell'))
+      \ fnamemodify(get(g:, 'vimshell_temporary_directory', '~/.vimshell'), ":p:h")
 if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
   call mkdir(fnamemodify(g:vimshell_temporary_directory, ':p'), 'p')
 endif
