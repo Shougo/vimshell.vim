@@ -57,16 +57,20 @@ let g:vimshell_enable_debug =
 let g:vimshell_use_terminal_command =
       \ get(g:, 'vimshell_use_terminal_command', '')
 let g:vimshell_temporary_directory =
-      \ expand(get(g:, 'vimshell_temporary_directory', '~/.vimshell'))
-if !isdirectory(fnamemodify(g:vimshell_temporary_directory, ':p'))
-  call mkdir(fnamemodify(g:vimshell_temporary_directory, ':p'), 'p')
+      \ substitute(fnamemodify(get(
+      \   g:, 'vimshell_temporary_directory', '~/.vimshell'),
+      \  ':p'), '\\', '/', 'g')
+if !isdirectory(g:vimshell_temporary_directory)
+  call mkdir(g:vimshell_temporary_directory, 'p')
 endif
 let g:vimshell_max_command_history =
       \ get(g:, 'vimshell_max_command_history', 1000)
 let g:vimshell_max_directory_stack =
       \ get(g:, 'vimshell_max_directory_stack', 100)
 let g:vimshell_vimshrc_path =
-      \ expand(get(g:, 'vimshell_vimshrc_path', '~/.vimshrc'))
+      \ substitute(fnamemodify(get(
+      \   g:, 'vimshell_vimshrc_path', '~/.vimshrc'),
+      \  ':p'), '\\', '/', 'g')
 if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))
   call mkdir(fnamemodify(g:vimshell_vimshrc_path, ':p:h'), 'p')
 endif
@@ -151,7 +155,8 @@ command! -nargs=? -complete=customlist,vimshell#complete VimShellCurrentDir
       \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
 command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
       \ call s:call_vimshell({}, <q-args> . ' ' .
-      \ vimshell#util#substitute_path_separator(fnamemodify(bufname('%'), ':p:h')))
+      \ vimshell#util#substitute_path_separator(
+      \       fnamemodify(bufname('%'), ':p:h')))
 
 command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellExecute
       \ call s:vimshell_execute(<q-args>)
