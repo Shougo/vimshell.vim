@@ -127,8 +127,8 @@ function! s:start_insert()"{{{
 endfunction "}}}
 function! s:execute_line()"{{{
   " Search cursor file.
-  let filename = substitute(substitute(
-        \ vimshell#util#expand('<cfile>'), ' ', '\\ ', 'g'), '\\', '/', 'g')
+  let filename = unite#util#substitute_path_separator(substitute(
+        \ expand('<cfile>'), ' ', '\\ ', 'g'))
 
   " Convert encoding.
   let filename = iconv(filename, &encoding, 'char')

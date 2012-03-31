@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2012.
+" Last Modified: 31 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -145,7 +145,8 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
   let b:interactive = a:interactive
 
   " Set syntax.
-  syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
+  syn region   InteractiveError   start=+!!!+ end=+!!!+
+        \ contains=InteractiveErrorHidden oneline
   if v:version >= 703
     " Supported conceal features.
     syn match   InteractiveErrorHidden            '!!!' contained conceal
@@ -156,7 +157,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
 
   augroup vimshell
     autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(
-          \ vimshell#util#expand('<afile>'))
+          \ expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
   augroup END
 

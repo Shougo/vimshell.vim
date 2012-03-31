@@ -1283,6 +1283,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-03-31
+- Fixed expand() bugs.
+
 2012-03-28
 - Fixed for ipython.
 - Supported ipython in Windows.
