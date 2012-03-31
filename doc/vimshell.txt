@@ -1286,6 +1286,7 @@ CHANGELOG						*vimshell-changelog*
 2012-03-31
 - Fixed expand() bugs.
 - Fixed for cmdwin.
+- Improved variables initialization.
 
 2012-03-28
 - Fixed for ipython.
