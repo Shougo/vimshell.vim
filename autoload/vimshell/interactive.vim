@@ -125,7 +125,7 @@ function! vimshell#interactive#send_char(char)"{{{
   call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
-  if s:last_interactive_bufnr <= 0 || vimshell#is_cmdwin()
+  if s:last_interactive_bufnr <= 0 || vimshell#util#is_cmdwin()
     return
   endif
 
@@ -617,7 +617,7 @@ endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   " Output cache.
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
-        \ || vimshell#is_cmdwin()
+        \ || vimshell#util#is_cmdwin()
     return
   endif
 

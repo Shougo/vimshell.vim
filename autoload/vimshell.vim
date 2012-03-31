@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2012.
+" Last Modified: 31 Mar 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,16 +120,20 @@ endfunction"}}}
 
 " vimshell plugin utility functions."{{{
 function! vimshell#switch_shell(path, ...)"{{{
-  if vimshell#is_cmdwin()
-    call vimshell#echo_error('Command line buffer is detected!')
-    call vimshell#echo_error('Please close command line buffer.')
+  if vimshell#util#is_cmdwin()
+    call vimshell#echo_error(
+          \ '[vimshell] Command line buffer is detected!')
+    call vimshell#echo_error(
+          \ '[vimshell] Please close command line buffer.')
     return
   endif
 
   " Detect autochdir option."{{{
   if &autochdir
-    call vimshell#echo_error('Detected autochdir!')
-    call vimshell#echo_error('vimshell don''t work if you set autochdir option.')
+    call vimshell#echo_error(
+          \ '[vimshell] Detected autochdir!')
+    call vimshell#echo_error(
+          \ '[vimshell] vimshell don''t work if you set autochdir option.')
     return
   endif
   "}}}
@@ -634,11 +638,6 @@ function! vimshell#get_cursor_filename()"{{{
   endif
 
   return vimshell#util#expand(filename)
-endfunction"}}}
-function! vimshell#is_cmdwin()"{{{
-  silent! noautocmd wincmd p
-  silent! noautocmd wincmd p
-  return v:errmsg =~ '^E11:'
 endfunction"}}}
 function! vimshell#next_prompt(context, is_insert)"{{{
   if &filetype !=# 'vimshell'
