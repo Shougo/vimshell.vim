@@ -163,7 +163,8 @@ function! s:command.execute(commands, context)"{{{
 endfunction"}}}
 function! s:command.complete(args)"{{{
   return vimshell#util#is_windows() ?
-        \ vimshell#complete#helper#executables(a:args[-1], g:vimshell_interactive_cygwin_path) :
+        \ vimshell#complete#helper#executables(a:args[-1],
+        \    g:vimshell_interactive_cygwin_path) :
         \ vimshell#complete#helper#executables(a:args[-1])
 endfunction"}}}
 
