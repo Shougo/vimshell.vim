@@ -40,19 +40,19 @@ let s:doc_dict = {
       \ 'filetypes' : { 'int-earthquake' : 1 },
       \ }
 let s:doc_table = {
-      \ ':delete' : ':delete $xx',
-      \ ':retweet' : ':retweet' : ' $xx',
-      \ ':recent' : ':recent [jugyo] | yugui/ruby-committers',
-      \ ':search' : ':search #ruby',
-      \ ':eval' : ':eval Time.now',
-      \ ':exit' : ':exit',
-      \ ':reconnect' : ':reconnect',
-      \ ':restart' : ':restart',
-      \ ':thread' : ':thread $xx',
-      \ ':plugin_install' : ':plugin_install https://gist.github.com/899506',
-      \ ':alias' : ':alias :rt :retweet',
-      \ ':update' : ':update<ENTER>',
-      \ ':filter' : ':filter keyword earthquakegem twitter | user jugyo matsuu | off',
+      \ ':delete' : 'Delete :delete $xx',
+      \ ':retweet' : 'Retweet :retweet $xx',
+      \ ':recent' : 'Timeline :recent [jugyo] | yugui/ruby-committers',
+      \ ':search' : 'Search :search #ruby',
+      \ ':eval' : 'Eval :eval Time.now',
+      \ ':exit' : 'Exit :exit',
+      \ ':reconnect' : 'Reconnect :reconnect',
+      \ ':restart' : 'Restart :restart',
+      \ ':thread' : 'Threads :thread $xx',
+      \ ':plugin_install' : 'Install Plugins :plugin_install https://gist.github.com/899506',
+      \ ':alias' : 'Alias :alias :rt :retweet',
+      \ ':update' : 'Tweet Ascii Art :update<ENTER>',
+      \ ':filter' : 'Stream Filter Tracking :filter keyword earthquakegem twitter | user jugyo matsuu | off',
       \ }
 function! s:doc_dict.search(cur_text)"{{{
   " Get command name.
@@ -64,9 +64,8 @@ function! s:doc_dict.search(cur_text)"{{{
   let description = s:doc_table[command]
 
   let usage = [
-        \ { 'text' : 'Usage: ', 'highlight' : 'Identifier' },
         \ { 'text' : command, 'highlight' : 'Statement' },
-        \ { 'text' : description[len(command) :] },
+        \ { 'text' : description },
         \ ]
 
   return usage
