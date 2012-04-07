@@ -29,10 +29,6 @@ function! s:search_recent()"{{{
   $
 endfunction"}}}
 
-if exists('g:loaded_echodoc') && g:loaded_echodoc
-  call echodoc#register('earthquake.gem', s:doc_dict)
-endif
-
 " For echodoc."{{{
 let s:doc_dict = {
       \ 'name' : 'earthquake.gem',
@@ -42,7 +38,7 @@ let s:doc_dict = {
 let s:doc_table = {
       \ ':delete' : 'Delete :delete $xx',
       \ ':retweet' : 'Retweet :retweet $xx',
-      \ ':recent' : 'Timeline :recent [jugyo] | yugui/ruby-committers',
+      \ ':recent' : 'Timeline :recent [jugyo] | List :recent yugui/ruby-committers',
       \ ':search' : 'Search :search #ruby',
       \ ':eval' : 'Eval :eval Time.now',
       \ ':exit' : 'Exit :exit',
@@ -56,7 +52,7 @@ let s:doc_table = {
       \ }
 function! s:doc_dict.search(cur_text)"{{{
   " Get command name.
-  let command = matchstr('', '^⚡ \zs:\h\w*\ze')
+  let command = matchstr(a:cur_text, '^⚡ \zs:\h\w*\ze')
   if command == '' || !has_key(s:doc_table, command)
     return []
   endif
@@ -65,11 +61,15 @@ function! s:doc_dict.search(cur_text)"{{{
 
   let usage = [
         \ { 'text' : command, 'highlight' : 'Statement' },
-        \ { 'text' : description },
+        \ { 'text' : ' ' . description },
         \ ]
 
   return usage
 endfunction"}}}
+
+if exists('g:loaded_echodoc') && g:loaded_echodoc
+  call echodoc#register('earthquake.gem', s:doc_dict)
+endif
 "}}}
 
 let &cpo = s:save_cpo
