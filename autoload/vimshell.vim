@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 22 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -105,7 +105,6 @@ function! s:default_settings()"{{{
   augroup vimshell
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
     autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
-    autocmd ColorScheme <buffer>    call s:color_scheme()
     autocmd CursorMoved <buffer> call vimshell#interactive#check_current_output()
   augroup end
 
@@ -1090,13 +1089,6 @@ function! s:event_bufwin_enter()"{{{
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
-endfunction"}}}
-function! s:color_scheme()"{{{
-  if has('gui_running')
-    hi VimShellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-  else
-    hi def link VimShellPrompt Identifier
-  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
