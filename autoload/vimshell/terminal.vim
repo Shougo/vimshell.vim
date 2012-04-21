@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2012.
+" Last Modified: 21 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -579,8 +579,8 @@ let s:highlight_table = {
       \ '27' : ' gui=NONE',
       \ '28' : ' ctermfg=NONE ctermbg=NONE guifg=NONE guibg=NONE',
       \ '29' : ' gui=NONE',
-      \ '39' : ' ctermfg=NONE guifg=NONE', 
-      \ '49' : ' ctermbg=NONE guibg=NONE', 
+      \ '39' : ' ctermfg=NONE guifg=NONE',
+      \ '49' : ' ctermbg=NONE guibg=NONE',
       \}"}}}
 function! s:escape.highlight(matchstr)"{{{
   if g:vimshell_disable_escape_highlight

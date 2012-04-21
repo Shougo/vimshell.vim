@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2012.
+" Last Modified: 21 Apr 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,12 +88,7 @@ execute 'syntax region   vimshellLine start='.string('^'.vimshell#escape_match(v
       \ "end='$' keepend contains=vimshellExe,vimshellDirectory,vimshellConstants,vimshellArguments,".
       \ "vimshellQuoted,vimshellString,vimshellVariable,vimshellSpecial,vimshellComment"
 
-if has('gui_running')
-  highlight vimshellPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
-else
-  highlight default link vimshellPrompt Identifier
-endif
-
+highlight default link vimshellPrompt Identifier
 highlight default link vimshellUserPrompt Special
 
 highlight default link vimshellQuoted Special
