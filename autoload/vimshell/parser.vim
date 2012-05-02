@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2012.
+" Last Modified: 02 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,13 +27,15 @@
 function! vimshell#parser#check_script(script)"{{{
   " Parse check only.
   " Split statements.
-  for statement in vimproc#parser#split_statements(a:script)
+  let script = vimshell#parser#parse_alias(a:script)
+  for statement in vimproc#parser#split_statements(script)
     let args = vimproc#parser#split_args(statement)
   endfor
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context)"{{{
   " Split statements.
-  let statements = vimproc#parser#parse_statements(a:script)
+  let script = vimshell#parser#parse_alias(a:script)
+  let statements = vimproc#parser#parse_statements(script)
   let max = len(statements)
 
   let context = a:context
@@ -234,10 +236,11 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
 endfunction
 "}}}
 function! s:execute_statement(statement, context)"{{{
-  let statement = vimshell#parser#parse_alias(a:statement)
+  let statement = a:statement
 
   " Call preexec filter.
-  let statement = vimshell#hook#call_filter('preexec', a:context, statement)
+  let statement = vimshell#hook#call_filter(
+        \ 'preexec', a:context, statement)
 
   let program = vimshell#parser#parse_program(statement)
 
@@ -245,7 +248,8 @@ function! s:execute_statement(statement, context)"{{{
   if program =~ '^\s*:'
     " Convert to vexe special command.
     let fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-    let commands = [ { 'args' : split(substitute(statement, '^:', 'vexe ', '')), 'fd' : fd } ]
+    let commands = [ { 'args' :
+          \ split(substitute(statement, '^:', 'vexe ', '')), 'fd' : fd } ]
   elseif has_key(internal_commands, program)
         \ && internal_commands[program].kind ==# 'special'
     " Special commands.
@@ -261,26 +265,21 @@ endfunction
 
 " Parse helper.
 function! vimshell#parser#parse_alias(statement)"{{{
-  let pipes = []
+  let statement = s:parse_galias(a:statement)
+  let program = matchstr(statement, vimshell#get_program_pattern())
+  if statement != '' && program  == ''
+    throw 'Error: Invalid command name.'
+  endif
 
-  for statement in vimproc#parser#split_pipe(a:statement)
-    " Get program.
-    let statement = s:parse_galias(statement)
-    let program = matchstr(statement, vimshell#get_program_pattern())
-    if program  == ''
-      throw 'Error: Invalid command name.'
-    endif
+  if exists('b:vimshell') &&
+        \ !empty(get(b:vimshell.alias_table, program, []))
+    " Expand alias.
+    let args = vimproc#parser#split_args_through(
+          \ statement[matchend(statement, vimshell#get_program_pattern()) :])
+    let statement = s:recursive_expand_alias(program, args)
+  endif
 
-    if exists('b:vimshell') && has_key(b:vimshell.alias_table, program) && !empty(b:vimshell.alias_table[program])
-      " Expand alias.
-      let args = vimproc#parser#split_args_through(statement[matchend(statement, vimshell#get_program_pattern()) :])
-      let statement = s:recursive_expand_alias(program, args)
-    endif
-
-    call add(pipes, statement)
-  endfor
-
-  return join(pipes, '|')
+  return statement
 endfunction"}}}
 function! vimshell#parser#parse_program(statement)"{{{
   " Get program.
@@ -291,7 +290,8 @@ function! vimshell#parser#parse_program(statement)"{{{
 
   if program != '' && program[0] == '~'
     " Parse tilde.
-    let program = substitute($HOME, '\\', '/', 'g') . program[1:]
+    let program = vimshell#util#substitute_path_separator(
+          \ $HOME, '\\', '/', 'g') . program[1:]
   endif
 
   return program
