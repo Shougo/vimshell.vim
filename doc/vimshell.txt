@@ -264,6 +264,10 @@ g:vimshell_disable_escape_highlight		*g:vimshell_disable_escape_highlight*
 
 g:vimshell_cat_command				*g:vimshell_cat_command*
 		Sets $PAGER command path.
+		Note: This variable is useful for using pager comands.
+		For example, "git log".
+		Note: You *must not* set "core.pager" variable in your
+		.gitconfig.
 		
 		Initial value is "cat".
 
@@ -1285,6 +1289,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-05-02
 - Fixed alias parsing.
+- Improved documentation.
 
 2012-04-28
 - Updated vital.
