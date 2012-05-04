@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 May 2012.
+" Last Modified: 04 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -290,8 +290,9 @@ function! vimshell#parser#parse_program(statement)"{{{
 
   if program != '' && program[0] == '~'
     " Parse tilde.
-    let program = vimshell#util#substitute_path_separator(
-          \ $HOME, '\\', '/', 'g') . program[1:]
+    let program =
+          \ vimshell#util#substitute_path_separator($HOME)
+          \ . program[1:]
   endif
 
   return program
