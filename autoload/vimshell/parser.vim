@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 May 2012.
+" Last Modified: 17 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,8 +83,8 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   let context.fd = fd
 
   " Check pipeline.
-  if has_key(internal_commands, program)
-        \ && internal_commands[program].kind ==# 'execute'
+  if get(get(internal_commands, program, {}),
+        \ 'kind', '') ==  'execute'
     " Execute execute commands.
     let commands[0].args = args
     return internal_commands[program].execute(commands, context)
@@ -102,7 +102,8 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       " Execute less(Syntax sugar).
       let commands = a:commands[: -2]
       if !empty(a:commands[-1].args[1:])
-        let commands[0].args = a:commands[-1].args[1:] + commands[0].args
+        let commands[0].args =
+              \ a:commands[-1].args[1:] + commands[0].args
       endif
       return internal_commands['less'].execute(commands, context)
     else
@@ -111,12 +112,14 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     endif
   else"{{{
     let line = join(a:commands[0].args)
-    let dir = substitute(substitute(line, '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), ''), '\\\(.\)', '\1', 'g')
+    let dir = substitute(substitute(line, '^\~\ze[/\\]',
+          \ substitute($HOME, '\\', '/', 'g'), ''),
+          \          '\\\(.\)', '\1', 'g')
     let command = vimshell#get_command_path(program)
     let ext = fnamemodify(program, ':e')
 
     " Check internal commands.
-    if has_key(internal_commands, program)"{{{
+    if has_key(get(internal_commands, program, {}), 'execute')"{{{
       " Internal commands.
       return internal_commands[program].execute(args, a:context)
       "}}}
@@ -129,7 +132,8 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       "}}}
     elseif !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
       " Suffix execution.
-      let args = extend(split(g:vimshell_execute_file_list[ext]), a:commands[0].args)
+      let args = extend(split(g:vimshell_execute_file_list[ext]),
+            \ a:commands[0].args)
       let commands = [ { 'args' : args, 'fd' : fd } ]
       return vimshell#parser#execute_command(commands, a:context)
     elseif command != '' || executable(program)
