@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Apr 2012.
+" Last Modified: 18 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -573,7 +573,7 @@ function! vimshell#get_argument_pattern()"{{{
         \'[^\\]\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
 endfunction"}}}
 function! vimshell#get_alias_pattern()"{{{
-  return '^\s*[[:alnum:].+#_@!%-]\+'
+  return '^\s*[[:alnum:].+#_@!%:-]\+'
 endfunction"}}}
 function! vimshell#cd(directory)"{{{
   execute g:vimshell_cd_command '`=a:directory`'

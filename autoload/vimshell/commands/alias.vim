@@ -35,16 +35,19 @@ function! s:command.execute(args, context)"{{{
   if empty(a:args)
     " View all aliases.
     for alias in keys(b:vimshell.alias_table)
-      call vimshell#print_line(a:context.fd, printf('%s=%s', alias, vimshell#get_alias(alias)))
+      call vimshell#print_line(a:context.fd,
+            \ printf('%s=%s', alias, vimshell#get_alias(alias)))
     endfor
   elseif args =~ vimshell#get_alias_pattern().'$'
     " View alias.
-    call vimshell#print_line(a:context.fd, printf('%s=%s', a:args[0], vimshell#get_alias(a:args[0])))
+    call vimshell#print_line(a:context.fd,
+          \ printf('%s=%s', a:args[0], vimshell#get_alias(a:args[0])))
   else
     " Define alias.
 
     " Parse command line.
-    let alias_name = matchstr(args, vimshell#get_alias_pattern().'\ze\s*=\s*')
+    let alias_name = matchstr(args,
+          \ vimshell#get_alias_pattern().'\ze\s*=\s*')
 
     " Next.
     if alias_name == ''

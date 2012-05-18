@@ -1287,6 +1287,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-05-18
+- Improved alias pattern.
+
 2012-05-16
 - Added sudo completion.
 - Improved parse.
