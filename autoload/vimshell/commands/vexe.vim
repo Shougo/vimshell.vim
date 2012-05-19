@@ -35,7 +35,9 @@ function! s:command.execute(args, context)"{{{
   let context = a:context
   let context.fd = a:context.fd
   call vimshell#set_context(context)
-  
+
+  let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
+
   let temp = tempname()
   let save_vfile = &verbosefile
   let &verbosefile = temp
@@ -48,7 +50,9 @@ function! s:command.execute(args, context)"{{{
   let output = readfile(temp)
   call delete(temp)
 
-  for line in output
+  call vimshell#restore_pos(old_pos)
+
+  for line in output[1:]
     call vimshell#print_line(a:context.fd, line)
   endfor
 endfunction"}}}
