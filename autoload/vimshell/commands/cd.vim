@@ -43,7 +43,8 @@ function! s:command.execute(args, context)"{{{
     return
   else
     " Filename escape.
-    let dir = substitute(a:args[0], '^\~\ze[/\\]', substitute($HOME, '\\', '/', 'g'), '')
+    let dir = substitute(a:args[0], '^\~\ze[/\\]',
+          \ substitute($HOME, '\\', '/', 'g'), '')
   endif
 
   if vimshell#util#is_windows()
@@ -68,7 +69,8 @@ function! s:command.execute(args, context)"{{{
     let dirs = split(globpath(&cdpath, dir), '\n')
 
     if empty(dirs)
-      call vimshell#error_line(a:context.fd, printf('cd: File "%s" is not found.', dir))
+      call vimshell#error_line(a:context.fd,
+            \ printf('cd: File "%s" is not found.', dir))
       return
     endif
 
@@ -80,17 +82,20 @@ function! s:command.execute(args, context)"{{{
       let b:vimshell.current_dir = fnamemodify(dirs[0], ':p')
       call vimshell#cd(b:vimshell.current_dir)
     else
-      call vimshell#error_line(a:context.fd, printf('cd: File "%s" is not found.', dir))
+      call vimshell#error_line(a:context.fd,
+            \ printf('cd: File "%s" is not found.', dir))
       return
     endif
   endif
 
-  if empty(b:vimshell.directory_stack) || cwd !=# b:vimshell.directory_stack[0]
+  if empty(b:vimshell.directory_stack)
+        \ || cwd !=# b:vimshell.directory_stack[0]
     " Push current directory and filtering.
     call insert(b:vimshell.directory_stack, cwd)
 
     " Truncate.
-    let b:vimshell.directory_stack = b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
+    let b:vimshell.directory_stack =
+          \ b:vimshell.directory_stack[: g:vimshell_max_directory_stack-1]
   endif
 
   if a:context.is_interactive
