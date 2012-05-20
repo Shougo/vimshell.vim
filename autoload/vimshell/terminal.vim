@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2012.
+" Last Modified: 20 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,8 +40,10 @@ function! vimshell#terminal#init()"{{{
         \}
 
   if s:use_conceal()
-    syntax match vimshellEscapeSequenceConceal contained conceal    '\e\[[0-9;]*m'
-    syntax match vimshellEscapeSequenceMarker conceal               '\e\[0\?m\|\e0m\['
+    syntax match vimshellEscapeSequenceConceal
+          \ contained conceal    '\e\[[0-9;]*m'
+    syntax match vimshellEscapeSequenceMarker
+          \ conceal               '\e\[0*m\|\e0m\['
   endif
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error)"{{{
@@ -697,8 +699,8 @@ function! s:escape.highlight(matchstr)"{{{
   if s:use_conceal()
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
           \ . '_' . line . '_' . col
-    let syntax_command = printf('start=+\e\%s+ end=+\e[\[0]+me=e-2 ' .
-          \ 'contains=vimshellEscapeSequenceConceal', a:matchstr)
+    let syntax_command = printf('start=+\e\%s+ end=+\e[\[0\+]+me=e-2 ' .
+          \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
 
     execute 'syntax region' syntax_name syntax_command
     execute 'highlight' syntax_name highlight
@@ -711,7 +713,7 @@ function! s:escape.highlight(matchstr)"{{{
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
           \ . '_' . line . '_' . (col+1)
     let syntax_command = printf(
-          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL', line, col)
+          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', line, col)
 
     if !has_key(b:interactive.terminal.syntax_names, line)
       let b:interactive.terminal.syntax_names[line] = {}
