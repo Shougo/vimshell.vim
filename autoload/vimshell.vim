@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 May 2012.
+" Last Modified: 23 May 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,9 +55,6 @@ endif
 if !exists('s:internal_commands')
   let s:internal_commands = {}
 endif
-
-" Disable bell.
-set vb t_vb=
 
 let s:last_vimshell_bufnr = -1
 
