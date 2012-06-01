@@ -38,9 +38,31 @@ function! s:command.complete(args)"{{{
   " Use unite-ssh function.
   let arglead = get(a:args, -1, '')
   let cmdline = join(a:args)
-  return unite#sources#ssh#command_complete_host(
+  let cursorpos = len(cmdline)
+  let _ =  unite#sources#ssh#command_complete_host(
         \ arglead, cmdline, len(cmdline)) +
         \ vimshell#complete#helper#files(arglead)
+
+  if !neocomplcache#is_auto_complete()
+    " Manual complete only.
+    let ssh_files = map(unite#sources#ssh#complete_file(
+        \ split('//' . substitute(arglead,
+        \     ':', '/', ''), ':'), unite#get_context(),
+        \ arglead, cmdline, cursorpos),
+        \ "substitute(v:val, ':\\d\\+/', ':', '')")
+    let [hostname, port, path] =
+          \ unite#sources#ssh#parse_path(
+          \ split('//' . substitute(arglead,
+          \     ':', '/', ''), ':'))
+    " echomsg string(a:args)
+    " echomsg '//' . substitute(arglead,
+    "       \     ':', '/', '')
+    " echomsg string([hostname, port, path])
+    " echomsg string(ssh_files)
+    let _ += ssh_files
+  endif
+
+  return _
 endfunction"}}}
 
 function! vimshell#commands#scp#define()

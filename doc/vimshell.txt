@@ -1291,6 +1291,8 @@ CHANGELOG						*vimshell-changelog*
 - Added ssh hostname completion.
 - Fixed iexe completion.
 - Added scp completion.
+- Fixed for scp completion.
+- Improved scp completion.
 
 2012-05-23
 - Don't set visualbell.
