@@ -54,11 +54,6 @@ function! s:command.complete(args)"{{{
           \ unite#sources#ssh#parse_path(
           \ split('//' . substitute(arglead,
           \     ':', '/', ''), ':'))
-    " echomsg string(a:args)
-    " echomsg '//' . substitute(arglead,
-    "       \     ':', '/', '')
-    " echomsg string([hostname, port, path])
-    " echomsg string(ssh_files)
     let _ += ssh_files
   endif
 
