@@ -1,5 +1,5 @@
 "=============================================================================
-" FILE: ssh.vim
+" FILE: scp.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
 " Last Modified: 01 Jun 2012.
 " License: MIT license  {{{
@@ -25,9 +25,9 @@
 "=============================================================================
 
 let s:command = {
-      \ 'name' : 'ssh',
+      \ 'name' : 'scp',
       \ 'kind' : 'external',
-      \ 'description' : 'ssh {hostname}',
+      \ 'description' : 'ssh {src} {dest}',
       \}
 function! s:command.complete(args)"{{{
   if !exists('*unite#get_all_sources')
@@ -39,9 +39,10 @@ function! s:command.complete(args)"{{{
   let arglead = get(a:args, -1, '')
   let cmdline = join(a:args)
   return unite#sources#ssh#command_complete_host(
-        \ arglead, cmdline, len(cmdline))
+        \ arglead, cmdline, len(cmdline)) +
+        \ vimshell#complete#helper#files(arglead)
 endfunction"}}}
 
-function! vimshell#commands#ssh#define()
+function! vimshell#commands#scp#define()
   return s:command
 endfunction
