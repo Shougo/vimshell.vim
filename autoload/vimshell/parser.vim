@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 May 2012.
+" Last Modified: 10 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -82,6 +82,11 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   let context = a:context
   let context.fd = fd
 
+  let line = join(a:commands[0].args)
+  let dir = substitute(substitute(line, '^\~\ze[/\\]',
+        \ substitute($HOME, '\\', '/', 'g'), ''),
+        \          '\\\(.\)', '\1', 'g')
+
   " Check pipeline.
   if get(get(internal_commands, program, {}),
         \ 'kind', '') ==  'execute'
@@ -110,11 +115,12 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       " Execute external commands.
       return internal_commands['exe'].execute(a:commands, context)
     endif
+  elseif isdirectory(dir)
+    " Directory.
+    " Change the working directory like zsh.
+    " Call internal cd command.
+    return vimshell#execute_internal_command('cd', [dir], a:context)
   else"{{{
-    let line = join(a:commands[0].args)
-    let dir = substitute(substitute(line, '^\~\ze[/\\]',
-          \ substitute($HOME, '\\', '/', 'g'), ''),
-          \          '\\\(.\)', '\1', 'g')
     let command = vimshell#get_command_path(program)
     let ext = fnamemodify(program, ':e')
 
@@ -122,13 +128,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     if has_key(get(internal_commands, program, {}), 'execute')"{{{
       " Internal commands.
       return internal_commands[program].execute(args, a:context)
-      "}}}
-    elseif isdirectory(dir)"{{{
-      " Directory.
-      " Change the working directory like zsh.
-
-      " Call internal cd command.
-      return vimshell#execute_internal_command('cd', [dir], a:context)
       "}}}
     elseif !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
       " Suffix execution.
