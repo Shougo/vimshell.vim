@@ -293,7 +293,7 @@ g:vimshell_environment_term			*g:vimshell_environment_term*
 g:vimshell_split_command			*g:vimshell_split_command*
 		Vimshell uses this as the Ex command to split window.  If you
 		set this "nicely", vimshell adjust with window size and split
-		window preferable.
+		window preferable. ("nicely" depends the winwidth variable)
 		Empty means disable window splitting for vimshell.
 		"tabnew" means vimshell opens new tab.
 		"vsplit" means vertical splitting.
