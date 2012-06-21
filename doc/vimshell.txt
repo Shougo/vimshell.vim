@@ -1290,6 +1290,7 @@ CHANGELOG						*vimshell-changelog*
 2012-06-21
 - Improved less mappings.
 - Fixed iexe completion error.
+- Improved terminal behavior.
 
 2012-06-10
 - Fixed auto cd error.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 May 2012.
+" Last Modified: 21 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -699,7 +699,7 @@ function! s:escape.highlight(matchstr)"{{{
   if s:use_conceal()
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
           \ . '_' . line . '_' . col
-    let syntax_command = printf('start=+\e\%s+ end=+\e[\[0\+]+me=e-2 ' .
+    let syntax_command = printf('start=+\e\%s+ end=+\ze\e[\[0*m]+ ' .
           \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
 
     execute 'syntax region' syntax_name syntax_command
