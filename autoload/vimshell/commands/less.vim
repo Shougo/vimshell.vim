@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Mar 2012.
+" Last Modified: 21 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -149,7 +149,8 @@ function! s:init(commands, context, options, interactive)"{{{
   let b:interactive = a:interactive
 
   " Set syntax.
-  syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
+  syn region   InteractiveError
+        \ start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   if v:version >= 703
     " Supported conceal features.
     syn match   InteractiveErrorHidden            '!!!' contained conceal
@@ -162,12 +163,20 @@ function! s:init(commands, context, options, interactive)"{{{
     autocmd BufDelete <buffer>       call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
 
-  nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)  :<C-u>call <SID>on_execute()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_interrupt)       :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_exit)       :<C-u>call vimshell#interactive#quit_buffer()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)       :<C-u>call <SID>next_line()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)       :<C-u>call <SID>next_screen()<CR>
-  nnoremap <buffer><silent> <Plug>(vimshell_less_next_half_screen)       :<C-u>call <SID>next_half_screen()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_execute_line)
+        \ :<C-u>call <SID>on_execute()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_interrupt)
+        \ :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_exit)
+        \ :<C-u>call vimshell#interactive#quit_buffer()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_line)
+        \ :<C-u>call <SID>next_line()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_screen)
+        \ :<C-u>call <SID>next_screen()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_next_half_screen)
+        \ :<C-u>call <SID>next_half_screen()<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_less_last_screen)
+        \ :<C-u>call <SID>last_screen()<CR>
 
   nmap <buffer><CR>      <Plug>(vimshell_less_execute_line)
   nmap <buffer><C-c>     <Plug>(vimshell_less_interrupt)
@@ -177,6 +186,7 @@ function! s:init(commands, context, options, interactive)"{{{
   nmap <buffer><C-f>     <Plug>(vimshell_less_next_screen)
   nmap <buffer>d         <Plug>(vimshell_less_next_half_screen)
   nmap <buffer><C-d>     <Plug>(vimshell_less_next_half_screen)
+  nmap <buffer>G     <Plug>(vimshell_less_last_screen)
   nmap <buffer><Space>   <Plug>(vimshell_less_next_screen)
   nnoremap <buffer>b     <C-b>
   nnoremap <buffer>u     <C-u>
@@ -213,13 +223,18 @@ function! s:next_half_screen()"{{{
     execute "normal! \<C-d>"
   endif
 endfunction "}}}
+function! s:last_screen()"{{{
+  call s:print_output(-1)
+endfunction "}}}
 
 function! s:print_output(line_num)"{{{
   setlocal modifiable
 
-  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
+  if winwidth(0) != b:interactive.width
+        \ || winheight(0) != b:interactive.height
     " Set new window size.
-    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
+    call b:interactive.process.set_winsize(
+          \ winwidth(0), winheight(0))
   endif
 
   $
@@ -237,24 +252,33 @@ function! s:print_output(line_num)"{{{
 
   " Check cache.
   let cnt = len(split(b:interactive.stdout_cache, '\n', 1))
-  if !b:interactive.process.stdout.eof && cnt < a:line_num
+  if !b:interactive.process.stdout.eof
+        \ && (a:line_num < 0 || cnt < a:line_num)
     echo 'Running command.'
 
-    while cnt < a:line_num && !b:interactive.process.stdout.eof
-      let b:interactive.stdout_cache .= b:interactive.process.stdout.read(100, 40)
-      let cnt = len(split(b:interactive.stdout_cache, '\n', 1))
+    while !b:interactive.process.stdout.eof
+        \ && (a:line_num < 0 || cnt < a:line_num)
+      let b:interactive.stdout_cache .=
+            \ b:interactive.process.stdout.read(100, 40)
+
+      if a:line_num >= 0
+        let cnt = len(split(b:interactive.stdout_cache, '\n', 1))
+      endif
     endwhile
 
     redraw
     echo ''
   endif
 
-  if cnt > a:line_num
-    let cnt = a:line_num
+  if a:line_num >= 0
+    if cnt > a:line_num
+      let cnt = a:line_num
+    endif
+
+    let match = match(b:interactive.stdout_cache, '\n', 0, cnt)
   endif
 
-  let match = match(b:interactive.stdout_cache, '\n', 0, cnt)
-  if match <= 0
+  if a:line_num < 0 || match <= 0
     let output = b:interactive.stdout_cache
     let b:interactive.stdout_cache = ''
   else
@@ -264,4 +288,9 @@ function! s:print_output(line_num)"{{{
 
   call vimshell#interactive#print_buffer(b:interactive.fd, output)
   setlocal nomodifiable
+
+  if b:interactive.stdout_cache == ''
+        \ && b:interactive.process.stdout.eof
+    call vimshell#interactive#exit()
+  endif
 endfunction"}}}
