@@ -72,9 +72,11 @@ function! vimshell#terminal#print(string, is_error)"{{{
         \ 'line' : 0,
         \ }
   let s:virtual.lines = {}
-  let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line('.'), col('.')-1)
+  let [s:virtual.line, s:virtual.col] =
+        \ s:get_virtual_col(line('.'), col('.')-1)
   if g:vimshell_enable_debug
-    echomsg '[s:virtual.line, s:virtual.col] = ' . string([s:virtual.line, s:virtual.col])
+    echomsg '[s:virtual.line, s:virtual.col] = ' .
+          \ string([s:virtual.line, s:virtual.col])
   endif
   let s:virtual.lines[s:virtual.line] = current_line
 
@@ -87,10 +89,17 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
   let newstr = ''
   let pos = 0
-  let max = len(a:string)
+
+  " Optimize checkstr.
+  let string = a:string
+  while string =~ '\%(\e\[[0-9;]*m\)\{2,}'
+    let string = substitute(string,
+          \ '\e\[[0-9;]*\zsm\e\[\ze[0-9;]*m', ';', 'g')
+  endwhile
+  let max = len(string)
 
   while pos < max
-    let char = a:string[pos]
+    let char = string[pos]
 
     if char !~ '[[:cntrl:]]'"{{{
       let newstr .= char
@@ -102,7 +111,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
       call s:output_string(newstr)
       let newstr = ''
 
-      if pos + 1 < max && a:string[pos+1] == "\<C-h>"
+      if pos + 1 < max && string[pos+1] == "\<C-h>"
         " <C-h><C-h>
         call s:control.delete_multi_backword_char()
         let pos += 2
@@ -116,7 +125,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
       "}}}
     elseif char == "\<ESC>""{{{
       " Check escape sequence.
-      let checkstr = a:string[pos+1 :]
+      let checkstr = string[pos+1 :]
       if checkstr == ''
         break
       endif
@@ -149,7 +158,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
         continue
       endif"}}}
       let checkchar2 = checkstr[: 1]
-      if checkchar2 != '' && has_key(s:escape_sequence_simple_char2, checkchar2)"{{{
+      if checkchar2 != '' &&
+            \ has_key(s:escape_sequence_simple_char2, checkchar2)"{{{
         call s:output_string(newstr)
         let newstr = ''
 
@@ -605,7 +615,7 @@ function! s:escape.highlight(matchstr)"{{{
 
   let highlight = ''
   let highlight_list =
-        \ split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';')
+        \ split(matchstr(a:matchstr, '^\[\zs[0-9;]\+'), ';', 1)
   let cnt = 0
   if empty(highlight_list)
     " Default.
@@ -699,7 +709,7 @@ function! s:escape.highlight(matchstr)"{{{
   if s:use_conceal()
     let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
           \ . '_' . line . '_' . col
-    let syntax_command = printf('start=+\e\%s+ end=+\ze\e[\[0*m]+ ' .
+    let syntax_command = printf('start=+\e\%s+ end=+\ze\e[\[0*m]\|$+ ' .
           \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
 
     execute 'syntax region' syntax_name syntax_command
@@ -733,7 +743,7 @@ function! s:escape.highlight(matchstr)"{{{
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr)"{{{
-  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
 
   let s:virtual.line = get(args, 0, 1)
   let s:virtual.col = get(args, 1, 1)
@@ -753,7 +763,7 @@ function! s:escape.move_cursor_column(matchstr)"{{{
   call s:set_screen_pos(line, col)
 endfunction"}}}
 function! s:escape.setup_scrolling_region(matchstr)"{{{
-  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';')
+  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
 
   let top = empty(args) ? 0 : args[0]
   let bottom = empty(args) ? 0 : args[1]
