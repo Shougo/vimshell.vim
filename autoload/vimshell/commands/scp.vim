@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: scp.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2012.
+" Last Modified: 22 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,10 +50,6 @@ function! s:command.complete(args)"{{{
         \     ':', '/', ''), ':'), unite#get_context(),
         \ arglead, cmdline, cursorpos),
         \ "substitute(v:val, ':\\d\\+/', ':', '')")
-    let [hostname, port, path] =
-          \ unite#sources#ssh#parse_path(
-          \ split('//' . substitute(arglead,
-          \     ':', '/', ''), ':'))
     let _ += ssh_files
   endif
 
