@@ -38,23 +38,19 @@ function! s:command.execute(args, context)"{{{
 
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
 
-  let temp = tempname()
-  let save_vfile = &verbosefile
-  let &verbosefile = temp
+  redir => _
   for command in split(join(a:args), '\n')
-    silent execute command
+    silent! execute command
   endfor
-  if &verbosefile == temp
-    let &verbosefile = save_vfile
-  endif
-  let output = readfile(temp)
-  call delete(temp)
+  redir END
 
   call vimshell#restore_pos(old_pos)
 
-  for line in output[1:]
-    call vimshell#print_line(a:context.fd, line)
-  endfor
+  if &filetype ==# 'vimshell'
+    call vimshell#print_line(a:context.fd, _)
+  else
+    echo _
+  endif
 endfunction"}}}
 
 function! vimshell#commands#vexe#define()
