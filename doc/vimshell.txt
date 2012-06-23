@@ -1287,6 +1287,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-06-24
+- Fixed ls behavior for vimproc.
+
 2012-06-23
 - Fixed vexe behavior.
 
