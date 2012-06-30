@@ -694,8 +694,8 @@ function! vimshell#get_editor_name()"{{{
         " MacVim check.
         if executable('/Applications/MacVim.app/Contents/MacOS/Vim')
           let progname = 'Applications/MacVim.app/Contents/MacOS/Vim -g'
-        elseif executable(substitute('HOMEDIR/Applications/MacVim.app/Contents/MacOS/Vim', 'HOMEDIR', $HOME, 'g'))
-          let progname = substitute('HOMEDIR/Applications/MacVim.app/Contents/MacOS/Vim -g', 'HOMEDIR', $HOME, 'g')               
+        elseif executable(expand('~/Applications/MacVim.app/Contents/MacOS/Vim'))
+          let progname = expand('~/Applications/MacVim.app/Contents/MacOS/Vim -g')               
         else
           echoerr 'You installed MacVim in not default directory! You must set g:vimshell_editor_command manually.'
           return g:vimshell_cat_command
