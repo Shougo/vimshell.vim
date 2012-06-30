@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Apr 2012.
+" Last Modified: 30 Jun 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,10 +28,6 @@ let s:last_interactive_bufnr = 1
 
 " Utility functions.
 
-let s:password_regex =
-      \'\%(Enter \|[Oo]ld \|[Nn]ew \|login '  .
-      \'\|Kerberos \|CVS \|UNIX \| SMB \|LDAP \|\[sudo] ' .
-      \'\|^\|\n\|''s \)[Pp]assword'
 let s:character_regex = ''
 let s:update_time_save = &updatetime
 
@@ -517,11 +513,13 @@ endfunction"}}}
 function! s:check_password_input(string)"{{{
   let current_line = substitute(getline('.'), '!!!', '', 'g')
 
-  if (current_line !~ s:password_regex
-        \ && a:string !~ s:password_regex)
+  if !exists('g:vimproc_password_pattern')
+        \ || (current_line !~ g:vimproc_password_pattern
+        \ && a:string !~ g:vimproc_password_pattern)
         \ || (b:interactive.type != 'interactive'
         \     && b:interactive.type != 'vimshell')
-        \ || a:string[matchend(a:string, s:password_regex) :] =~ '\n'
+        \ || a:string[matchend(a:string,
+        \ g:vimproc_password_pattern) :] =~ '\n'
     return
   endif
 
