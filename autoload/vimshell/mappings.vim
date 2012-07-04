@@ -78,7 +78,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
         \ <SID>expand_wildcard() :
         \ exists('*neocomplcache#start_manual_complete') ?
         \    neocomplcache#start_manual_complete() :
-        \ "\<C-o>:echoerr 'neocomplcache is not installed or enabled. Completion feature is disabled.'\<CR>"
+        \    vimshell#complete_setup()
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)
         \ <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)

@@ -1092,4 +1092,35 @@ function! s:event_bufwin_leave()"{{{
   let s:last_vimshell_bufnr = bufnr('%')
 endfunction"}}}
 
+" Complete function. This provides simple file completion.
+function! vimshell#complete_setup()"{{{
+  if len(&omnifunc) == 0
+    setlocal omnifunc=vimshell#complete
+  endif
+  call feedkeys("\<c-x>\<c-o>", "n")
+  return ''
+endfunction
+function! vimshell#complete(findstart, base)"{{{
+  let line = getline('.')
+  let prompt_len = len(vimshell#get_prompt())
+  if a:findstart
+    let part = matchstr(line, '\(\\\s\|[^ \\]\+\)*$')
+    if len(part) == 0
+      let pos = col('.')
+    else
+      let pos = strridx(line, part)
+    endif
+    return pos
+  endif
+  let files = filter(map(map(split(glob(a:base . '*'), "\n"),
+  \ "isdirectory(v:val)?v:val.'/':v:val"),
+  \ "fnameescape(substitute(v:val, '\\', '/', 'g'))"),
+  \ 'stridx(v:val, a:base)==0')
+
+  if line[prompt_len :] =~ '^\s*cd\s'
+    call filter(files, 'v:val=~"/$"')
+  endif
+  return files
+endfunction"}}}
+
 " vim: foldmethod=marker
