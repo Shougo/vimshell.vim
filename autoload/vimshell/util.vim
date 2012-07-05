@@ -172,11 +172,12 @@ function! vimshell#util#escape_file_searching(...)
 endfunction
 
 function! vimshell#util#is_cmdwin()"{{{
-  try
-    noautocmd wincmd p
-  catch /^Vim\%((\a\+)\)\=:E11:/
+  let errmsg_save = v:errmsg
+  silent! verbose noautocmd wincmd p
+  if errmsg_save !=# v:errmsg
+        \ && v:errmsg =~ '^E11:'
     return 1
-  endtry
+  endif
 
   silent! noautocmd wincmd p
   return 0
