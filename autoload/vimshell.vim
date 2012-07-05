@@ -980,8 +980,11 @@ function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
   let _ = []
 
   " Option names completion.
-  let _ += filter(vimfiler#get_options(),
-        \ 'stridx(v:val, a:arglead) == 0')
+  try
+    let _ += filter(vimfiler#get_options(),
+          \ 'stridx(v:val, a:arglead) == 0')
+  catch
+  endtry
 
   " Directory name completion.
   let _ += filter(map(split(glob(a:arglead . '*'), '\n'),
