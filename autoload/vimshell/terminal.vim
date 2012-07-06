@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jul 2012.
+" Last Modified: 07 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -52,7 +52,6 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   setlocal modifiable
-  echomsg 'print string = ' . string(a:string)
   if g:vimshell_enable_debug
     echomsg 'print string = ' . string(a:string)
   endif
