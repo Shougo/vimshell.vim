@@ -1287,6 +1287,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-07-10
+- Fixed escape sequence color.
+
 2012-07-07
 - Fixed debug message.
 
