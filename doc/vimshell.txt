@@ -169,7 +169,7 @@ COMMANDS 					*vimshell-commands*
 		it launches a terminal program you Specify by {command}.
 		Note: This is not completed function.
 
-:VimShellSendString {string}			*:VimShellSendString*
+:[range]VimShellSendString {string}		*:VimShellSendString*
 		It sends selected string to the interpreter in background
 		buffer of vimshell, iexe, texe.  You can control interpreter as
 		if you are using |quickrun|.
@@ -1286,6 +1286,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-07-15
+- Improved documentation.
 
 2012-07-07
 - Fixed debug message.
