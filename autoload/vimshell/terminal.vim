@@ -754,6 +754,12 @@ function! s:escape.move_cursor(matchstr)"{{{
 
   let s:virtual.line = get(args, 0, 1)
   let s:virtual.col = get(args, 1, 1)
+  if s:virtual.line !~ '^\d\+$' || s:virtual.col !~ '^\d\+$'
+    call unite#print_error(
+          \ 'Move cursor escape sequence format error: str = "'
+          \ . a:matchstr . '"')
+    return
+  endif
 
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
