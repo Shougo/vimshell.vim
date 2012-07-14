@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jun 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -151,14 +151,15 @@ function! s:send_region(line1, line2, string)"{{{
     return
   endif
 
-  if type ==# 'interactive'
+  let is_valid = get(get(b:interactive, 'process', {}), 'is_valid', 0)
+  if type ==# 'interactive' || (type ==# 'vimshell' && is_valid)
     " Save prompt.
     let prompt = vimshell#interactive#get_prompt(line('$'))
     let prompt_nr = line('$')
   endif
 
   " Send string.
-  if type ==# 'vimshell'
+  if type ==# 'vimshell' && !is_valid
     for line in split(string, "\<LF>")
       call vimshell#set_prompt_command(line)
       call vimshell#execute(line)
@@ -169,8 +170,7 @@ function! s:send_region(line1, line2, string)"{{{
     call vimshell#interactive#send_string(string, mode() ==# 'i')
   endif
 
-  if type ==# 'interactive'
-        \ && b:interactive.process.is_valid
+  if type ==# 'interactive' || (type ==# 'vimshell' && is_valid)
     call setline(prompt_nr, split(prompt . string, "\<LF>"))
   endif
 
@@ -598,8 +598,10 @@ function! s:check_all_output(is_hold)"{{{
     if mode() ==# 'n'
       call feedkeys("g\<ESC>", 'n')
     elseif mode() ==# 'i' && exists('b:interactive') &&
-        \ !empty(b:interactive.process) && b:interactive.process.is_valid
-      let is_complete_hold = get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
+        \ !empty(b:interactive.process)
+        \ && b:interactive.process.is_valid
+      let is_complete_hold = get(g:,
+            \ 'neocomplcache_enable_cursor_hold_i', 0)
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
         " call feedkeys("\<C-r>\<ESC>", 'n')
@@ -689,7 +691,8 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   endif
 endfunction"}}}
 function! s:cache_output(interactive)"{{{
-  if empty(a:interactive.process) || !a:interactive.process.is_valid
+  if empty(a:interactive.process) ||
+        \ !a:interactive.process.is_valid
     return 0
   endif
 
