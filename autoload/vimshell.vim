@@ -717,6 +717,11 @@ function! vimshell#get_editor_name()"{{{
 
   return g:vimshell_editor_command
 endfunction"}}}
+function! vimshell#is_interactive()"{{{
+  let is_valid = get(get(b:interactive, 'process', {}), 'is_valid', 0)
+  return b:interactive.type ==# 'interactive'
+        \ || (b:interactive.type ==# 'vimshell' && is_valid)
+endfunction"}}}
 "}}}
 
 " User helper functions.

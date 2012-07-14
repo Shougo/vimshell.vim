@@ -151,15 +151,14 @@ function! s:send_region(line1, line2, string)"{{{
     return
   endif
 
-  let is_valid = get(get(b:interactive, 'process', {}), 'is_valid', 0)
-  if type ==# 'interactive' || (type ==# 'vimshell' && is_valid)
+  if vimshell#is_interactive()
     " Save prompt.
     let prompt = vimshell#interactive#get_prompt(line('$'))
     let prompt_nr = line('$')
   endif
 
   " Send string.
-  if type ==# 'vimshell' && !is_valid
+  if type ==# 'vimshell' && !vimshell#is_interactive()
     for line in split(string, "\<LF>")
       call vimshell#set_prompt_command(line)
       call vimshell#execute(line)
@@ -170,7 +169,7 @@ function! s:send_region(line1, line2, string)"{{{
     call vimshell#interactive#send_string(string, mode() ==# 'i')
   endif
 
-  if type ==# 'interactive' || (type ==# 'vimshell' && is_valid)
+  if vimshell#is_interactive()
     call setline(prompt_nr, split(prompt . string, "\<LF>"))
   endif
 

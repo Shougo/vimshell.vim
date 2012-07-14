@@ -1292,6 +1292,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved :VimShellSendString behavior.
 - Fixed escape errors.
 - Check escape error.
+- Fixed clear behavior.
 
 2012-07-10
 - Fixed escape sequence color.

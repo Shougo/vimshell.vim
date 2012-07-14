@@ -526,6 +526,10 @@ function! s:delete_line()"{{{
   endif
 endfunction"}}}
 function! s:clear(is_insert)"{{{
+  if vimshell#is_interactive()
+    return vimshell#int_mappings#clear()
+  endif
+
   " Hangup current process.
   call s:hangup(a:is_insert)
 

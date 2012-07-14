@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Mar 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,7 +55,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   nnoremap <silent><buffer> <Plug>(vimshell_int_append_end)
         \ :<C-u>call <SID>append_end()<CR>
   nnoremap <silent><buffer> <Plug>(vimshell_int_clear)
-        \ :<C-u>call <SID>clear()<CR>
+        \ :<C-u>call vimshell#int_mappings#clear()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_interrupt)
         \ :<C-u>call vimshell#interactive#send_char(3)<CR>
 
@@ -307,7 +307,7 @@ function! s:append_end()"{{{
 endfunction"}}}
 function! s:send_intrrupt()"{{{
 endfunction"}}}
-function! s:clear()"{{{
+function! vimshell#int_mappings#clear()"{{{
   set modifiable
 
   " Clean up the screen.
