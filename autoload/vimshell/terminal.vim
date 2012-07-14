@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jul 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,7 +57,9 @@ function! vimshell#terminal#print(string, is_error)"{{{
   endif
 
   if &filetype ==# 'vimshell' &&
-        \ empty(b:vimshell.continuation) && vimshell#check_prompt()
+        \ empty(b:vimshell.continuation) && (vimshell#check_prompt()
+        \ || vimshell#head_match(getline('.'),
+        \     vimshell#get_secondary_prompt()))
     " Move line.
     call append(line('.'), '')
     normal! j

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 May 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -447,7 +447,8 @@ function! vimshell#get_prompt_command(...)"{{{
 
   if !vimshell#check_prompt()
     " Search prompt.
-    let [lnum, col] = searchpos('^' . vimshell#escape_match(vimshell#get_prompt()), 'bnW')
+    let [lnum, col] = searchpos('^' .
+          \ vimshell#escape_match(vimshell#get_prompt()), 'bnW')
   else
     let lnum = '.'
   endif
@@ -458,7 +459,8 @@ function! vimshell#get_prompt_command(...)"{{{
   while lnum <= line('$') && !vimshell#check_prompt(lnum)
     if vimshell#check_secondary_prompt(lnum)
       " Append secondary command.
-      let line .= "\<NL>" . getline(lnum)[len(secondary_prompt):]
+      let line .= (line =~ '\\$' ? '' : "\<NL>") .
+            \ getline(lnum)[len(secondary_prompt):]
     endif
 
     let lnum += 1
@@ -513,7 +515,7 @@ function! vimshell#get_prompt_linenr()"{{{
 endfunction"}}}
 function! vimshell#check_prompt(...)"{{{
   if &filetype !=# 'vimshell' || !empty(b:vimshell.continuation)
-    return call('vimshell#interactive#get_prompt', a:000) != ''
+    return call('vimshell#get_prompt', a:000) != ''
   endif
 
   let line = a:0 == 0 ? getline('.') : getline(a:1)

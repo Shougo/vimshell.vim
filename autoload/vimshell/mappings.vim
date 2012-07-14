@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Mar 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -326,7 +326,7 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
 
   try
     call vimshell#parser#check_script(line)
-  catch /^Exception: Quote/
+  catch /^Exception: Quote\|^Exception: Join to next line/
     call vimshell#print_secondary_prompt()
 
     call vimshell#start_insert(a:is_insert)

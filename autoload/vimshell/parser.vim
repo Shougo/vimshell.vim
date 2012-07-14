@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Jul 2012.
+" Last Modified: 15 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -315,7 +315,7 @@ function! s:parse_galias(script)"{{{
       " Escape.
       let i += 1
 
-      if i > max
+      if i >= max
         throw 'Exception: Join to next line (\).'
       endif
 
