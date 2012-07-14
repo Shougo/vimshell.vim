@@ -1290,6 +1290,9 @@ CHANGELOG						*vimshell-changelog*
 2012-07-15
 - Improved documentation.
 
+2012-07-10
+- Fixed escape sequence color.
+
 2012-07-07
 - Fixed debug message.
 

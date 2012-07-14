@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jul 2012.
+" Last Modified: 10 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -547,12 +547,15 @@ function! s:set_screen_string(line, col, string)"{{{
         \ . current_line[col+len :]
   let len2 = s:get_virtual_wcswidth(a:string)
   let s:virtual.col += len2
+  if col < 1
+    let s:virtual.col += 1
+  endif
 
   " let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
     echomsg 'current_line = ' . current_line
     echomsg 'current_line[col:] = ' . current_line[col :]
-    echomsg '[virt_col, real_col, string] = ' .
+    echomsg '[old_virt_col, real_col, new_virt_col, string] = ' .
           \ string([a:col, col, s:virtual.col, a:string])
   endif
 endfunction"}}}
