@@ -358,7 +358,7 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
     endif
 
     " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    call vimshell#error_line({}, v:exception)
     call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return

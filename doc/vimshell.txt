@@ -1293,6 +1293,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed escape errors.
 - Check escape error.
 - Fixed clear behavior.
+- Improved stack trace.
 
 2012-07-10
 - Fixed escape sequence color.
