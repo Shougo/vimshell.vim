@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2012.
+" Last Modified: 18 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -459,8 +459,13 @@ function! vimshell#get_prompt_command(...)"{{{
   while lnum <= line('$') && !vimshell#check_prompt(lnum)
     if vimshell#check_secondary_prompt(lnum)
       " Append secondary command.
-      let line .= (line =~ '\\$' ? '' : "\<NL>") .
-            \ getline(lnum)[len(secondary_prompt):]
+      if line =~ '\\$'
+        let line = substitute(line, '\\$', '', '')
+      else
+        let line .= "\<NL>"
+      endif
+
+      let line .= getline(lnum)[len(secondary_prompt):]
     endif
 
     let lnum += 1
