@@ -1290,6 +1290,7 @@ CHANGELOG						*vimshell-changelog*
 2012-07-18
 - Improved interrupt behavior.
 - Fixed prompt escape.
+- Fixed hangup.
 
 2012-07-15
 - Improved documentation.

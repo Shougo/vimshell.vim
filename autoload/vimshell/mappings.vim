@@ -647,6 +647,7 @@ endfunction"}}}
 function! s:hangup(is_insert)"{{{
   if empty(b:vimshell.continuation)
     call vimshell#print_prompt()
+    call vimshell#start_insert(a:is_insert)
     return
   endif
 
