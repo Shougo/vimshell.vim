@@ -82,7 +82,7 @@ highlight default link vimshellPrompt Identifier
 highlight default link vimshellUserPrompt Special
 
 highlight default link vimshellQuoted Special
-highlight default link vimshellString Constant
+highlight default link vimshellString String
 highlight default link vimshellArguments Type
 highlight default link vimshellConstants Constant
 highlight default link vimshellSpecial PreProc
