@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2012.
+" Last Modified: 22 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,10 +30,6 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-execute 'syntax match vimshellPrompt'
-      \ string('^' . vimshell#escape_match(vimshell#get_prompt()))
-execute 'syntax match vimshellPrompt'
-      \ string('^' . vimshell#escape_match(vimshell#get_secondary_prompt()))
 syntax match   vimshellUserPrompt   '^\[%\] .*$' contains=vimshellUserPromptHidden
 syntax region   vimshellString   start=+'+ end=+'+ oneline contained
 syntax region   vimshellString   start=+"+ end=+"+ contains=vimshellQuoted oneline contained
@@ -73,13 +69,7 @@ else
   syntax match   vimshellUserPromptHidden       '^\[%\] ' contained
 endif
 
-execute "syntax region   vimshellExe start=".string('^'.vimshell#escape_match(vimshell#get_prompt()))
-      \ "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=vimshellPrompt,".
-      \ "vimshellSpecial,vimshellConstants,vimshellArguments,vimshellString,vimshellComment"
 syntax match vimshellExe '[|;]\s*\f\+' contained contains=vimshellSpecial,vimshellArguments
-execute "syntax region   vimshellLine start=".string('^'.vimshell#escape_match(vimshell#get_prompt()))
-      \ "end='$' keepend contains=vimshellExe,vimshellDirectory,vimshellConstants,vimshellArguments,".
-      \ "vimshellQuoted,vimshellString,vimshellVariable,vimshellSpecial,vimshellComment"
 
 execute 'syntax region   vimshellExe start='.string('^'.vimshell#escape_match(vimshell#get_secondary_prompt()))
       \ "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=vimshellPrompt,".

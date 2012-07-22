@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2012.
+" Last Modified: 22 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -405,13 +405,15 @@ function! vimshell#get_prompt(...)"{{{
           \ g:vimshell_prompt : 'vimshell% '
   endif
 
-  return &filetype ==# 'vimshell' && empty(b:vimshell.continuation) ?
+  return &filetype ==# 'vimshell' &&
+        \ empty(b:vimshell.continuation) ?
         \ s:prompt :
         \ vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
   if !exists('s:secondary_prompt')
-    let s:secondary_prompt = exists('g:vimshell_secondary_prompt') ?
+    let s:secondary_prompt =
+          \ exists('g:vimshell_secondary_prompt') ?
           \ g:vimshell_secondary_prompt : '%% '
   endif
 
@@ -861,6 +863,22 @@ function! s:initialize_vimshell(path, context)"{{{
   endif
 
   setfiletype vimshell
+
+  " Set syntax.
+  let prompt_pattern = "'^" . escape(
+        \ vimshell#escape_match(vimshell#get_prompt()), "'") . "'"
+  let secondary_prompt_pattern = "'^" . escape(
+        \ vimshell#escape_match(vimshell#get_secondary_prompt()), "'") . "'"
+  execute 'syntax match vimshellPrompt' prompt_pattern
+  execute 'syntax match vimshellPrompt' secondary_prompt_pattern
+  execute 'syntax region   vimshellExe start='.prompt_pattern
+        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'' contained contains=vimshellPrompt,'.
+        \ 'vimshellSpecial,vimshellConstants,'.
+        \ 'vimshellArguments,vimshellString,vimshellComment'
+  execute 'syntax region   vimshellLine start='.prompt_pattern
+        \ 'end=''$'' keepend contains=vimshellExe,'
+        \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
+        \ 'vimshellQuoted,vimshellString,vimshellVariable,vimshellSpecial,vimshellComment'
 
   call vimshell#help#init()
   call vimshell#interactive#init()
