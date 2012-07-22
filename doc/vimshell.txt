@@ -1308,6 +1308,7 @@ CHANGELOG						*vimshell-changelog*
 - Improved prompt syntax.
 - Improved vimshell prompt behavior.
 - Added prompts options.
+- Added alias tests.
 
 2012-07-18
 - Improved interrupt behavior.
