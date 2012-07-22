@@ -401,39 +401,21 @@ function! vimshell#get_prompt(...)"{{{
   endif
 
   if !exists('s:prompt')
-    let s:prompt = exists('g:vimshell_prompt') ?
-          \ g:vimshell_prompt : 'vimshell% '
   endif
 
   return &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) ?
-        \ s:prompt :
+        \ b:vimshell.prompt :
         \ vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
-  if !exists('s:secondary_prompt')
-    let s:secondary_prompt =
-          \ exists('g:vimshell_secondary_prompt') ?
-          \ g:vimshell_secondary_prompt : '%% '
-  endif
-
-  return s:secondary_prompt
+  return b:vimshell.secondary_prompt
 endfunction"}}}
 function! vimshell#get_user_prompt()"{{{
-  if !exists('s:user_prompt')
-    let s:user_prompt = exists('g:vimshell_user_prompt') ?
-          \ g:vimshell_user_prompt : ''
-  endif
-
-  return s:user_prompt
+  return b:vimshell.user_prompt
 endfunction"}}}
 function! vimshell#get_right_prompt()"{{{
-  if !exists('s:right_prompt')
-    let s:right_prompt = exists('g:vimshell_right_prompt') ?
-          \ g:vimshell_right_prompt : ''
-  endif
-
-  return s:right_prompt
+  return b:vimshell.right_prompt
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
@@ -833,6 +815,16 @@ function! s:initialize_vimshell(path, context)"{{{
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.continuation = {}
   let b:vimshell.prompts_save = {}
+
+  " Set prompts.
+  let b:vimshell.prompt =
+        \ get(g:, 'vimshell_prompt', 'vimshell% ')
+  let b:vimshell.secondary_prompt =
+        \ get(g:, 'vimshell_secondary_prompt', '%% ')
+  let b:vimshell.user_prompt =
+        \ get(g:, 'vimshell_user_prompt', '')
+  let b:vimshell.right_prompt =
+        \ get(g:, 'vimshell_right_prompt', '')
 
   " Default settings.
   call s:default_settings()
