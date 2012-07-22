@@ -867,6 +867,16 @@ function! s:initialize_vimshell(path, context)"{{{
         \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
         \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
         \ 'vimshellSpecial,vimshellComment'
+  execute 'syntax region   vimshellExe start='.secondary_prompt_pattern
+        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'''
+        \ 'contained contains=vimshellPrompt,'.
+        \ 'vimshellSpecial,vimshellConstants,'.
+        \ 'vimshellArguments,vimshellString,vimshellComment'
+  execute 'syntax region   vimshellLine start='.secondary_prompt_pattern
+        \ 'end=''$'' keepend contains=vimshellExe,'
+        \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
+        \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
+        \ 'vimshellSpecial,vimshellComment'
 
   call vimshell#help#init()
   call vimshell#interactive#init()

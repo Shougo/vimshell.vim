@@ -69,14 +69,8 @@ else
   syntax match   vimshellUserPromptHidden       '^\[%\] ' contained
 endif
 
-syntax match vimshellExe '[|;]\s*\f\+' contained contains=vimshellSpecial,vimshellArguments
-
-execute 'syntax region   vimshellExe start='.string('^'.vimshell#escape_match(vimshell#get_secondary_prompt()))
-      \ "end='[^[:blank:]]\\+\\zs[[:blank:]\\n]' contained contains=vimshellPrompt,".
-      \ "vimshellSpecial,vimshellConstants,vimshellArguments,vimshellString,vimshellComment"
-execute 'syntax region   vimshellLine start='.string('^'.vimshell#escape_match(vimshell#get_secondary_prompt()))
-      \ "end='$' keepend contains=vimshellExe,vimshellDirectory,vimshellConstants,vimshellArguments,".
-      \ "vimshellQuoted,vimshellString,vimshellVariable,vimshellSpecial,vimshellComment"
+syntax match vimshellExe '[|;]\s*\f\+'
+      \ contained contains=vimshellSpecial,vimshellArguments
 
 highlight default link vimshellPrompt Identifier
 highlight default link vimshellUserPrompt Special
