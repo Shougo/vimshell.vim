@@ -10,8 +10,10 @@ set cpo&vim
 Context Vesting.run()
   It tests prompt.
     let g:vimshell_prompt = "'% ' "
+    let g:vimshell_secondary_prompt = 'aaa '
     VimShellCreate -toggle
     Should vimshell#get_prompt() ==# "'% ' "
+    Should vimshell#get_secondary_prompt() ==# 'aaa '
     VimShellCreate -toggle
 
     let g:vimshell_user_prompt = "3\ngetcwd()"
@@ -23,6 +25,12 @@ Context Vesting.run()
     VimShellCreate -toggle
     Should vimshell#get_user_prompt() ==#
           \ 'fnamemodify(getcwd(), ":~")'
+    VimShellCreate -toggle
+  End
+
+  It tests options.
+    VimShellCreate -toggle -prompt=foo\ bar
+    Should vimshell#get_prompt() ==# 'foo bar'
     VimShellCreate -toggle
   End
 End

@@ -62,6 +62,8 @@ let s:vimshell_options = [
       \ '-buffer-name=', '-toggle', '-create',
       \ '-split', '-split-command=', '-popup',
       \ '-winwidth=', '-winminwidth=',
+      \ '-prompt=', '-secondary-prompt=',
+      \ '-user-prompt=', '-right-prompt=',
       \]
 "}}}
 
@@ -405,17 +407,17 @@ function! vimshell#get_prompt(...)"{{{
 
   return &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) ?
-        \ b:vimshell.prompt :
+        \ vimshell#get_context().prompt :
         \ vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt()"{{{
-  return b:vimshell.secondary_prompt
+  return vimshell#get_context().secondary_prompt
 endfunction"}}}
 function! vimshell#get_user_prompt()"{{{
-  return b:vimshell.user_prompt
+  return vimshell#get_context().user_prompt
 endfunction"}}}
 function! vimshell#get_right_prompt()"{{{
-  return b:vimshell.right_prompt
+  return vimshell#get_context().right_prompt
 endfunction"}}}
 function! vimshell#get_cur_text()"{{{
   " Get cursor text without prompt.
@@ -727,9 +729,10 @@ function! vimshell#execute(cmdline, ...)"{{{
   return b:vimshell.system_variables.status
 endfunction"}}}
 function! vimshell#set_context(context)"{{{
-  let s:context = a:context
+  let context = s:initialize_context(a:context)
+  let s:context = context
   if exists('b:vimshell')
-    let b:vimshell.context = a:context
+    let b:vimshell.context = context
   endif
 endfunction"}}}
 function! vimshell#get_context()"{{{
@@ -816,16 +819,6 @@ function! s:initialize_vimshell(path, context)"{{{
   let b:vimshell.continuation = {}
   let b:vimshell.prompts_save = {}
 
-  " Set prompts.
-  let b:vimshell.prompt =
-        \ get(g:, 'vimshell_prompt', 'vimshell% ')
-  let b:vimshell.secondary_prompt =
-        \ get(g:, 'vimshell_secondary_prompt', '%% ')
-  let b:vimshell.user_prompt =
-        \ get(g:, 'vimshell_user_prompt', '')
-  let b:vimshell.right_prompt =
-        \ get(g:, 'vimshell_right_prompt', '')
-
   " Default settings.
   call s:default_settings()
 
@@ -860,17 +853,20 @@ function! s:initialize_vimshell(path, context)"{{{
   let prompt_pattern = "'^" . escape(
         \ vimshell#escape_match(vimshell#get_prompt()), "'") . "'"
   let secondary_prompt_pattern = "'^" . escape(
-        \ vimshell#escape_match(vimshell#get_secondary_prompt()), "'") . "'"
+        \ vimshell#escape_match(
+        \ vimshell#get_secondary_prompt()), "'") . "'"
   execute 'syntax match vimshellPrompt' prompt_pattern
   execute 'syntax match vimshellPrompt' secondary_prompt_pattern
   execute 'syntax region   vimshellExe start='.prompt_pattern
-        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'' contained contains=vimshellPrompt,'.
+        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'''
+        \ 'contained contains=vimshellPrompt,'.
         \ 'vimshellSpecial,vimshellConstants,'.
         \ 'vimshellArguments,vimshellString,vimshellComment'
   execute 'syntax region   vimshellLine start='.prompt_pattern
         \ 'end=''$'' keepend contains=vimshellExe,'
         \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
-        \ 'vimshellQuoted,vimshellString,vimshellVariable,vimshellSpecial,vimshellComment'
+        \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
+        \ 'vimshellSpecial,vimshellComment'
 
   call vimshell#help#init()
   call vimshell#interactive#init()
@@ -887,6 +883,14 @@ function! s:initialize_context(context)"{{{
     \ 'winwidth' : 0,
     \ 'winminwidth' : 0,
     \ 'direction' : '',
+    \ 'prompt' : get(g:,
+    \      'vimshell_prompt', 'vimshell% '),
+    \ 'secondary_prompt' : get(g:,
+    \      'vimshell_secondary_prompt', '%% '),
+    \ 'user_prompt' : get(g:,
+    \      'vimshell_user_prompt', ''),
+    \ 'right_prompt' : get(g:,
+    \      'vimshell_right_prompt', ''),
     \ }
   let context = extend(default_context, a:context)
 
@@ -1003,7 +1007,7 @@ function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
 
   " Option names completion.
   try
-    let _ += filter(vimfiler#get_options(),
+    let _ += filter(vimshell#get_options(),
           \ 'stridx(v:val, a:arglead) == 0')
   catch
   endtry

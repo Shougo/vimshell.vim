@@ -133,6 +133,26 @@ COMMANDS 					*vimshell-commands*
 		-split-command={command-name}
 		Specify split command.
 
+						*vimshell-options-prompt*
+		-prompt={prompt}
+		Specify prompt string. If omit it,
+		|g:vimshell_prompt| is used.
+
+						*vimshell-options-secondary-prompt*
+		-secondary-prompt={secondary-prompt}
+		Specify secondary prompt string. If omit it,
+		|g:vimshell_secondary_prompt| is used.
+
+						*vimshell-options-user-prompt*
+		-user-prompt={user-prompt}
+		Specify secondary prompt string. If omit it,
+		|g:vimshell_user_prompt| is used.
+
+						*vimshell-options-right-prompt*
+		-right-prompt={right-prompt}
+		Specify right prompt string. If omit it,
+		|g:vimshell_right_prompt| is used.
+
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Runs vimshell as the same :VimShell, but it creates a new
 		vimshell buffer instead of activating other vimshells which are
@@ -182,10 +202,12 @@ COMMANDS 					*vimshell-commands*
 VARIABLES 					*vimshell-variables*
 
 g:vimshell_prompt				*g:vimshell_prompt*
-		Sets vimshell prompt string. vimshell evaluates this only once.
+		Sets vimshell default prompt string. Initial value is
+		"vimshell%".
 
-		To make it secure, this makes nothing if this is set after
-		calling vimshell functions.  Intial value is "vimshell%".
+g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
+		Sets vimshell default secondary prompt string. Initial value is
+		"%%".
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		You can define additional prompt to substitute a string for
@@ -198,17 +220,12 @@ g:vimshell_user_prompt				*g:vimshell_user_prompt*
 >
 		let g:vimshell_user_prompt = 'getcwd()'
 <
-		To make it secure, this makes nothing if this is set after
-		calling vimshell functions.  Intial value is empty.
-
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		It's zsh-like right prompt. This value is a string value which
 		is an expression of Vim script. similar to
 		|g:vimshell_user_prompt|, but this calculates the window size,
-		and shows the prompt on preferable position.  To make it
-		secure, this makes nothing if this is set after calling
-		vimshell functions.
-		Intial value is empty.
+		and shows the prompt on preferable position.
+		Initial value is empty.
 
 g:vimshell_no_default_keymappings		*g:vimshell_no_default_keymappings*
 		Disables all default key mapings in vimshell.
@@ -1290,6 +1307,7 @@ CHANGELOG						*vimshell-changelog*
 2012-07-23
 - Improved prompt syntax.
 - Improved vimshell prompt behavior.
+- Added prompts options.
 
 2012-07-18
 - Improved interrupt behavior.
