@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2012.
+" Last Modified: 23 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -718,6 +718,7 @@ endfunction"}}}
 " User helper functions.
 function! vimshell#execute(cmdline, ...)"{{{
   let context = a:0 >= 1? a:1 : vimshell#get_context()
+  let context.is_interactive = 0
   try
     call vimshell#parser#eval_script(a:cmdline, context)
   catch
