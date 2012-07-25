@@ -1304,6 +1304,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-07-25
+- Fixed for g:neocomplcache_enable_insert_char_pre.
+
 2012-07-23
 - Fixed vimshell#execute().
 - Improved vimshrc syntax file.
