@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 31 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -203,14 +203,17 @@ function! vimshell#complete#helper#args(command, args)"{{{
   let commands = vimshell#available_commands()
 
   " Get complete words.
-  let complete_words = has_key(commands, a:command) && has_key(commands[a:command], 'complete') ?
-        \ commands[a:command].complete(a:args) : vimshell#complete#helper#files(a:args[-1])
+  let complete_words = has_key(commands, a:command)
+        \ && has_key(commands[a:command], 'complete') ?
+        \ commands[a:command].complete(a:args) :
+        \ vimshell#complete#helper#files(a:args[-1])
 
   if a:args[-1] =~ '^--\?[[:alnum:]._-]\+=\f\+$\|[<>]\+\f\+$'
     " Complete file.
     let prefix = matchstr(a:args[-1],
           \'^--[[:alnum:]._-]\+=\|^[<>]\+')
-    let complete_words += vimshell#complete#helper#files(a:args[-1][len(prefix): ])
+    let complete_words += vimshell#complete#helper#files(
+          \ a:args[-1][len(prefix): ])
   endif
 
   return complete_words

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Jul 2012.
+" Last Modified: 31 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1032,8 +1032,16 @@ function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
 endfunction"}}}
 function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos)"{{{
   " Get complete words.
-  return map(vimshell#complete#command_complete#get_candidates(
-        \ a:cmdline, 0, a:arglead), 'v:val.word')
+  let cmdline = a:cmdline[len(matchstr(
+        \ a:cmdline, vimshell#get_program_pattern())):]
+
+  let args = vimproc#parser#split_args_through(cmdline)
+  if empty(args) || cmdline =~ '\\\@!\s\+$'
+    " Add blank argument.
+    call add(args, '')
+  endif
+
+  return map(vimshell#complete#helper#command_args(args), 'v:val.word')
 endfunction"}}}
 function! s:insert_user_and_right_prompt()"{{{
   for user in split(vimshell#get_user_prompt(), "\\n")
