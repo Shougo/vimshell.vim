@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2012.
+" Last Modified: 31 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -325,7 +325,8 @@ function! s:print_simple(is_error, lines)"{{{
 endfunction"}}}
 function! s:set_cursor()"{{{
   " Get real pos(0 origin).
-  let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
+  let [line, col] = s:get_real_pos(
+        \ s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
 
   " Convert to 1 origin.
@@ -448,7 +449,7 @@ function! s:get_real_pos(line, col)"{{{
     return [a:line, 0]
   endif
 
-  return s:get_col(a:line, a:col, 0)
+  return s:get_col_current_line(a:line, a:col, 0)
 endfunction"}}}
 function! s:get_virtual_col(line, col)"{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
@@ -456,78 +457,12 @@ function! s:get_virtual_col(line, col)"{{{
     return [a:line, 1]
   endif
 
-  return s:get_col(a:line, a:col, 1)
+  return s:get_col_current_line(a:line, a:col, 1)
 endfunction"}}}
-function! s:get_col(line, col, is_virtual)"{{{
-  " is_virtual -> a:col : real col.
-  " not -> a:col : virtual col.
-  let col = 1
-  let real_col = 0
-
+function! s:get_col_current_line(line, col, is_virtual)"{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
-  if current_line =~ '^ \+'
-    " Optimized.
-    let spaces = len(matchstr(current_line, '^ \+'))
-    let col += spaces
-    let real_col += spaces
-
-    let check_col = a:is_virtual ? real_col : col
-    if check_col > a:col
-      let col -= check_col - a:col
-      let real_col -= check_col - a:col
-    endif
-
-    let current_line = current_line[real_col :]
-  endif
-
-  if current_line !~ '\e\[[0-9;]*m'
-    " Optimized.
-    for c in split(current_line[: a:col*3], '\zs')
-      let real_col += len(c)
-      let col += vimshell#util#wcswidth(c)
-
-      let check_col = a:is_virtual ? real_col : col
-      if check_col > a:col
-        break
-      endif
-    endfor
-  else
-    let skip_cnt = 0
-    for c in split(current_line, '\zs')
-      if skip_cnt > 0
-        let skip_cnt -= 1
-        continue
-      endif
-
-      if c == "\<ESC>"
-            \ && current_line[real_col :] =~ '^\e\[[0-9;]*m'
-        " Skip.
-        let sequence = matchstr(current_line, '^\e\[[0-9;]*m', real_col)
-        let skip_cnt = len(sequence)-1
-        let real_col += len(sequence)
-      else
-        let real_col += len(c)
-        let col += vimshell#util#wcswidth(c)
-      endif
-
-      let check_col = a:is_virtual ? real_col : col
-      if check_col > a:col
-        break
-      endif
-    endfor
-  endif
-
-  let check_col = a:is_virtual ? real_col : col
-  " current_line is too short.
-  if check_col < a:col
-    if a:is_virtual
-      let col += a:col - real_col
-    else
-      let real_col += a:col - col
-    endif
-  endif
-
-  return [a:line, (a:is_virtual ? col : real_col)]
+  return [a:line, vimshell#terminal#get_col(
+        \ current_line, a:col, a:is_virtual)]
 endfunction"}}}
 function! s:get_screen_character(line, col)"{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
@@ -566,8 +501,81 @@ function! s:set_screen_pos(line, col)"{{{
     let s:virtual.lines[a:line] = ''
   endif
   if a:col > len(s:virtual.lines[a:line])
-    let s:virtual.lines[a:line] .= repeat(' ', a:col - len(s:virtual.lines[a:line]))
+    let s:virtual.lines[a:line] .=
+          \ repeat(' ', a:col - len(s:virtual.lines[a:line]))
   endif
+endfunction"}}}
+function! vimshell#terminal#get_col(line, col, is_virtual)"{{{
+  " is_virtual -> a:col : real col.
+  " not -> a:col : virtual col.
+  let col = 1
+  let real_col = 0
+
+  let current_line = a:line
+  if current_line =~ '^ \+'
+    " Optimized.
+    let spaces = len(matchstr(current_line, '^ \+'))
+    let col += spaces
+    let real_col += spaces
+
+    let check_col = a:is_virtual ? real_col : col
+    if check_col > a:col
+      let col -= check_col - a:col
+      let real_col -= check_col - a:col
+    endif
+
+    let current_line = current_line[real_col :]
+  endif
+
+  if current_line !~ '\e\[[0-9;]*m'
+    " Optimized.
+    for c in split(current_line[: a:col*3], '\zs')
+      let real_col += len(c)
+      let col += vimshell#util#wcswidth(c)
+
+      let check_col = a:is_virtual ? real_col : col
+      if check_col > a:col
+        break
+      endif
+    endfor
+  else
+    let skip_cnt = 0
+    for c in split(current_line[real_col :], '\zs')
+      if skip_cnt > 0
+        let skip_cnt -= 1
+        continue
+      endif
+
+      if c == "\<ESC>"
+            \ && current_line[real_col :] =~ '^\e\[[0-9;]*m'
+        " Skip.
+        let sequence = matchstr(current_line,
+              \ '^\e\[[0-9;]*m', real_col)
+        let skip_cnt = len(sequence)-1
+        let real_col += len(sequence)
+      else
+        let real_col += len(c)
+        let col += vimshell#util#wcswidth(c)
+      endif
+
+      let check_col = a:is_virtual ? real_col : col
+      if check_col > a:col
+        break
+      endif
+    endfor
+  endif
+
+  let check_col = a:is_virtual ? real_col : col
+  " current_line is too short.
+  if check_col < a:col
+    if a:is_virtual
+      let col += a:col - real_col
+    else
+      let real_col += a:col - col
+    endif
+  endif
+
+  return (a:is_virtual ? col : real_col)
 endfunction"}}}
 
 " Escape sequence functions.
