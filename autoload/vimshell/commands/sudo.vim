@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: sudo.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 May 2012.
+" Last Modified: 31 Jul 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,15 +24,42 @@
 " }}}
 "=============================================================================
 
+function! vimshell#commands#sudo#define()
+  return s:command
+endfunction
+
 let s:command = {
       \ 'name' : 'sudo',
       \ 'kind' : 'external',
       \ 'description' : 'sudo {command}',
       \}
+
 function! s:command.complete(args)"{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! vimshell#commands#sudo#define()
-  return s:command
-endfunction
+function! s:command.execute(args, context)"{{{
+  " Execute GUI program.
+  if empty(a:args)
+    call vimshell#error_line(
+          \ a:context.fd, 'sudo: Arguments required.')
+    return
+  endif
+
+  if a:args[0] ==# 'vim' || a:args[0] ==# 'vi'
+    " Use sudo.vim.
+    let args = a:args[1:]
+    if empty(args)
+      return
+    endif
+
+    let args[0] = 'sudo:' . args[0]
+    return vimshell#execute_internal_command(
+          \ 'vim', args, a:context)
+  endif
+
+  call vimshell#execute_internal_command(
+        \ 'exe', insert(a:args, 'sudo'), a:context)
+endfunction"}}}
+
+" vim: foldmethod=marker

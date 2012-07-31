@@ -996,6 +996,13 @@ source_shellcmd {shellcmd} [{args}]			*vimshell-internal-source_shellcmd*
 		Note: The {shellcmd} must be executable from |system()|. You
 		may edit .zshenv/.bashenv.
 
+sudo {command} [{args}]					*vimshell-internal-sudo*
+		Execute super user command. If {command} is "vim", use
+		|sudo.vim|.
+		http://www.vim.org/scripts/script.php?script_id=729
+		In Windows, "sudo.exe" is needed.
+		http://bitbucket.org/wantora/sudo/wiki/Home
+
 texe [{options}...] {command}				*vimshell-internal-texe*
 		Execute {command} with args.
 		Note: Execute external command forcibly.
@@ -1307,6 +1314,7 @@ CHANGELOG						*vimshell-changelog*
 2012-07-31
 - Fixed vimshell#vimshell_execute_complete() error.
 - Fixed terminal outputs.
+- Supported sudo.
 
 2012-07-25
 - Fixed for g:neocomplcache_enable_insert_char_pre.
