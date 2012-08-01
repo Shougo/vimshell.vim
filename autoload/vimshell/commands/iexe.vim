@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2012.
+" Last Modified: 01 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -276,7 +276,6 @@ function! s:default_settings()"{{{
 
   " For interactive.
   setlocal wrap
-  setlocal omnifunc=vimshell#complete#interactive_history_complete#omnifunc
 
   " Define mappings.
   call vimshell#int_mappings#define_default_mappings()
@@ -333,14 +332,11 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   let bufnr = bufnr('%')
   call vimshell#restore_pos(a:old_pos)
 
-  if has_key(a:context, 'is_single_command') && a:context.is_single_command
+  if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, a:is_insert)
     call vimshell#restore_pos(a:new_pos)
   endif
 endfunction"}}}
-
-function! vimshell#commands#iexe#dummy()
-endfunction
 
 function! s:insert_enter()"{{{
   if winwidth(0) != b:interactive.width ||

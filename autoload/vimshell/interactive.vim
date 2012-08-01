@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Jul 2012.
+" Last Modified: 01 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,8 +43,10 @@ augroup vimshell
         \ call s:winleave(expand('<afile>'))
 augroup END
 
-command! -range -nargs=? VimShellSendString call s:send_region(<line1>, <line2>, <q-args>)
-command! -complete=buffer -nargs=1 VimShellSendBuffer call vimshell#interactive#set_send_buffer(<q-args>)
+command! -range -nargs=? VimShellSendString
+      \ call s:send_region(<line1>, <line2>, <q-args>)
+command! -complete=buffer -nargs=1 VimShellSendBuffer
+      \ call vimshell#interactive#set_send_buffer(<q-args>)
 
 " Dummy.
 function! vimshell#interactive#init()"{{{
