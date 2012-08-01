@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2012.
+" Last Modified: 01 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -213,7 +213,8 @@ function! vimshell#terminal#print(string, is_error)"{{{
   call s:output_string(newstr)
 
   " Set lines.
-  for linenr in sort(map(keys(s:virtual.lines), 'str2nr(v:val)'), 's:sortfunc')
+  for linenr in sort(map(keys(s:virtual.lines),
+        \ 'str2nr(v:val)'), 's:sortfunc')
     call setline(linenr, s:virtual.lines[linenr])
   endfor
 
@@ -260,8 +261,12 @@ endfunction"}}}
 
 function! s:optimized_print(string, is_error)"{{{
   " Strip <CR>.
-  let string = substitute(substitute(a:string, "\<C-g>", '', 'g'),
-        \ '\r\+\n', '\n', 'g')
+  let string = substitute(substitute(
+        \ a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
+
+  if g:vimshell_enable_debug
+    echomsg 'print optimized output string = ' . string(string)
+  endif
 
   let lines = split(string, '\n', 1)
 
@@ -272,7 +277,8 @@ function! s:optimized_print(string, is_error)"{{{
   endif
 
   normal! $
-  let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line('.'), col('.')-1)
+  let [s:virtual.line, s:virtual.col] =
+        \ s:get_virtual_col(line('.'), col('.')-1)
   call s:set_cursor()
 endfunction"}}}
 function! s:print_with_redraw(is_error, lines)"{{{
@@ -367,6 +373,10 @@ function! s:output_string(string)"{{{
     return
   endif
 
+  if g:vimshell_enable_debug
+    echomsg 'print output string = ' . string(a:string)
+  endif
+
   if a:string == ''
     return
   endif
@@ -374,7 +384,8 @@ function! s:output_string(string)"{{{
   let string = b:interactive.terminal.is_error ?
         \ '!!!' . a:string . '!!!' : a:string
 
-  if b:interactive.terminal.current_character_set ==# 'Line Drawing'
+  if b:interactive.terminal.current_character_set
+        \ ==# 'Line Drawing'
     " Convert characters.
     let string = ''
     for c in split(a:string, '\zs')

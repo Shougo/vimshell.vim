@@ -91,8 +91,9 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   call s:send_string(in, a:is_insert, line('.'))
 endfunction"}}}
-function! vimshell#interactive#send_string(string, is_insert)"{{{
-  call s:send_string(a:string, 1, line('$'))
+function! vimshell#interactive#send_string(string, is_insert, ...)"{{{
+  let linenr = get(a:000, 0, line('$'))
+  call s:send_string(a:string, 1, linenr)
 endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let input = input('Please input send string: ', vimshell#interactive#get_cur_line(line('.')))
@@ -192,7 +193,8 @@ function! s:send_string(string, is_insert, linenr)"{{{
 
   let in = vimshell#hook#call_filter('preinput', context, in)
 
-  if b:interactive.encoding != '' && &encoding != b:interactive.encoding
+  if b:interactive.encoding != ''
+        \ && &encoding != b:interactive.encoding
     " Convert encoding.
     let in = iconv(in, &encoding, b:interactive.encoding)
   endif
@@ -210,7 +212,8 @@ function! s:send_string(string, is_insert, linenr)"{{{
     endif
   catch
     " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    call vimshell#error_line({},
+          \ v:exception . ' ' . v:throwpoint)
     call vimshell#interactive#exit()
   endtry
 
@@ -272,7 +275,8 @@ function! s:set_output_pos(is_insert)"{{{
     let b:interactive.output_pos = getpos('.')
   endif
 
-  if a:is_insert && exists('*neocomplcache#is_enabled') && neocomplcache#is_enabled()
+  if a:is_insert && exists('*neocomplcache#is_enabled')
+        \ && neocomplcache#is_enabled()
     " If response delays, so you have to close popup manually.
     call neocomplcache#close_popup()
   endif
@@ -572,6 +576,10 @@ function! vimshell#interactive#check_current_output()"{{{
   endif
 endfunction"}}}
 function! s:check_all_output(is_hold)"{{{
+  if vimshell#util#is_cmdwin()
+    return
+  endif
+
   let winnrs = filter(range(1, winnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
         \  && get(get(getbufvar(winbufnr(v:val), 'interactive'),

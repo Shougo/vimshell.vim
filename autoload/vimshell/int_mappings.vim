@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jul 2012.
+" Last Modified: 01 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -260,15 +260,20 @@ function! s:command_complete()"{{{
   let command = b:interactive.command
   let cur_text = vimshell#interactive#get_cur_text()
   call setline('.', prompt)
-  call vimshell#interactive#send_string(cur_text .
-        \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"), !0)
-  if !vimshell#head_match(getline('$'), prompt)
-    " Restore prompt.
-    call setline('$', prompt . cur_text . getline('$'))
-    startinsert!
-  endif
+  let prompt_linenr = line('.')
 
-  let b:interactive.prompt_history[line('$')] = getline('$')
+  call vimshell#interactive#send_string(cur_text .
+        \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"), !0, 0)
+
+  " if !vimshell#head_match(getline(prompt_linenr), prompt)
+  "   " Restore prompt.
+  "   call setline(prompt_linenr, prompt . cur_text .
+  "         \  getline(prompt_linenr))
+  "   startinsert!
+  " endif
+
+  let b:interactive.prompt_history[prompt_linenr] =
+   \ getline(prompt_linenr)
 endfunction "}}}
 function! s:insert_enter()"{{{
   if !has_key(b:interactive.prompt_history, line('.')) && line('.') != line('$')
