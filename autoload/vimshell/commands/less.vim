@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jun 2012.
+" Last Modified: 02 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,6 +24,11 @@
 " }}}
 "=============================================================================
 
+let s:V = vital#of('vimshell')
+let s:BM = s:V.import('Vim.Buffer.Manager')
+let s:manager = s:BM.new()  " creates new manager
+call s:manager.config('opener', 'silent edit')
+
 let s:command = {
       \ 'name' : 'less',
       \ 'kind' : 'execute',
@@ -45,11 +50,12 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   if !executable(commands[0].args[0])
-    return vimshell#execute_internal_command('view', commands[0].args, a:context)
+    return vimshell#execute_internal_command(
+          \ 'view', commands[0].args, a:context)
   endif
 
   " Background execute.
-  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
+  if exists('b:interactive') && get(b:interactive.process, 'is_valid')
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
@@ -108,7 +114,8 @@ function! s:init(commands, context, options, interactive)"{{{
 
   " Input from stdin.
   if a:interactive.fd.stdin != ''
-    call a:interactive.process.stdin.write(vimshell#read(a:context.fd))
+    call a:interactive.process.stdin.write(
+          \ vimshell#read(a:context.fd))
   endif
   call a:interactive.process.stdin.close()
 
@@ -120,8 +127,13 @@ function! s:init(commands, context, options, interactive)"{{{
     let args .= join(command.args)
   endfor
 
-  silent edit `='less-'.substitute(args, '[<>|]', '_', 'g')
-        \ .'@'.(bufnr('$')+1)`
+  let ret = s:manager.open('less-'.substitute(args,
+        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1))
+  if !ret.loaded
+    call vimshell#echo_error(
+          \ '[vimshell] Failed to open Buffer.')
+    return
+  endif
 
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
@@ -153,9 +165,9 @@ function! s:init(commands, context, options, interactive)"{{{
         \ start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   if v:version >= 703
     " Supported conceal features.
-    syn match   InteractiveErrorHidden            '!!!' contained conceal
+    syn match   InteractiveErrorHidden  '!!!' contained conceal
   else
-    syn match   InteractiveErrorHidden            '!!!' contained
+    syn match   InteractiveErrorHidden  '!!!' contained
   endif
   hi def link InteractiveErrorHidden Error
 
@@ -195,7 +207,7 @@ function! s:init(commands, context, options, interactive)"{{{
 
   call vimshell#restore_pos(old_pos)
 
-  if has_key(a:context, 'is_single_command') && a:context.is_single_command
+  if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, 0)
     call vimshell#restore_pos(new_pos)
     stopinsert

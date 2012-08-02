@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jul 2012.
+" Last Modified: 02 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,6 +65,11 @@ let s:vimshell_options = [
       \ '-prompt=', '-secondary-prompt=',
       \ '-user-prompt=', '-right-prompt=',
       \]
+
+let s:V = vital#of('vimshell')
+let s:BM = s:V.import('Vim.Buffer.Manager')
+let s:manager = s:BM.new()  " creates new manager
+call s:manager.config('opener', 'silent edit')
 "}}}
 
 function! vimshell#head_match(checkstr, headstr)"{{{
@@ -157,22 +162,16 @@ function! vimshell#switch_shell(path, ...)"{{{
     return
   endif
 
-  if buflisted(s:last_vimshell_bufnr)
-        \ && getbufvar(s:last_vimshell_bufnr, '&filetype') ==# 'vimshell'
-        \ && (!exists('t:unite_buffer_dictionary')
-        \    || has_key(t:unite_buffer_dictionary, s:last_vimshell_bufnr))
-    call s:switch_vimshell(s:last_vimshell_bufnr, context, path)
-    return
-  else
-    for bufnr in filter(range(1, bufnr('$')),
-          \ "getbufvar(v:val, '&filetype') ==# 'vimshell'")
-      if (!exists('t:unite_buffer_dictionary')
-            \    || has_key(t:unite_buffer_dictionary, bufnr))
-        call s:switch_vimshell(bufnr, context, path)
-        return
-      endif
-    endfor
-  endif
+  for bufnr in filter(insert(range(1, bufnr('$')),
+        \ s:last_vimshell_bufnr),
+        \ "buflisted(v:val) &&
+        \  getbufvar(v:val, '&filetype') ==# 'vimshell'")
+    if (!exists('t:unite_buffer_dictionary')
+          \    || has_key(t:unite_buffer_dictionary, bufnr))
+      call s:switch_vimshell(bufnr, context, path)
+      return
+    endif
+  endfor
 
   " Create shell buffer.
   call s:create_shell(path, context)
@@ -202,7 +201,12 @@ function! s:create_shell(path, context)"{{{
           \ vimshell#split(a:context.split_command)
   endif
 
-  silent edit! `=bufname`
+  let ret = s:manager.open(bufname)
+  if !ret.loaded
+    call vimshell#echo_error(
+          \ '[vimshell] Failed to open Buffer.')
+    return
+  endif
 
   call s:initialize_vimshell(path, a:context)
 
