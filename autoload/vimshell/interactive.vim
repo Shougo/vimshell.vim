@@ -632,7 +632,7 @@ function! s:check_all_output(is_hold)"{{{
 endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   " Output cache.
-  if mode() ==# 'i' && (s:is_skk_enabled()
+  if exists('b:interactive') && (s:is_skk_enabled()
         \ || (b:interactive.type ==# 'interactive'
         \   && line('.') != b:interactive.echoback_linenr
         \   && (vimshell#interactive#get_cur_line(
