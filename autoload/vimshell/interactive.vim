@@ -732,6 +732,11 @@ function! s:cache_output(interactive)"{{{
     let a:interactive.stderr_cache = read
   endif
 
+  if a:interactive.process.stderr.eof &&
+        \ a:interactive.process.stdout.eof
+    let outputed = 1
+  endif
+
   return outputed
 endfunction"}}}
 function! s:is_skk_enabled()"{{{
