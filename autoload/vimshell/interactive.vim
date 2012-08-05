@@ -594,7 +594,11 @@ function! s:check_all_output(is_hold)"{{{
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
-    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    let ret = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    if ret
+      " Skip update.
+      return
+    endif
   endif
 
   if len(winnrs) > 0
@@ -628,6 +632,16 @@ function! s:check_all_output(is_hold)"{{{
 endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save)"{{{
   " Output cache.
+  if mode() ==# 'i' && (s:is_skk_enabled()
+        \ || (b:interactive.type ==# 'interactive'
+        \   && line('.') != b:interactive.echoback_linenr
+        \   && (vimshell#interactive#get_cur_line(
+        \             line('.'), b:interactive) != ''
+        \    || vimshell#interactive#get_cur_line(
+        \            line('$'), b:interactive) != '')))
+    return 1
+  endif
+
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
         \ || vimshell#util#is_cmdwin()
     return
@@ -639,14 +653,7 @@ function! s:check_output(interactive, bufnr, bufnr_save)"{{{
 
   let type = a:interactive.type
 
-  if s:is_skk_enabled()
-        \ || (type ==# 'interactive'
-        \   && line('.') != a:interactive.echoback_linenr
-        \   && (vimshell#interactive#get_cur_line(
-        \             line('.'), a:interactive) != ''
-        \    || vimshell#interactive#get_cur_line(
-        \            line('$'), a:interactive) != ''))
-        \ || (type ==# 'vimshell'
+  if (type ==# 'vimshell'
         \   && empty(b:vimshell.continuation))
     if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)
       execute bufwinnr(a:bufnr_save) . 'wincmd w'
