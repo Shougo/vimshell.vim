@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2012.
+" Last Modified: 05 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,7 +92,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)
         \ vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_enter)
-        \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
+        \ <C-g>u<C-o>:call vimshell#execute_current_line(1)<CR>
+        " \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)
         \ <C-o>:call <SID>hangup(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)

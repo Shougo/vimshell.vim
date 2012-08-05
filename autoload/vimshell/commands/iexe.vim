@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Aug 2012.
+" Last Modified: 05 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -331,8 +331,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
     autocmd InsertEnter <buffer>
           \ call s:insert_enter()
     autocmd BufDelete <buffer>
-          \ call vimshell#interactive#hang_up(
-          \    expand('<afile>'))
+          \ call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer>
           \ call s:event_bufwin_enter()
   augroup END

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Aug 2012.
+" Last Modified: 05 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -66,7 +66,8 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_word)
         \ vimshell#interactive#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_int_execute_line)
-        \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
+        \ <C-g>u<C-o>:call vimshell#execute_current_line(1)<CR>
+        " \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_backward_char)
         \ <SID>delete_backward_char(0)
   " 3 == char2nr("\<C-c>")

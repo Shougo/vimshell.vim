@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Aug 2012.
+" Last Modified: 05 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -272,6 +272,7 @@ function! s:set_output_pos(is_insert)"{{{
     else
       normal! $
     endif
+
     let b:interactive.output_pos = getpos('.')
   endif
 
@@ -553,7 +554,7 @@ function! s:check_password_input(string)"{{{
   endtry
 endfunction"}}}
 
-function! s:check_scrollback()
+function! s:check_scrollback()"{{{
   let prompt_nr = get(b:interactive, 'prompt_nr', 0)
   let output_lines = line('.') - prompt_nr
   if output_lines > g:vimshell_scrollback_limit
@@ -565,7 +566,7 @@ function! s:check_scrollback()
       call setpos('.', pos)
     endif
   endif
-endfunction
+endfunction"}}}
 
 " Autocmd functions.
 function! vimshell#interactive#check_current_output()"{{{
@@ -708,9 +709,7 @@ function! s:cache_output(interactive)"{{{
   endif
 
   let outputed = 0
-  if a:interactive.process.stdout.eof
-    let outputed = 1
-  else
+  if !a:interactive.process.stdout.eof
     let read = a:interactive.process.stdout.read(10000, 0)
     if read != ''
       let outputed = 1
@@ -718,9 +717,7 @@ function! s:cache_output(interactive)"{{{
     let a:interactive.stdout_cache = read
   endif
 
-  if a:interactive.process.stderr.eof
-    let outputed = 1
-  else
+  if !a:interactive.process.stderr.eof
     let read = a:interactive.process.stderr.read(10000, 0)
     if read != ''
       let outputed = 1
