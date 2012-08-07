@@ -1311,6 +1311,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-08-07
+- Set noswapfile.
+
 2012-08-05
 - Fixed update behavior.
 - Improved check output.
