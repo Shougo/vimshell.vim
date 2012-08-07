@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jun 2012.
+" Last Modified: 07 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -131,31 +131,18 @@ function! s:get_omni_list(list)"{{{
   let omni_list = []
 
   " Convert string list.
-  for str in filter(copy(a:list), 'type(v:val) == '.type(''))
-    let dict = { 'word' : str, 'menu' : '[sh]' }
-
-    call add(omni_list, dict)
-  endfor
-
-  for omni in filter(a:list, 'type(v:val) != '.type(''))
-    let dict = {
-          \'word' : omni.word, 'menu' : '[sh]',
-          \'abbr' : has_key(omni, 'abbr')? omni.abbr : omni.word,
-          \}
-
-    if has_key(omni, 'kind')
-      let dict.kind = omni.kind
-    endif
-
-    if has_key(omni, 'menu')
-      let dict.menu .= ' ' . omni.menu
-    endif
-
-    if has_key(omni, 'info')
-      let dict.info = omni.info
+  for val in deepcopy(a:list)
+    if type(val) == type('')
+      let dict = { 'word' : val, 'menu' : '[sh]' }
+    else
+      let dict = val
+      let dict.menu = has_key(dict, 'menu') ?
+            \ '[sh] ' . dict.menu : '[sh]'
     endif
 
     call add(omni_list, dict)
+
+    unlet val
   endfor
 
   return omni_list
