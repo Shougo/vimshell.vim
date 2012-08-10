@@ -1315,6 +1315,7 @@ CHANGELOG						*vimshell-changelog*
 - Set noswapfile.
 - Improved vimshell_complete.
 - Improved last vimshell buffer.
+- Fixed alternate buffer.
 
 2012-08-05
 - Fixed update behavior.
