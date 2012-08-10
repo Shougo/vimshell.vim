@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2012.
+" Last Modified: 10 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,8 +55,6 @@ endif
 if !exists('s:internal_commands')
   let s:internal_commands = {}
 endif
-
-let s:last_vimshell_bufnr = -1
 
 let s:vimshell_options = [
       \ '-buffer-name=', '-toggle', '-create',
@@ -162,8 +160,11 @@ function! vimshell#switch_shell(path, ...)"{{{
     return
   endif
 
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
   for bufnr in filter(insert(range(1, bufnr('$')),
-        \ s:last_vimshell_bufnr),
+        \ t:vimshell.last_vimshell_bufnr),
         \ "buflisted(v:val) &&
         \  getbufvar(v:val, '&filetype') ==# 'vimshell'")
     if (!exists('t:unite_buffer_dictionary')
@@ -971,6 +972,12 @@ function! s:initialize_internal_commands()"{{{
     endif
   endfor
 endfunction"}}}
+function! vimshell#initialize_tab_variable()"{{{
+  let t:vimshell = {
+        \ 'last_vimshell_bufnr' : -1,
+        \ 'last_interactive_bufnr' : -1,
+        \ }
+endfunction"}}}
 function! s:switch_vimshell(bufnr, context, path)"{{{
   if bufwinnr(a:bufnr) > 0
     execute bufwinnr(a:bufnr) 'wincmd w'
@@ -1150,7 +1157,10 @@ function! s:event_bufwin_enter()"{{{
   endfor
 endfunction"}}}
 function! s:event_bufwin_leave()"{{{
-  let s:last_vimshell_bufnr = bufnr('%')
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
+  let t:vimshell.last_vimshell_bufnr = bufnr('%')
 endfunction"}}}
 
 " vim: foldmethod=marker

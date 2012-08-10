@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2012.
+" Last Modified: 10 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -23,8 +23,6 @@
 "     SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 " }}}
 "=============================================================================
-
-let s:last_interactive_bufnr = 1
 
 " Utility functions.
 
@@ -124,7 +122,12 @@ function! vimshell#interactive#send_char(char)"{{{
   call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
-  if s:last_interactive_bufnr <= 0 || vimshell#util#is_cmdwin()
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
+
+  if t:vimshell.last_interactive_bufnr <= 0
+        \ || vimshell#util#is_cmdwin()
     return
   endif
 
@@ -134,12 +137,13 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   let string .= "\<LF>"
 
-  let winnr = bufwinnr(s:last_interactive_bufnr)
+  let winnr = bufwinnr(t:vimshell.last_interactive_bufnr)
   if winnr <= 0
     " Open buffer.
-    let [new_pos, old_pos] = vimshell#split(g:vimshell_split_command)
+    let [new_pos, old_pos] = vimshell#split(
+          \ g:vimshell_split_command)
 
-    execute 'buffer' s:last_interactive_bufnr
+    execute 'buffer' t:vimshell.last_interactive_bufnr
   else
     let [new_pos, old_pos] = vimshell#split('')
     execute winnr 'wincmd w'
@@ -147,8 +151,13 @@ function! s:send_region(line1, line2, string)"{{{
 
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
+
   " Check alternate buffer.
-  let type = getbufvar(s:last_interactive_bufnr, 'interactive').type
+  let type = getbufvar(t:vimshell.last_interactive_bufnr,
+        \ 'interactive').type
   if type !=# 'interactive' && type !=# 'terminal'
         \ && type !=# 'vimshell'
     return
@@ -225,8 +234,12 @@ function! s:send_string(string, is_insert, linenr)"{{{
   call vimshell#hook#call('postinput', context, in)
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname)"{{{
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
+
   let bufname = a:bufname == '' ? bufname('%') : a:bufname
-  let s:last_interactive_bufnr = bufnr(bufname)
+  let t:vimshell.last_interactive_bufnr = bufnr(bufname)
 endfunction"}}}
 
 function! vimshell#interactive#execute_process_out(is_insert)"{{{
@@ -327,7 +340,8 @@ function! vimshell#interactive#exit()"{{{
   if &filetype !=# 'vimshell'
     stopinsert
 
-    if exists("b:interactive.is_close_immediately") && b:interactive.is_close_immediately
+    if exists('b:interactive.is_close_immediately')
+          \ && b:interactive.is_close_immediately
       " Close buffer immediately.
       call vimshell#util#delete_buffer()
     else
@@ -750,8 +764,13 @@ function! s:winenter()"{{{
   endif
 endfunction"}}}
 function! s:winleave(bufname)"{{{
+  if !exists('t:vimshell')
+    call vimshell#initialize_tab_variable()
+  endif
+
+  let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
+
   if exists('b:interactive')
-    let s:last_interactive_bufnr = bufnr(a:bufname)
     call vimshell#terminal#restore_title()
   endif
 endfunction"}}}

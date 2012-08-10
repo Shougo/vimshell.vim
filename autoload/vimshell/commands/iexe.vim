@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Aug 2012.
+" Last Modified: 10 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,7 +78,8 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   if !use_cygpty && has_key(g:vimshell_interactive_command_options, cmdname)
-    for arg in vimproc#parser#split_args(g:vimshell_interactive_command_options[cmdname])
+    for arg in vimproc#parser#split_args(
+          \ g:vimshell_interactive_command_options[cmdname])
       call add(args, arg)
     endfor
   endif
@@ -86,7 +87,8 @@ function! s:command.execute(commands, context)"{{{
   if vimshell#util#is_windows() && cmdname == 'cmd'
     " Run cmdproxy.exe instead of cmd.exe.
     if !executable('cmdproxy.exe')
-      call vimshell#error_line(a:context.fd, 'iexe: "cmdproxy.exe" is not found. Please install it.')
+      call vimshell#error_line(a:context.fd,
+            \ 'iexe: "cmdproxy.exe" is not found. Please install it.')
       return
     endif
 

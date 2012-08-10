@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Mar 2012.
+" Last Modified: 10 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,45 +96,6 @@ else
   endfunction"}}}
 endif
 
-function! vimshell#util#alternate_buffer()"{{{
-  if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
-    buffer #
-    return
-  endif
-
-  let listed_buffer_len = len(filter(range(1, bufnr('$')),
-        \ 's:buflisted(v:val) && v:val != bufnr("%")'))
-  if listed_buffer_len <= 1
-    enew
-    return
-  endif
-
-  let cnt = 0
-  let pos = 1
-  let current = 0
-  while pos <= bufnr('$')
-    if s:buflisted(pos)
-      if pos == bufnr('%')
-        let current = cnt
-      endif
-
-      let cnt += 1
-    endif
-
-    let pos += 1
-  endwhile
-
-  if current > cnt / 2
-    bprevious
-  else
-    bnext
-  endif
-endfunction"}}}
-function! vimshell#util#delete_buffer(...)"{{{
-  let bufnr = get(a:000, 0, bufnr('%'))
-  call vimshell#util#alternate_buffer()
-  execute 'bdelete!' bufnr
-endfunction"}}}
 function! s:buflisted(bufnr)"{{{
   return exists('t:unite_buffer_dictionary') ?
         \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
@@ -184,8 +145,7 @@ function! vimshell#util#is_cmdwin()"{{{
 endfunction"}}}
 
 function! vimshell#util#alternate_buffer()"{{{
-  if getbufvar('#', "&filetype") !=# "vimshell"
-        \ && s:buflisted(bufnr('#'))
+  if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
     buffer #
     return
   endif
@@ -204,7 +164,7 @@ endfunction"}}}
 function! vimshell#util#delete_buffer(...)"{{{
   let bufnr = get(a:000, 0, bufnr('%'))
   call vimshell#util#alternate_buffer()
-  execute 'bdelete!' bufnr
+  execute 'silent bdelete!' bufnr
 endfunction"}}}
 function! s:buflisted(bufnr)"{{{
   return exists('t:unite_buffer_dictionary') ?
