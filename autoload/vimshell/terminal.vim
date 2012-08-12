@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Aug 2012.
+" Last Modified: 12 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -523,20 +523,6 @@ function! vimshell#terminal#get_col(line, col, is_virtual)"{{{
   let real_col = 0
 
   let current_line = a:line
-  if current_line =~ '^ \+'
-    " Optimized.
-    let spaces = len(matchstr(current_line, '^ \+'))
-    let col += spaces
-    let real_col += spaces
-
-    let check_col = a:is_virtual ? real_col : col
-    if check_col > a:col
-      let col -= check_col - a:col
-      let real_col -= check_col - a:col
-    endif
-
-    let current_line = current_line[real_col :]
-  endif
 
   if current_line !~ '\e\[[0-9;]*m'
     " Optimized.
