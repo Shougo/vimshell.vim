@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Aug 2012.
+" Last Modified: 14 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -126,7 +126,9 @@ function! s:send_region(line1, line2, string)"{{{
     call vimshell#initialize_tab_variable()
   endif
 
-  if t:vimshell.last_interactive_bufnr <= 0
+  let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
+
+  if last_interactive_bufnr <= 0
         \ || vimshell#util#is_cmdwin()
     return
   endif
@@ -137,13 +139,13 @@ function! s:send_region(line1, line2, string)"{{{
   endif
   let string .= "\<LF>"
 
-  let winnr = bufwinnr(t:vimshell.last_interactive_bufnr)
+  let winnr = bufwinnr(last_interactive_bufnr)
   if winnr <= 0
     " Open buffer.
     let [new_pos, old_pos] = vimshell#split(
           \ g:vimshell_split_command)
 
-    execute 'buffer' t:vimshell.last_interactive_bufnr
+    execute 'buffer' last_interactive_bufnr
   else
     let [new_pos, old_pos] = vimshell#split('')
     execute winnr 'wincmd w'
@@ -151,13 +153,13 @@ function! s:send_region(line1, line2, string)"{{{
 
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
-  endif
-
   " Check alternate buffer.
-  let type = getbufvar(t:vimshell.last_interactive_bufnr,
-        \ 'interactive').type
+  let interactive = getbufvar(last_interactive_bufnr,
+        \ 'interactive')
+  if type(interactive) != type({})
+    return
+  endif
+  let type = interactive.type
   if type !=# 'interactive' && type !=# 'terminal'
         \ && type !=# 'vimshell'
     return
