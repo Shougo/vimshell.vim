@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by Vim script
 
-Version: 9.1
+Version: 9.2
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -1310,6 +1310,12 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-08-14
+- Version 9.2 development is started.
+
+------------------------------------------------------------------------------
+ChangeLog 9.1
 
 2012-08-14
 - Fixed :VimShellSendString error.
