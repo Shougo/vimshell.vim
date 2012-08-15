@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Aug 2012.
+" Last Modified: 15 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -212,7 +212,7 @@ function! s:create_shell(path, context)"{{{
     let &swapfile = swapfile_save
   endtry
 
-  if !ret.loaded
+  if !ret.bufnr <= 0
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return
@@ -1008,10 +1008,11 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
   call vimshell#start_insert()
 endfunction"}}}
 function! s:get_postfix(prefix, is_create)"{{{
-  let buflist = sort(filter(map(range(1, bufnr('$')),
+  let buffers = get(a:000, 0, range(1, bufnr('$')))
+  let buflist = sort(filter(map(buffers,
         \ 'bufname(v:val)'), 'stridx(v:val, a:prefix) >= 0'))
   if empty(buflist)
-    return '@1'
+    return ''
   endif
 
   return a:is_create ? '@'.(matchstr(buflist[-1], '@\zs\d\+$') + 1)
