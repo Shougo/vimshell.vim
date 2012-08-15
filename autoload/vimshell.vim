@@ -212,7 +212,7 @@ function! s:create_shell(path, context)"{{{
     let &swapfile = swapfile_save
   endtry
 
-  if !ret.bufnr <= 0
+  if !ret.loaded
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return
