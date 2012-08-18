@@ -1311,6 +1311,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-08-18
+- Fixed for internal commands.
+
 2012-08-15
 - Improved postfix.
 - Improved loaded check.

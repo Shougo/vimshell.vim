@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jul 2012.
+" Last Modified: 18 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -120,16 +120,14 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     " Change the working directory like zsh.
     " Call internal cd command.
     return internal_commands['cd'].execute([dir], a:context)
+  elseif has_key(get(internal_commands, program, {}), 'execute')"{{{
+    " Internal commands.
+    return internal_commands[program].execute(args, a:context)
   else"{{{
     let command = vimshell#get_command_path(program)
     let ext = fnamemodify(program, ':e')
 
-    " Check internal commands.
-    if has_key(get(internal_commands, program, {}), 'execute')"{{{
-      " Internal commands.
-      return internal_commands[program].execute(args, a:context)
-      "}}}
-    elseif !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
+    if !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
       " Suffix execution.
       let args = extend(split(g:vimshell_execute_file_list[ext]),
             \ a:commands[0].args)
