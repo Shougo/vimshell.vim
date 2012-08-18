@@ -69,15 +69,15 @@ function! s:command.execute(args, context)"{{{
 
   if options['--encoding'] != '' && &encoding != options['--encoding']
     " Convert encoding.
-    let cmdline = iconv(cmdline, &encoding, options['--encoding'])
-    let stdin = iconv(stdin, &encoding, options['--encoding'])
+    let cmdline = vimproc#util#iconv(cmdline, &encoding, options['--encoding'])
+    let stdin = vimproc#util#iconv(stdin, &encoding, options['--encoding'])
   endif
 
   let result = system(printf('%s %s', cmdline, stdin))
 
   if options['--encoding'] != '' && &encoding != options['--encoding']
     " Convert encoding.
-    let result = iconv(result, options['--encoding'], &encoding)
+    let result = vimproc#util#iconv(result, options['--encoding'], &encoding)
   endif
 
   call vimshell#print(a:context.fd, result)

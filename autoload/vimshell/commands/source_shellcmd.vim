@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: source_shellcmd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Mar 2012.
+" Last Modified: 18 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,7 +42,7 @@ function! s:command.execute(args, context)"{{{
   " echomsg join(a:args)
   " echomsg output
   let variables = {}
-  for line in split(iconv(output, 'char', &encoding), '\n\|\r\n')
+  for line in split(vimproc#util#iconv(output, 'char', &encoding), '\n\|\r\n')
     if line =~ '^\u\w*='
       let name = '$'.matchstr(line, '^\u\w*')
       let val = matchstr(line, '^\u\w*=\zs.*')

@@ -443,10 +443,6 @@ function! vimshell#parser#getopt(args, optsyntax, ...)"{{{
         break
       endif
     endfor
-    if found
-      " Next argument.
-      continue
-    endif
 
     if !found
       call add(args, arg)

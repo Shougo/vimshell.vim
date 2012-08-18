@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Aug 2012.
+" Last Modified: 18 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -207,7 +207,7 @@ function! s:send_string(string, is_insert, linenr)"{{{
   if b:interactive.encoding != ''
         \ && &encoding != b:interactive.encoding
     " Convert encoding.
-    let in = iconv(in, &encoding, b:interactive.encoding)
+    let in = vimproc#util#iconv(in, &encoding, b:interactive.encoding)
   endif
 
   try
@@ -482,7 +482,7 @@ function! vimshell#interactive#print_buffer(fd, string)"{{{
   " Convert encoding.
   let string =
         \ (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
-        \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
+        \ vimproc#util#iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   call vimshell#terminal#print(string, 0)
 
@@ -514,7 +514,7 @@ function! vimshell#interactive#error_buffer(fd, string)"{{{
   " Convert encoding.
   let string =
         \ (b:interactive.encoding != '' && &encoding != b:interactive.encoding) ?
-        \ iconv(a:string, b:interactive.encoding, &encoding) : a:string
+        \ vimproc#util#iconv(a:string, b:interactive.encoding, &encoding) : a:string
 
   " Print buffer.
   call vimshell#terminal#print(string, 1)
@@ -553,7 +553,7 @@ function! s:check_password_input(string)"{{{
 
   if b:interactive.encoding != '' && &encoding != b:interactive.encoding
     " Convert encoding.
-    let in = iconv(in, &encoding, b:interactive.encoding)
+    let in = vimproc#util#iconv(in, &encoding, b:interactive.encoding)
   endif
 
   try

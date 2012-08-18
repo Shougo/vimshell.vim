@@ -131,7 +131,7 @@ function! s:execute_line()"{{{
         \ expand('<cfile>'), ' ', '\\ ', 'g'))
 
   " Convert encoding.
-  let filename = iconv(filename, &encoding, 'char')
+  let filename = vimproc#util#iconv(filename, &encoding, 'char')
 
   " Execute cursor file.
   if filename =~ '^\%(https\?\|ftp\)://'
