@@ -120,7 +120,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     " Change the working directory like zsh.
     " Call internal cd command.
     return internal_commands['cd'].execute([dir], a:context)
-  elseif has_key(get(internal_commands, program, {}), 'execute')"{{{
+  elseif has_key(get(internal_commands, program, {}), 'execute')
     " Internal commands.
     return internal_commands[program].execute(args, a:context)
   else"{{{
