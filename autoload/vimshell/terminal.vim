@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Aug 2012.
+" Last Modified: 20 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -508,6 +508,10 @@ function! s:set_screen_string(line, col, string)"{{{
   endif
 endfunction"}}}
 function! s:set_screen_pos(line, col)"{{{
+  if a:line == ''
+    return
+  endif
+
   if !has_key(s:virtual.lines, a:line)
     let s:virtual.lines[a:line] = ''
   endif

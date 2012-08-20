@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2012.
+" Last Modified: 20 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,25 +165,24 @@ function! s:send_region(line1, line2, string)"{{{
     return
   endif
 
-  if vimshell#is_interactive()
+  let is_interactive = vimshell#is_interactive()
+  if is_interactive
     " Save prompt.
     let prompt = vimshell#interactive#get_prompt(line('$'))
     let prompt_nr = line('$')
   endif
 
   " Send string.
-  if type ==# 'vimshell' && !vimshell#is_interactive()
-    for line in split(string, "\<LF>")
-      call vimshell#set_prompt_command(line)
-      call vimshell#execute(line)
-    endfor
-
-    call vimshell#print_prompt()
+  if type ==# 'vimshell' && !is_interactive
+    let line = substitute(substitute(
+          \ string, "\<LF>", '; ', 'g'), '; $', '', '')
+    call vimshell#set_prompt_command(line)
+    call vimshell#execute_async(line)
   else
     call vimshell#interactive#send_string(string, mode() ==# 'i')
   endif
 
-  if vimshell#is_interactive()
+  if is_interactive
     call setline(prompt_nr, split(prompt . string, "\<LF>"))
   endif
 
