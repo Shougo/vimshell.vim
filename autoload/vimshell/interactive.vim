@@ -174,10 +174,19 @@ function! s:send_region(line1, line2, string)"{{{
 
   " Send string.
   if type ==# 'vimshell'
+    $
+
     if !empty(b:vimshell.continuation)
       " Kill process.
-      let context = vimshell#get_context()
       call vimshell#interactive#hang_up(bufname('%'))
+
+      let context = {
+            \ 'has_head_spaces' : 0,
+            \ 'is_interactive' : 1,
+            \ 'is_insert' : 0,
+            \ 'fd' : { 'stdin' : '', 'stdout' : '', 'stderr' : '' },
+            \ }
+
       call vimshell#print_prompt(context)
     endif
 
