@@ -731,6 +731,11 @@ endfunction"}}}
 
 " User helper functions.
 function! vimshell#execute(cmdline, ...)"{{{
+  if !empty(b:vimshell.continuation)
+    " Kill process.
+    call vimshell#interactive#hang_up(bufname('%'))
+  endif
+
   let context = a:0 >= 1? a:1 : vimshell#get_context()
   let context.is_interactive = 0
   try
@@ -744,6 +749,11 @@ function! vimshell#execute(cmdline, ...)"{{{
   return b:vimshell.system_variables.status
 endfunction"}}}
 function! vimshell#execute_async(cmdline, ...)"{{{
+  if !empty(b:vimshell.continuation)
+    " Kill process.
+    call vimshell#interactive#hang_up(bufname('%'))
+  endif
+
   let context = a:0 >= 1 ? a:1 : vimshell#get_context()
   let context.is_interactive = 1
   try

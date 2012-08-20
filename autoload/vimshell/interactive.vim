@@ -165,7 +165,7 @@ function! s:send_region(line1, line2, string)"{{{
     return
   endif
 
-  let is_interactive = vimshell#is_interactive()
+  let is_interactive = (vimshell#is_interactive() && type !=# 'vimshell')
   if is_interactive
     " Save prompt.
     let prompt = vimshell#interactive#get_prompt(line('$'))
@@ -173,7 +173,14 @@ function! s:send_region(line1, line2, string)"{{{
   endif
 
   " Send string.
-  if type ==# 'vimshell' && !is_interactive
+  if type ==# 'vimshell'
+    if !empty(b:vimshell.continuation)
+      " Kill process.
+      let context = vimshell#get_context()
+      call vimshell#interactive#hang_up(bufname('%'))
+      call vimshell#print_prompt(context)
+    endif
+
     let line = substitute(substitute(
           \ string, "\<LF>", '; ', 'g'), '; $', '', '')
     call vimshell#set_prompt_command(line)
@@ -408,6 +415,11 @@ function! vimshell#interactive#hang_up(afile)"{{{
     endtry
   endif
   let interactive.process.is_valid = 0
+
+  if interactive.type ==# 'vimshell'
+    " Clear continuation.
+    let b:vimshell.continuation = {}
+  endif
 
   if bufname('%') == a:afile && interactive.type !=# 'vimshell'
     if interactive.type ==# 'terminal'
