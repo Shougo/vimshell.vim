@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Aug 2012.
+" Last Modified: 21 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -334,6 +334,7 @@ function! vimshell#error_line(fd, string)"{{{
 endfunction"}}}
 function! vimshell#print_prompt(...)"{{{
   if &filetype !=# 'vimshell' || line('.') != line('$')
+        \ || !empty(b:vimshell.continuation)
     return
   endif
 
@@ -1009,6 +1010,10 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
     endif
 
     execute 'buffer' a:bufnr
+  endif
+
+  if !empty(b:vimshell.continuation)
+    return
   endif
 
   if a:path != '' && isdirectory(a:path)
