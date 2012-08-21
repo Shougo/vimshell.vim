@@ -244,9 +244,6 @@ function! s:create_shell(path, context)"{{{
           \ vimshell#get_secondary_prompt()))
     finish
   endif"}}}
-
-  " Set undo point.
-  call feedkeys("\<C-g>u", 'n')
 endfunction"}}}
 
 function! vimshell#get_options()"{{{
