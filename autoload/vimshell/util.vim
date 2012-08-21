@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Aug 2012.
+" Last Modified: 21 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -131,6 +131,23 @@ endfunction
 function! vimshell#util#escape_file_searching(...)
   return call(s:V.escape_file_searching, a:000)
 endfunction
+
+function! vimshell#util#input_yesno(message)"{{{
+  let yesno = input(a:message . ' [yes/no] : ')
+  while yesno !~? '^\%(y\%[es]\|n\%[o]\)$'
+    redraw
+    if yesno == ''
+      echo 'Canceled.'
+      break
+    endif
+
+    " Retry.
+    call unite#print_error('Invalid input.')
+    let yesno = input(a:message . ' [yes/no] : ')
+  endwhile
+
+  return yesno =~? 'y\%[es]'
+endfunction"}}}
 
 function! vimshell#util#is_cmdwin()"{{{
   let errmsg_save = v:errmsg

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Aug 2012.
+" Last Modified: 21 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -177,6 +177,11 @@ function! s:send_region(line1, line2, string)"{{{
     $
 
     if !empty(b:vimshell.continuation)
+      if !vimshell#util#input_yesno(
+            \ 'The process is running. Kill it?')
+        return
+      endif
+
       " Kill process.
       call vimshell#interactive#hang_up(bufname('%'))
 
