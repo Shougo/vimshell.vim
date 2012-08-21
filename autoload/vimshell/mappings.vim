@@ -254,10 +254,6 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
   if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
     " Prompt not found
 
-    if a:is_insert
-      return
-    endif
-
     if !vimshell#check_prompt('$')
       " Create prompt line.
       call append('$', vimshell#get_prompt())

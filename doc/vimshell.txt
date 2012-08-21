@@ -1316,6 +1316,7 @@ CHANGELOG						*vimshell-changelog*
 - Fixed <Plug>(vimshell_clear) behavior.
 - Fixed switch vimshell behavior.
 - Fixed for interactive bufnr.
+- Fixed for :VimShellSendString.
 
 2012-08-20
 - Improved :VimShellSendString behavior.
