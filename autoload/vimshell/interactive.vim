@@ -791,15 +791,17 @@ function! s:winenter()"{{{
   endif
 endfunction"}}}
 function! s:winleave(bufname)"{{{
+  if !exists('b:interactive')
+    return
+  endif
+
   if !exists('t:vimshell')
     call vimshell#initialize_tab_variable()
   endif
 
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
 
-  if exists('b:interactive')
-    call vimshell#terminal#restore_title()
-  endif
+  call vimshell#terminal#restore_title()
 endfunction"}}}
 
 " vim: foldmethod=marker

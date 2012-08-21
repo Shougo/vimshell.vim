@@ -219,11 +219,11 @@ function! s:create_shell(path, context)"{{{
   endif
 
   call s:initialize_vimshell(path, a:context)
+  call vimshell#interactive#set_send_buffer(bufname('%'))
 
   call vimshell#print_prompt(a:context)
 
   call vimshell#start_insert()
-  call vimshell#interactive#set_send_buffer(bufname('%'))
 
   " Check prompt value."{{{
   if vimshell#head_match(vimshell#get_prompt(), vimshell#get_secondary_prompt())
