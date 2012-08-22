@@ -1311,6 +1311,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-08-22
+- Added depends.
+
 2012-08-21
 - Improved :VimShellSendString behavior.
 - Fixed <Plug>(vimshell_clear) behavior.
