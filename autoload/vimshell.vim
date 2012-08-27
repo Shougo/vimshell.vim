@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2012.
+" Last Modified: 27 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1030,6 +1030,8 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
           \ vimshell#check_user_prompt(line('$')) . ',' : ''
     execute 'silent ' . promptnr . '$delete _'
   endif
+
+  normal! zb
 
   call vimshell#print_prompt()
   call vimshell#start_insert()
