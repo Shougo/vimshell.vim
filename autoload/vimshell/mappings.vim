@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Aug 2012.
+" Last Modified: 28 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -161,11 +161,13 @@ function! vimshell#mappings#define_default_mappings()"{{{
 
   " Insert mode key-mappings.
   " Execute command.
-  inoremap <expr> <SID>(bs-ctrl-])    getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
+  inoremap <expr> <SID>(bs-ctrl-])
+        \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
   " History completion.
-  inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete(!0)
+  inoremap <buffer> <expr><silent> <C-l>
+        \ unite#sources#vimshell_history#start_complete(!0)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.
