@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2012.
+" Last Modified: 28 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -263,7 +263,7 @@ function! s:command_complete()"{{{
   call setline('.', prompt)
   let prompt_linenr = line('.')
 
-  call vimshell#interactive#send_string(cur_text .
+  call vimshell#interactive#iexe_send_string(cur_text .
         \ (b:interactive.is_pty ? "\<TAB>" : "\<TAB>\<TAB>"), !0, 0)
 
   " if !vimshell#head_match(getline(prompt_linenr), prompt)

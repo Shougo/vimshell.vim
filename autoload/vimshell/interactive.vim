@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Aug 2012.
+" Last Modified: 28 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -87,11 +87,11 @@ function! vimshell#interactive#execute_pty_inout(is_insert)"{{{
 
   let b:interactive.prompt_nr = line('.')
 
-  call s:send_string(in, a:is_insert, line('.'))
+  call s:iexe_send_string(in, a:is_insert, line('.'))
 endfunction"}}}
-function! vimshell#interactive#send_string(string, is_insert, ...)"{{{
+function! vimshell#interactive#iexe_send_string(string, is_insert, ...)"{{{
   let linenr = get(a:000, 0, line('$'))
-  call s:send_string(a:string, 1, linenr)
+  call s:iexe_send_string(a:string, 1, linenr)
 endfunction"}}}
 function! vimshell#interactive#send_input()"{{{
   let input = input('Please input send string: ', vimshell#interactive#get_cur_line(line('.')))
@@ -99,7 +99,7 @@ function! vimshell#interactive#send_input()"{{{
   call setline('.', vimshell#interactive#get_prompt() . ' ')
 
   normal! $h
-  call vimshell#interactive#send_string(input, 1)
+  call vimshell#interactive#iexe_send_string(input, 1)
 endfunction"}}}
 function! vimshell#interactive#send_char(char)"{{{
   if !b:interactive.process.is_valid
@@ -122,6 +122,15 @@ function! vimshell#interactive#send_char(char)"{{{
   call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
 function! s:send_region(line1, line2, string)"{{{
+  let string = a:string
+  if string == ''
+    let string = join(getline(a:line1, a:line2), "\<LF>")
+  endif
+  let string .= "\<LF>"
+
+  return vimshell#interactive#send_string(string)
+endfunction"}}}
+function! vimshell#interactive#send_string(expr)"{{{
   if !exists('t:vimshell')
     call vimshell#initialize_tab_variable()
   endif
@@ -132,12 +141,6 @@ function! s:send_region(line1, line2, string)"{{{
         \ || vimshell#util#is_cmdwin()
     return
   endif
-
-  let string = a:string
-  if string == ''
-    let string = join(getline(a:line1, a:line2), "\<LF>")
-  endif
-  let string .= "\<LF>"
 
   let winnr = bufwinnr(last_interactive_bufnr)
   if winnr <= 0
@@ -172,8 +175,12 @@ function! s:send_region(line1, line2, string)"{{{
     let prompt_nr = line('$')
   endif
 
+  let list = type(a:expr) == type('') ?
+        \ [a:expr] : a:expr
+
   " Send string.
   if type ==# 'vimshell'
+    let string = join(list, '; ')
     $
 
     if !empty(b:vimshell.continuation)
@@ -198,9 +205,11 @@ function! s:send_region(line1, line2, string)"{{{
     let line = substitute(substitute(
           \ string, "\<LF>", '; ', 'g'), '; $', '', '')
     call vimshell#set_prompt_command(line)
+
     call vimshell#execute_async(line)
   else
-    call vimshell#interactive#send_string(string, mode() ==# 'i')
+    let string = join(list, "\<LF>")
+    call vimshell#interactive#iexe_send_string(string, mode() ==# 'i')
   endif
 
   if is_interactive
@@ -210,7 +219,7 @@ function! s:send_region(line1, line2, string)"{{{
   stopinsert
   call vimshell#restore_pos(old_pos)
 endfunction"}}}
-function! s:send_string(string, is_insert, linenr)"{{{
+function! s:iexe_send_string(string, is_insert, linenr)"{{{
   if !b:interactive.process.is_valid
     return
   endif

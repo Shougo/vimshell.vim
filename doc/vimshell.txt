@@ -181,8 +181,8 @@ COMMANDS 					*vimshell-commands*
 :VimShellInteractive [{command}]		*:VimShellInteractive*
 		It does not run vimshell, but launches a interpreter program
 		you specify by {command}.  It is same as Emacs's M-x
-		{interpreter-name}.  You leave out {command}, vimshell uses the
-		value in |g:vimshell_interactive_interpreter_commands|.
+		{interpreter-name}.  You leave out {command}, vimshell uses
+		the value in |g:vimshell_interactive_interpreter_commands|.
 
 :VimShellTerminal {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
@@ -191,8 +191,9 @@ COMMANDS 					*vimshell-commands*
 
 :[range]VimShellSendString {string}		*:VimShellSendString*
 		It sends selected string to the interpreter in background
-		buffer of vimshell, iexe, texe.  You can control interpreter as
-		if you are using |quickrun|.
+		buffer of vimshell, iexe, texe.  You can control interpreter
+		as if you are using |quickrun|.
+		Cf: |vimshell#interactive#send_string()|
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
 		Sets background buffer as {bufname}.  When {bufname} isn't
@@ -740,6 +741,12 @@ Insert mode default key mappings.
 
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
+
+vimshell#interactive#send_string({expr})		*vimshell#interactive#send_string()*
+		It sends {expr} to the interpreter in background buffer of
+		vimshell, iexe, texe.  You can control interpreter as if you
+		are using |quickrun|.
+		{expr} is string or list.
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
 		Defines hook functions {func-list} in {hook-point}. The old
@@ -1310,6 +1317,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-08-28
+- Added vimshell#interactive#send_string().
 
 2012-08-26
 - Improved switch vimshell behavior.

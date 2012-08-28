@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Aug 2012.
+" Last Modified: 28 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -763,6 +763,11 @@ function! vimshell#execute_async(cmdline, ...)"{{{
   catch
     let message = v:exception . ' ' . v:throwpoint
     call vimshell#error_line(context.fd, message)
+
+    let context = vimshell#get_context()
+    let b:vimshell.continuation = {}
+    call vimshell#print_prompt(context)
+    call vimshell#start_insert(mode() ==# 'i')
     return 1
   endtry
 endfunction"}}}
