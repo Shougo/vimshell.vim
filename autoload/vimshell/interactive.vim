@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2012.
+" Last Modified: 29 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -345,6 +345,10 @@ function! vimshell#interactive#quit_buffer()"{{{
   endif
   call vimshell#util#delete_buffer()
   call vimshell#echo_error('')
+
+  if winnr('$') != 1
+    close
+  endif
 endfunction"}}}
 function! vimshell#interactive#exit()"{{{
   if !b:interactive.process.is_valid

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2012.
+" Last Modified: 29 Aug 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -570,8 +570,7 @@ function! s:hide()"{{{
   endif
 endfunction"}}}
 function! s:exit()"{{{
-  call vimshell#util#delete_buffer()
-  call s:hide()
+  call vimshell#interactive#quit_buffer()
 endfunction"}}}
 function! s:delete_backward_char()"{{{
   if !pumvisible()

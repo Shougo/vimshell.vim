@@ -184,6 +184,10 @@ COMMANDS 					*vimshell-commands*
 		{interpreter-name}.  You leave out {command}, vimshell uses
 		the value in |g:vimshell_interactive_interpreter_commands|.
 
+		Resize window example:
+>
+		VimShellInteractive --split='split | resize 20' irb
+<
 :VimShellTerminal {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
 		it launches a terminal program you Specify by {command}.
@@ -329,6 +333,8 @@ g:vimshell_popup_command			*g:vimshell_popup_command*
 g:vimshell_popup_height				*g:vimshell_popup_height*
 		This value is split height of |:VimShellPop|.
 		This value is ratio percent against |winheight(0)|.
+		Note: It is not used in non vimshell buffer(ex: interactive
+		buffer).
 
 		Default value 30.
 
@@ -1320,6 +1326,8 @@ CHANGELOG						*vimshell-changelog*
 
 2012-08-28
 - Added vimshell#interactive#send_string().
+- Improved documentation.
+- Improved vimshell#interactive#quit_buffer().
 
 2012-08-26
 - Improved switch vimshell behavior.
