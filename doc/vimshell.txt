@@ -1324,6 +1324,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-08-31
+- Added vimshell/zsh_complete source(imcomplete).
+
 2012-08-28
 - Added vimshell#interactive#send_string().
 - Improved documentation.
