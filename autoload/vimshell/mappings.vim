@@ -79,6 +79,8 @@ function! vimshell#mappings#define_default_mappings()"{{{
         \ exists('*neocomplcache#start_manual_complete') ?
         \    neocomplcache#start_manual_complete() :
         \    vimshell#complete#start()
+  inoremap <buffer><silent><expr> <Plug>(vimshell_zsh_complete)
+        \ unite#sources#vimshell_zsh_complete#start_complete(!0)
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)
         \ <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)
