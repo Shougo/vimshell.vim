@@ -8,6 +8,7 @@ TERM=dumb
 PROMPT='% '
 HISTSIZE=0
 LANG=C
+LISTMAX=1000
 
 #####################################################################
 # completions
