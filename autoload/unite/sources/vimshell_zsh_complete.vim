@@ -36,16 +36,31 @@ let s:source = {
       \ 'name': 'vimshell/zsh_complete',
       \ 'hooks' : {},
       \ 'max_candidates' : 100,
-      \ 'action_table' : {},
-      \ 'syntax' : 'uniteSource__VimshellHistory',
+      \ 'syntax' : 'uniteSource__VimshellZshComplete',
       \ 'is_listed' : 0,
       \ }
 
-let s:current_histories = []
-
 function! s:source.hooks.on_init(args, context) "{{{
-  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
   let a:context.source__input = vimshell#get_cur_text()
+
+  try
+    let args = vimshell#get_current_args(a:context.source__input)
+
+    if len(args) <= 1
+      let pos = len(vimshell#get_prompt())
+    else
+      if a:context.source__input =~ '\s\+$'
+        " Add blank argument.
+        call add(args, '')
+      endif
+
+      let pos = col('.')-len(args[-1])
+    endif
+  catch /^Exception:/
+    let pos = -1
+  endtry
+
+  let a:context.source__cur_keyword_pos = pos
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
   " syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
@@ -99,26 +114,32 @@ function! s:source.async_gather_candidates(args, context) "{{{
     let a:context.is_async = 0
   endif
 
-  let output = stdout.read_lines(-1, 100)
-  echomsg string(output)
-  call filter(output, "v:val !~ '\\r'")
+  let lines = stdout.read_lines(-1, 100)
+  echomsg string(lines)
 
-  return map(output, '{ "word" : v:val }')
+  return map(s:split_lines(lines), '{ "word" : v:val }')
 endfunction "}}}
 
 function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
   if !exists(':Unite')
     call vimshell#echo_error('unite.vim is not installed.')
-    call vimshell#echo_error('Please install unite.vim Ver.1.5 or above.')
+    call vimshell#echo_error(
+          \ 'Please install unite.vim Ver.1.5 or above.')
     return ''
   elseif unite#version() < 300
     call vimshell#echo_error('Your unite.vim is too old.')
-    call vimshell#echo_error('Please install unite.vim Ver.3.0 or above.')
+    call vimshell#echo_error(
+          \ 'Please install unite.vim Ver.3.0 or above.')
     return ''
   endif
 
   let cmdline = vimshell#get_cur_text()
-  let args = vimproc#parser#split_args_through(cmdline)
+  try
+    let args = vimshell#get_current_args(cmdline)
+  catch /^Exception:/
+    return ''
+  endtry
+
   if empty(args) || cmdline =~ '\\\@!\s\+$'
     " Add blank argument.
     call add(args, '')
@@ -129,5 +150,18 @@ function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
         \ 'input' : args[-1],
         \ })
 endfunction "}}}
+
+function! s:split_lines(lines)
+  let _ = []
+  for line in filter(copy(a:lines), "v:val !~ '\\r'")
+    if stridx(line, '---') > 0
+      call add(_, line)
+    else
+      call extend(_, split(line, '\\\@<!\s\+'))
+    endif
+  endfor
+
+  return _
+endfunction
 
 " ies foldmethod=marker
