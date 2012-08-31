@@ -28,7 +28,8 @@ let s:script_path = expand('<sfile>:p:h')
       \ .'/vimshell_zsh_complete/complete.zsh'
 
 function! unite#sources#vimshell_zsh_complete#define() "{{{
-  return s:source
+  return (executable('zsh') && !vimshell#util#is_windows()) ?
+        \ s:source : {}
 endfunction "}}}
 
 let s:source = {

@@ -1326,6 +1326,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-08-31
 - Added vimshell/zsh_complete source(imcomplete).
+- Added condition check.
 
 2012-08-28
 - Added vimshell#interactive#send_string().
