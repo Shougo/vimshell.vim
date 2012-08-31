@@ -63,9 +63,14 @@ function! s:source.hooks.on_init(args, context) "{{{
   let a:context.source__cur_keyword_pos = pos
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context)"{{{
-  " syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
-  "       \ containedin=uniteSource__VimshellHistory
-  " highlight default link uniteSource__VimshellHistorySpaces Comment
+  syntax match uniteSource__VimshellZshCompleteDescriptionLine / -- .*$/
+        \ contained containedin=uniteSource__VimshellZshComplete
+  syntax match uniteSource__VimshellZshCompleteDescription /.*$/
+        \ contained containedin=uniteSource__VimshellZshCompleteDescriptionLine
+  syntax match uniteSource__VimshellZshCompleteMarker / -- /
+        \ contained containedin=uniteSource__VimshellZshCompleteDescriptionLine
+  highlight default link uniteSource__VimshellZshCompleteMarker Special
+  highlight default link uniteSource__VimshellZshCompleteDescription Comment
 endfunction"}}}
 function! s:source.hooks.on_close(args, context) "{{{
   if has_key(a:context, 'source__proc')
@@ -115,9 +120,12 @@ function! s:source.async_gather_candidates(args, context) "{{{
   endif
 
   let lines = stdout.read_lines(-1, 100)
-  echomsg string(lines)
 
-  return map(s:split_lines(lines), '{ "word" : v:val }')
+  if g:vimshell_enable_debug
+    echomsg string(lines)
+  endif
+
+  return s:convert_lines(lines)
 endfunction "}}}
 
 function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
@@ -151,13 +159,18 @@ function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
         \ })
 endfunction "}}}
 
-function! s:split_lines(lines)
+function! s:convert_lines(lines)
   let _ = []
-  for line in filter(copy(a:lines), "v:val !~ '\\r'")
-    if stridx(line, '---') > 0
-      call add(_, line)
+  for line in filter(copy(a:lines),
+        \ "v:val !~ '\\r' && v:val !~ '^% '")
+    if line ==# 'files'
+      " Dummy candidate.
+    elseif stridx(line, ' -- ') > 0
+      call add(_, { 'word' :
+            \ split(line, '\\\@<!\s\+')[0], 'abbr' : line })
     else
-      call extend(_, split(line, '\\\@<!\s\+'))
+      call extend(_, map(split(line, '\\\@<!\s\+'),
+            \ "{'word' : v:val}"))
     endif
   endfor
 
