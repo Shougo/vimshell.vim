@@ -552,6 +552,7 @@ Insert mode key mappings.
 		Start completion using zsh.
 		Note: Required zsh and unite plugin.
 		https://github.com/Shougo/neocomplcache
+		Note: It is not worked in Windows!
 
 <Plug>(vimshell_push_current_line)		*i_<Plug>(vimshell_push_current_line)*
 		Push current line command to command line stack.
