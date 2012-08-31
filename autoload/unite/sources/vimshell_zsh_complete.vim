@@ -92,7 +92,7 @@ function! s:source.gather_candidates(args, context) "{{{
         \ 'source ' . string(s:script_path) . "\<LF>")
 
   call a:context.source__proc.stdin.write(
-        \ a:context.source__input . "\<Tab>")
+        \ a:context.source__input . "\<Tab>\<C-u>exit\<LF>")
 
   return []
 endfunction "}}}
