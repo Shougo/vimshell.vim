@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2012.
+" Last Modified: 01 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1050,7 +1050,7 @@ function! s:get_postfix(prefix, is_create)"{{{
   endif
 
   return a:is_create ? '@'.(matchstr(buflist[-1], '@\zs\d\+$') + 1)
-        \ : matchstr(buflist[0], '@\d\+$')
+        \ : matchstr(buflist[-1], '@\d\+$')
 endfunction"}}}
 function! vimshell#complete(arglead, cmdline, cursorpos)"{{{
   let _ = []
