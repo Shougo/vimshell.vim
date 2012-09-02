@@ -124,7 +124,7 @@ function! vimshell#set_dictionary_helper(variable, keys, value)"{{{
 endfunction"}}}
 
 " vimshell plugin utility functions."{{{
-function! vimshell#switch_shell(path, ...)"{{{
+function! vimshell#start(path, ...)"{{{
   if vimshell#util#is_cmdwin()
     call vimshell#echo_error(
           \ '[vimshell] Command line buffer is detected!')

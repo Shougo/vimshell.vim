@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Aug 2012.
+" Last Modified: 02 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -287,7 +287,7 @@ function! s:call_vimshell(default, args)"{{{
     endif
   endfor
 
-  call vimshell#switch_shell(join(args), options)
+  call vimshell#start(join(args), options)
 endfunction"}}}
 
 augroup vimshell
