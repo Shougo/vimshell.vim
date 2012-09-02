@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Aug 2012.
+" Last Modified: 02 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -122,15 +122,18 @@ function! vimshell#util#set_dictionary_helper(variable, keys, value)"{{{
   endfor
 endfunction"}}}
 
-function! vimshell#util#substitute_path_separator(...)
+function! vimshell#util#substitute_path_separator(...)"{{{
   return call(s:V.substitute_path_separator, a:000)
-endfunction
-function! vimshell#util#is_windows(...)
+endfunction"}}}
+function! vimshell#util#is_windows(...)"{{{
   return call(s:V.is_windows, a:000)
-endfunction
-function! vimshell#util#escape_file_searching(...)
+endfunction"}}}
+function! vimshell#util#escape_file_searching(...)"{{{
   return call(s:V.escape_file_searching, a:000)
-endfunction
+endfunction"}}}
+function! vimshell#util#sort_by(...)"{{{
+  return call(s:V.sort_by, a:000)
+endfunction"}}}
 
 function! vimshell#util#input_yesno(message)"{{{
   let yesno = input(a:message . ' [yes/no] : ')
