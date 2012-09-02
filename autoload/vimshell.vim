@@ -192,14 +192,10 @@ function! s:create_shell(path, context)"{{{
 
   " Create new buffer.
   let prefix = vimshell#util#is_windows() ?
-        \ '[vimshell]' : '*vimshell*'
-  let postfix = ' - 1'
-  let cnt = 1
-  while buflisted(prefix.postfix)
-    let cnt += 1
-    let postfix = ' - ' . cnt
-  endwhile
-  let bufname = prefix.postfix
+        \ '[vimshell] - ' : '*vimshell* - '
+  let prefix .= a:context.profile_name
+  let postfix = s:get_postfix(prefix, 1)
+  let bufname = prefix . postfix
 
   if a:context.split_command != ''
     let [new_pos, old_pos] =
@@ -1044,7 +1040,7 @@ function! s:switch_vimshell(bufnr, context, path)"{{{
 endfunction"}}}
 function! s:get_postfix(prefix, is_create)"{{{
   let buffers = get(a:000, 0, range(1, bufnr('$')))
-  let buflist = vimproc#util#sort_by(filter(map(buffers,
+  let buflist = vimshell#util#sort_by(filter(map(buffers,
         \ 'bufname(v:val)'), 'stridx(v:val, a:prefix) >= 0'),
         \ "str2nr(matchstr(v:val, '\\d\\+$'))")
   if empty(buflist)

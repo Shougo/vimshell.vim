@@ -25,6 +25,7 @@
 "=============================================================================
 
 let s:V = vital#of('vimshell')
+let s:List = vital#of('vimshell').import('Data.List')
 
 function! vimshell#util#truncate_smart(...)"{{{
   return call(s:V.truncate_smart, a:000)
@@ -132,7 +133,7 @@ function! vimshell#util#escape_file_searching(...)"{{{
   return call(s:V.escape_file_searching, a:000)
 endfunction"}}}
 function! vimshell#util#sort_by(...)"{{{
-  return call(s:V.sort_by, a:000)
+  return call(s:List.sort_by, a:000)
 endfunction"}}}
 
 function! vimshell#util#input_yesno(message)"{{{

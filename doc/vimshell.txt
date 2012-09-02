@@ -1331,7 +1331,7 @@ ability of vimshell will spread by creating plugin by yourself.
 CHANGELOG						*vimshell-changelog*
 
 2012-09-02
-- Improved postfix.
+- Improved to open buffer.
 
 2012-08-31
 - Added vimshell/zsh_complete source(imcomplete).

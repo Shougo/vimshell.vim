@@ -73,7 +73,10 @@ function! s:_import(name, scripts, debug)
       source `=path`
     catch /^Vim\%((\a\+)\)\?:E484/
       throw 'vital: module not found: ' . a:name
+    catch /^Vim\%((\a\+)\)\?:E127/
+      " Ignore.
     endtry
+
     let sid = len(a:scripts) + 1  " We expect that the file newly read is +1.
     let a:scripts[path] = sid
   endif
