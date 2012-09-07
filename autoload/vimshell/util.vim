@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Sep 2012.
+" Last Modified: 07 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -134,6 +134,10 @@ function! vimshell#util#escape_file_searching(...)"{{{
 endfunction"}}}
 function! vimshell#util#sort_by(...)"{{{
   return call(s:List.sort_by, a:000)
+endfunction"}}}
+
+function! vimshell#util#has_vimproc(...)"{{{
+  return call(s:V.has_vimproc, a:000)
 endfunction"}}}
 
 function! vimshell#util#input_yesno(message)"{{{
