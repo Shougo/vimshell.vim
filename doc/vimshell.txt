@@ -1332,6 +1332,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-09-08
 - Fixed interactive freeze problem(test).
+- Fixed nomodifiable errors.
 
 2012-09-02
 - Improved to open buffer.

@@ -670,6 +670,7 @@ function! s:check_all_output(is_hold)"{{{
             \ 'neocomplcache_enable_insert_char_pre', 0)
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
+        setlocal modifiable
         call feedkeys(is_complete_hold ?
               \ "\<C-r>\<ESC>" : "a\<BS>", 'n')
       endif
