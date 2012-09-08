@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Aug 2012.
+" Last Modified: 08 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -328,7 +328,7 @@ function! s:set_output_pos(is_insert)"{{{
 endfunction"}}}
 
 function! vimshell#interactive#quit_buffer()"{{{
-  if b:interactive.process.is_valid
+  if get(b:interactive.process, 'is_valid', 0)
     echohl WarningMsg
     let input = input('Process is running. Force exit? ')
     echohl None
