@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2012.
+" Last Modified: 09 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -168,13 +168,6 @@ function! vimshell#interactive#send_string(expr)"{{{
     return
   endif
 
-  let is_interactive = (vimshell#is_interactive() && type !=# 'vimshell')
-  if is_interactive
-    " Save prompt.
-    let prompt = vimshell#interactive#get_prompt(line('$'))
-    let prompt_nr = line('$')
-  endif
-
   $
 
   let list = type(a:expr) == type('') ?
@@ -210,11 +203,13 @@ function! vimshell#interactive#send_string(expr)"{{{
     call vimshell#execute_async(line)
   else
     let string = join(list, "\<LF>")
-    call vimshell#interactive#iexe_send_string(string, mode() ==# 'i')
-  endif
+    if string !~ '\n$'
+      let string .= "\<LF>"
+    endif
 
-  if is_interactive
-    call setline(prompt_nr, split(prompt . string, "\<LF>"))
+    let prompt = vimshell#interactive#get_prompt(line('$'))
+    call setline('$', split(prompt . string, "\<LF>")[0])
+    call vimshell#interactive#iexe_send_string(string, mode() ==# 'i')
   endif
 
   stopinsert

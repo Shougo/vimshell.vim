@@ -1330,6 +1330,9 @@ ability of vimshell will spread by creating plugin by yourself.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-09-09
+- Improved send string.
+
 2012-09-08
 - Fixed interactive freeze problem(test).
 - Fixed nomodifiable errors.
