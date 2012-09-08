@@ -675,7 +675,7 @@ function! s:check_all_output(is_hold)"{{{
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
         " call feedkeys("\<C-r>\<ESC>", 'n')
-        call feedkeys("a\<BS>",'n')
+        call feedkeys((is_complete_hold ? "\<C-r>\<ESC>" : "a\<BS>"),'n')
       endif
     endif
   elseif &updatetime < s:update_time_save
