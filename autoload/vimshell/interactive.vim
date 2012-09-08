@@ -388,8 +388,6 @@ function! vimshell#interactive#exit()"{{{
 
       $
       normal! $
-
-      setlocal nomodifiable
     endif
   endif
 endfunction"}}}
@@ -420,7 +418,6 @@ function! vimshell#interactive#force_exit()"{{{
     normal! $
 
     stopinsert
-    setlocal nomodifiable
   endif
 endfunction"}}}
 function! vimshell#interactive#hang_up(afile)"{{{
@@ -462,7 +459,6 @@ function! vimshell#interactive#hang_up(afile)"{{{
     normal! $
 
     stopinsert
-    setlocal nomodifiable
   endif
 endfunction"}}}
 function! vimshell#interactive#decode_signal(signal)"{{{
