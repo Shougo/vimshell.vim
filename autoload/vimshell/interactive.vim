@@ -175,13 +175,14 @@ function! vimshell#interactive#send_string(expr)"{{{
     let prompt_nr = line('$')
   endif
 
+  $
+
   let list = type(a:expr) == type('') ?
         \ [a:expr] : a:expr
 
   " Send string.
   if type ==# 'vimshell'
     let string = join(list, '; ')
-    $
 
     if !empty(b:vimshell.continuation)
       if !vimshell#util#input_yesno(
@@ -209,7 +210,6 @@ function! vimshell#interactive#send_string(expr)"{{{
     call vimshell#execute_async(line)
   else
     let string = join(list, "\<LF>")
-    let string .= "\<LF>"
     call vimshell#interactive#iexe_send_string(string, mode() ==# 'i')
   endif
 
