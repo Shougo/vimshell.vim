@@ -668,16 +668,12 @@ function! s:check_all_output(is_hold)"{{{
     elseif mode() ==# 'i' && exists('b:interactive') &&
         \ !empty(b:interactive.process)
         \ && b:interactive.process.is_valid
-      " let is_complete_hold = get(g:,
-      "       \ 'neocomplcache_enable_cursor_hold_i', 0)
-      "       \ || get(g:,
-      "       \ 'neocomplcache_enable_insert_char_pre', 0)
       let is_complete_hold = get(g:,
             \ 'neocomplcache_enable_cursor_hold_i', 0)
+            \ && !get(g:,
+            \ 'neocomplcache_enable_insert_char_pre', 0)
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
-        " call feedkeys("\<C-r>\<ESC>", 'n')
-        " call feedkeys((is_complete_hold ? "\<C-r>\<ESC>" : "a\<BS>"),'n')
         call feedkeys("a\<BS>",'n')
       endif
     endif
