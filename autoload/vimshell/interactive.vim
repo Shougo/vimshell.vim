@@ -209,6 +209,7 @@ function! vimshell#interactive#send_string(expr)"{{{
     call vimshell#execute_async(line)
   else
     let string = join(list, "\<LF>")
+    let string .= "\<LF>"
     call vimshell#interactive#iexe_send_string(string, mode() ==# 'i')
   endif
 
