@@ -142,6 +142,7 @@ function! vimshell#interactive#send_string(expr)"{{{
           \ 'customlist,vimshell#vimshell_execute_complete')
     execute 'VimShellInteractive' command
 
+    let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
     if last_interactive_bufnr <= 0
       " Error.
       return
