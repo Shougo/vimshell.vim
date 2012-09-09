@@ -41,11 +41,6 @@ augroup vimshell
         \ call s:winleave(expand('<afile>'))
 augroup END
 
-command! -range -nargs=? VimShellSendString
-      \ call s:send_region(<line1>, <line2>, <q-args>)
-command! -complete=buffer -nargs=1 VimShellSendBuffer
-      \ call vimshell#interactive#set_send_buffer(<q-args>)
-
 " Dummy.
 function! vimshell#interactive#init()"{{{
 endfunction"}}}
@@ -121,7 +116,7 @@ function! vimshell#interactive#send_char(char)"{{{
 
   call vimshell#interactive#execute_process_out(1)
 endfunction"}}}
-function! s:send_region(line1, line2, string)"{{{
+function! vimshell#interactive#send_region(line1, line2, string)"{{{
   let string = a:string
   if string == ''
     let string = join(getline(a:line1, a:line2), "\<LF>")
@@ -135,11 +130,22 @@ function! vimshell#interactive#send_string(expr)"{{{
     call vimshell#initialize_tab_variable()
   endif
 
+  if vimshell#util#is_cmdwin()
+    return
+  endif
+
   let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
 
   if last_interactive_bufnr <= 0
-        \ || vimshell#util#is_cmdwin()
-    return
+    let command = input('Please input interpreter command : ',
+          \ get(g:vimshell_interactive_interpreter_commands, &filetype, ''),
+          \ 'customlist,vimshell#vimshell_execute_complete')
+    execute 'VimShellInteractive' command
+
+    if last_interactive_bufnr <= 0
+      " Error.
+      return
+    endif
   endif
 
   let winnr = bufwinnr(last_interactive_bufnr)

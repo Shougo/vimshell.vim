@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Sep 2012.
+" Last Modified: 09 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -177,6 +177,11 @@ command! -nargs=* -complete=customlist,vimshell#vimshell_execute_complete VimShe
       \ call s:vimshell_interactive(<q-args>)
 command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellTerminal
       \ call s:vimshell_terminal(<q-args>)
+
+command! -range -nargs=? VimShellSendString
+      \ call vimshell#interactive#send_region(<line1>, <line2>, <q-args>)
+command! -complete=buffer -nargs=1 VimShellSendBuffer
+      \ call vimshell#interactive#set_send_buffer(<q-args>)
 
 " Plugin keymappings"{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)

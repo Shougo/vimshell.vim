@@ -198,6 +198,8 @@ COMMANDS 					*vimshell-commands*
 		buffer of vimshell, iexe, texe.  You can control interpreter
 		as if you are using |quickrun|.
 		Cf: |vimshell#interactive#send_string()|
+		Note: If interpreter is not loaded in current tab, you can run
+		interpreter command.
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
 		Sets background buffer as {bufname}.  When {bufname} isn't
@@ -754,11 +756,14 @@ Insert mode default key mappings.
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
 
-vimshell#interactive#send_string({expr})		*vimshell#interactive#send_string()*
+vimshell#interactive#send_string({expr})
+					*vimshell#interactive#send_string()*
 		It sends {expr} to the interpreter in background buffer of
 		vimshell, iexe, texe.  You can control interpreter as if you
 		are using |quickrun|.
 		{expr} is string or list.
+		Note: If interpreter is not loaded in current tab, you can run
+		interpreter command.
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
 		Defines hook functions {func-list} in {hook-point}. The old
@@ -1332,6 +1337,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-09-09
 - Improved send string.
+- Improved :VimShellSendString behavior.
 
 2012-09-08
 - Fixed interactive freeze problem(test).
