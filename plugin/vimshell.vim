@@ -119,13 +119,13 @@ let g:vimshell_scrollback_limit =
 
 " For interactive commands.
 let g:vimshell_interactive_no_save_history_commands =
-      \ get(g:, 'vimshell_no_save_history_commands', {})
+      \ get(g:, 'vimshell_interactive_no_save_history_commands', {})
 let g:vimshell_interactive_update_time =
-      \ get(g:, 'vimshell_update_time', 500)
+      \ get(g:, 'vimshell_interactive_update_time', 500)
 let g:vimshell_interactive_command_options =
-      \ get(g:, 'vimshell_command_options', {})
+      \ get(g:, 'vimshell_interactive_command_options', {})
 let g:vimshell_interactive_interpreter_commands =
-      \ get(g:, 'vimshell_interpreter_commands', {})
+      \ get(g:, 'vimshell_interactive_interpreter_commands', {})
 let g:vimshell_interactive_encodings =
       \ get(g:, 'vimshell_interactive_encodings', {})
 let g:vimshell_interactive_prompts =
