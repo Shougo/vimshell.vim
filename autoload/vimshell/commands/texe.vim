@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 Sep 2012.
+" Last Modified: 12 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -117,7 +117,9 @@ function! s:command.execute(commands, context)"{{{
         \ '$LINES' : winheight(0),
         \ '$VIMSHELL_TERM' : 'terminal',
         \ '$EDITOR' : vimshell#get_editor_name(),
+        \ '$GIT_EDITOR' : vimshell#get_editor_name(),
         \ '$PAGER' : g:vimshell_cat_command,
+        \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})
 
   " Initialize.
