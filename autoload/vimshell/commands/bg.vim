@@ -136,7 +136,6 @@ function! vimshell#commands#bg#init(commands, context, options, interactive)"{{{
   call vimshell#cd(cwd)
 
   " Common.
-  setlocal nocompatible
   setlocal nolist
   setlocal buftype=nofile
   setlocal noswapfile
