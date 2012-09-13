@@ -1294,6 +1294,15 @@ encoding					*vimshell-tips-encoding*
 >
 		vimshell% iexe --encoding=utf8 ghci
 <
+environment-variables-execution
+			*vimshell-tips-environment-variables-execution*
+		To execute commands with changing environment variables like
+		sh's "env=value command" syntax, you can use "env" command.
+		Example:
+>
+		:call vimproc#system('env GIT_EDITOR= git commit')
+<
+
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 
@@ -1334,6 +1343,9 @@ ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-09-13
+- Added Tips.
 
 2012-09-11
 - Improved set editor variables.
