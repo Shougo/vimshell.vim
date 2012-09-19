@@ -41,6 +41,7 @@ Hook			|vimshell-hook|
 Tips			|vimshell-tips|
 Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
+FAQ			|vimshell-faq|
 Changelog		|vimshell-changelog|
 
 ==============================================================================
@@ -1302,7 +1303,6 @@ environment-variables-execution
 >
 		:call vimproc#system('env GIT_EDITOR= git commit')
 <
-
 ==============================================================================
 UNITE SOURCES						*vimshell-unite-sources*
 
@@ -1342,7 +1342,21 @@ In this clause, I comment on a method to make plugin of vimshell.  The
 ability of vimshell will spread by creating plugin by yourself.
 
 ==============================================================================
+FAQ						*vimshell-faq*
+
+Q: I want to yank text without escape sequences.
+
+A: You can use |concealedyank.vim| plugin.
+https://github.com/chikatoike/concealedyank.vim
+<Plug>(operator-concealedyank) yanks text without concealed text.
+>
+	xmap Y <Plug>(operator-concealedyank)
+<
+==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-09-19
+- Added FAQ section.
 
 2012-09-13
 - Added Tips.
