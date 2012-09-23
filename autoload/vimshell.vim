@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Sep 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -625,7 +625,7 @@ endfunction"}}}
 function! vimshell#get_cursor_filename()"{{{
   let filename_pattern = (b:interactive.type ==# 'vimshell') ?
         \'\s\?\%(\f\+\s\)*\f\+' :
-        \'[[:alnum:];/?:@&=+$,_.!~*|-]\+'
+        \'[[:alnum:];/?:@&=+$,_.!~*|#-]\+'
   let cur_text = matchstr(getline('.'), '^.*\%'
         \ . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   let next_text = matchstr('a'.getline('.')[len(cur_text) :],

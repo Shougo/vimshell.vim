@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Aug 2012.
+" Last Modified: 23 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -267,7 +267,8 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
     if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
       " History output execution.
-      call setline('$', vimshell#get_prompt() . matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
+      call setline('$', vimshell#get_prompt() .
+            \ matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
     else
       " Search cursor file.
       let filename = substitute(
@@ -622,7 +623,8 @@ function! s:open_file(filename)"{{{
   if a:filename !~ '^\a\+:\|^[/~]'
     let prompt_nr = vimshell#get_prompt_linenr()
     let filename = (has_key(b:vimshell.prompt_current_dir, prompt_nr)?
-          \ b:vimshell.prompt_current_dir[prompt_nr] : getcwd()) . '/' . a:filename
+          \ b:vimshell.prompt_current_dir[prompt_nr] :
+          \ getcwd()) . '/' . a:filename
     let filename = substitute(filename, '//', '/', 'g')
     let filename = substitute(filename, ' ', '\\ ', 'g')
   else
