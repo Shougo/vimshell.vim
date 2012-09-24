@@ -1355,6 +1355,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-09-24
+- Fixed sexe error.
+
 2012-09-23
 - Improved get_cursor_filename pattern.
 
