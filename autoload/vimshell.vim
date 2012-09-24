@@ -305,7 +305,10 @@ function! vimshell#execute_internal_command(command, args, context)"{{{
 
   let internal = s:internal_commands[a:command]
   if internal.kind ==# 'execute'
-    return internal.execute([{ 'args' : a:args, 'fd' : context.fd}], context)
+    " Convert args.
+    let args = type(get(a:args, 0, '')) == type('') ?
+          \ [{ 'args' : a:args, 'fd' : context.fd}] : a:args
+    return internal.execute(args, context)
   else
     return internal.execute(a:args, context)
   endif
