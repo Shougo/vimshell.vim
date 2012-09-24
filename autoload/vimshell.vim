@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Sep 2012.
+" Last Modified: 24 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -276,12 +276,15 @@ function! vimshell#close(buffer_name)"{{{
 
   return quit_winnr > 0
 endfunction"}}}
-function! vimshell#available_commands()"{{{
+function! vimshell#available_commands(...)"{{{
+  let command = get(a:000, 0, '')
+  call s:initialize_internal_commands(command)
+
   return s:internal_commands
 endfunction"}}}
 function! vimshell#execute_internal_command(command, args, context)"{{{
-  if empty(s:internal_commands)
-    call s:initialize_internal_commands()
+  if !has_key(s:internal_commands, a:command)
+    call s:initialize_internal_commands(a:command)
   endif
 
   if empty(a:context)
@@ -294,10 +297,18 @@ function! vimshell#execute_internal_command(command, args, context)"{{{
     let context.fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
   endif
 
-  let commands = [ { 'args' : insert(a:args, a:command),
-        \            'fd' : context.fd } ]
+  if !has_key(s:internal_commands, a:command)
+    call vimshell#error_line(context.fd,
+          \ printf('Internal command : "%s" is not found.', a:command))
+    return
+  endif
 
-  return vimshell#parser#execute_command(commands, context)
+  let internal = s:internal_commands[a:command]
+  if internal.kind ==# 'execute'
+    return internal.execute([{ 'args' : a:args, 'fd' : context.fd}], context)
+  else
+    return internal.execute(a:args, context)
+  endif
 endfunction"}}}
 function! vimshell#read(fd)"{{{
   if empty(a:fd) || a:fd.stdin == ''
@@ -640,20 +651,23 @@ function! vimshell#get_cursor_filename()"{{{
 
   return vimshell#util#expand(filename)
 endfunction"}}}
-function! vimshell#next_prompt(context, is_insert)"{{{
+function! vimshell#next_prompt(context, ...)"{{{
   if &filetype !=# 'vimshell'
     return
   endif
 
+  let is_insert = get(a:000, 0, get(a:context, 'is_insert', 1))
+
   if line('.') == line('$')
     call vimshell#print_prompt(a:context)
-    call vimshell#start_insert(a:is_insert)
+    call vimshell#start_insert(is_insert)
     return
   endif
 
   " Search prompt.
-  call search('^' . vimshell#escape_match(vimshell#get_prompt()).'.\?', 'We')
-  if a:is_insert
+  call search('^' . vimshell#escape_match(
+        \ vimshell#get_prompt()).'.\?', 'We')
+  if is_insert
     if vimshell#get_prompt_command() == ''
       startinsert!
     else
@@ -833,10 +847,6 @@ function! vimshell#set_syntax(syntax_name)"{{{
 endfunction"}}}
 
 function! s:initialize_vimshell(path, context)"{{{
-  if empty(s:internal_commands)
-    call s:initialize_internal_commands()
-  endif
-
   " Load history.
   let g:vimshell#hist_buffer = vimshell#history#read()
 
@@ -973,27 +983,29 @@ function! s:initialize_context(context)"{{{
 
   return context
 endfunction"}}}
-function! s:initialize_internal_commands()"{{{
+function! s:initialize_internal_commands(command)"{{{
   " Initialize internal commands table.
-  let s:internal_commands= {}
 
   " Search autoload.
-  for list in split(globpath(&runtimepath, 'autoload/vimshell/commands/*.vim'), '\n')
+  for list in split(globpath(&runtimepath,
+        \ 'autoload/vimshell/commands/' . a:command . '*.vim'), '\n')
     let command_name = fnamemodify(list, ':t:r')
-    if !has_key(s:internal_commands, command_name)
-      let result = {'vimshell#commands#'.command_name.'#define'}()
-
-      for command in (type(result) == type([])) ?
-            \ result : [result]
-        if !has_key(command, 'description')
-          let command.description = ''
-        endif
-
-        let s:internal_commands[command.name] = command
-      endfor
-
-      unlet result
+    if has_key(s:internal_commands, command_name)
+      continue
     endif
+
+    let result = {'vimshell#commands#'.command_name.'#define'}()
+
+    for command in (type(result) == type([])) ?
+          \ result : [result]
+      if !has_key(command, 'description')
+        let command.description = ''
+      endif
+
+      let s:internal_commands[command.name] = command
+    endfor
+
+    unlet result
   endfor
 endfunction"}}}
 function! vimshell#initialize_tab_variable()"{{{

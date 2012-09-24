@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Aug 2012.
+" Last Modified: 24 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,14 +73,14 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     return 0
   endif
 
-  let internal_commands = vimshell#available_commands()
-
   let commands = a:commands
   let program = commands[0].args[0]
   let args = commands[0].args[1:]
   let fd = commands[0].fd
   let context = a:context
   let context.fd = fd
+
+  let internal_commands = vimshell#available_commands(program)
 
   let line = join(a:commands[0].args)
   let dir = substitute(substitute(line, '^\~\ze[/\\]',
@@ -92,7 +92,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
         \ 'kind', '') ==  'execute'
     " Execute execute commands.
     let commands[0].args = args
-    return internal_commands[program].execute(commands, context)
+    return vimshell#execute_internal_command(program, commands, context)
   elseif a:commands[-1].args[-1] =~ '&$'
     " Convert to internal bg command.
     let commands[-1].args[-1] = commands[-1].args[-1][:-2]
@@ -101,7 +101,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       call remove(commands[-1].args, -1)
     endif
 
-    return internal_commands['bg'].execute(commands, context)
+    return vimshell#execute_internal_command('bg', commands, context)
   elseif len(a:commands) > 1
     if a:commands[-1].args[0] == 'less'
       " Execute less(Syntax sugar).
@@ -110,19 +110,19 @@ function! vimshell#parser#execute_command(commands, context)"{{{
         let commands[0].args =
               \ a:commands[-1].args[1:] + commands[0].args
       endif
-      return internal_commands['less'].execute(commands, context)
+      return vimshell#execute_internal_command('less', commands, context)
     else
       " Execute external commands.
-      return internal_commands['exe'].execute(a:commands, context)
+      return vimshell#execute_internal_command('exe', commands, context)
     endif
   elseif isdirectory(dir)
     " Directory.
     " Change the working directory like zsh.
     " Call internal cd command.
-    return internal_commands['cd'].execute([dir], a:context)
+    return vimshell#execute_internal_command('dir', [dir], context)
   elseif has_key(get(internal_commands, program, {}), 'execute')
     " Internal commands.
-    return internal_commands[program].execute(args, a:context)
+    return vimshell#execute_internal_command(program, args, context)
   else"{{{
     let command = vimshell#get_command_path(program)
     let ext = fnamemodify(program, ':e')
@@ -139,10 +139,10 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       if has_key(g:vimshell_terminal_commands, program)
             \ && g:vimshell_terminal_commands[program]
         " Execute terminal commands.
-        return internal_commands['texe'].execute(a:commands, context)
+        return vimshell#execute_internal_command('texe', commands, context)
       else
         " Execute external commands.
-        return internal_commands['exe'].execute(a:commands, context)
+        return vimshell#execute_internal_command('exe', commands, context)
       endif
     else
       throw printf('Error: File "%s" is not found.', program)
@@ -245,7 +245,7 @@ function! s:execute_statement(statement, context)"{{{
 
   let program = vimshell#parser#parse_program(statement)
 
-  let internal_commands = vimshell#available_commands()
+  let internal_commands = vimshell#available_commands(program)
   if program =~ '^\s*:'
     " Convert to vexe special command.
     let fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }

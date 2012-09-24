@@ -75,12 +75,7 @@ function! s:command.execute(args, context)"{{{
     call vimshell#parser#eval_script(hist, context)
   catch /.*/
     call vimshell#error_line({}, v:exception)
-    call vimshell#print_prompt(context)
-
-    if has_key(context, 'is_insert') && context.is_insert
-      call vimshell#start_insert()
-    endif
-    return
+    call vimshell#error_line({}, v:throwpoint)
   endtry
 endfunction"}}}
 
