@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Sep 2012.
+" Last Modified: 27 Sep 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,10 +55,12 @@ function! s:command.execute(commands, context)"{{{
     call insert(args, 'fakecygpty')
   endif
 
-  let use_cygpty = vimshell#util#is_windows() && args[0] =~ '^fakecygpty\%(\.exe\)\?$'
+  let use_cygpty = vimshell#util#is_windows() &&
+        \ args[0] =~ '^fakecygpty\%(\.exe\)\?$'
   if use_cygpty
     if !executable('fakecygpty')
-      call vimshell#error_line(a:context.fd, 'iexe: "fakecygpty.exe" is required. Please install it.')
+      call vimshell#error_line(a:context.fd,
+            \ 'iexe: "fakecygpty.exe" is required. Please install it.')
       return
     endif
 
@@ -68,13 +70,14 @@ function! s:command.execute(commands, context)"{{{
       return
     endif
 
-    let args[1] = vimproc#get_command_name(args[1], g:vimshell_interactive_cygwin_path)
+    let args[1] = vimproc#get_command_name(
+          \ args[1], g:vimshell_interactive_cygwin_path)
   endif
 
   let cmdname = fnamemodify(args[0], ':r')
   if !has_key(options, '--encoding')
-    let options['--encoding'] = has_key(g:vimshell_interactive_encodings, cmdname) ?
-          \ g:vimshell_interactive_encodings[cmdname] : 'char'
+    let options['--encoding'] = get(
+          \ g:vimshell_interactive_encodings, cmdname, 'char')
   endif
 
   if !use_cygpty && has_key(g:vimshell_interactive_command_options, cmdname)
@@ -161,8 +164,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(use_cygpty ? args[1] : args[0], ':t:r'),
-        \ 'is_close_immediately' : has_key(a:context, 'is_close_immediately')
-        \    && a:context.is_close_immediately,
+        \ 'is_close_immediately' :
+        \   get(a:context, 'is_close_immediately', 0),
         \ 'hook_functions_table' : {},
         \}
 
