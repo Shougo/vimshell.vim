@@ -944,18 +944,18 @@ iexe [{options}...] {command}				*vimshell-internal-iexe*
 		Different from exe, this command is for interactive command.
 		Note: Interactive buffer |filetype| is int-{command}. If you
 		use |:autocmd| for interactive buffer, use "int-*" pattern.
-		
+
 		Note:
-		This command is not supports zsh right prompt.
-		If execute process from iexe, set "$VIMSHELL" to 1.
-		Should check it in your shell rc file.
-		
-		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior. Refer to |vimshell-execute-options|.
+		This command does not support zsh's right-side prompt.
+		If you execute a process from iexe, this sets "$VIMSHELL" 1.
+		You may want to check it in your shell's rc file.
+
+		Note: iexe, exe, bg, texe and less interpret options to change
+		their behaviours. Refer |vimshell-execute-options|.
 
 		--split={split-command}
-		Specify split command.
-		If omit this option, used |g:vimshell_split_command|.
+		Specifies split command.
+		If you omit this option, this uses |g:vimshell_split_command|.
 
 less [{options}...] {command}				*vimshell-internal-less*
 		Opens new buffer and executes {command} with arguments. Execute
@@ -1022,10 +1022,10 @@ source_shellcmd {shellcmd} [{args}]			*vimshell-internal-source_shellcmd*
 		may edit .zshenv/.bashenv.
 
 sudo {command} [{args}]					*vimshell-internal-sudo*
-		Execute super user command. If {command} is "vim", use
+		Execute super user command. If {command} is "vim", this uses
 		|sudo.vim|.
 		http://www.vim.org/scripts/script.php?script_id=729
-		In Windows, "sudo.exe" is needed.
+		On Windows, "sudo.exe" is necessary.
 		http://bitbucket.org/wantora/sudo/wiki/Home
 
 texe [{options}...] {command}				*vimshell-internal-texe*
