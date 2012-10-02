@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Feb 2012.
+" Last Modified: 02 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,6 +109,26 @@ function! s:kind.action_table.insert.func(candidate)"{{{
     normal! $
   endif
 endfunction"}}}
+
+let s:kind.action_table.unite__new_candidate = {
+      \ 'description' : 'add new history',
+      \ 'is_invalidate_cache' : 1,
+      \ 'is_quit' : 0,
+      \ }
+function! s:kind.action_table.unite__new_candidate.func(candidate)"{{{
+  let current_histories =
+        \ a:candidate.action__current_histories
+  let history = input('Please input new history: ',
+        \ '', 'shellcmd')
+  if history != ''
+    call insert(current_histories, history)
+  endif
+
+  if !a:candidate.action__is_external
+    call unite#sources#vimshell_history#_change_histories(current_histories)
+  endif
+endfunction"}}}
+
 "}}}
 
 let &cpo = s:save_cpo
