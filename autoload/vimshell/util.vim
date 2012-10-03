@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Sep 2012.
+" Last Modified: 03 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,15 +158,7 @@ function! vimshell#util#input_yesno(message)"{{{
 endfunction"}}}
 
 function! vimshell#util#is_cmdwin()"{{{
-  let errmsg_save = v:errmsg
-  silent! verbose noautocmd wincmd p
-  if errmsg_save !=# v:errmsg
-        \ && v:errmsg =~ '^E11:'
-    return 1
-  endif
-
-  silent! noautocmd wincmd p
-  return 0
+  return bufname('%') ==# '[Command Line]'
 endfunction"}}}
 
 function! vimshell#util#alternate_buffer()"{{{
