@@ -1355,6 +1355,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-10-13
+- Fixed neocomplcache check.
+
 2012-10-02
 - Added unite__new_candidate action.
 
