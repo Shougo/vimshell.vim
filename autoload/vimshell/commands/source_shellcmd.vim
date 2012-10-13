@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: source_shellcmd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2012.
+" Last Modified: 13 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -37,15 +37,16 @@ function! s:command.execute(args, context)"{{{
   let output = vimshell#util#is_windows() ?
         \ system(printf('cmd /c "%s& set"',
         \      join(map(a:args, '"\"".v:val."\""')))) :
-        \ vimproc#system(printf('%s -c ''%s; env''',
+        \ vimproc#system(printf("%s -c '%s; env'",
         \ &shell, join(a:args)))
   " echomsg join(a:args)
   " echomsg output
   let variables = {}
-  for line in split(vimproc#util#iconv(output, 'char', &encoding), '\n\|\r\n')
-    if line =~ '^\u\w*='
-      let name = '$'.matchstr(line, '^\u\w*')
-      let val = matchstr(line, '^\u\w*=\zs.*')
+  for line in split(
+        \ vimproc#util#iconv(output, 'char', &encoding), '\n\|\r\n')
+    if line =~ '^\h\w*='
+      let name = '$'.matchstr(line, '^\h\w*')
+      let val = matchstr(line, '^\h\w*=\zs.*')
       let variables[name] = val
     else
       call vimshell#print_line(a:context.fd, line)
