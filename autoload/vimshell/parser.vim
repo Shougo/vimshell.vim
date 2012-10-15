@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2012.
+" Last Modified: 16 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -124,7 +124,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
     " Internal commands.
     return vimshell#execute_internal_command(program, args, context)
   else"{{{
-    let command = vimshell#get_command_path(program)
     let ext = fnamemodify(program, ':e')
 
     if !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
@@ -133,7 +132,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
             \ a:commands[0].args)
       let commands = [ { 'args' : args, 'fd' : fd } ]
       return vimshell#parser#execute_command(commands, a:context)
-    elseif command != '' || executable(program)
+    else
       let args = insert(args, program)
 
       if has_key(g:vimshell_terminal_commands, program)
@@ -144,8 +143,6 @@ function! vimshell#parser#execute_command(commands, context)"{{{
         " Execute external commands.
         return vimshell#execute_internal_command('exe', commands, context)
       endif
-    else
-      throw printf('Error: File "%s" is not found.', program)
     endif
   endif"}}}
 endfunction
