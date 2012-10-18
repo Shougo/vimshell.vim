@@ -95,11 +95,11 @@ INTERFACE					*vimshell-interface*
 COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
-		Run vimshell. The {path} is current directory.
-		If other vimshell buffer is exists, switch to the vimshell
-		buffer and change current directory as {path}.
-		If omit {path}, used Vim current directory (or do not change
-		current directory).
+		Runs vimshell. The {path} will be its current directory.
+		If aother vimshell buffer exists, switches to the vimshell
+		buffer and changes its current directory to {path}.
+		If you omit {path}, it uses Vim's current directory (or does not
+		change the current directory).
 
 						*vimshell-options*
 		{options} are options for a vimshell buffer.  You may give the
