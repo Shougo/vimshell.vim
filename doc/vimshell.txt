@@ -408,7 +408,7 @@ g:vimshell_interactive_echoback_commands	*g:vimshell_interactive_echoback_comman
 		This value has effect only on windows.
 
 		Defalut value is complicated, so please refer
-		autoload/vimshell/commands/iexe.vim.
+		plugin/vimshell.vim
 
 g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
 		It is an assignment of cursor shape |vimshell-internal-texe|
