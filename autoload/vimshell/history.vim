@@ -90,12 +90,13 @@ function! s:get_history_path()"{{{
       let program = vimshell#parser#parse_program(
             \ b:vimshell.continuation.statements[0].statement)
 
-      let program = (program == '') ? 'unknown' :
-            \ fnamemodify(program, ':t:r')
-
-      let program = 'int-' . program
+      let program = 'int-' . fnamemodify(program, ':t:r')
     else
       let program = &filetype
+    endif
+
+    if &filetype == ''
+      let program = 'unknown'
     endif
 
     let history_path = history_dir.'/'.program
