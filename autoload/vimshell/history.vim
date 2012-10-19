@@ -89,11 +89,9 @@ function! s:get_history_path()"{{{
       " Search program name.
       let program = vimshell#parser#parse_program(
             \ b:vimshell.continuation.statements[0].statement)
-      if program == ''
-        let program = 'unknown'
-      else
-        let program = fnamemodify(program, ':t:r')
-      endif
+
+      let program = (program == '') ? 'unknown' :
+            \ fnamemodify(program, ':t:r')
 
       let program = 'int-' . program
     else
