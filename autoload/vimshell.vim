@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Oct 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -605,7 +605,7 @@ function! vimshell#compare_number(i1, i2)"{{{
 endfunction"}}}
 function! vimshell#imdisable()"{{{
   " Disable input method.
-  if exists('g:loaded_eskk') && (!exists('g:eskk_disable') || !g:eskk_disable) && eskk#is_enabled()
+  if exists('g:loaded_eskk') && eskk#is_enabled()
     call eskk#disable()
   elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
     call SkkDisable()
