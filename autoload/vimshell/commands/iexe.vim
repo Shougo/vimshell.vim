@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,6 +165,7 @@ function! s:command.execute(commands, context)"{{{
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(use_cygpty ? args[1] : args[0], ':t:r'),
+        \ 'cmdline' : join(args),
         \ 'is_close_immediately' :
         \   get(a:context, 'is_close_immediately', 0),
         \ 'hook_functions_table' : {},

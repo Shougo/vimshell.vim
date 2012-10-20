@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Sep 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -375,6 +375,10 @@ function! vimshell#interactive#exit()"{{{
 
   let b:interactive.status = str2nr(status)
   let b:interactive.cond = cond
+
+  let interactive = b:interactive
+  let context = vimshell#get_context()
+
   if &filetype !=# 'vimshell'
     stopinsert
 
@@ -393,6 +397,10 @@ function! vimshell#interactive#exit()"{{{
       normal! $
     endif
   endif
+
+  " Call postexit hook.
+  call vimshell#hook#call('postexit', context,
+        \ [interactive.command, interactive.cmdline])
 endfunction"}}}
 function! vimshell#interactive#force_exit()"{{{
   if !b:interactive.process.is_valid

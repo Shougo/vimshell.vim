@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -64,7 +64,8 @@ function! s:command.execute(commands, context)"{{{
   " Encoding conversion.
   if options['--encoding'] != '' && options['--encoding'] != &encoding
     for command in commands
-      call map(command.args, 'vimproc#util#iconv(v:val, &encoding, options["--encoding"])')
+      call map(command.args,
+            \ 'vimproc#util#iconv(v:val, &encoding, options["--encoding"])')
     endfor
   endif
 
@@ -76,6 +77,8 @@ function! s:command.execute(commands, context)"{{{
         \ 'encoding' : options['--encoding'],
         \ 'is_pty' : 0,
         \ 'echoback_linenr' : 0,
+        \ 'command' : commands[0].args[0],
+        \ 'cmdline' : join(commands[0].args),
         \ 'stdout_cache' : '',
         \}
 

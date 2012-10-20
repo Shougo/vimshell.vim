@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -51,7 +51,8 @@ function! s:command.execute(commands, context)"{{{
   endif
 
   " Background execute.
-  if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
+  if exists('b:interactive') &&
+        \ !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombie process.
     call vimshell#interactive#force_exit()
   endif
@@ -85,12 +86,14 @@ function! s:command.execute(commands, context)"{{{
 
   " Set variables.
   let interactive = {
-        \ 'type' : 'background', 
+        \ 'type' : 'background',
         \ 'syntax' : &syntax,
-        \ 'process' : sub, 
-        \ 'fd' : a:context.fd, 
-        \ 'encoding' : options['--encoding'], 
-        \ 'is_pty' : 0, 
+        \ 'process' : sub,
+        \ 'fd' : a:context.fd,
+        \ 'encoding' : options['--encoding'],
+        \ 'is_pty' : 0,
+        \ 'command' : commands[0].args[0],
+        \ 'cmdline' : join(commands[0].args),
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',

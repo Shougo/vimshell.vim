@@ -1179,46 +1179,55 @@ chpwd							*vimshell-hook-chpwd*
 		This hook called when changed vimshell current directory.
 		The first argument is new current directory.
 
-preparse						*vimshell-hook-preparse*
+preparse					*vimshell-hook-preparse*
 		This hook called when before parse command line.
-		The first argument is {cmdline}. {cmdline} is command line string.
-		And returns changed command line string.
+		The first argument is {cmdline}. {cmdline} is command line
+		string.  And returns changed command line string.
 
-preexec							*vimshell-hook-preexec*
+preexec						*vimshell-hook-preexec*
 		This hook called when after alias parsed and before execute
 		command line.
-		The first argument is {cmdline}. {cmdline} is command line string.
-		And returns changed command line string.
+		The first argument is {cmdline}. {cmdline} is command line
+		string.  And returns changed command line string.
 
-postexec						*vimshell-hook-postexec*
+postexec					*vimshell-hook-postexec*
 		This hook called when after execute command line.
 		The first argument is {cmdline}. {cmdline} is executed command
 		line string.
 
-emptycmd						*vimshell-hook-emptycmd*
+emptycmd					*vimshell-hook-emptycmd*
 		This hook called when cmdline is empty.
-		The first argument is {cmdline}. {cmdline} is command line string.
-		And returns changed command line string.
+		The first argument is {cmdline}. {cmdline} is command line
+		string.  And returns changed command line string.
 
-notfound						*vimshell-hook-notfound*
+notfound					*vimshell-hook-notfound*
 		This hook called when the command is not found.
-		The first argument is {cmdline}. {cmdline} is command line string.
-		And returns changed command line string.
+		The first argument is {cmdline}. {cmdline} is command line
+		string.  And returns changed command line string.
 
-preprompt						*vimshell-hook-preprompt*
+preprompt					*vimshell-hook-preprompt*
 		This hook called when after execute command line and before
 		display prompt.
 
-preinput						*vimshell-hook-preinput*
+preinput					*vimshell-hook-preinput*
 		This hook called when after user input.
 		The first argument is {input}. {input} is user input string.
 		And returns changed input string.
 		Note: This hook is usually used in interactive buffer.
 
-postinput						*vimshell-hook-postinput*
+postinput					*vimshell-hook-postinput*
 		This hook called when after executed user input.
 		The first argument is {input}. {input} is user input string.
 		Note: This hook is usually used in interactive buffer.
+
+postexit					*vimshell-hook-postexit*
+		This hook called when after (external) command exit.
+		The first argument is {command}. {command} is executed command
+		name. The second argument is {cmdline}. {command} is executed
+		command line.
+		Note: This hook is usually used in interactive buffer.
+		Note: The buffer may be deleted(or closed) in interactive
+		buffer.
 
 To analyze command line, use |vimproc#parser#split_args()|or
 |vimproc#parser#split_args_through()|. These functions arguments are the
@@ -1354,6 +1363,9 @@ https://github.com/chikatoike/concealedyank.vim
 <
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2012-10-20
+- Added postexit hook.
 
 2012-10-19
 - Fixed get_history_path().

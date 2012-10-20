@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Sep 2011.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,8 +25,8 @@
 "=============================================================================
 
 function! vimshell#hook#call(hook_point, context, args)"{{{
-  " There are cases when this variable doesn't 
-  " exist 
+  " There are cases when this variable doesn't
+  " exist
   " USE: 'b:interactive.is_close_immediately = 1' to replicate
   if !exists('b:interactive')
     return

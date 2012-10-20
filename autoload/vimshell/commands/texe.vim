@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Sep 2012.
+" Last Modified: 20 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,7 +96,8 @@ function! s:command.execute(commands, context)"{{{
     call vimshell#interactive#force_exit()
   endif
 
-  if vimshell#util#is_windows() && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#util#is_windows() &&
+        \ g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
     let home_save = vimshell#set_variables({
           \ '$HOME' : g:vimshell_interactive_cygwin_home, 
@@ -129,7 +130,8 @@ function! s:command.execute(commands, context)"{{{
   " Restore environment variables.
   call vimshell#restore_variables(environments_save)
 
-  if vimshell#util#is_windows() && g:vimshell_interactive_cygwin_home != ''
+  if vimshell#util#is_windows() &&
+        \ g:vimshell_interactive_cygwin_home != ''
     " Restore $HOME.
     call vimshell#restore_variables(home_save)
   endif
@@ -151,7 +153,9 @@ function! s:command.execute(commands, context)"{{{
         \ 'height' : winheight(0),
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'command' : fnamemodify(vimshell#util#is_windows() ? args[1] : args[0], ':t:r'),
+        \ 'command' : fnamemodify(vimshell#util#is_windows() ?
+        \       args[1] : args[0], ':t:r'),
+        \ 'cmdline' : join(commands[0].args),
         \ 'hook_functions_table' : {},
         \}
   call vimshell#interactive#init()
