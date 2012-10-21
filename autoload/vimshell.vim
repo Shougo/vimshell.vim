@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Oct 2012.
+" Last Modified: 21 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -109,6 +109,8 @@ function! s:default_settings()"{{{
 
   " Set autocommands.
   augroup vimshell
+    autocmd BufDelete,VimLeave <buffer>
+          \ call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
     autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
     autocmd CursorMoved <buffer> call vimshell#interactive#check_current_output()
