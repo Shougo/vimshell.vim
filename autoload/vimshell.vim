@@ -109,7 +109,7 @@ function! s:default_settings()"{{{
 
   " Set autocommands.
   augroup vimshell
-    autocmd BufDelete,VimLeave <buffer>
+    autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
     autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()

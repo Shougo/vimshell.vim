@@ -177,7 +177,7 @@ function! s:init(commands, context, options, interactive)"{{{
   hi def link InteractiveErrorHidden Error
 
   augroup vimshell
-    autocmd BufDelete,VimLeave <buffer>
+    autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
   augroup END
 

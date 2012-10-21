@@ -341,7 +341,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   augroup vimshell
     autocmd InsertEnter <buffer>
           \ call s:insert_enter()
-    autocmd BufDelete,VimLeave <buffer>
+    autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer>
           \ call s:event_bufwin_enter()
