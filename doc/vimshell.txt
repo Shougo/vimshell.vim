@@ -317,9 +317,10 @@ g:vimshell_environment_term			*g:vimshell_environment_term*
 
 g:vimshell_split_command			*g:vimshell_split_command*
 		Vimshell uses this as the Ex command to split window.  If you
-		set this "nicely", vimshell adjust with window size and split
-		window preferable. ("nicely" depends the winwidth variable)
-		Empty means disable window splitting for vimshell.
+		set this "nicely", vimshell adjusts with the current window
+		size and splits window preferable ("nicely" depends on the
+		winwidth variable.)
+		Empty means disabling window splitting on vimshell.
 		"tabnew" means vimshell opens new tab.
 		"vsplit" means vertical splitting.
 
@@ -328,30 +329,30 @@ g:vimshell_split_command			*g:vimshell_split_command*
 g:vimshell_popup_command			*g:vimshell_popup_command*
 		Vimshell uses this as the Ex command to split window in
 		|:VimShellPop|.
-		Leaving this empty, "split" and |g:vimshell_popup_height|
-		will be used.
+		If you leave this empty, vimshell uses "split" and
+		|g:vimshell_popup_height|.
 
 		Default value is "".
 
 g:vimshell_popup_height				*g:vimshell_popup_height*
 		This value is split height of |:VimShellPop|.
 		This value is ratio percent against |winheight(0)|.
-		Note: It is not used in non vimshell buffer(ex: interactive
-		buffer).
+		Note: It is not used on non vimshell buffers (ex: interactive
+		buffer.)
 
 		Default value 30.
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
 		This is the Ex command to change current directory.
-		The command must interpret|`=| .
+		The command must interpret |`=|.
 
 		Default value is "lcd".
 
 g:vimshell_no_save_history_commands		*g:vimshell_no_save_history_commands*
-		This is dictionary value that has keys of the command name vimshell
-		doesn't save in history.
+		This is a dictionary value that has keys of the command name
+		that vimshell doesn't save in history.
 
-		Default value is { 'history' : 1, 'h' : 1, 'histdel' : 1}.
+		Default value is {'history': 1, 'h': 1, 'histdel': 1}.
 
 g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 		This value is the maximum size of command output.
@@ -362,7 +363,7 @@ g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 g:vimshell_interactive_no_save_history_commands	*g:vimshell_interactive_no_save_history_commands*
 		This is a dictionary value which key is a command name that
 		won't be save on the history in |vimshell-internal-iexe|.
-		If there is not exist, it will be ignored.
+		If there does not exist, it will be ignored.
 
 		Default value is {}.
 
