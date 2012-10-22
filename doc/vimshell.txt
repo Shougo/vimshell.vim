@@ -1319,10 +1319,10 @@ UNITE SOURCES						*vimshell-unite-sources*
 						*vimshell-unite-source-vimshell-history*
 vimshell/history
 		Nominates vimshell histories as candidates. This source is also
-		available in interactive buffer. This source is used in
+		available on interactive buffer. This source is used in
 		|unite#sources#vimshell_history#start_complete()|.
 		Note: Default mapping is <C-l>.
-		
+
 		Exmaple:
 >
 		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
@@ -1341,7 +1341,7 @@ kind actions:
 
 vimshell/history					*vimshell-unite-action-vimshell-history*
 	execute		Execute history.
-			If you selected several histories, "; " will be inserted.
+			If you selected several histories, it joins with "; ".
 	edit		Edit history.
 	delete		Delete history.
 
@@ -1350,6 +1350,10 @@ CREATE PLUGIN						*vimshell-create-plugin*
 
 In this clause, I comment on a method to make plugin of vimshell.  The
 ability of vimshell will spread by creating plugin by yourself.
+
+You can add a new vimshell command easily just by adding a plugin file under
+autoload/internal/ directory; vimshell reads *.vim files there as internal
+command.
 
 ==============================================================================
 FAQ						*vimshell-faq*
