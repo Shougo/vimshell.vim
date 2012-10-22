@@ -123,9 +123,9 @@ function! vimshell#interactive#send_region(line1, line2, string)"{{{
   endif
   let string .= "\<LF>"
 
-  return vimshell#interactive#send_string(string)
+  return vimshell#interactive#send(string)
 endfunction"}}}
-function! vimshell#interactive#send_string(expr)"{{{
+function! vimshell#interactive#send(expr)"{{{
   if !exists('t:vimshell')
     call vimshell#initialize_tab_variable()
   endif
@@ -221,6 +221,10 @@ function! vimshell#interactive#send_string(expr)"{{{
 
   stopinsert
   call vimshell#restore_pos(old_pos)
+endfunction"}}}
+function! vimshell#interactive#send_string(...)"{{{
+  echohl WarningMsg | echomsg 'vimshell#interactive#send_string() is deprecated; use vimshell#interactive#send() instead' | echohl None
+  return call('vimshell#interactive#send', a:000)
 endfunction"}}}
 function! s:iexe_send_string(string, is_insert, linenr)"{{{
   if !b:interactive.process.is_valid

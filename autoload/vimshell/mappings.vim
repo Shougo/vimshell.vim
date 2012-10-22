@@ -189,7 +189,7 @@ function! vimshell#mappings#define_default_mappings()"{{{
   " Run help.
   imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
   " Interrupt.
-  imap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  inoremap <buffer> <C-c> <C-o>:call vimshell#interactive#send_char(3)<CR>
   " Delete char.
   imap <buffer> <C-h>    <Plug>(vimshell_delete_backward_char)
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)

@@ -198,7 +198,7 @@ COMMANDS 					*vimshell-commands*
 		It sends selected string to the interpreter in background
 		buffer of vimshell, iexe, texe.  You can control interpreter
 		as if you are using |quickrun|.
-		Cf: |vimshell#interactive#send_string()|
+		Cf: |vimshell#interactive#send()|
 		Note: If interpreter is not loaded in current tab, you can run
 		interpreter command.
 
@@ -758,14 +758,20 @@ Insert mode default key mappings.
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
 
-vimshell#interactive#send_string({expr})
-					*vimshell#interactive#send_string()*
+vimshell#interactive#send({expr})
+					*vimshell#interactive#send()*
 		It sends {expr} to the interpreter in background buffer of
 		vimshell, iexe, texe.  You can control interpreter as if you
 		are using |quickrun|.
 		{expr} is string or list.
 		Note: If interpreter is not loaded in current tab, you can run
 		interpreter command.
+
+vimshell#interactive#send_string({expr})
+					*vimshell#interactive#send_string()*
+		Deprecated. Use |vimshell#interactive#send()| instead; they
+		are equivalent.
+
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
 		Defines hook functions {func-list} in {hook-point}. The old
@@ -1371,6 +1377,7 @@ CHANGELOG						*vimshell-changelog*
 
 2012-10-21
 - Improved hangup behavior.
+- Renamed vimshell#interactive#send_string() to vimshell#interactive#send()
 
 2012-10-20
 - Added postexit hook.
