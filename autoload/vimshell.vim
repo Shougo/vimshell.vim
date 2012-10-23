@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2012.
+" Last Modified: 23 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -996,7 +996,8 @@ function! s:initialize_internal_commands(command)"{{{
   for list in split(globpath(&runtimepath,
         \ 'autoload/vimshell/commands/' . a:command . '*.vim'), '\n')
     let command_name = fnamemodify(list, ':t:r')
-    if has_key(s:internal_commands, command_name)
+    if command_name == '' ||
+          \ has_key(s:internal_commands, command_name)
       continue
     endif
 
