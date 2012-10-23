@@ -136,7 +136,7 @@ function! vimshell#start(path, ...)"{{{
   endif
 
   " Detect autochdir option."{{{
-  if &autochdir
+  if exists('+autochdir') && &autochdir
     call vimshell#echo_error(
           \ '[vimshell] Detected autochdir!')
     call vimshell#echo_error(

@@ -1375,6 +1375,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-10-23
+- Fixed check of autochdir.
+
 2012-10-21
 - Improved hangup behavior.
 - Renamed vimshell#interactive#send_string() to vimshell#interactive#send()
