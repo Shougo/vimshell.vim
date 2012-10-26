@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Oct 2012.
+" Last Modified: 26 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -437,11 +437,12 @@ function! vimshell#interactive#force_exit()"{{{
 endfunction"}}}
 function! vimshell#interactive#hang_up(afile)"{{{
   let interactive = getbufvar(a:afile, 'interactive')
+  let vimshell = getbufvar(a:afile, 'vimshell')
   if type(interactive) == type('')
     return
   endif
 
-  if interactive.process.is_valid
+  if get(interactive.process, 'is_valid', 0)
     " Kill process.
     try
       " 15 == SIGTERM
@@ -450,20 +451,16 @@ function! vimshell#interactive#hang_up(afile)"{{{
     catch
       " Error.
       call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      call vimshell#interactive#exit()
     endtry
   endif
   let interactive.process.is_valid = 0
 
   if interactive.type ==# 'vimshell'
     " Clear continuation.
-    let b:vimshell.continuation = {}
+    let vimshell.continuation = {}
   endif
 
   if bufname('%') == a:afile && interactive.type !=# 'vimshell'
-    if interactive.type ==# 'terminal'
-      call vimshell#commands#texe#restore_cursor()
-    endif
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
     hi def link InteractiveMessage WarningMsg
 
