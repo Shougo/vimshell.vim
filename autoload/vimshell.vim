@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Oct 2012.
+" Last Modified: 26 Oct 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -991,6 +991,10 @@ function! s:initialize_context(context)"{{{
 endfunction"}}}
 function! s:initialize_internal_commands(command)"{{{
   " Initialize internal commands table.
+  if a:command =~ '\.'
+    " Search pattern error.
+    return
+  endif
 
   " Search autoload.
   for list in split(globpath(&runtimepath,
