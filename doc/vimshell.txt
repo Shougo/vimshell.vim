@@ -1375,6 +1375,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-11-17
+- Fixed for skip next complete.
+
 2012-10-26
 - Fixed error message on exit.
 

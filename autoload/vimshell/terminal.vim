@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Aug 2012.
+" Last Modified: 17 Nov 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,6 +54,11 @@ function! vimshell#terminal#print(string, is_error)"{{{
   setlocal modifiable
   if g:vimshell_enable_debug
     echomsg 'print string = ' . string(a:string)
+  endif
+
+  " Skip next auto completion.
+  if exists('*neocomplcache#skip_next_complete')
+    call neocomplcache#skip_next_complete()
   endif
 
   if &filetype ==# 'vimshell' &&
