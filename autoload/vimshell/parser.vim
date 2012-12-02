@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Oct 2012.
+" Last Modified: 02 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#parser#check_script(script)"{{{
+function! vimshell#parser#check_script(script) "{{{
   " Parse check only.
   " Split statements.
   let script = vimshell#parser#parse_alias(a:script)
@@ -32,7 +32,7 @@ function! vimshell#parser#check_script(script)"{{{
     let args = vimproc#parser#split_args(statement)
   endfor
 endfunction"}}}
-function! vimshell#parser#eval_script(script, context)"{{{
+function! vimshell#parser#eval_script(script, context) "{{{
   " Split statements.
   let script = vimshell#parser#parse_alias(a:script)
   let statements = vimproc#parser#parse_statements(script)
@@ -68,7 +68,7 @@ function! vimshell#parser#eval_script(script, context)"{{{
 
   return 0
 endfunction"}}}
-function! vimshell#parser#execute_command(commands, context)"{{{
+function! vimshell#parser#execute_command(commands, context) "{{{
   if empty(a:commands)
     return 0
   endif
@@ -115,7 +115,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
       " Execute external commands.
       return vimshell#execute_internal_command('exe', commands, context)
     endif
-  elseif isdirectory(dir)
+  elseif !executable(dir) && isdirectory(dir)
     " Directory.
     " Change the working directory like zsh.
     " Call internal cd command.
@@ -123,7 +123,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   elseif has_key(get(internal_commands, program, {}), 'execute')
     " Internal commands.
     return vimshell#execute_internal_command(program, args, context)
-  else"{{{
+  else "{{{
     let ext = fnamemodify(program, ':e')
 
     if !empty(ext) && has_key(g:vimshell_execute_file_list, ext)
@@ -147,7 +147,7 @@ function! vimshell#parser#execute_command(commands, context)"{{{
   endif"}}}
 endfunction
 "}}}
-function! vimshell#parser#execute_continuation(is_insert)"{{{
+function! vimshell#parser#execute_continuation(is_insert) "{{{
   " Execute pipe.
   call vimshell#interactive#execute_process_out(a:is_insert)
 
@@ -233,7 +233,7 @@ function! vimshell#parser#execute_continuation(is_insert)"{{{
   call vimshell#next_prompt(context, a:is_insert)
 endfunction
 "}}}
-function! s:execute_statement(statement, context)"{{{
+function! s:execute_statement(statement, context) "{{{
   let statement = a:statement
 
   " Call preexec filter.
@@ -262,7 +262,7 @@ endfunction
 "}}}
 
 " Parse helper.
-function! vimshell#parser#parse_alias(statement)"{{{
+function! vimshell#parser#parse_alias(statement) "{{{
   let statement = s:parse_galias(a:statement)
   let program = matchstr(statement, vimshell#get_program_pattern())
   if statement != '' && program  == ''
@@ -279,7 +279,7 @@ function! vimshell#parser#parse_alias(statement)"{{{
 
   return statement
 endfunction"}}}
-function! vimshell#parser#parse_program(statement)"{{{
+function! vimshell#parser#parse_program(statement) "{{{
   " Get program.
   let program = matchstr(a:statement, vimshell#get_program_pattern())
   if program  == ''
@@ -295,7 +295,7 @@ function! vimshell#parser#parse_program(statement)"{{{
 
   return program
 endfunction"}}}
-function! s:parse_galias(script)"{{{
+function! s:parse_galias(script) "{{{
   if !exists('b:vimshell')
     return a:script
   endif
@@ -347,7 +347,7 @@ function! s:parse_galias(script)"{{{
 
   return join(args)
 endfunction"}}}
-function! s:recursive_expand_alias(alias_name, args)"{{{
+function! s:recursive_expand_alias(alias_name, args) "{{{
   " Recursive expand alias.
   let alias = b:vimshell.alias_table[a:alias_name]
   let expanded = {}
@@ -400,11 +400,11 @@ function! s:recursive_expand_alias(alias_name, args)"{{{
 endfunction"}}}
 
 " Misc.
-function! vimshell#parser#check_wildcard()"{{{
+function! vimshell#parser#check_wildcard() "{{{
   let args = vimshell#get_current_args()
   return !empty(args) && args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
-function! vimshell#parser#getopt(args, optsyntax, ...)"{{{
+function! vimshell#parser#getopt(args, optsyntax, ...) "{{{
   let default_values = get(a:000, 0, {})
 
   " Initialize.
@@ -455,7 +455,7 @@ function! vimshell#parser#getopt(args, optsyntax, ...)"{{{
 
   return [args, options]
 endfunction"}}}
-function! s:highlight_with(start, end, syntax)"{{{
+function! s:highlight_with(start, end, syntax) "{{{
   let cnt = get(b:, 'highlight_count', 0)
   if globpath(&runtimepath, 'syntax/' . a:syntax . '.vim') == ''
     return
