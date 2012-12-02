@@ -141,7 +141,7 @@ function! vimshell#util#has_vimproc(...)"{{{
 endfunction"}}}
 
 function! vimshell#util#input_yesno(message)"{{{
-  let yesno = input(a:message . ' [yes/no] : ')
+  let yesno = input(a:message . ' [yes/no]: ')
   while yesno !~? '^\%(y\%[es]\|n\%[o]\)$'
     redraw
     if yesno == ''
@@ -151,7 +151,7 @@ function! vimshell#util#input_yesno(message)"{{{
 
     " Retry.
     call unite#print_error('Invalid input.')
-    let yesno = input(a:message . ' [yes/no] : ')
+    let yesno = input(a:message . ' [yes/no]: ')
   endwhile
 
   return yesno =~? 'y\%[es]'
