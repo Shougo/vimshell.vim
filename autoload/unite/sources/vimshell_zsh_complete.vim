@@ -62,7 +62,7 @@ function! s:source.hooks.on_init(args, context) "{{{
 
   let a:context.source__cur_keyword_pos = pos
 endfunction"}}}
-function! s:source.hooks.on_syntax(args, context)"{{{
+function! s:source.hooks.on_syntax(args, context) "{{{
   syntax match uniteSource__VimshellZshCompleteDescriptionLine / -- .*$/
         \ contained containedin=uniteSource__VimshellZshComplete
   syntax match uniteSource__VimshellZshCompleteDescription /.*$/
@@ -77,7 +77,7 @@ function! s:source.hooks.on_close(args, context) "{{{
     call a:context.source__proc.waitpid()
   endif
 endfunction"}}}
-function! s:source.hooks.on_post_filter(args, context)"{{{
+function! s:source.hooks.on_post_filter(args, context) "{{{
   for candidate in a:context.candidates
     let candidate.kind = 'completion'
     let candidate.action__complete_word = candidate.word

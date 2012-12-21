@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'dirs [{max}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Print directory stack.
 
   let cnt = 0

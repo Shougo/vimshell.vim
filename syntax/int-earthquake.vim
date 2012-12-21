@@ -73,7 +73,7 @@ augroup vimshell-int_earthquake
   autocmd ColorScheme <buffer>    call s:color_scheme()
 augroup END
 
-function! s:color_scheme()"{{{
+function! s:color_scheme() "{{{
   if has('gui_running')
     highlight int_earthquakePrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
   else

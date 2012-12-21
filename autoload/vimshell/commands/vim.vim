@@ -29,7 +29,7 @@ let s:command_vim = {
       \ 'kind' : 'internal',
       \ 'description' : 'vim [{filename}]',
       \}
-function! s:command_vim.execute(args, context)"{{{
+function! s:command_vim.execute(args, context) "{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {

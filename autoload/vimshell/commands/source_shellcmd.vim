@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'source shellcmd...',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   if len(a:args) < 1
     return
   endif

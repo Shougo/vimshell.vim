@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gendoc {command} {args}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Generate cached doc.
 
   if empty(a:args)

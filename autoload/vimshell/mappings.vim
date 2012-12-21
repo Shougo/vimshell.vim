@@ -25,8 +25,8 @@
 "=============================================================================
 
 " Define default mappings.
-function! vimshell#mappings#define_default_mappings()"{{{
-  " Plugin keymappings"{{{
+function! vimshell#mappings#define_default_mappings() "{{{
+  " Plugin keymappings "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_enter)
         \ i<C-g>u<ESC>:<C-u>call vimshell#execute_current_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)
@@ -203,7 +203,7 @@ function! vimshell#mappings#smart_map(vimshell_map, execute_map)
 endfunction
 
 " VimShell key-mappings functions.
-function! s:push_current_line()"{{{
+function! s:push_current_line() "{{{
   " Check current line.
   if !vimshell#check_prompt()
     return
@@ -222,7 +222,7 @@ function! s:push_current_line()"{{{
 
   startinsert!
 endfunction"}}}
-function! s:push_and_execute(command)"{{{
+function! s:push_and_execute(command) "{{{
   " Check current line.
   if !vimshell#check_prompt()
     return
@@ -236,7 +236,7 @@ function! s:push_and_execute(command)"{{{
   call s:execute_line(1)
 endfunction"}}}
 
-function! vimshell#mappings#execute_line(is_insert)"{{{
+function! vimshell#mappings#execute_line(is_insert) "{{{
   let oldpos = getpos('.')
   let b:interactive.output_pos = getpos('.')
 
@@ -300,7 +300,7 @@ function! vimshell#mappings#execute_line(is_insert)"{{{
 
   call s:execute_command_line(a:is_insert, oldpos)
 endfunction"}}}
-function! s:execute_command_line(is_insert, oldpos)"{{{
+function! s:execute_command_line(is_insert, oldpos) "{{{
   " Get command line.
   let line = vimshell#get_prompt_command()
   let context = {
@@ -380,7 +380,7 @@ function! s:execute_command_line(is_insert, oldpos)"{{{
 
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! s:previous_prompt()"{{{
+function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
     call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
   else
@@ -391,7 +391,7 @@ function! s:previous_prompt()"{{{
     endif
   endif
 endfunction"}}}
-function! s:next_prompt()"{{{
+function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
     call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
   else
@@ -402,7 +402,7 @@ function! s:next_prompt()"{{{
     endif
   endif
 endfunction"}}}
-function! s:select_previous_prompt()"{{{
+function! s:select_previous_prompt() "{{{
   let prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
   let [linenr, col] = searchpos(prompt_pattern, 'bWen')
   if linenr == 0
@@ -411,7 +411,7 @@ function! s:select_previous_prompt()"{{{
 
   return (line('.') - linenr - 1) . 'k'
 endfunction"}}}
-function! s:select_next_prompt()"{{{
+function! s:select_next_prompt() "{{{
   let prompt_pattern = vimshell#get_user_prompt() != '' ?
         \ '^' . vimshell#escape_match(vimshell#get_prompt()) : '^\[%\] '
   let [linenr, col] = searchpos(prompt_pattern, 'Wen')
@@ -421,7 +421,7 @@ function! s:select_next_prompt()"{{{
 
   return (linenr - line('.') - 2) . 'j'
 endfunction"}}}
-function! s:delete_previous_output()"{{{
+function! s:delete_previous_output() "{{{
   let prompt = vimshell#escape_match(vimshell#get_prompt())
   if vimshell#get_user_prompt() != ''
     let nprompt = '^\[%\] '
@@ -452,7 +452,7 @@ function! s:delete_previous_output()"{{{
 
   call vimshell#terminal#clear_highlight()
 endfunction"}}}
-function! s:insert_last_word()"{{{
+function! s:insert_last_word() "{{{
   let word = ''
   let histories = vimshell#history#read()
   if !empty(histories)
@@ -466,7 +466,7 @@ function! s:insert_last_word()"{{{
   call setline(line('.'), getline('.') . word)
   startinsert!
 endfunction"}}}
-function! s:run_help()"{{{
+function! s:run_help() "{{{
   if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
     startinsert!
     return
@@ -497,7 +497,7 @@ function! s:run_help()"{{{
     call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
   endif
 endfunction"}}}
-function! s:paste_prompt()"{{{
+function! s:paste_prompt() "{{{
   let prompt = getline('.')
   if prompt !~# vimshell#escape_match(vimshell#get_prompt())
     return
@@ -513,14 +513,14 @@ function! s:paste_prompt()"{{{
   endif
   $
 endfunction"}}}
-function! s:move_head()"{{{
+function! s:move_head() "{{{
   call s:insert_head()
 endfunction"}}}
-function! s:move_end_argument()"{{{
+function! s:move_end_argument() "{{{
   normal! 0
   call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))
 endfunction"}}}
-function! s:delete_line()"{{{
+function! s:delete_line() "{{{
   let col = col('.')
   let mcol = col('$')
   call setline(line('.'), vimshell#get_prompt() . getline('.')[col :])
@@ -529,7 +529,7 @@ function! s:delete_line()"{{{
     startinsert!
   endif
 endfunction"}}}
-function! s:clear(is_insert)"{{{
+function! s:clear(is_insert) "{{{
   if vimshell#is_interactive()
     return vimshell#int_mappings#clear()
   endif
@@ -555,7 +555,7 @@ function! s:clear(is_insert)"{{{
     call vimshell#start_insert()
   endif
 endfunction"}}}
-function! s:expand_wildcard()"{{{
+function! s:expand_wildcard() "{{{
   " Wildcard.
   if empty(vimshell#get_current_args())
     return ''
@@ -566,7 +566,7 @@ function! s:expand_wildcard()"{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(wildcard)) . join(expanded)
 endfunction"}}}
-function! s:hide()"{{{
+function! s:hide() "{{{
   " Switch buffer.
   if winnr('$') != 1
     close
@@ -574,10 +574,10 @@ function! s:hide()"{{{
     call vimshell#util#alternate_buffer()
   endif
 endfunction"}}}
-function! s:exit()"{{{
+function! s:exit() "{{{
   call vimshell#interactive#quit_buffer()
 endfunction"}}}
-function! s:delete_backward_char()"{{{
+function! s:delete_backward_char() "{{{
   if !pumvisible()
     let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
@@ -594,14 +594,14 @@ function! s:delete_backward_char()"{{{
     return prefix
   endif
 endfunction"}}}
-function! s:delete_another_backward_char()"{{{
+function! s:delete_another_backward_char() "{{{
   return vimshell#get_cur_text() != '' ?
         \ s:delete_backward_char() :
         \ winnr('$') != 1 ?
         \ "\<ESC>:close\<CR>" :
         \ "\<ESC>:buffer #\<CR>"
 endfunction"}}}
-function! s:delete_backward_line()"{{{
+function! s:delete_backward_line() "{{{
   if !pumvisible()
     let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
@@ -614,7 +614,7 @@ function! s:delete_backward_line()"{{{
 
   return prefix . repeat("\<BS>", len)
 endfunction"}}}
-function! s:open_file(filename)"{{{
+function! s:open_file(filename) "{{{
   " Execute cursor file.
   if a:filename == ''
     return
@@ -650,7 +650,7 @@ function! s:open_file(filename)"{{{
     call setline('$', vimshell#get_prompt() . 'vim ' . filename)
   endif
 endfunction"}}}
-function! s:hangup(is_insert)"{{{
+function! s:hangup(is_insert) "{{{
   if empty(b:vimshell.continuation)
     call vimshell#print_prompt()
     call vimshell#start_insert(a:is_insert)
@@ -670,7 +670,7 @@ function! s:hangup(is_insert)"{{{
   call vimshell#print_prompt(context)
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! s:insert_enter()"{{{
+function! s:insert_enter() "{{{
   if !vimshell#head_match(getline('.'), vimshell#get_prompt())
     startinsert
     return
@@ -689,11 +689,11 @@ function! s:insert_enter()"{{{
 
   startinsert
 endfunction"}}}
-function! s:insert_head()"{{{
+function! s:insert_head() "{{{
   normal! 0
   call s:insert_enter()
 endfunction"}}}
-function! s:append_enter()"{{{
+function! s:append_enter() "{{{
   if vimshell#check_cursor_is_end()
     call s:append_end()
   else
@@ -701,11 +701,11 @@ function! s:append_enter()"{{{
     call s:insert_enter()
   endif
 endfunction"}}}
-function! s:append_end()"{{{
+function! s:append_end() "{{{
   call s:insert_enter()
   startinsert!
 endfunction"}}}
-function! s:execute_by_background(is_insert)"{{{
+function! s:execute_by_background(is_insert) "{{{
   if empty(b:vimshell.continuation)
     return
   endif

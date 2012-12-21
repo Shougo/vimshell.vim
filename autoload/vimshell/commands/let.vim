@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'let ${var-name} = {expression}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
     let args = join(a:args)
 
     if args !~ '^$$\?\h\w*'

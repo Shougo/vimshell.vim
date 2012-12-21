@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'mkcd {directory-name}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Make directory and change the working directory.
 
   if empty(a:args)

@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimsh [{filename}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Create new vimshell or execute script.
   if empty(a:args)
     let bufnr = bufnr('%')

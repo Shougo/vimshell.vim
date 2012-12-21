@@ -40,7 +40,7 @@ endif
 let s:save_cpo = &cpo
 set cpo&vim
 
-if exists(':NeoBundleDepends')"{{{
+if exists(':NeoBundleDepends') "{{{
   NeoBundleDepends 'Shougo/vimproc', {
         \ 'build' : {
         \     'windows' : 'echo "Sorry, cannot update vimproc binary file in Windows."',
@@ -51,7 +51,7 @@ if exists(':NeoBundleDepends')"{{{
         \ }
 endif"}}}
 
-" Obsolute options check."{{{
+" Obsolute options check. "{{{
 if exists('g:VimShell_Prompt')
   echoerr 'g:VimShell_Prompt option does not work this version of vimshell.'
 endif
@@ -65,7 +65,7 @@ if exists('g:VimShell_EnableInteractive')
   echoerr 'g:VimShell_EnableInteractive option does not work this version of vimshell.'
 endif
 "}}}
-" Global options definition."{{{
+" Global options definition. "{{{
 let g:vimshell_enable_debug =
       \ get(g:, 'vimshell_enable_debug', 0)
 let g:vimshell_use_terminal_command =
@@ -184,7 +184,7 @@ command! -range -nargs=? VimShellSendString
 command! -complete=buffer -nargs=1 VimShellSendBuffer
       \ call vimshell#interactive#set_send_buffer(<q-args>)
 
-" Plugin keymappings"{{{
+" Plugin keymappings "{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)
       \ :<C-u>call <SID>call_vimshell({'split' : 1}, '')<CR>
 nnoremap <silent> <Plug>(vimshell_split_create)
@@ -196,7 +196,7 @@ nnoremap <silent> <Plug>(vimshell_create)
 "}}}
 
 " Command functions:
-function! s:vimshell_execute(args)"{{{
+function! s:vimshell_execute(args) "{{{
   let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
@@ -216,7 +216,7 @@ function! s:vimshell_execute(args)"{{{
     return
   endtry
 endfunction"}}}
-function! s:vimshell_interactive(args)"{{{
+function! s:vimshell_interactive(args) "{{{
   if a:args == ''
     call vimshell#commands#iexe#define()
 
@@ -252,7 +252,7 @@ function! s:vimshell_interactive(args)"{{{
     return
   endtry
 endfunction"}}}
-function! s:vimshell_terminal(args)"{{{
+function! s:vimshell_terminal(args) "{{{
   let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
@@ -272,7 +272,7 @@ function! s:vimshell_terminal(args)"{{{
   endtry
 endfunction"}}}
 
-function! s:call_vimshell(default, args)"{{{
+function! s:call_vimshell(default, args) "{{{
   let args = []
   let options = a:default
   for arg in split(a:args, '\%(\\\@<!\s\)\+')

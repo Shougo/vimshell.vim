@@ -24,13 +24,13 @@
 " }}}
 "=============================================================================
 
-" For echodoc."{{{
+" For echodoc. "{{{
 let s:doc_dict = {
       \ 'name' : 'vimshell',
       \ 'rank' : 10,
       \ 'filetypes' : { 'vimshell' : 1 },
       \ }
-function! s:doc_dict.search(cur_text)"{{{
+function! s:doc_dict.search(cur_text) "{{{
   " Get command name.
   try
     let args = vimshell#get_current_args(vimshell#get_cur_text())
@@ -67,23 +67,23 @@ function! s:doc_dict.search(cur_text)"{{{
 endfunction"}}}
 "}}}
 
-function! vimshell#help#init()"{{{
+function! vimshell#help#init() "{{{
   if exists('g:loaded_echodoc') && g:loaded_echodoc
     call echodoc#register('vimshell', s:doc_dict)
   endif
 
   call s:load_cached_doc()
 endfunction"}}}
-function! vimshell#help#get_cached_doc()"{{{
+function! vimshell#help#get_cached_doc() "{{{
   return s:cached_doc
 endfunction"}}}
-function! vimshell#help#set_cached_doc(cache)"{{{
+function! vimshell#help#set_cached_doc(cache) "{{{
   let s:cached_doc = a:cache
   let doc_path = g:vimshell_temporary_directory.'/cached-doc'
   call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), doc_path)
 endfunction"}}}
 
-function! s:load_cached_doc()"{{{
+function! s:load_cached_doc() "{{{
   let s:cached_doc = {}
   let doc_path = g:vimshell_temporary_directory.'/cached-doc'
   if !filereadable(doc_path)

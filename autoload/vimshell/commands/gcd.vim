@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gcd [{directory-path}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Change the global working directory.
 
   let dir = empty(a:args)? getcwd() : a:args[0]

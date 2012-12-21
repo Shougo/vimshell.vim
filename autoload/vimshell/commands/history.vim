@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'history [{search-string}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   let histories = vimshell#history#read()
 
   let arguments = join(a:args, ' ')

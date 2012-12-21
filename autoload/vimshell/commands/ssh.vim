@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'external',
       \ 'description' : 'ssh {hostname}',
       \}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   if !exists('*unite#get_all_sources')
         \ || empty(unite#get_all_sources('ssh'))
     return []

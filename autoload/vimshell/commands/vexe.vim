@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'vexe {expression}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Execute vim command.
 
   let context = a:context

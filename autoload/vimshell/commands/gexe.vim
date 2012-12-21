@@ -29,13 +29,13 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gexe {command}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   let command = join(a:args)
   let command = vimproc#util#iconv(command, &encoding, 'char')
 
   call vimproc#system_gui(command)
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 

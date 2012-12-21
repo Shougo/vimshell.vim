@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#history#append(command)"{{{
+function! vimshell#history#append(command) "{{{
   " Reduce blanks.
   let command = substitute(a:command, '\s\+', ' ', 'g')
 
@@ -62,17 +62,17 @@ function! vimshell#history#append(command)"{{{
 
   call vimshell#history#write(histories)
 endfunction"}}}
-function! vimshell#history#read()"{{{
+function! vimshell#history#read() "{{{
   let history_path = s:get_history_path()
   return filereadable(history_path) ?
         \ readfile(history_path) : []
 endfunction"}}}
-function! vimshell#history#write(list)"{{{
+function! vimshell#history#write(list) "{{{
   " Save history file.
   call writefile(a:list, s:get_history_path())
 endfunction"}}}
 
-function! s:get_history_path()"{{{
+function! s:get_history_path() "{{{
   if &filetype ==# 'vimshell' && empty(b:vimshell.continuation)
     let history_path = g:vimshell_temporary_directory . '/command-history'
     if !filereadable(history_path)

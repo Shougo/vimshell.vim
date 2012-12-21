@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'ls [{argument}...]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Check ls command.
   if !executable('ls')
     call vimshell#error_line(a:context.fd,

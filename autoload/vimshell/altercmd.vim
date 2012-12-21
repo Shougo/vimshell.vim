@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#altercmd#define(original, alternative)"{{{
+function! vimshell#altercmd#define(original, alternative) "{{{
   execute 'inoreabbrev <buffer><expr>' a:original
         \ '(join(vimshell#get_current_args()) ==# "' . a:original  . '")?' 
         \ s:SID_PREFIX().'recursive_expand_altercmd('.string(a:original).')' ':' string(a:original)

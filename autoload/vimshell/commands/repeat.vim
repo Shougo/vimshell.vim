@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'repeat {cnt} {command}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Repeat command.
 
   if len(a:args) < 2 || a:args[0] !~ '\d\+'

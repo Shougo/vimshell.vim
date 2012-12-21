@@ -17,7 +17,7 @@ nmap <buffer> K <Plug>(int_earthquake_search_recent)
 nnoremap <silent><buffer> <Plug>(int_earthquake_search_recent)
       \ :<C-u>call <SID>search_recent()<CR>
 
-function! s:search_recent()"{{{
+function! s:search_recent() "{{{
   " Set prompt line.
   let cur_text = expand('<cword>')
   if cur_text =~ '^#'
@@ -29,7 +29,7 @@ function! s:search_recent()"{{{
   $
 endfunction"}}}
 
-" For echodoc."{{{
+" For echodoc. "{{{
 let s:doc_dict = {
       \ 'name' : 'earthquake.gem',
       \ 'rank' : 10,
@@ -50,7 +50,7 @@ let s:doc_table = {
       \ ':update' : 'Tweet Ascii Art :update<ENTER>',
       \ ':filter' : 'Stream Filter Tracking :filter keyword earthquakegem twitter | user jugyo matsuu | off',
       \ }
-function! s:doc_dict.search(cur_text)"{{{
+function! s:doc_dict.search(cur_text) "{{{
   " Get command name.
   let command = matchstr(a:cur_text, '^⚡ \zs:\h\w*\ze')
   if command == '' || !has_key(s:doc_table, command)

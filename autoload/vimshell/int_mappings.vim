@@ -24,8 +24,8 @@
 " }}}
 "=============================================================================
 
-function! vimshell#int_mappings#define_default_mappings()"{{{
-  " Plugin key-mappings."{{{
+function! vimshell#int_mappings#define_default_mappings() "{{{
+  " Plugin key-mappings. "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_int_previous_prompt)
         \ :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_next_prompt)
@@ -126,7 +126,7 @@ function! vimshell#int_mappings#define_default_mappings()"{{{
 endfunction"}}}
 
 " vimshell interactive key-mappings functions.
-function! s:delete_backward_char(is_auto_select)"{{{
+function! s:delete_backward_char(is_auto_select) "{{{
   if !pumvisible()
     let prefix = ''
   elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
@@ -143,7 +143,7 @@ function! s:delete_backward_char(is_auto_select)"{{{
     return prefix
   endif
 endfunction"}}}
-function! s:execute_history(is_insert)"{{{
+function! s:execute_history(is_insert) "{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     " Do update.
     call vimshell#interactive#execute_process_out(a:is_insert)
@@ -168,24 +168,24 @@ function! s:execute_history(is_insert)"{{{
 
   call vimshell#imdisable()
 endfunction"}}}
-function! s:previous_prompt()"{{{
+function! s:previous_prompt() "{{{
   let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
         \ 'v:val < line(".")'), 'vimshell#compare_number')
   if !empty(prompts)
     call cursor(prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
-function! s:next_prompt()"{{{
+function! s:next_prompt() "{{{
   let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
         \ 'v:val > line(".")'), 'vimshell#compare_number')
   if !empty(prompts)
     call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
-function! s:move_head()"{{{
+function! s:move_head() "{{{
   call s:insert_head()
 endfunction"}}}
-function! s:delete_backward_line()"{{{
+function! s:delete_backward_line() "{{{
   if !pumvisible()
     let prefix = ''
   elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
@@ -199,7 +199,7 @@ function! s:delete_backward_line()"{{{
 
   return prefix . repeat("\<BS>", len)
 endfunction"}}}
-function! vimshell#int_mappings#execute_line(is_insert)"{{{
+function! vimshell#int_mappings#execute_line(is_insert) "{{{
   if !a:is_insert
     " Search cursor filename.
     let filename = vimshell#get_cursor_filename()
@@ -218,7 +218,7 @@ function! vimshell#int_mappings#execute_line(is_insert)"{{{
   " Execute history.
   call s:execute_history(a:is_insert)
 endfunction"}}}
-function! s:paste_prompt()"{{{
+function! s:paste_prompt() "{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif
@@ -228,7 +228,7 @@ function! s:paste_prompt()"{{{
   call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . cur_text)
   $
 endfunction"}}}
-function! s:restart_command()"{{{
+function! s:restart_command() "{{{
   if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombie process.
     call vimshell#interactive#force_exit()
@@ -256,7 +256,7 @@ function! s:restart_command()"{{{
 
   startinsert!
 endfunction"}}}
-function! s:command_complete()"{{{
+function! s:command_complete() "{{{
   let prompt = vimshell#interactive#get_prompt()
   let command = b:interactive.command
   let cur_text = vimshell#interactive#get_cur_text()
@@ -276,7 +276,7 @@ function! s:command_complete()"{{{
   let b:interactive.prompt_history[prompt_linenr] =
    \ getline(prompt_linenr)
 endfunction "}}}
-function! s:insert_enter()"{{{
+function! s:insert_enter() "{{{
   if !has_key(b:interactive.prompt_history, line('.')) && line('.') != line('$')
     startinsert
     return
@@ -295,11 +295,11 @@ function! s:insert_enter()"{{{
 
   startinsert
 endfunction"}}}
-function! s:insert_head()"{{{
+function! s:insert_head() "{{{
   normal! 0
   call s:insert_enter()
 endfunction"}}}
-function! s:append_enter()"{{{
+function! s:append_enter() "{{{
   if vimshell#check_cursor_is_end()
     call s:append_end()
   else
@@ -307,13 +307,13 @@ function! s:append_enter()"{{{
     call s:insert_enter()
   endif
 endfunction"}}}
-function! s:append_end()"{{{
+function! s:append_end() "{{{
   call s:insert_enter()
   startinsert!
 endfunction"}}}
-function! s:send_intrrupt()"{{{
+function! s:send_intrrupt() "{{{
 endfunction"}}}
-function! vimshell#int_mappings#clear()"{{{
+function! vimshell#int_mappings#clear() "{{{
   set modifiable
 
   " Clean up the screen.

@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'exe [{option}...] {command}',
       \}
-function! s:command.execute(commands, context)"{{{
+function! s:command.execute(commands, context) "{{{
   let commands = a:commands
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding'],
@@ -96,7 +96,7 @@ function! s:command.execute(commands, context)"{{{
 
   let b:vimshell.system_variables['status'] = b:interactive.status
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
@@ -104,7 +104,7 @@ function! vimshell#commands#exe#define()
   return s:command
 endfunction
 
-function! s:init_process(commands, context, options)"{{{
+function! s:init_process(commands, context, options) "{{{
   if !empty(b:interactive.process) && b:interactive.process.is_valid
     " Delete zombie process.
     call vimshell#interactive#force_exit()

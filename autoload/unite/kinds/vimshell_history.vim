@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! unite#kinds#vimshell_history#define()"{{{
+function! unite#kinds#vimshell_history#define() "{{{
   return s:kind
 endfunction"}}}
 
@@ -39,14 +39,14 @@ let s:kind = {
       \ 'parents': ['completion'],
       \}
 
-" Actions"{{{
+" Actions "{{{
 let s:kind.action_table.delete = {
       \ 'description' : 'delete from vimshell history',
       \ 'is_invalidate_cache' : 1,
       \ 'is_quit' : 0,
       \ 'is_selectable' : 1,
       \ }
-function! s:kind.action_table.delete.func(candidates)"{{{
+function! s:kind.action_table.delete.func(candidates) "{{{
   let current_histories =
         \ a:candidates[0].action__current_histories
   for candidate in a:candidates
@@ -64,7 +64,7 @@ let s:kind.action_table.edit = {
       \ 'is_invalidate_cache' : 1,
       \ 'is_quit' : 0,
       \ }
-function! s:kind.action_table.edit.func(candidate)"{{{
+function! s:kind.action_table.edit.func(candidate) "{{{
   let current_histories =
         \ a:candidate.action__current_histories
   let history = input('Please edit history: ',
@@ -83,7 +83,7 @@ let s:kind.action_table.execute = {
       \ 'description' : 'execute history',
       \ 'is_selectable' : 1,
       \ }
-function! s:kind.action_table.execute.func(candidates)"{{{
+function! s:kind.action_table.execute.func(candidates) "{{{
   let candidate = deepcopy(a:candidates[0])
   let candidate.action__complete_word =
         \ join(map(copy(a:candidates), 'v:val.action__complete_word'), '; ')
@@ -95,7 +95,7 @@ endfunction"}}}
 let s:kind.action_table.insert = {
       \ 'description' : 'insert history',
       \ }
-function! s:kind.action_table.insert.func(candidate)"{{{
+function! s:kind.action_table.insert.func(candidate) "{{{
   if !vimshell#check_prompt()
     call vimshell#echo_error('Not in command line.')
     return
@@ -115,7 +115,7 @@ let s:kind.action_table.unite__new_candidate = {
       \ 'is_invalidate_cache' : 1,
       \ 'is_quit' : 0,
       \ }
-function! s:kind.action_table.unite__new_candidate.func(candidate)"{{{
+function! s:kind.action_table.unite__new_candidate.func(candidate) "{{{
   let current_histories =
         \ a:candidate.action__current_histories
   let history = input('Please input new history: ',

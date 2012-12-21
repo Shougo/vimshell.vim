@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'popd [{directory-stack-number}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Pop directory.
 
   if empty(b:vimshell.directory_stack)
@@ -60,7 +60,7 @@ function! s:command.execute(args, context)"{{{
   return vimshell#execute_internal_command('cd',
         \ [ b:vimshell.directory_stack[pop] ], a:context)
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   return vimshell#complete#helper#directory_stack(a:args[-1])
 endfunction"}}}
 

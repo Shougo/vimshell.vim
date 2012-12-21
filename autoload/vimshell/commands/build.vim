@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'build [{builder-name}, {args}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ })
 
@@ -49,7 +49,7 @@ function! s:command.execute(args, context)"{{{
   endif
 endfunction"}}}
 
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   if len(a:args) == 1
     return vimshell#complete#helper#keyword_simple_filter(
           \ unite#sources#build#get_builders_name(), a:args[-1])

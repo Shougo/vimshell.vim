@@ -34,11 +34,11 @@ let s:command = {
       \ 'description' : 'sudo {command}',
       \}
 
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Execute GUI program.
   if empty(a:args)
     call vimshell#error_line(

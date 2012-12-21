@@ -27,7 +27,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#sources#vimshell_complete#define()"{{{
+function! neocomplcache#sources#vimshell_complete#define() "{{{
   return s:source
 endfunction"}}}
 
@@ -37,13 +37,13 @@ let s:source = {
       \ 'filetypes' : { 'vimshell' : 1, },
       \}
 
-function! s:source.initialize()"{{{
+function! s:source.initialize() "{{{
   " Initialize.
   call neocomplcache#set_completion_length('vimshell_complete',
         \ g:neocomplcache_auto_completion_start_length)
 endfunction"}}}
 
-function! s:source.get_keyword_pos(cur_text)"{{{
+function! s:source.get_keyword_pos(cur_text) "{{{
   if !vimshell#check_prompt()
     " Ignore.
     return -1
@@ -74,7 +74,7 @@ function! s:source.get_keyword_pos(cur_text)"{{{
   return pos
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   try
     let args = vimshell#get_current_args(vimshell#get_cur_text())
   catch /^Exception:/
@@ -92,7 +92,7 @@ function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str)"{{{
   return s:get_omni_list(_)
 endfunction"}}}
 
-function! s:get_complete_commands(cur_keyword_str)"{{{
+function! s:get_complete_commands(cur_keyword_str) "{{{
   if a:cur_keyword_str =~ '/'
     " Filename completion.
     return vimshell#complete#helper#files(a:cur_keyword_str)
@@ -118,7 +118,7 @@ function! s:get_complete_commands(cur_keyword_str)"{{{
   return _
 endfunction"}}}
 
-function! s:get_complete_args(cur_keyword_str, args)"{{{
+function! s:get_complete_args(cur_keyword_str, args) "{{{
   " Get command name.
   let command = fnamemodify(a:args[0], ':t:r')
 
@@ -127,7 +127,7 @@ function! s:get_complete_args(cur_keyword_str, args)"{{{
   return vimshell#complete#helper#args(command, a:args[1:])
 endfunction"}}}
 
-function! s:get_omni_list(list)"{{{
+function! s:get_omni_list(list) "{{{
   let omni_list = []
 
   " Convert string list.

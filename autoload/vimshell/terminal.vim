@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#terminal#init()"{{{
+function! vimshell#terminal#init() "{{{
   let b:interactive.terminal = {
         \ 'syntax_names' : {},
         \ 'titlestring' : &titlestring,
@@ -46,7 +46,7 @@ function! vimshell#terminal#init()"{{{
           \ conceal               '\e\[0*m\|\e0m\['
   endif
 endfunction"}}}
-function! vimshell#terminal#print(string, is_error)"{{{
+function! vimshell#terminal#print(string, is_error) "{{{
   if !has_key(b:interactive, 'terminal')
     call vimshell#terminal#init()
   endif
@@ -108,12 +108,12 @@ function! vimshell#terminal#print(string, is_error)"{{{
   while pos < max
     let char = string[pos]
 
-    if char !~ '[[:cntrl:]]'"{{{
+    if char !~ '[[:cntrl:]]' "{{{
       let newstr .= char
       let pos += 1
       continue
       "}}}
-    elseif char == "\<C-h>""{{{
+    elseif char == "\<C-h>" "{{{
       " Print rest string.
       call s:output_string(newstr)
       let newstr = ''
@@ -130,7 +130,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
       continue
       "}}}
-    elseif char == "\<ESC>""{{{
+    elseif char == "\<ESC>" "{{{
       " Check escape sequence.
       let checkstr = string[pos+1 :]
       if checkstr == ''
@@ -155,7 +155,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
       " Check simple pattern.
       let checkchar1 = checkstr[0]
-      if has_key(s:escape_sequence_simple_char1, checkchar1)"{{{
+      if has_key(s:escape_sequence_simple_char1, checkchar1) "{{{
         call s:output_string(newstr)
         let newstr = ''
 
@@ -166,7 +166,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
       endif"}}}
       let checkchar2 = checkstr[: 1]
       if checkchar2 != '' &&
-            \ has_key(s:escape_sequence_simple_char2, checkchar2)"{{{
+            \ has_key(s:escape_sequence_simple_char2, checkchar2) "{{{
         call s:output_string(newstr)
         let newstr = ''
 
@@ -178,7 +178,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
       let matched = 0
       " Check match pattern.
-      for pattern in keys(s:escape_sequence_match)"{{{
+      for pattern in keys(s:escape_sequence_match) "{{{
         if checkstr =~ pattern
           let matched = 1
 
@@ -198,7 +198,7 @@ function! vimshell#terminal#print(string, is_error)"{{{
       if matched
         continue
       endif"}}}
-    elseif has_key(s:control_sequence, char)"{{{
+    elseif has_key(s:control_sequence, char) "{{{
       " Check other pattern.
       " Print rest string.
       call s:output_string(newstr)
@@ -225,21 +225,21 @@ function! vimshell#terminal#print(string, is_error)"{{{
 
   call s:set_cursor()
 endfunction"}}}
-function! vimshell#terminal#set_title()"{{{
+function! vimshell#terminal#set_title() "{{{
   if !has_key(b:interactive, 'terminal')
     call vimshell#terminal#init()
   endif
 
   let &titlestring = b:interactive.terminal.titlestring
 endfunction"}}}
-function! vimshell#terminal#restore_title()"{{{
+function! vimshell#terminal#restore_title() "{{{
   if !has_key(b:interactive, 'terminal')
     call vimshell#terminal#init()
   endif
 
   let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
-function! vimshell#terminal#clear_highlight()"{{{
+function! vimshell#terminal#clear_highlight() "{{{
   if !has_key(b:interactive, 'terminal')
     call vimshell#terminal#init()
   endif
@@ -264,7 +264,7 @@ function! vimshell#terminal#clear_highlight()"{{{
   endif
 endfunction"}}}
 
-function! s:optimized_print(string, is_error)"{{{
+function! s:optimized_print(string, is_error) "{{{
   " Strip <CR>.
   let string = substitute(substitute(
         \ a:string, "\<C-g>", '', 'g'), '\r\+\n', '\n', 'g')
@@ -286,7 +286,7 @@ function! s:optimized_print(string, is_error)"{{{
         \ s:get_virtual_col(line('.'), col('.')-1)
   call s:set_cursor()
 endfunction"}}}
-function! s:print_with_redraw(is_error, lines)"{{{
+function! s:print_with_redraw(is_error, lines) "{{{
   let cnt = 1
   for line in a:lines
     if cnt != 1 ||
@@ -309,7 +309,7 @@ function! s:print_with_redraw(is_error, lines)"{{{
     let cnt += 1
   endfor
 endfunction"}}}
-function! s:print_simple(is_error, lines)"{{{
+function! s:print_simple(is_error, lines) "{{{
   let lines = a:lines
 
   if a:is_error
@@ -334,7 +334,7 @@ function! s:print_simple(is_error, lines)"{{{
   call append('.', lines)
   execute 'normal!' (len(lines)).'j$'
 endfunction"}}}
-function! s:set_cursor()"{{{
+function! s:set_cursor() "{{{
   " Get real pos(0 origin).
   let [line, col] = s:get_real_pos(
         \ s:virtual.line, s:virtual.col)
@@ -364,9 +364,9 @@ function! s:is_no_echoback()
           \        b:interactive.command, 0)
 endfunction
 
-function! s:init_terminal()"{{{
+function! s:init_terminal() "{{{
 endfunction"}}}
-function! s:output_string(string)"{{{
+function! s:output_string(string) "{{{
   if s:virtual.line == b:interactive.echoback_linenr
     if s:is_no_echoback()
       " no echoback command.
@@ -401,10 +401,10 @@ function! s:output_string(string)"{{{
 
   call s:set_screen_string(s:virtual.line, s:virtual.col, string)
 endfunction"}}}
-function! s:sortfunc(i1, i2)"{{{
+function! s:sortfunc(i1, i2) "{{{
   return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction"}}}
-function! s:scroll_up(number)"{{{
+function! s:scroll_up(number) "{{{
   let line = b:interactive.terminal.region_bottom
   let end = b:interactive.terminal.region_top - a:number
   while line >= end
@@ -423,7 +423,7 @@ function! s:scroll_up(number)"{{{
     let i += 1
   endwhile
 endfunction"}}}
-function! s:scroll_down(number)"{{{
+function! s:scroll_down(number) "{{{
   let line = b:interactive.terminal.region_top
   let end = b:interactive.terminal.region_bottom - a:number
   while line <= end
@@ -442,7 +442,7 @@ function! s:scroll_down(number)"{{{
     let i += 1
   endwhile
 endfunction"}}}
-function! s:clear_highlight_line(linenr)"{{{
+function! s:clear_highlight_line(linenr) "{{{
   if s:use_conceal()
     return
   endif
@@ -454,12 +454,12 @@ function! s:clear_highlight_line(linenr)"{{{
     endfor
   endif
 endfunction"}}}
-function! s:use_conceal()"{{{
+function! s:use_conceal() "{{{
   return has('conceal') && b:interactive.type !=# 'terminal'
 endfunction"}}}
 
 " Note: Real pos is 0 origin.
-function! s:get_real_pos(line, col)"{{{
+function! s:get_real_pos(line, col) "{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
   if a:col <= 1 && current_line !~ '\e\[[0-9;]*m'
     return [a:line, 0]
@@ -467,7 +467,7 @@ function! s:get_real_pos(line, col)"{{{
 
   return s:get_col_current_line(a:line, a:col, 0)
 endfunction"}}}
-function! s:get_virtual_col(line, col)"{{{
+function! s:get_virtual_col(line, col) "{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
   if a:col <= 0 && current_line !~ '\e\[[0-9;]*m'
     return [a:line, 1]
@@ -475,20 +475,20 @@ function! s:get_virtual_col(line, col)"{{{
 
   return s:get_col_current_line(a:line, a:col, 1)
 endfunction"}}}
-function! s:get_col_current_line(line, col, is_virtual)"{{{
+function! s:get_col_current_line(line, col, is_virtual) "{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
   return [a:line, vimshell#terminal#get_col(
         \ current_line, a:col, a:is_virtual)]
 endfunction"}}}
-function! s:get_screen_character(line, col)"{{{
+function! s:get_screen_character(line, col) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   return s:virtual.lines[line][col]
 endfunction"}}}
-function! s:get_virtual_wcswidth(string)"{{{
+function! s:get_virtual_wcswidth(string) "{{{
   return vimshell#util#wcswidth(
         \ substitute(a:string, '\e\[[0-9;]*m', '', 'g'))
 endfunction"}}}
-function! s:set_screen_string(line, col, string)"{{{
+function! s:set_screen_string(line, col, string) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
 
@@ -512,7 +512,7 @@ function! s:set_screen_string(line, col, string)"{{{
           \ string([a:col, col, s:virtual.col, a:string])
   endif
 endfunction"}}}
-function! s:set_screen_pos(line, col)"{{{
+function! s:set_screen_pos(line, col) "{{{
   if a:line == ''
     return
   endif
@@ -525,7 +525,7 @@ function! s:set_screen_pos(line, col)"{{{
           \ repeat(' ', a:col - len(s:virtual.lines[a:line]))
   endif
 endfunction"}}}
-function! vimshell#terminal#get_col(line, col, is_virtual)"{{{
+function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
   " is_virtual -> a:col : real col.
   " not -> a:col : virtual col.
   let col = 1
@@ -586,10 +586,10 @@ endfunction"}}}
 
 " Escape sequence functions.
 let s:escape = {}
-function! s:escape.ignore(matchstr)"{{{
+function! s:escape.ignore(matchstr) "{{{
 endfunction"}}}
 
-" Color table."{{{
+" Color table. "{{{
 let s:color_table = [ 0x00, 0x5F, 0x87, 0xAF, 0xD7, 0xFF ]
 let s:grey_table = [
       \0x08, 0x12, 0x1C, 0x26, 0x30, 0x3A, 0x44, 0x4E, 
@@ -615,7 +615,7 @@ let s:highlight_table = {
       \ '39' : ' ctermfg=NONE guifg=NONE',
       \ '49' : ' ctermbg=NONE guibg=NONE',
       \}"}}}
-function! s:escape.highlight(matchstr)"{{{
+function! s:escape.highlight(matchstr) "{{{
   if g:vimshell_disable_escape_highlight
         \ || (b:interactive.type == 'interactive' &&
         \     get(g:vimshell_interactive_monochrome_commands,
@@ -643,7 +643,7 @@ function! s:escape.highlight(matchstr)"{{{
     let highlight_list = [ 0 ]
   endif
   for color_code in map(highlight_list, 'str2nr(v:val)')
-    if has_key(s:highlight_table, color_code)"{{{
+    if has_key(s:highlight_table, color_code) "{{{
       " Use table.
       let highlight .= s:highlight_table[color_code]
     elseif 30 <= color_code && color_code <= 37
@@ -763,7 +763,7 @@ function! s:escape.highlight(matchstr)"{{{
     execute 'highlight' syntax_name highlight
   endif
 endfunction"}}}
-function! s:escape.move_cursor(matchstr)"{{{
+function! s:escape.move_cursor(matchstr) "{{{
   let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
 
   let s:virtual.line = get(args, 0, 1)
@@ -778,7 +778,7 @@ function! s:escape.move_cursor(matchstr)"{{{
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
 endfunction"}}}
-function! s:escape.move_cursor_column(matchstr)"{{{
+function! s:escape.move_cursor_column(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -789,7 +789,7 @@ function! s:escape.move_cursor_column(matchstr)"{{{
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
 endfunction"}}}
-function! s:escape.setup_scrolling_region(matchstr)"{{{
+function! s:escape.setup_scrolling_region(matchstr) "{{{
   let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
 
   let top = empty(args) ? 0 : args[0]
@@ -806,7 +806,7 @@ function! s:escape.setup_scrolling_region(matchstr)"{{{
   let b:interactive.terminal.region_top = top
   let b:interactive.terminal.region_bottom = bottom
 endfunction"}}}
-function! s:escape.clear_line(matchstr)"{{{
+function! s:escape.clear_line(matchstr) "{{{
   " Clear previous highlight.
   call s:clear_highlight_line(s:virtual.line)
 
@@ -827,7 +827,7 @@ function! s:escape.clear_line(matchstr)"{{{
     let s:virtual.col = 1
   endif
 endfunction"}}}
-function! s:escape.clear_screen(matchstr)"{{{
+function! s:escape.clear_screen(matchstr) "{{{
   let param = matchstr(a:matchstr, '\d\+')
   if param == '' || param == '0'
     " Clear screen from cursor down.
@@ -862,7 +862,7 @@ function! s:escape.clear_screen(matchstr)"{{{
     call vimshell#terminal#clear_highlight()
   endif
 endfunction"}}}
-function! s:escape.move_up(matchstr)"{{{
+function! s:escape.move_up(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -879,7 +879,7 @@ function! s:escape.move_up(matchstr)"{{{
     endif
   endif
 endfunction"}}}
-function! s:escape.move_down(matchstr)"{{{
+function! s:escape.move_down(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -893,7 +893,7 @@ function! s:escape.move_down(matchstr)"{{{
     let s:virtual.line += n
   endif
 endfunction"}}}
-function! s:escape.move_right(matchstr)"{{{
+function! s:escape.move_right(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -901,7 +901,7 @@ function! s:escape.move_right(matchstr)"{{{
 
   let s:virtual.col += n
 endfunction"}}}
-function! s:escape.move_left(matchstr)"{{{
+function! s:escape.move_left(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -912,40 +912,40 @@ function! s:escape.move_left(matchstr)"{{{
     let s:virtual.col = 1
   endif
 endfunction"}}}
-function! s:escape.move_down_head1(matchstr)"{{{
+function! s:escape.move_down_head1(matchstr) "{{{
   call s:control.newline()
 endfunction"}}}
-function! s:escape.move_down_head(matchstr)"{{{
+function! s:escape.move_down_head(matchstr) "{{{
   call s:scroll_down(a:matchstr)
   let s:virtual.col = 1
 endfunction"}}}
-function! s:escape.move_up_head(matchstr)"{{{
+function! s:escape.move_up_head(matchstr) "{{{
   let param = matchstr(a:matchstr, '\d\+')
   if param != '0'
     call s:scroll_up(a:matchstr)
   endif
   let s:virtual.col = 1
 endfunction"}}}
-function! s:escape.scroll_up1(matchstr)"{{{
+function! s:escape.scroll_up1(matchstr) "{{{
   call s:scroll_up(1)
 endfunction"}}}
-function! s:escape.scroll_down1(matchstr)"{{{
+function! s:escape.scroll_down1(matchstr) "{{{
   call s:scroll_down(1)
 endfunction"}}}
-function! s:escape.move_col(matchstr)"{{{
+function! s:escape.move_col(matchstr) "{{{
   let num = matchstr(a:matchstr, '\d\+')
   let s:virtual.col = num
   if s:virtual.col < 1
     let s:virtual.col = 1
   endif
 endfunction"}}}
-function! s:escape.save_pos(matchstr)"{{{
+function! s:escape.save_pos(matchstr) "{{{
   let b:interactive.terminal.save_pos = [s:virtual.line, s:virtual.col]
 endfunction"}}}
-function! s:escape.restore_pos(matchstr)"{{{
+function! s:escape.restore_pos(matchstr) "{{{
   let [s:virtual.line, s:virtual.col] = b:interactive.terminal.save_pos
 endfunction"}}}
-function! s:escape.change_title(matchstr)"{{{
+function! s:escape.change_title(matchstr) "{{{
   let title = matchstr(a:matchstr, '^k\zs.\{-}\ze\e\\')
   if empty(title)
     let title = matchstr(a:matchstr, '^][02];\zs.\{-}\ze'."\<C-g>")
@@ -954,10 +954,10 @@ function! s:escape.change_title(matchstr)"{{{
   let &titlestring = title
   let b:interactive.terminal.titlestring = title
 endfunction"}}}
-function! s:escape.print_control_sequence(matchstr)"{{{
+function! s:escape.print_control_sequence(matchstr) "{{{
   call s:output_string("\<ESC>")
 endfunction"}}}
-function! s:escape.change_cursor_shape(matchstr)"{{{
+function! s:escape.change_cursor_shape(matchstr) "{{{
   if !exists('+guicursor') || b:interactive.type !=# 'terminal'
     return
   endif
@@ -974,7 +974,7 @@ function! s:escape.change_cursor_shape(matchstr)"{{{
     set guicursor=i:hor20-Cursor/lCursor-blinkon0
   endif
 endfunction"}}}
-function! s:escape.change_character_set(matchstr)"{{{
+function! s:escape.change_character_set(matchstr) "{{{
   if a:matchstr =~ '^[()]0'
     " Line drawing set.
     if a:matchstr =~ '^('
@@ -984,10 +984,10 @@ function! s:escape.change_character_set(matchstr)"{{{
     endif
   endif
 endfunction"}}}
-function! s:escape.reset(matchstr)"{{{
+function! s:escape.reset(matchstr) "{{{
   call vimshell#terminal#init()
 endfunction"}}}
-function! s:escape.delete_chars(matchstr)"{{{
+function! s:escape.delete_chars(matchstr) "{{{
   let n = matchstr(a:matchstr, '\d\+')
   if n == ''
     let n = 1
@@ -999,9 +999,9 @@ endfunction"}}}
 
 " Control sequence functions.
 let s:control = {}
-function! s:control.ignore()"{{{
+function! s:control.ignore() "{{{
 endfunction"}}}
-function! s:control.newline()"{{{
+function! s:control.newline() "{{{
   let s:virtual.col = 1
 
   if b:interactive.type !=# 'terminal'
@@ -1011,7 +1011,7 @@ function! s:control.newline()"{{{
 
   call s:escape.move_down(1)
 endfunction"}}}
-function! s:control.delete_backword_char()"{{{
+function! s:control.delete_backword_char() "{{{
   if s:virtual.line == b:interactive.echoback_linenr
     return
   endif
@@ -1032,7 +1032,7 @@ function! s:control.delete_backword_char()"{{{
 
   call s:escape.move_left(1)
 endfunction"}}}
-function! s:control.delete_multi_backword_char()"{{{
+function! s:control.delete_multi_backword_char() "{{{
   if s:virtual.line == b:interactive.echoback_linenr
     return
   endif
@@ -1053,16 +1053,16 @@ function! s:control.delete_multi_backword_char()"{{{
 
   call s:escape.move_left(2)
 endfunction"}}}
-function! s:control.carriage_return()"{{{
+function! s:control.carriage_return() "{{{
   let s:virtual.col = 1
 endfunction"}}}
-function! s:control.bell()"{{{
+function! s:control.bell() "{{{
   echo 'Ring!'
 endfunction"}}}
-function! s:control.shift_in()"{{{
+function! s:control.shift_in() "{{{
   let b:interactive.terminal.current_character_set = b:interactive.terminal.standard_character_set
 endfunction"}}}
-function! s:control.shift_out()"{{{
+function! s:control.shift_out() "{{{
   let b:interactive.terminal.current_character_set = b:interactive.terminal.alternate_character_set
 endfunction"}}}
 

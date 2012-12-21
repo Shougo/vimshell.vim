@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'echo [{argument}...]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Echo arguments.
   call vimshell#print(a:context.fd, join(a:args) . "\n")
 endfunction"}}}

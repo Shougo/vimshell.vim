@@ -63,7 +63,7 @@ augroup vimshell-int-termtter
   autocmd ColorScheme <buffer>    call s:color_scheme()
 augroup END
 
-function! s:color_scheme()"{{{
+function! s:color_scheme() "{{{
   if has('gui_running')
     highlight int_termtterPrompt  gui=UNDERLINE guifg=#80ffff guibg=NONE
   else

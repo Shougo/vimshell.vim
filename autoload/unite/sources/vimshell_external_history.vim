@@ -55,12 +55,12 @@ function! s:source.hooks.on_init(args, context) "{{{
         \"^\\%(\\d\\+/\\)\\+[:[:digit:]; ]\\+\\|^[:[:digit:]; ]\\+", "", "g")')
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
 endfunction"}}}
-function! s:source.hooks.on_syntax(args, context)"{{{
+function! s:source.hooks.on_syntax(args, context) "{{{
   syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
         \ containedin=uniteSource__VimshellHistory
   highlight default link uniteSource__VimshellHistorySpaces Comment
 endfunction"}}}
-function! s:source.hooks.on_post_filter(args, context)"{{{
+function! s:source.hooks.on_post_filter(args, context) "{{{
   let cnt = 0
 
   for candidate in a:context.candidates

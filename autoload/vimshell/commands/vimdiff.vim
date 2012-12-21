@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimdiff {filename1} {filename2}',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {

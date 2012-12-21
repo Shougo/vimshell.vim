@@ -35,7 +35,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'iexe [{options}...] {command}',
       \}
-function! s:command.execute(commands, context)"{{{
+function! s:command.execute(commands, context) "{{{
   " Interactive execute command.
 
   let commands = a:commands
@@ -180,7 +180,7 @@ function! s:command.execute(commands, context)"{{{
     startinsert!
   endif
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   if len(a:args) == 1
     return vimshell#complete#helper#executables(a:args[-1])
   elseif vimshell#util#is_windows() &&
@@ -196,7 +196,7 @@ function! vimshell#commands#iexe#define()
   return s:command
 endfunction
 
-" Set interactive options."{{{
+" Set interactive options. "{{{
 if vimshell#util#is_windows()
   " Windows only options.
   call vimshell#set_dictionary_helper(
@@ -275,7 +275,7 @@ call vimshell#set_dictionary_helper(
       \ g:vimshell_interactive_monochrome_commands, 'earthquake', '1')
 "}}}
 
-function! s:default_settings()"{{{
+function! s:default_settings() "{{{
   " Common.
   setlocal buftype=nofile
   setlocal bufhidden=hide
@@ -297,7 +297,7 @@ function! s:default_settings()"{{{
   call vimshell#int_mappings#define_default_mappings()
 endfunction"}}}
 
-function! s:default_syntax()"{{{
+function! s:default_syntax() "{{{
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
   hi def link InteractiveError Error
@@ -311,7 +311,7 @@ function! s:default_syntax()"{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert)"{{{
+function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
@@ -359,14 +359,14 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   endif
 endfunction"}}}
 
-function! s:insert_enter()"{{{
+function! s:insert_enter() "{{{
   if winwidth(0) != b:interactive.width ||
         \ winheight(0) != b:interactive.height
     " Set new window size.
     call b:interactive.process.set_winsize(winwidth(0), winheight(0))
   endif
 endfunction"}}}
-function! s:event_bufwin_enter()"{{{
+function! s:event_bufwin_enter() "{{{
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi

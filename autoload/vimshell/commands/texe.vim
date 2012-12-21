@@ -35,7 +35,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'texe [{options}...] {command}',
       \}
-function! s:command.execute(commands, context)"{{{
+function! s:command.execute(commands, context) "{{{
   " Interactive execute command.
   if len(a:commands) > 1
     call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
@@ -173,7 +173,7 @@ function! s:command.execute(commands, context)"{{{
     endif
   endif
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   return vimshell#util#is_windows() ?
         \ vimshell#complete#helper#executables(a:args[-1],
         \    g:vimshell_interactive_cygwin_path) :
@@ -189,7 +189,7 @@ function! vimshell#commands#texe#restore_cursor()
   endif
 endfunction
 
-function! s:default_settings()"{{{
+function! s:default_settings() "{{{
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
 
@@ -219,7 +219,7 @@ function! s:default_settings()"{{{
   setfiletype vimshell-term
 endfunction"}}}
 
-function! s:init_bg(args, context)"{{{
+function! s:init_bg(args, context) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
@@ -251,7 +251,7 @@ function! s:init_bg(args, context)"{{{
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 endfunction"}}}
 
-function! s:insert_enter()"{{{
+function! s:insert_enter() "{{{
   if exists(':NeoComplCacheDisable')
     " Lock neocomplcache.
     NeoComplCacheLock
@@ -275,12 +275,12 @@ function! s:insert_enter()"{{{
   call setpos('.', b:interactive.save_cursor)
   startinsert
 endfunction"}}}
-function! s:insert_leave()"{{{
+function! s:insert_leave() "{{{
   setlocal nomodifiable
 
   call vimshell#commands#texe#restore_cursor()
 endfunction"}}}
-function! s:event_bufwin_enter()"{{{
+function! s:event_bufwin_enter() "{{{
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi

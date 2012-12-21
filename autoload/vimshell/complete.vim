@@ -25,14 +25,14 @@
 "=============================================================================
 
 " Complete function. This provides simple file completion.
-function! vimshell#complete#start()"{{{
+function! vimshell#complete#start() "{{{
   if len(&omnifunc) == 0
     setlocal omnifunc=vimshell#complete#candidate
   endif
   call feedkeys("\<c-x>\<c-o>", "n")
   return ''
 endfunction"}}}
-function! vimshell#complete#candidate(findstart, base)"{{{
+function! vimshell#complete#candidate(findstart, base) "{{{
   let line = getline('.')
   let prompt_len = len(vimshell#get_prompt())
   if a:findstart

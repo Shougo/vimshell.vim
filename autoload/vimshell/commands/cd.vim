@@ -29,7 +29,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'cd {directory-path} [{substitute-pattern}]',
       \}
-function! s:command.execute(args, context)"{{{
+function! s:command.execute(args, context) "{{{
   " Change the working directory.
 
   if empty(a:args)
@@ -105,7 +105,7 @@ function! s:command.execute(args, context)"{{{
     call vimshell#hook#call('chpwd', context, getcwd())
   endif
 endfunction"}}}
-function! s:command.complete(args)"{{{
+function! s:command.complete(args) "{{{
   if a:args[-1] =~ '^-\d*$'
     let ret = vimshell#complete#helper#directory_stack(a:args[-1][1:])
     for keyword in ret

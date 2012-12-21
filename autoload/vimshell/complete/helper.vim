@@ -24,7 +24,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
+function! vimshell#complete#helper#files(cur_keyword_str, ...) "{{{
   " vimshell#complete#helper#files(cur_keyword_str [, path])
 
   if a:0 > 1
@@ -58,7 +58,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...)"{{{
 
   return list
 endfunction"}}}
-function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
+function! vimshell#complete#helper#directories(cur_keyword_str) "{{{
   let ret = []
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str),
         \ 'isdirectory(v:val.orig) ||
@@ -72,7 +72,7 @@ function! vimshell#complete#helper#directories(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
+function! vimshell#complete#helper#cdpath_directories(cur_keyword_str) "{{{
   " Check dup.
   let check = {}
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath),
@@ -94,7 +94,7 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
+function! vimshell#complete#helper#directory_stack(cur_keyword_str) "{{{
   if !exists('b:vimshell')
     return []
   endif
@@ -110,7 +110,7 @@ function! vimshell#complete#helper#directory_stack(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
+function! vimshell#complete#helper#aliases(cur_keyword_str) "{{{
   if !exists('b:vimshell')
     return []
   endif
@@ -135,7 +135,7 @@ function! vimshell#complete#helper#aliases(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
+function! vimshell#complete#helper#internals(cur_keyword_str) "{{{
   let commands = vimshell#available_commands(a:cur_keyword_str)
   let ret = []
   for keyword in vimshell#complete#helper#keyword_simple_filter(
@@ -146,7 +146,7 @@ function! vimshell#complete#helper#internals(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
+function! vimshell#complete#helper#executables(cur_keyword_str, ...) "{{{
   if a:cur_keyword_str =~ '[/\\]'
     let files = vimshell#complete#helper#files(a:cur_keyword_str)
   else
@@ -183,7 +183,7 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
+function! vimshell#complete#helper#buffers(cur_keyword_str) "{{{
   let ret = []
   let bufnumber = 1
   while bufnumber <= bufnr('$')
@@ -199,7 +199,7 @@ function! vimshell#complete#helper#buffers(cur_keyword_str)"{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#args(command, args)"{{{
+function! vimshell#complete#helper#args(command, args) "{{{
   let commands = vimshell#available_commands(a:command)
 
   " Get complete words.
@@ -221,7 +221,7 @@ function! vimshell#complete#helper#args(command, args)"{{{
 
   return complete_words
 endfunction"}}}
-function! vimshell#complete#helper#command_args(args)"{{{
+function! vimshell#complete#helper#command_args(args) "{{{
   " command args...
   if len(a:args) == 1
     " Commands.
@@ -231,7 +231,7 @@ function! vimshell#complete#helper#command_args(args)"{{{
     return vimshell#complete#helper#args(a:args[0], a:args[1:])
   endif
 endfunction"}}}
-function! vimshell#complete#helper#variables(cur_keyword_str)"{{{
+function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
   let _ = []
   let _ += neocomplcache#sources#vim_complete#helper#environment(
         \ vimshell#get_cur_text(), a:cur_keyword_str)
@@ -245,7 +245,7 @@ function! vimshell#complete#helper#variables(cur_keyword_str)"{{{
   return vimshell#complete#helper#keyword_filter(_, a:cur_keyword_str)
 endfunction"}}}
 
-function! vimshell#complete#helper#call_omnifunc(omnifunc)"{{{
+function! vimshell#complete#helper#call_omnifunc(omnifunc) "{{{
   " Note: neocomplcache#sources#completefunc_complete#call_completefunc()
   "     is not working. :-(
   " if exists(':NeoComplCacheDisable')
@@ -258,15 +258,15 @@ function! vimshell#complete#helper#call_omnifunc(omnifunc)"{{{
     return "\<C-x>\<C-o>\<C-p>"
   endif
 endfunction"}}}
-function! vimshell#complete#helper#restore_omnifunc(omnifunc)"{{{
+function! vimshell#complete#helper#restore_omnifunc(omnifunc) "{{{
   if &l:omnifunc !=# a:omnifunc
     let &l:omnifunc = a:omnifunc
   endif
 endfunction"}}}
-function! vimshell#complete#helper#compare_rank(i1, i2)"{{{
+function! vimshell#complete#helper#compare_rank(i1, i2) "{{{
   return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
 endfunction"}}}
-function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
+function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str) "{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
   if &ignorecase
     let expr = printf('stridx(tolower(v:val.word), %s) == 0', string(tolower(cur_keyword)))
@@ -276,7 +276,7 @@ function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str)"{{{
 
   return filter(a:list, expr)
 endfunction"}}}
-function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str)"{{{
+function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) "{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
   let expr = &ignorecase ?
         \ printf('stridx(tolower(v:val), %s) == 0',
