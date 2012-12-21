@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Oct 2012.
+" Last Modified: 21 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -207,7 +207,11 @@ function! vimshell#interactive#send(expr) "{{{
           \ string, "\<LF>", '; ', 'g'), '; $', '', '')
     call vimshell#set_prompt_command(line)
 
-    call vimshell#execute_async(line)
+    let ret = vimshell#execute_async(line)
+
+    if ret == 0
+      call vimshell#next_prompt(vimshell#get_context(), 0)
+    endif
   else
     let string = join(list, "\<LF>")
     if string !~ '\n$'
