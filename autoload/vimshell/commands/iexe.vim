@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Oct 2012.
+" Last Modified: 25 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -73,6 +73,8 @@ function! s:command.execute(commands, context) "{{{
 
     let args[1] = vimproc#get_command_name(
           \ args[1], g:vimshell_interactive_cygwin_path)
+
+    let options['--encoding'] = 'utf8'
   endif
 
   let cmdname = fnamemodify(args[0], ':r')

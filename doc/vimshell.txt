@@ -1375,6 +1375,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2012-12-25
+- Set UTF-8 in fakecygpty.
+
 2012-12-21
 - Fixed :VimShellSendString behavior.
 
