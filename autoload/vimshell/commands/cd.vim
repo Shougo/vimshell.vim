@@ -115,7 +115,7 @@ function! s:command.complete(args) "{{{
   else
     let ret = vimshell#complete#helper#directories(a:args[-1])
   endif
-    
+
   return ret
 endfunction"}}}
 
