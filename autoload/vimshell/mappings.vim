@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2012.
+" Last Modified: 25 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -189,7 +189,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   " Run help.
   imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
   " Interrupt.
-  inoremap <buffer> <C-c> <C-o>:call vimshell#interactive#send_char(3)<CR>
+  inoremap <buffer><silent> <C-c> <C-o>:call vimshell#interactive#send_char(3)<CR>
   " Delete char.
   imap <buffer> <C-h>    <Plug>(vimshell_delete_backward_char)
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)

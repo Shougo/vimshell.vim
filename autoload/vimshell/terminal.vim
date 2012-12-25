@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Nov 2012.
+" Last Modified: 25 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -295,14 +295,15 @@ function! s:print_with_redraw(is_error, lines) "{{{
       normal! j
     endif
 
-    let ls = split(line, '\r', 1)
+    let ls = map(split(line, '\r\ze.', 1), "substitute(v:val, '\\r', '', '')")
 
     if a:is_error
-      call map(ls, '"!!!".v:val."!!!"')
+      call map(ls, "v:val != '' ? ('!!!'.v:val.'!!!') : v:val")
     endif
 
     for l in ls
       call setline('.', l)
+      sleep 1m
       redraw
     endfor
 
@@ -313,7 +314,7 @@ function! s:print_simple(is_error, lines) "{{{
   let lines = a:lines
 
   if a:is_error
-    call map(lines, '"!!!".v:val."!!!"')
+    call map(lines, "v:val != '' ? ('!!!'.v:val.'!!!') : v:val")
   endif
 
   " Optimized print.
@@ -386,7 +387,7 @@ function! s:output_string(string) "{{{
     return
   endif
 
-  let string = b:interactive.terminal.is_error ?
+  let string = a:string != '' && b:interactive.terminal.is_error ?
         \ '!!!' . a:string . '!!!' : a:string
 
   if b:interactive.terminal.current_character_set
