@@ -73,14 +73,13 @@ function! s:command.execute(commands, context) "{{{
     " Get program path from g:vimshell_interactive_cygwin_path.
     let args[1] = vimproc#get_command_name(
           \ args[1], g:vimshell_interactive_cygwin_path)
-    let options['--encoding'] = 'utf8'
   endif
 
   let cmdname = fnamemodify(args[0], ':r')
   if !has_key(options, '--encoding')
     if vimshell#util#is_windows()
       " Use UTF-8 Cygwin.
-      let options['--encoding'] = 'utf8'
+      let options['--encoding'] = 'utf-8'
     else
       let options['--encoding'] =
             \ has_key(g:vimshell_interactive_encodings, cmdname) ?

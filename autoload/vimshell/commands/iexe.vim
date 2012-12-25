@@ -74,7 +74,7 @@ function! s:command.execute(commands, context) "{{{
     let args[1] = vimproc#get_command_name(
           \ args[1], g:vimshell_interactive_cygwin_path)
 
-    let options['--encoding'] = 'utf8'
+    let options['--encoding'] = 'utf-8'
   endif
 
   let cmdname = fnamemodify(args[0], ':r')
