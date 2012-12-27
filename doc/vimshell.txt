@@ -1283,6 +1283,10 @@ backquote						*vimshell-tips-backquote*
 >
 		vimshell% echo `ls`
 <
+		Backquote works in double quoted string.
+>
+		vimshell% python -c "`curl -fs https://gist.github.com/raw/4349265/sudden-vim.py`"
+<
 		And embed Vim script expression.
 >
 		vimshell% echo `=3`
