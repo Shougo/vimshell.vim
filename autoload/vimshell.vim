@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2012.
+" Last Modified: 29 Dec 2012.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -226,6 +226,8 @@ function! s:create_shell(path, context) "{{{
   call vimshell#print_prompt(a:context)
 
   call vimshell#start_insert()
+
+  call s:set_syntax()
 
   " Check prompt value. "{{{
   if vimshell#head_match(vimshell#get_prompt(), vimshell#get_secondary_prompt())
@@ -904,6 +906,10 @@ function! s:initialize_vimshell(path, context) "{{{
 
   setfiletype vimshell
 
+  call vimshell#help#init()
+  call vimshell#interactive#init()
+endfunction"}}}
+function! s:set_syntax()
   " Set syntax.
   let prompt_pattern = "'^" . escape(
         \ vimshell#escape_match(vimshell#get_prompt()), "'") . "'"
@@ -932,10 +938,7 @@ function! s:initialize_vimshell(path, context) "{{{
         \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
         \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
         \ 'vimshellSpecial,vimshellComment'
-
-  call vimshell#help#init()
-  call vimshell#interactive#init()
-endfunction"}}}
+endfunction
 function! s:initialize_context(context) "{{{
   let default_context = {
     \ 'buffer_name' : 'default',
