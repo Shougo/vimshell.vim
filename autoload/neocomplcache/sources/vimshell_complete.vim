@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Aug 2012.
+" Last Modified: 01 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,7 +44,7 @@ function! s:source.initialize() "{{{
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text) "{{{
-  if !vimshell#check_prompt()
+  if !vimshell#check_prompt() || !empty(b:vimshell.continuation)
     " Ignore.
     return -1
   endif
