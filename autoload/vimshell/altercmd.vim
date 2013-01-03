@@ -27,7 +27,7 @@
 function! vimshell#altercmd#define(original, alternative) "{{{
   execute 'inoreabbrev <buffer><expr>' a:original
         \ '(join(vimshell#get_current_args()) ==# "' . a:original  . '") &&'
-        \ 'vimshell#check_user_prompt() ?'
+        \ 'empty(b:vimshell.continuation) ?'
         \ s:SID_PREFIX().'recursive_expand_altercmd('.string(a:original).')' ':' string(a:original)
   let b:vimshell.altercmd_table[a:original] = a:alternative
 endfunction"}}}
@@ -42,10 +42,11 @@ function! s:recursive_expand_altercmd(string)
   let expanded = {}
   while 1
     let key = vimproc#parser#split_args(abbrev)[-1]
-    if has_key(expanded, abbrev) || !has_key(b:vimshell.altercmd_table, abbrev)
+    if has_key(expanded, abbrev) ||
+          \ !has_key(b:vimshell.altercmd_table, abbrev)
       break
     endif
-    
+
     let expanded[abbrev] = 1
     let abbrev = b:vimshell.altercmd_table[abbrev]
   endwhile
