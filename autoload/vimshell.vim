@@ -433,9 +433,6 @@ function! vimshell#get_prompt(...) "{{{
     return ''
   endif
 
-  if !exists('s:prompt')
-  endif
-
   return &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) ?
         \ vimshell#get_context().prompt :
