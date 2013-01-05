@@ -280,22 +280,16 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
   elseif line('.') != line('$')
     " History execution.
 
-    " Search next prompt.
-    let prompt = vimshell#escape_match(vimshell#get_prompt())
-    if vimshell#get_user_prompt() != ''
-      let nprompt = '^\[%\] '
-    else
-      let nprompt = '^' . prompt
+    if !vimshell#check_prompt('$')
+      " Create prompt line.
+      call append('$', vimshell#get_prompt())
     endif
 
-    let [next_line, next_col] = searchpos(nprompt, 'Wn')
+    " Set command on current line.
+    let line = vimshell#get_prompt_command()
+    call setline('$', vimshell#get_prompt() . line)
 
-    if next_line > 0 && next_line - line('.') > 1
-      execute printf('%s,%sdelete _', line('.')+1, next_line-1)
-
-      call vimshell#terminal#clear_highlight()
-      normal! k
-    endif
+    $
   endif
 
   call s:execute_command_line(a:is_insert, oldpos)
