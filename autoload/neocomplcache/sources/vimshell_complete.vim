@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 01 Jan 2013.
+" Last Modified: 06 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,8 +49,16 @@ function! s:source.get_keyword_pos(cur_text) "{{{
     return -1
   endif
 
+  let cur_text = vimshell#get_cur_text()
+
   try
-    let args = vimshell#get_current_args(vimshell#get_cur_text())
+    call vimshell#parser#check_script(cur_text)
+  catch /^Exception: Quote/
+    return -1
+  endtry
+
+  try
+    let args = vimshell#get_current_args(cur_text)
   catch /^Exception:/
     return -1
   endtry

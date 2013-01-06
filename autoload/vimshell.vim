@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jan 2013.
+" Last Modified: 06 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -505,6 +505,7 @@ function! vimshell#get_cur_line() "{{{
 endfunction"}}}
 function! vimshell#get_current_args(...) "{{{
   let cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
+
   let statements = vimproc#parser#split_statements(cur_text)
   if empty(statements)
     return []
