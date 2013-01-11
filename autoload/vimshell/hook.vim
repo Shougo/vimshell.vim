@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Oct 2012.
+" Last Modified: 11 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,7 +49,7 @@ function! vimshell#hook#call(hook_point, context, args) "{{{
   endfor
 endfunction"}}}
 function! vimshell#hook#call_filter(hook_point, context, args) "{{{
-  if !a:context.is_interactive
+  if !exists('b:interactive') || !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return a:args
   endif
@@ -68,6 +68,10 @@ function! vimshell#hook#call_filter(hook_point, context, args) "{{{
   return args
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list) "{{{
+  if !exists('b:interactive')
+    return
+  endif
+
   if !has_key(b:interactive.hook_functions_table, a:hook_point)
     let b:interactive.hook_functions_table[a:hook_point] = {}
   endif
@@ -81,9 +85,17 @@ function! vimshell#hook#set(hook_point, func_list) "{{{
   endfor
 endfunction"}}}
 function! vimshell#hook#get(hook_point) "{{{
+  if !exists('b:interactive')
+    return
+  endif
+
   return get(b:interactive.hook_functions_table, a:hook_point, {})
 endfunction"}}}
 function! vimshell#hook#add(hook_point, hook_name, func) "{{{
+  if !exists('b:interactive')
+    return
+  endif
+
   if !has_key(b:interactive.hook_functions_table, a:hook_point)
     let b:interactive.hook_functions_table[a:hook_point] = {}
   endif
@@ -91,6 +103,10 @@ function! vimshell#hook#add(hook_point, hook_name, func) "{{{
   let b:interactive.hook_functions_table[a:hook_point][a:hook_name] = a:func
 endfunction"}}}
 function! vimshell#hook#remove(hook_point, hook_name) "{{{
+  if !exists('b:interactive')
+    return
+  endif
+
   if !has_key(b:interactive.hook_functions_table, a:hook_point)
     let b:interactive.hook_functions_table[a:hook_point] = {}
   endif
