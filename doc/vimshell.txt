@@ -1451,6 +1451,9 @@ https://github.com/chikatoike/concealedyank.vim
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-01-13
+- Improved restore current directory behavior.
+
 2013-01-12
 - Improved g:vimshell_interactive_encodings behavior.
 

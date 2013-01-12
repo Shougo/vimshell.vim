@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2013.
+" Last Modified: 13 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -110,12 +110,15 @@ function! s:default_settings() "{{{
   augroup vimshell
     autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd BufWinEnter,WinEnter <buffer> call s:event_bufwin_enter()
-    autocmd BufWinLeave,WinLeave <buffer> call s:event_bufwin_leave()
-    autocmd CursorMoved <buffer> call vimshell#interactive#check_current_output()
+    autocmd BufEnter,BufWinEnter,WinEnter <buffer>
+          \ call s:event_bufwin_enter(expand('<abuf>'))
+    autocmd BufLeave,BufWinLeave,WinLeave <buffer>
+          \ call s:event_bufwin_leave()
+    autocmd CursorMoved <buffer>
+          \ call vimshell#interactive#check_current_output()
   augroup end
 
-  call s:event_bufwin_enter()
+  call s:event_bufwin_enter(bufnr('%'))
 
   " Define mappings.
   call vimshell#mappings#define_default_mappings()
@@ -1163,39 +1166,55 @@ function! s:insert_user_and_right_prompt() "{{{
 endfunction"}}}
 
 " Auto commands function.
-function! s:event_bufwin_enter() "{{{
-  if has('conceal')
-    setlocal conceallevel=3
-    setlocal concealcursor=nvi
+function! s:event_bufwin_enter(bufnr) "{{{
+  if a:bufnr != bufnr('%') && bufwinnr(a:bufnr) > 0
+    let winnr = winnr()
+    execute bufwinnr(a:bufnr) 'wincmd w'
   endif
 
-  setlocal nolist
-
-  if !exists('b:vimshell') ||
-        \ !isdirectory(b:vimshell.current_dir)
-    return
-  endif
-
-  call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
-
-  " Redraw right prompt.
-  let winwidth = (winwidth(0)+1)/2*2 - 5
-  for [line, prompts] in items(b:vimshell.prompts_save)
-    if getline(line) =~ '^\[%] .*\S$'
-          \ && prompts.winwidth != winwidth
-      let right_prompt = prompts.right_prompt
-      let user_prompt_last = prompts.user_prompt_last
-
-      let padding_len =
-            \ (len(user_prompt_last)+
-            \  len(right_prompt)+1
-            \          > winwidth) ?
-            \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
-      let secondary = printf('%s%s%s', user_prompt_last,
-            \ repeat(' ', padding_len), right_prompt)
-      call setline(line, secondary)
+  try
+    if !exists('b:vimshell')
+      return
     endif
-  endfor
+
+    if has('conceal')
+      setlocal conceallevel=3
+      setlocal concealcursor=nvi
+    endif
+
+    setlocal nolist
+
+    if !exists('b:vimshell') ||
+          \ !isdirectory(b:vimshell.current_dir)
+      return
+    endif
+
+    call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
+
+    " Redraw right prompt.
+    let winwidth = (winwidth(0)+1)/2*2 - 5
+    for [line, prompts] in items(b:vimshell.prompts_save)
+      if getline(line) =~ '^\[%] .*\S$'
+            \ && prompts.winwidth != winwidth
+        let right_prompt = prompts.right_prompt
+        let user_prompt_last = prompts.user_prompt_last
+
+        let padding_len =
+              \ (len(user_prompt_last)+
+              \  len(right_prompt)+1
+              \          > winwidth) ?
+              \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
+        let secondary = printf('%s%s%s', user_prompt_last,
+              \ repeat(' ', padding_len), right_prompt)
+        call setline(line, secondary)
+      endif
+    endfor
+    
+  finally
+    if exists('winnr')
+      execute winnr.'wincmd w'
+    endif
+  endtry
 endfunction"}}}
 function! s:event_bufwin_leave() "{{{
   if !exists('t:vimshell')
