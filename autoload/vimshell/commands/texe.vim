@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2012.
+" Last Modified: 12 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,6 +46,7 @@ function! s:command.execute(commands, context) "{{{
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--split']
         \ }, {
+        \ '--encoding' : vimshell#interactive#get_default_encoding(a:commands),
         \ '--split' : g:vimshell_split_command,
         \ })
   let args = commands[0].args
@@ -73,18 +74,6 @@ function! s:command.execute(commands, context) "{{{
     " Get program path from g:vimshell_interactive_cygwin_path.
     let args[1] = vimproc#get_command_name(
           \ args[1], g:vimshell_interactive_cygwin_path)
-  endif
-
-  let cmdname = fnamemodify(args[0], ':r')
-  if !has_key(options, '--encoding')
-    if vimshell#util#is_windows()
-      " Use UTF-8 Cygwin.
-      let options['--encoding'] = 'utf-8'
-    else
-      let options['--encoding'] =
-            \ has_key(g:vimshell_interactive_encodings, cmdname) ?
-            \ g:vimshell_interactive_encodings[cmdname] : 'char'
-    endif
   endif
 
   " Encoding conversion.

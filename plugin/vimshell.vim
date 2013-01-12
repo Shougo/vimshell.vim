@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2012.
+" Last Modified: 12 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -132,7 +132,11 @@ let g:vimshell_interactive_command_options =
 let g:vimshell_interactive_interpreter_commands =
       \ get(g:, 'vimshell_interactive_interpreter_commands', {})
 let g:vimshell_interactive_encodings =
-      \ get(g:, 'vimshell_interactive_encodings', {})
+      \ get(g:, 'vimshell_interactive_encodings',
+      \     (has('win32') || has('win64')) ? {
+      \   '/MinGW/bin/' : 'utf-8', '/msysgit/bin/' : 'utf-8',
+      \   '/cygwin/bin/' : 'utf-8', 'gosh' : 'utf-8', 'fakecygpty' : 'utf-8',
+      \   } : {})
 let g:vimshell_interactive_prompts =
       \ get(g:, 'vimshell_interactive_prompts', {})
 let g:vimshell_interactive_echoback_commands =

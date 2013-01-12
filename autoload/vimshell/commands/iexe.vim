@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2013.
+" Last Modified: 12 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -42,6 +42,7 @@ function! s:command.execute(commands, context) "{{{
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
         \ 'arg=' : ['--encoding', '--split'],
         \ }, {
+        \ '--encoding' : vimshell#interactive#get_default_encoding(a:commands),
         \ '--split' : g:vimshell_split_command,
         \ })
 
@@ -73,16 +74,9 @@ function! s:command.execute(commands, context) "{{{
 
     let args[1] = vimproc#get_command_name(
           \ args[1], g:vimshell_interactive_cygwin_path)
-
-    let options['--encoding'] = 'utf-8'
   endif
 
   let cmdname = fnamemodify(args[0], ':r')
-  if !has_key(options, '--encoding')
-    let options['--encoding'] = get(
-          \ g:vimshell_interactive_encodings, cmdname, 'char')
-  endif
-
   if !use_cygpty && has_key(g:vimshell_interactive_command_options, cmdname)
     for arg in vimproc#parser#split_args(
           \ g:vimshell_interactive_command_options[cmdname])
@@ -219,9 +213,6 @@ if vimshell#util#is_windows()
   call vimshell#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'ipython,ipython3',
         \ '--TerminalInteractiveShell.readline_use=False')
-
-  call vimshell#set_dictionary_helper(
-        \ g:vimshell_interactive_encodings, 'gosh,fakecygpty', 'utf8')
 
   call vimshell#set_dictionary_helper(
         \ g:vimshell_interactive_cygwin_commands, 'tail,zsh,ssh', 1)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Dec 2012.
+" Last Modified: 12 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -632,6 +632,21 @@ function! s:check_scrollback() "{{{
       call setpos('.', pos)
     endif
   endif
+endfunction"}}}
+
+function! vimshell#interactive#get_default_encoding(commands) "{{{
+  let full_command = tolower(
+        \ vimshell#get_command_path(a:commands[0].args[0]))
+  let command = fnamemodify(full_command, ':t:r')
+  for [path, encoding] in items(g:vimshell_interactive_encodings)
+    if (path =~ '/' && stridx(full_command, tolower(path)) >= 0)
+          \ || path ==? command
+      return encoding
+    endif
+  endfor
+
+  " Default.
+  return 'char'
 endfunction"}}}
 
 " Autocmd functions.
