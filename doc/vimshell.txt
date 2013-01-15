@@ -170,8 +170,9 @@ COMMANDS 					*vimshell-commands*
 		Like as |:VimShell|, but this command popups little window.
 		It will be your help when you want to make vimshell a bit
 		help.  To split it, |g:vimshell_popup_command| is suited
-		command.  When you are in vimshell buffer, it closes the
-		buffer.
+		command.
+		Note: It sets |vimshell-options-toggle|. You can toggle
+		vimshell buffer.
 
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
 		Like as |:VimShell|, but move to current directory.
