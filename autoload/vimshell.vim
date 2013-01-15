@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jan 2013.
+" Last Modified: 15 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -65,6 +65,7 @@ let s:vimshell_options = [
       \ '-winwidth=', '-winminwidth=',
       \ '-prompt=', '-secondary-prompt=',
       \ '-user-prompt=', '-right-prompt=',
+      \ '-project',
       \]
 
 let s:V = vital#of('vimshell')
@@ -190,6 +191,10 @@ function! s:create_shell(path, context) "{{{
   if path == ''
     " Use current directory.
     let path = vimshell#util#substitute_path_separator(getcwd())
+  endif
+
+  if a:context.project
+    let path = vimshell#util#path2project_directory(path)
   endif
 
   let context = a:context
@@ -951,6 +956,7 @@ function! s:initialize_context(context) "{{{
     \ 'popup' : 0,
     \ 'winwidth' : 0,
     \ 'winminwidth' : 0,
+    \ 'project' : 0,
     \ 'direction' : '',
     \ 'prompt' : get(g:,
     \      'vimshell_prompt', 'vimshell% '),

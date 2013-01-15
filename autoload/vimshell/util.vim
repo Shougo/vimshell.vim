@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 03 Oct 2012.
+" Last Modified: 15 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -160,6 +160,10 @@ endfunction"}}}
 function! vimshell#util#is_cmdwin() "{{{
   return bufname('%') ==# '[Command Line]'
 endfunction"}}}
+
+function! vimshell#util#path2project_directory(...)
+  return call(s:V.path2project_directory, a:000)
+endfunction
 
 function! vimshell#util#alternate_buffer() "{{{
   if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
