@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 17 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,18 +56,6 @@ if exists(':NeoBundleDepends') "{{{
 endif"}}}
 
 " Obsolute options check. "{{{
-if exists('g:VimShell_Prompt')
-  echoerr 'g:VimShell_Prompt option does not work this version of vimshell.'
-endif
-if exists('g:VimShell_SecondaryPrompt')
-  echoerr 'g:VimShell_SecondaryPrompt option does not work this version of vimshell.'
-endif
-if exists('g:VimShell_UserPrompt')
-  echoerr 'g:VimShell_UserPrompt option does not work this version of vimshell.'
-endif
-if exists('g:VimShell_EnableInteractive')
-  echoerr 'g:VimShell_EnableInteractive option does not work this version of vimshell.'
-endif
 "}}}
 " Global options definition. "{{{
 let g:vimshell_enable_debug =
