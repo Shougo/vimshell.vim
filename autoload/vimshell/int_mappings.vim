@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 Aug 2012.
+" Last Modified: 17 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -143,31 +143,6 @@ function! s:delete_backward_char(is_auto_select) "{{{
     return prefix
   endif
 endfunction"}}}
-function! s:execute_history(is_insert) "{{{
-  if !has_key(b:interactive.prompt_history, line('.'))
-    " Do update.
-    call vimshell#interactive#execute_process_out(a:is_insert)
-  endif
-
-  " Search prompt.
-  let command = vimshell#interactive#get_cur_line(line('.'))
-
-  if line('.') != line('$')
-    if !has_key(b:interactive.prompt_history, line('$'))
-      " Insert prompt line.
-      call append(line('$'), command)
-    else
-      " Set prompt line.
-      call setline(line('$'), b:interactive.prompt_history[line('$')] . command)
-    endif
-  endif
-
-  $
-
-  call vimshell#interactive#execute_pty_inout(a:is_insert)
-
-  call vimshell#imdisable()
-endfunction"}}}
 function! s:previous_prompt() "{{{
   let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
         \ 'v:val < line(".")'), 'vimshell#compare_number')
@@ -200,23 +175,30 @@ function! s:delete_backward_line() "{{{
   return prefix . repeat("\<BS>", len)
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert) "{{{
-  if !a:is_insert
-    " Search cursor filename.
-    let filename = vimshell#get_cursor_filename()
+  if !has_key(b:interactive.prompt_history, line('.'))
+    " Do update.
+    call vimshell#interactive#execute_process_out(a:is_insert)
+  endif
 
-    " Convert encoding.
-    let filename = vimproc#util#iconv(filename, &encoding, 'char')
+  " Search prompt.
+  let command = vimshell#interactive#get_cur_line(line('.'))
 
-    " Execute cursor file.
-    if filename =~ '^\%(https\?\|ftp\)://'
-      " Open uri.
-      call vimshell#open(filename)
-      return
+  if line('.') != line('$')
+    if !has_key(b:interactive.prompt_history, line('$'))
+      " Insert prompt line.
+      call append(line('$'), command)
+    else
+      " Set prompt line.
+      call setline(line('$'),
+            \ b:interactive.prompt_history[line('$')] . command)
     endif
   endif
 
-  " Execute history.
-  call s:execute_history(a:is_insert)
+  $
+
+  call vimshell#interactive#execute_pty_inout(a:is_insert)
+
+  call vimshell#imdisable()
 endfunction"}}}
 function! s:paste_prompt() "{{{
   if !has_key(b:interactive.prompt_history, line('.'))

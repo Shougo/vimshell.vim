@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2012.
+" Last Modified: 17 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -233,7 +233,7 @@ function! s:push_and_execute(command) "{{{
   " Set prompt line.
   call setline('.', vimshell#get_prompt() . a:command)
 
-  call s:execute_line(1)
+  call vimshell#mappings#execute_line(1)
 endfunction"}}}
 
 function! vimshell#mappings#execute_line(is_insert) "{{{
@@ -269,33 +269,12 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
       " History output execution.
       call setline('$', vimshell#get_prompt() .
             \ matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
-    else
-      " Search cursor file.
-      let filename = substitute(
-            \ vimshell#get_cursor_filename(), '\\', '/', 'g')
-      call s:open_file(filename)
     endif
 
     $
-  elseif line('.') != line('$')
+  elseif vimshell#check_prompt() && line('.') != line('$')
     " History execution.
-
-    " Search next prompt.
-    let prompt = vimshell#escape_match(vimshell#get_prompt())
-    if vimshell#get_user_prompt() != ''
-      let nprompt = '^\[%\] '
-    else
-      let nprompt = '^' . prompt
-    endif
-
-    let [next_line, next_col] = searchpos(nprompt, 'Wn')
-
-    if next_line > 0 && next_line - line('.') > 1
-      execute printf('%s,%sdelete _', line('.')+1, next_line-1)
-
-      call vimshell#terminal#clear_highlight()
-      normal! k
-    endif
+    call s:paste_prompt()
   endif
 
   call s:execute_command_line(a:is_insert, oldpos)
@@ -358,7 +337,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
       " Retry.
       call setpos('.', a:oldpos)
       call setline('.', line)
-      call s:execute_line(a:is_insert)
+      call s:execute_command_line(a:is_insert, a:oldpos)
     endif
 
     " Error.
@@ -613,42 +592,6 @@ function! s:delete_backward_line() "{{{
   let len = len(substitute(vimshell#get_cur_text(), '.', 'x', 'g'))
 
   return prefix . repeat("\<BS>", len)
-endfunction"}}}
-function! s:open_file(filename) "{{{
-  " Execute cursor file.
-  if a:filename == ''
-    return
-  endif
-
-  if a:filename !~ '^\a\+:\|^[/~]'
-    let prompt_nr = vimshell#get_prompt_linenr()
-    let filename = (has_key(b:vimshell.prompt_current_dir, prompt_nr)?
-          \ b:vimshell.prompt_current_dir[prompt_nr] :
-          \ getcwd()) . '/' . a:filename
-    let filename = substitute(filename, '//', '/', 'g')
-    let filename = substitute(filename, ' ', '\\ ', 'g')
-  else
-    let filename = a:filename
-  endif
-
-  if filename =~ '^\%(https\?\|ftp\)://'
-    " Open URI.
-    call setline('$', vimshell#get_prompt() . 'open ' . filename)
-  endif
-
-  while filename =~ '\s'
-        \ && !filereadable(substitute(filename, '\\ ', ' ', 'g'))
-        \ && !isdirectory(substitute(filename, '\\ ', ' ', 'g'))
-    let filename = substitute(filename, '^\S*\s', '', '')
-  endwhile
-
-  if isdirectory(substitute(filename, '\\ ', ' ', 'g'))
-    " Change directory.
-    call setline('$', vimshell#get_prompt() . 'cd ' . filename)
-  else
-    " Edit file.
-    call setline('$', vimshell#get_prompt() . 'vim ' . filename)
-  endif
 endfunction"}}}
 function! s:hangup(is_insert) "{{{
   if empty(b:vimshell.continuation)
