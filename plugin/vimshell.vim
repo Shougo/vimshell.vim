@@ -109,6 +109,8 @@ let g:vimshell_no_save_history_commands =
       \ })
 let g:vimshell_scrollback_limit =
       \ get(g:, 'vimshell_scrollback_limit', 1000)
+let g:vimshell_enable_transient_user_prompt =
+      \ get(g:, 'vimshell_enable_transient_user_prompt', 0)
 
 " For interactive commands.
 let g:vimshell_interactive_no_save_history_commands =

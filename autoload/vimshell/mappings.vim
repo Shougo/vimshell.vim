@@ -316,6 +316,11 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     return
   endtry
 
+  if g:vimshell_enable_transient_user_prompt && vimshell#check_user_prompt()
+    " Delete previous user prompt.
+    execute vimshell#check_user_prompt().',-1 delete _'
+  endif
+
   " Call preparse filter.
   let line = vimshell#hook#call_filter('preparse', context, line)
 

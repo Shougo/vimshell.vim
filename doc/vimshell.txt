@@ -371,6 +371,13 @@ g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 
 		Default value is 1000.
 
+g:vimshell_enable_transient_user_prompt
+				*g:vimshell_enable_transient_user_prompt*
+		If it is non-zero, user prompt and right prompt line will
+		delete after executing |<Plug>(vimshell_enter)| .
+
+		Default value is 0.
+
 g:vimshell_interactive_no_save_history_commands
 			*g:vimshell_interactive_no_save_history_commands*
 		This is a dictionary value which key is a command name that
@@ -1462,6 +1469,7 @@ CHANGELOG						*vimshell-changelog*
 
 2013-01-17
 - Simplify history execution behavior.
+- Added g:vimshell_enable_transient_user_prompt option.
 
 2013-01-15
 - Added -project option.
