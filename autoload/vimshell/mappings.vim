@@ -28,7 +28,7 @@
 function! vimshell#mappings#define_default_mappings() "{{{
   " Plugin keymappings "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_enter)
-        \ i<C-g>u<ESC>:<C-u>call vimshell#execute_current_line(0)<CR><ESC>
+        \ :<C-u>call vimshell#execute_current_line(0)<CR><ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_previous_prompt)
         \ :<C-u>call <SID>previous_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_next_prompt)
@@ -257,27 +257,14 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
     return
   endif
 
-  if !vimshell#check_prompt() && !vimshell#check_secondary_prompt()
-    " Prompt not found
-
-    if !vimshell#check_prompt('$')
-      " Create prompt line.
-      call append('$', vimshell#get_prompt())
-    endif
-
-    if getline('.') =~ '^\s*\d\+:\s[^[:space:]]'
-      " History output execution.
-      call setline('$', vimshell#get_prompt() .
-            \ matchstr(getline('.'), '^\s*\d\+:\s\zs.*'))
-    endif
-
-    $
-  elseif vimshell#check_prompt() && line('.') != line('$')
+  if vimshell#check_prompt() && line('.') != line('$')
     " History execution.
     call s:paste_prompt()
   endif
 
-  call s:execute_command_line(a:is_insert, oldpos)
+  if line('.') == line('$')
+    call s:execute_command_line(a:is_insert, oldpos)
+  endif
 endfunction"}}}
 function! s:execute_command_line(is_insert, oldpos) "{{{
   " Get command line.
