@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Dec 2012.
+" Last Modified: 20 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -220,7 +220,8 @@ function! vimshell#terminal#print(string, is_error) "{{{
   " Set lines.
   for linenr in sort(map(keys(s:virtual.lines),
         \ 'str2nr(v:val)'), 's:sortfunc')
-    call setline(linenr, s:virtual.lines[linenr])
+    call setline(linenr, substitute(
+          \ s:virtual.lines[linenr], '!!!!!!', '', 'g'))
   endfor
 
   call s:set_cursor()
@@ -327,7 +328,8 @@ function! s:print_simple(is_error, lines) "{{{
 
     normal! j$
   elseif line('.') != b:interactive.echoback_linenr
-    call setline('.', getline('.') . lines[0])
+    call setline('.', substitute(
+          \ getline('.') . lines[0], '!!!!!!', '', 'g'))
   endif
 
   let lines = lines[1:]
