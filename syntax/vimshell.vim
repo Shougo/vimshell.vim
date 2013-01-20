@@ -41,7 +41,7 @@ syntax region   vimshellString
 syntax match   vimshellString
       \ '[''"`]$' contained contained
 syntax match   vimshellError
-        \ '\%([^!]\|^\)\zs!!!.\+!!!\ze\%([^!]\|$\)' contains=vimshellErrorHidden
+        \ '!!![^!].*!!!' contains=vimshellErrorHidden
 syntax match   vimshellComment
       \ '#.*$' contained
 syntax match   vimshellConstants
@@ -88,12 +88,12 @@ endif
 if has('conceal')
   " Supported conceal features.
   syntax match   vimshellErrorHidden
-        \ '\%([^!]\|^\)\zs!!!\ze\%([^!]\|$\)' contained conceal
+        \ '!!!' contained conceal
   syntax match   vimshellUserPromptHidden
         \ '^\[%\] ' contained conceal
 else
   syntax match   vimshellErrorHidden
-        \ '\%([^!]\|^\)\zs!!!\ze\%([^!]\|$\)' contained
+        \ '!!!' contained
   syntax match   vimshellUserPromptHidden
         \ '^\[%\] ' contained
   highlight default link vimshellErrorHidden Ignore

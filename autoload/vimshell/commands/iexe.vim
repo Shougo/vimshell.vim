@@ -290,16 +290,16 @@ endfunction"}}}
 function! s:default_syntax() "{{{
   " Set syntax.
   syntax match InteractiveError
-      \ '\%([^!]\|^\)\zs!!!.\+!!!\ze\%([^!]\|$\)' contains=InteractiveErrorHidden
+      \ '!!![^!].*!!!' contains=InteractiveErrorHidden
   highlight def link InteractiveError Error
 
   if has('conceal')
     " Supported conceal features.
     syntax match   InteractiveErrorHidden
-          \ '\%([^!]\|^\)\zs!!!\ze\%([^!]\|$\)' contained conceal
+          \ '!!!' contained conceal
   else
     syntax match   InteractiveErrorHidden
-          \ '\%([^!]\|^\)\zs!!!\ze\%([^!]\|$\)' contained
+          \ '!!!' contained
     highlight def link InteractiveErrorHidden Ignore
   endif
 endfunction"}}}
