@@ -44,12 +44,20 @@ function! s:command.execute(args, context) "{{{
   endfor
   redir END
 
-  call vimshell#restore_pos(old_pos)
+  let _ = _[1:]
+  let pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
+  let bufnr = bufnr('%')
 
-  if &filetype ==# 'vimshell'
+  call vimshell#restore_pos(old_pos)
+  if _ != ''
     call vimshell#print_line(a:context.fd, _)
-  else
-    echo _
+  endif
+
+  if bufnr('%') != bufnr
+    call vimshell#next_prompt(a:context)
+    call vimshell#restore_pos(pos)
+    stopinsert
+    return 1
   endif
 endfunction"}}}
 
