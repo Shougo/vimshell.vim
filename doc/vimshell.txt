@@ -1457,7 +1457,7 @@ You can add a new vimshell command easily just by adding a plugin file under
 autoload/internal/ directory; vimshell reads *.vim files there as internal
 command.
 
-The tutorial is available(Japanese).
+A tutorial is available (in Japanese.)
 http://yomi322.hateblo.jp/entry/2013/01/13/141003
 
 
