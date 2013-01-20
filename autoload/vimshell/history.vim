@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Oct 2012.
+" Last Modified: 20 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,8 +54,7 @@ function! vimshell#history#append(command) "{{{
   let histories = vimshell#history#read()
 
   " Filtering.
-  call insert(filter(histories, 'v:val !=# '.
-        \ string(substitute(command, "'", "''", 'g'))), command)
+  let histories = vimshell#util#uniq(insert(histories, command))
 
   " Truncate.
   let histories = histories[: g:vimshell_max_command_history-1]
