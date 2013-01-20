@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Jan 2013.
+" Last Modified: 21 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,43 +30,74 @@ elseif exists("b:current_syntax")
   finish
 endif
 
-syntax match   vimshellUserPrompt   '^\[%\] .*$' contains=vimshellUserPromptHidden
-syntax region   vimshellString   start=+'+ end=+'+ oneline contained
-syntax region   vimshellString   start=+"+ end=+"+ contains=vimshellQuoted oneline contained
-syntax region   vimshellString   start=+`+ end=+`+ oneline contained
-syntax match   vimshellString   '[''"`]$' contained contained
-syntax region   vimshellError   start=+!!!+ end=+!!!+ contains=vimshellErrorHidden oneline
-syntax match   vimshellComment   '#.*$' contained
-syntax match   vimshellConstants         '[+-]\=\<\d\+\>'
-syntax match   vimshellConstants         '[+-]\=\<0x\x\+\>'
-syntax match   vimshellConstants         '[+-]\=\<0\o\+\>'
-syntax match   vimshellConstants         '[+-]\=\d\+#[-+]\=\w\+\>'
-syntax match   vimshellConstants         '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   vimshellExe               '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
-syntax match   vimshellSocket            '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
-syntax match   vimshellDotFiles          '\%(^\|\s\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
-syntax match   vimshellArguments         '\s-\=-[[:alnum:]-]\+=\=' contained
-syntax match   vimshellQuoted            '\\.' contained
-syntax match   vimshellSpecial           '[|<>;&;]' contained
-syntax match   vimshellVariable          '$\h\w*' contained
-syntax match   vimshellVariable          '$$\h\w*' contained
+syntax match   vimshellUserPrompt
+      \ '^\[%\] .*$' contains=vimshellUserPromptHidden
+syntax region   vimshellString
+      \ start=+'+ end=+'+ oneline contained
+syntax region   vimshellString
+      \ start=+"+ end=+"+ contains=vimshellQuoted oneline contained
+syntax region   vimshellString
+      \ start=+`+ end=+`+ oneline contained
+syntax match   vimshellString
+      \ '[''"`]$' contained contained
+syntax match   vimshellError
+      \ '!\@<!!!.\+!!!!\@<!' contains=vimshellErrorHidden
+syntax match   vimshellComment
+      \ '#.*$' contained
+syntax match   vimshellConstants
+      \ '[+-]\=\<\d\+\>'
+syntax match   vimshellConstants
+      \ '[+-]\=\<0x\x\+\>'
+syntax match   vimshellConstants
+      \ '[+-]\=\<0\o\+\>'
+syntax match   vimshellConstants
+      \ '[+-]\=\d\+#[-+]\=\w\+\>'
+syntax match   vimshellConstants
+      \ '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
+syntax match   vimshellExe
+      \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
+syntax match   vimshellSocket
+      \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
+syntax match   vimshellDotFiles
+      \ '\%(^\|\s\)\.[[:alnum:]_.-]\+[[:blank:]\n]'
+syntax match   vimshellArguments
+      \ '\s-\=-[[:alnum:]-]\+=\=' contained
+syntax match   vimshellQuoted
+      \ '\\.' contained
+syntax match   vimshellSpecial
+      \ '[|<>;&;]' contained
+syntax match   vimshellVariable
+      \ '$\h\w*' contained
+syntax match   vimshellVariable
+      \ '$$\h\w*' contained
 syntax region   vimshellVariable  start=+${+ end=+}+ contained
 if vimshell#util#is_windows()
-  syntax match   vimshellArguments         '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
-  syntax match   vimshellDirectory         '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
-  syntax match   vimshellLink              '\([[:alnum:]_.-]\+\.lnk\)'
+  syntax match   vimshellArguments
+        \ '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
+  syntax match   vimshellDirectory
+        \ '\%(\f\s\?\)\+[/\\]\ze\%(\s\|$\)'
+  syntax match   vimshellLink
+        \ '\([[:alnum:]_.-]\+\.lnk\)'
 else
-  syntax match   vimshellDirectory         '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
-  syntax match   vimshellLink              '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
+  syntax match   vimshellDirectory
+        \ '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
+  syntax match   vimshellLink
+        \ '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
 endif
 
 if has('conceal')
   " Supported conceal features.
-  syntax match   vimshellErrorHidden            '!!!' contained conceal
-  syntax match   vimshellUserPromptHidden       '^\[%\] ' contained conceal
+  syntax match   vimshellErrorHidden
+        \ '!\@<!!!!\@<!' contained conceal
+  syntax match   vimshellUserPromptHidden
+        \ '^\[%\] ' contained conceal
 else
-  syntax match   vimshellErrorHidden            '!!!' contained
-  syntax match   vimshellUserPromptHidden       '^\[%\] ' contained
+  syntax match   vimshellErrorHidden
+        \ '!\@<!!!!\@<!' contained
+  syntax match   vimshellUserPromptHidden
+        \ '^\[%\] ' contained
+  highlight default link vimshellErrorHidden Ignore
+  highlight default link vimshellUserPromptHidden Ignore
 endif
 
 syntax match vimshellExe '[|;]\s*\f\+'
@@ -90,8 +121,6 @@ highlight default link vimshellSocket Constant
 highlight default link vimshellLink Comment
 highlight default link vimshellDotFiles Identifier
 highlight default link vimshellError Error
-highlight default link vimshellErrorHidden Ignore
-highlight default link vimshellUserPromptHidden Ignore
 
 call vimshell#set_highlight()
 

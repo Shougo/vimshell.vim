@@ -1477,6 +1477,7 @@ CHANGELOG						*vimshell-changelog*
 
 2013-01-21
 - Improved error output.
+- Fixed error syntax patterns.
 
 2013-01-20
 - Improved append histories.

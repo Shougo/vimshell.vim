@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 21 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -289,15 +289,18 @@ endfunction"}}}
 
 function! s:default_syntax() "{{{
   " Set syntax.
-  syn region   InteractiveError   start=+!!!+ end=+!!!+ contains=InteractiveErrorHidden oneline
-  hi def link InteractiveError Error
+  syntax match InteractiveError
+      \ '!\@<!!!.\+!!!!\@<!' contains=InteractiveErrorHidden
+  highlight def link InteractiveError Error
 
   if has('conceal')
     " Supported conceal features.
-    syn match   InteractiveErrorHidden            '!!!' contained conceal
+    syntax match   InteractiveErrorHidden
+          \ '!\@<!!!!\@<!' contained conceal
   else
-    syn match   InteractiveErrorHidden            '!!!' contained
-    hi def link InteractiveErrorHidden Ignore
+    syntax match   InteractiveErrorHidden
+          \ '!\@<!!!!\@<!' contained
+    highlight def link InteractiveErrorHidden Ignore
   endif
 endfunction"}}}
 
