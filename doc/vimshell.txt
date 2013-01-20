@@ -373,8 +373,8 @@ g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 
 g:vimshell_enable_transient_user_prompt
 				*g:vimshell_enable_transient_user_prompt*
-		If it is non-zero, user prompt and right prompt line will
-		delete after executing |<Plug>(vimshell_enter)| .
+		If it is non-zero, vimshell will delete user prompt and right
+		prompt line after executing |<Plug>(vimshell_enter)| .
 
 		Default value is 0.
 
