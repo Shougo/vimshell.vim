@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2013.
+" Last Modified: 22 Jan 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -438,22 +438,24 @@ function! vimshell#get_prompt(...) "{{{
     return ''
   endif
 
-  if !exists('s:prompt')
-  endif
-
   return &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) ?
-        \ vimshell#get_context().prompt :
+        \ get(vimshell#get_context(),
+        \      'vimshell_prompt', get(g:,
+        \      'vimshell_prompt', 'vimshell% ')) :
         \ vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt() "{{{
-  return vimshell#get_context().secondary_prompt
+  return get(vimshell#get_context(),
+        \ 'secondary_prompt', get(g:, 'vimshell_secondary_prompt', '%% '))
 endfunction"}}}
 function! vimshell#get_user_prompt() "{{{
-  return vimshell#get_context().user_prompt
+  return get(vimshell#get_context(),
+        \ 'user_prompt', get(g:, 'vimshell_user_prompt', ''))
 endfunction"}}}
 function! vimshell#get_right_prompt() "{{{
-  return vimshell#get_context().right_prompt
+  return get(vimshell#get_context(),
+        \ 'right_prompt', get(g:, 'vimshell_right_prompt', ''))
 endfunction"}}}
 function! vimshell#get_cur_text() "{{{
   " Get cursor text without prompt.
@@ -915,7 +917,7 @@ function! s:initialize_vimshell(path, context) "{{{
   call vimshell#help#init()
   call vimshell#interactive#init()
 endfunction"}}}
-function! vimshell#set_highlight()
+function! vimshell#set_highlight() "{{{
   " Set syntax.
   let prompt_pattern = "'^" . escape(
         \ vimshell#escape_match(vimshell#get_prompt()), "'") . "'"
@@ -944,7 +946,7 @@ function! vimshell#set_highlight()
         \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
         \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
         \ 'vimshellSpecial,vimshellComment'
-endfunction
+endfunction"}}}
 function! s:initialize_context(context) "{{{
   let default_context = {
     \ 'buffer_name' : 'default',
@@ -1215,7 +1217,7 @@ function! s:event_bufwin_enter(bufnr) "{{{
         call setline(line, secondary)
       endif
     endfor
-    
+
   finally
     if exists('winnr')
       execute winnr.'wincmd w'
