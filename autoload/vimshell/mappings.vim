@@ -329,7 +329,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
       " Retry.
       call setpos('.', a:oldpos)
       call setline('.', line)
-      call s:execute_command_line(a:is_insert, a:oldpos)
+      return s:execute_command_line(a:is_insert, a:oldpos)
     endif
 
     " Error.
