@@ -328,7 +328,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     if line !=# oldline
       " Retry.
       call setpos('.', a:oldpos)
-      call setline('.', line)
+      call vimshell#set_prompt_command(line)
       return s:execute_command_line(a:is_insert, a:oldpos)
     endif
 
