@@ -1475,7 +1475,7 @@ https://github.com/chikatoike/concealedyank.vim
 
 Q: I want to add paths to $PATH.
 
-A: You can add them like below in .vimshrc. Note that any Environment constant inside the double quotes will not be unfold.
+A: You can add them by writing a line like below in .vimshrc. Note that any Environment constant inside the double quotes will not be unfold.
 >
 	let $PATH="~/bin:/local/usr/bin:/".$PATH
 <
