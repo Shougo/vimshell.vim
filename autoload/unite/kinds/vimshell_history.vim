@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Oct 2012.
+" Last Modified: 02 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,7 +33,7 @@ endfunction"}}}
 
 let s:kind = {
       \ 'name' : 'vimshell/history',
-      \ 'default_action' : 'execute',
+      \ 'default_action' : 'insert',
       \ 'action_table': {},
       \ 'alias_table' : { 'ex' : 'nop', 'narrow' : 'edit' },
       \ 'parents': ['completion'],
