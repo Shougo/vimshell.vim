@@ -79,13 +79,13 @@ variables by "vimshell-internal-source".
 ==============================================================================
 INSTALL						*vimshell-install*
 
-vimshell needs |vimproc|
+vimshell depends on |vimproc|
 http://github.com/Shougo/vimproc
 
-You must install and compile vimproc Ver.5.0(or later) before use vimshell
+You must install and compile vimproc Ver.5.0(or later) before using vimshell
 (refer to |vimproc-install|).
 
-Note: To enable complete feature, required neocomplcache.
+Note: To enable all the features of vimshell, neocomplcache is required.
 https://github.com/Shougo/neocomplcache
 
 ==============================================================================
@@ -1472,6 +1472,14 @@ https://github.com/chikatoike/concealedyank.vim
 >
 	xmap Y <Plug>(operator-concealedyank)
 <
+
+Q: I want to add paths to $PATH.
+
+A: You can add them like below in .vimshrc. Note that any Environment constant inside the double quotes will not be unfold.
+>
+	let $PATH="~/bin:/local/usr/bin:/".$PATH
+<
+
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
