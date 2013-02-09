@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2013.
+" Last Modified: 09 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,33 +49,24 @@ function! s:source.get_keyword_pos(cur_text) "{{{
     return -1
   endif
 
-  let cur_text = vimshell#get_cur_text()
-
   try
-    call vimshell#parser#check_script(cur_text)
-  catch /^Exception: Quote/
-    return -1
-  endtry
-
-  try
-    let args = vimshell#get_current_args(cur_text)
+    let cur_text = vimproc#parser#parse_statements(
+          \ vimshell#get_cur_text())[-1].statement
+    let pipe = vimproc#parser#parse_pipe(cur_text)
+    let arg = empty(pipe) ? '' : get(pipe[-1].args, -1, '')
   catch /^Exception:/
     return -1
   endtry
-
-  if len(args) <= 1
-    return len(vimshell#get_prompt())
-  endif
 
   if a:cur_text =~ '\s\+$'
     " Add blank argument.
     call add(args, '')
   endif
 
-  let pos = col('.')-len(args[-1])-1
-  if args[-1] =~ '/'
+  let pos = col('.')-len(arg)-1
+  if arg =~ '/'
     " Filename completion.
-    let pos += match(args[-1],
+    let pos += match(arg,
           \ '\%(\\[^[:alnum:].-]\|\f\|[:]\)\+$')
   endif
 
@@ -84,14 +75,21 @@ endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   try
-    let args = vimshell#get_current_args(vimshell#get_cur_text())
+    let cur_text = vimproc#parser#parse_statements(
+          \ vimshell#get_cur_text())[-1].statement
+    let args = vimproc#parser#parse_pipe(cur_text)[-1].args
   catch /^Exception:/
     return []
   endtry
 
+  if empty(args)
+    let args = ['']
+  endif
+  let cur_keyword_str = args[-1]
+
   let _ = (len(args) <= 1) ?
-        \ s:get_complete_commands(a:cur_keyword_str) :
-        \ s:get_complete_args(a:cur_keyword_str, args)
+        \ s:get_complete_commands(cur_keyword_str) :
+        \ s:get_complete_args(cur_keyword_str, args)
 
   if a:cur_keyword_str =~ '^\$'
     let _ += vimshell#complete#helper#variables(a:cur_keyword_str)
