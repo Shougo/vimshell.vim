@@ -38,26 +38,34 @@ function! s:command.execute(args, context) "{{{
 
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
 
-  redir => _
-  for command in split(join(a:args), '\n')
-    silent! execute command
-  endfor
-  redir END
+  let verbose = tempname()
+  let [verbosefile_save, verbose_save] = [&verbosefile, &verbose]
+  try
+    let &verbosefile = verbose
+    let &verbose = 0
 
-  let _ = _[1:]
+    for command in split(join(a:args), '\n')
+      silent! execute command
+    endfor
+  finally
+    let [&verbosefile, &verbose] = [verbosefile_save, verbose_save]
+  endtry
+
+  let _ = join(readfile(verbose), "\n")[1:]
+  call delete(verbose)
+
   let pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
   let bufnr = bufnr('%')
 
   call vimshell#restore_pos(old_pos)
-  if _ != ''
-    call vimshell#print_line(a:context.fd, _)
-  endif
 
   if bufnr('%') != bufnr
     call vimshell#next_prompt(a:context)
     call vimshell#restore_pos(pos)
     stopinsert
     return 1
+  elseif _ != ''
+    call vimshell#print_line(a:context.fd, _)
   endif
 endfunction"}}}
 

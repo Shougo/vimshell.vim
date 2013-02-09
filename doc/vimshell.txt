@@ -1413,7 +1413,7 @@ auto-jump
 		Example:
 >
     		call vimshell#set_alias('j', ':Unite -buffer-name=files
-          \ -default-action=lcd -input=$$args directory_mru')
+          \ -default-action=lcd -no-split -input=$$args directory_mru')
 <
 ==============================================================================
 UNITE SOURCES					*vimshell-unite-sources*
@@ -1484,6 +1484,9 @@ unfold.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2013-02-09
+- Improved vexe behavior.
 
 2013-02-02
 - Changed default_action in vimshell/history kind.
