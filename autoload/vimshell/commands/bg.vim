@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 11 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,11 +39,12 @@ function! s:command.execute(commands, context) "{{{
   " Execute command in background.
   let commands = a:commands
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
-        \ 'arg=' : ['--encoding', '--syntax', '--split'],
+        \ 'arg=' : ['--encoding', '--syntax', '--split', '--filetype'],
         \ }, {
         \ '--encoding' : vimshell#interactive#get_default_encoding(a:commands),
         \ '--syntax' : 'vimshell-bg',
         \ '--split' : g:vimshell_split_command,
+        \ '--filetype' : 'background',
         \ })
 
   if empty(commands[0].args)
@@ -153,7 +154,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
 
   " For bg.
   setlocal nomodifiable
-  setlocal filetype=vimshell-bg
+  let &filetype = a:options['--filetype']
   let &syntax = a:options['--syntax']
 
   let b:interactive = a:interactive
