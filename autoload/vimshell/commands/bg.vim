@@ -39,10 +39,9 @@ function! s:command.execute(commands, context) "{{{
   " Execute command in background.
   let commands = a:commands
   let [commands[0].args, options] = vimshell#parser#getopt(commands[0].args, {
-        \ 'arg=' : ['--encoding', '--syntax', '--split', '--filetype'],
+        \ 'arg=' : ['--encoding', '--split', '--filetype'],
         \ }, {
         \ '--encoding' : vimshell#interactive#get_default_encoding(a:commands),
-        \ '--syntax' : 'vimshell-bg',
         \ '--split' : g:vimshell_split_command,
         \ '--filetype' : 'background',
         \ })
@@ -155,7 +154,6 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
   " For bg.
   setlocal nomodifiable
   let &filetype = a:options['--filetype']
-  let &syntax = a:options['--syntax']
 
   let b:interactive = a:interactive
 
