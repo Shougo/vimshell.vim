@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2013.
+" Last Modified: 11 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -329,12 +329,6 @@ function! s:set_output_pos(is_insert) "{{{
     endif
 
     let b:interactive.output_pos = getpos('.')
-  endif
-
-  if a:is_insert && exists('*neocomplcache#is_enabled')
-        \ && neocomplcache#is_enabled()
-    " If response delays, so you have to close popup manually.
-    call neocomplcache#close_popup()
   endif
 endfunction"}}}
 
@@ -704,6 +698,11 @@ function! s:check_all_output(is_hold) "{{{
         setlocal modifiable
         call feedkeys(is_complete_hold ?
               \ "\<C-r>\<ESC>" : "a\<BS>", 'n')
+      endif
+
+      " Skip next auto completion.
+      if exists('*neocomplcache#skip_next_complete')
+        call neocomplcache#skip_next_complete()
       endif
     endif
   elseif &updatetime < s:update_time_save
