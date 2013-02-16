@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2013.
+" Last Modified: 16 Feb 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,10 +50,8 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   endif
 
   try
-    let cur_text = vimproc#parser#parse_statements(
-          \ vimshell#get_cur_text())[-1].statement
-    let pipe = vimproc#parser#parse_pipe(cur_text)
-    let arg = empty(pipe) ? '' : get(pipe[-1].args, -1, '')
+    let args = vimproc#parser#split_args_through(
+          \ vimshell#get_cur_text())
   catch /^Exception:/
     return -1
   endtry
@@ -63,6 +61,7 @@ function! s:source.get_keyword_pos(cur_text) "{{{
     call add(args, '')
   endif
 
+  let arg = get(args, -1, '')
   let pos = col('.')-len(arg)-1
   if arg =~ '/'
     " Filename completion.
@@ -75,9 +74,8 @@ endfunction"}}}
 
 function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
   try
-    let cur_text = vimproc#parser#parse_statements(
-          \ vimshell#get_cur_text())[-1].statement
-    let args = vimproc#parser#parse_pipe(cur_text)[-1].args
+    let args = vimproc#parser#split_args_through(
+          \ vimshell#get_cur_text())
   catch /^Exception:/
     return []
   endtry
