@@ -1486,6 +1486,9 @@ unfold.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-03-02
+- Fixed vimshell#cd().
+
 2013-02-11
 - Fixed update behavior.
 - Fixed bg command.
