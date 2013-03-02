@@ -29,7 +29,7 @@ if !exists('g:loaded_vimshell')
 endif
 
 function! vimshell#version() "{{{
-  return '902'
+  return '1000'
 endfunction"}}}
 
 function! vimshell#echo_error(string) "{{{
