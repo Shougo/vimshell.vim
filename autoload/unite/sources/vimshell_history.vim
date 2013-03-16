@@ -52,7 +52,7 @@ function! s:source.hooks.on_syntax(args, context) "{{{
   try
     syntax include @Vimshell syntax/vimshell.vim
     syntax region uniteSource__VimShellHistoryVimshell
-          \ start=' ' end='$' contains=@Vimshell
+          \ start=' ' end='$' contains=@Vimshell,vimshellCommand
           \ containedin=uniteSource__VimshellHistory
   finally
     let b:current_syntax = save_current_syntax

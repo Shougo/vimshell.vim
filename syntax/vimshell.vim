@@ -54,7 +54,7 @@ syntax match   vimshellConstants
       \ '[+-]\=\d\+#[-+]\=\w\+\>'
 syntax match   vimshellConstants
       \ '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   vimshellExe
+syntax match   vimshellCommand
       \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
 syntax match   vimshellSocket
       \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
@@ -100,7 +100,7 @@ else
   highlight default link vimshellUserPromptHidden Ignore
 endif
 
-syntax match vimshellExe '[|;]\s*\f\+'
+syntax match vimshellCommand '[|;]\s*\f\+'
       \ contained contains=vimshellSpecial,vimshellArguments
 
 highlight default link vimshellPrompt Identifier
@@ -115,7 +115,7 @@ highlight default link vimshellVariable Comment
 highlight default link vimshellComment Identifier
 highlight default link vimshellNormal Normal
 
-highlight default link vimshellExe Statement
+highlight default link vimshellCommand Statement
 highlight default link vimshellDirectory Preproc
 highlight default link vimshellSocket Constant
 highlight default link vimshellLink Comment

@@ -919,33 +919,21 @@ function! s:initialize_vimshell(path, context) "{{{
 endfunction"}}}
 function! vimshell#set_highlight() "{{{
   " Set syntax.
-  let prompt_pattern = string('^\s*' . escape(
+  let prompt_pattern = string('^' . escape(
         \ vimshell#escape_match(vimshell#get_prompt()), "'"))
-  let secondary_prompt_pattern = string('^\s*' . escape(
+  let secondary_prompt_pattern = string('^' . escape(
         \ vimshell#escape_match(
         \ vimshell#get_secondary_prompt()), "'"))
-  execute 'syntax match vimshellPrompt' prompt_pattern
-  execute 'syntax match vimshellPrompt' secondary_prompt_pattern
-  execute 'syntax region   vimshellExe start='.prompt_pattern
-        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'''
-        \ 'contained contains=vimshellPrompt,'.
-        \ 'vimshellSpecial,vimshellConstants,'.
-        \ 'vimshellArguments,vimshellString,vimshellComment'
-  execute 'syntax region   vimshellLine start='.prompt_pattern
-        \ 'end=''$'' keepend contains=vimshellExe,'
-        \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
-        \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
-        \ 'vimshellSpecial,vimshellComment'
-  execute 'syntax region   vimshellExe start='.secondary_prompt_pattern
-        \ 'end=''[^[:blank:]]\+\zs[[:blank:]\n]'''
-        \ 'contained contains=vimshellPrompt,'.
-        \ 'vimshellSpecial,vimshellConstants,'.
-        \ 'vimshellArguments,vimshellString,vimshellComment'
-  execute 'syntax region   vimshellLine start='.secondary_prompt_pattern
-        \ 'end=''$'' keepend contains=vimshellExe,'
-        \ 'vimshellDirectory,vimshellConstants,vimshellArguments,'.
-        \ 'vimshellQuoted,vimshellString,vimshellVariable,'.
-        \ 'vimshellSpecial,vimshellComment'
+  execute 'syntax match vimshellPrompt'
+        \ prompt_pattern 'nextgroup=vimshellCommand'
+  execute 'syntax match vimshellPrompt'
+        \ secondary_prompt_pattern 'nextgroup=vimshellCommand'
+  syntax match   vimshellCommand '\f\+'
+        \ nextgroup=vimshellLine contained
+  syntax region vimshellLine start='' end='$' keepend contained
+        \ contains=vimshellDirectory,vimshellConstants,
+        \vimshellArguments,vimshellQuoted,vimshellString,
+        \vimshellVariable,vimshellSpecial,vimshellComment
 endfunction"}}}
 function! s:initialize_context(context) "{{{
   let default_context = {
