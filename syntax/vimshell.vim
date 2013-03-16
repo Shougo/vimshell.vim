@@ -26,7 +26,7 @@
 
 if version < 700
   syntax clear
-elseif exists("b:current_syntax")
+elseif exists('b:current_syntax')
   finish
 endif
 
@@ -71,6 +71,13 @@ syntax match   vimshellVariable
 syntax match   vimshellVariable
       \ '$$\h\w*' contained
 syntax region   vimshellVariable  start=+${+ end=+}+ contained
+
+syntax match vimshellCommand '[|;]\s*\f\+'
+      \ contained contains=vimshellSpecial,vimshellArguments
+
+syntax match vimshellURI
+      \ '\a\a\+://[[:alnum:];/?:@&=+$,_.!~*|()-]\+' containedin=ALL
+
 if vimshell#util#is_windows()
   syntax match   vimshellArguments
         \ '\s/[?:,_[:alnum:]]\+\ze\%(\s\|$\)' contained
@@ -100,8 +107,11 @@ else
   highlight default link vimshellUserPromptHidden Ignore
 endif
 
-syntax match vimshellCommand '[|;]\s*\f\+'
-      \ contained contains=vimshellSpecial,vimshellArguments
+if has('gui_running')
+  highlight vimshellURI gui=UNDERLINE guifg=#6699ff guibg=NONE
+else
+  highlight def link vimshellURI Comment
+endif
 
 highlight default link vimshellPrompt Identifier
 highlight default link vimshellUserPrompt Special
