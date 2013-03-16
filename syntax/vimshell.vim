@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jan 2013.
+" Last Modified: 16 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,7 +39,7 @@ syntax region   vimshellString
 syntax region   vimshellString
       \ start=+`+ end=+`+ oneline contained
 syntax match   vimshellString
-      \ '[''"`]$' contained contained
+      \ '[''"`]$' contained
 syntax match   vimshellError
         \ '!!![^!].*!!!' contains=vimshellErrorHidden
 syntax match   vimshellComment

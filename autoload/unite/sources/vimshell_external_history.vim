@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_external_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Feb 2012.
+" Last Modified: 16 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,9 +56,17 @@ function! s:source.hooks.on_init(args, context) "{{{
   let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context) "{{{
-  syntax match uniteSource__VimshellHistorySpaces />-*\ze\s*$/
-        \ containedin=uniteSource__VimshellHistory
-  highlight default link uniteSource__VimshellHistorySpaces Comment
+  let save_current_syntax = get(b:, 'current_syntax', '')
+  unlet! b:current_syntax
+
+  try
+    syntax include @Vimshell syntax/vimshell.vim
+    syntax region uniteSource__VimShellExternalHistoryVimshell
+          \ start=' ' end='$' contains=@Vimshell
+          \ containedin=uniteSource__VimshellExternalHistory
+  finally
+    let b:current_syntax = save_current_syntax
+  endtry
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context) "{{{
   let cnt = 0

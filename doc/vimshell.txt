@@ -1488,6 +1488,7 @@ CHANGELOG						*vimshell-changelog*
 
 2013-03-16
 - Fixed complete position problem.
+- Improved syntax highlight in unite sources.
 
 2013-03-02
 - Version 10.0 development is started.
