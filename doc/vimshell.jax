@@ -1,0 +1,61 @@
+*vimshell.txt*	Vim scriptによって実装された強力なシェル
+
+Version: 10.0
+Author : Shougo <Shougo.Matsu@gmail.com>
+License: MIT license  {{{
+    Permission is hereby granted, free of charge, to any person obtaining
+    a copy of this software and associated documentation files (the
+    "Software"), to deal in the Software without restriction, including
+    without limitation the rights to use, copy, modify, merge, publish,
+    distribute, sublicense, and/or sell copies of the Software, and to
+    permit persons to whom the Software is furnished to do so, subject to
+    the following conditions:
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+    OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+    MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+    IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
+    CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
+    TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
+    SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+}}}
+
+目次						*vimshell-contents*
+
+はじめに		|vimshell-introduction|
+インストール			|vimshell-install|
+インターフェース		|vimshell-interface|
+  コマンド		  |vimshell-commands|
+  変数		  |vimshell-variables|
+  関数		  |vimshell-functions|
+  キーマッピング		  |vimshell-key-mappings|
+    Vimshellバッファのキーマッピング |vimshell-buffer-key-mappings|
+    Interactiveバッファのキーマッピング |vimshell-interactive-buffer-key-mappings|
+例		|vimshell-examples|
+内部コマンド	|vimshell-internal-commands|
+特別なコマンド	|vimshell-special-commands|
+コマンドの変更		|vimshell-alter-command|
+Hook			|vimshell-hook|
+Tips			|vimshell-tips|
+Uniteのソース		|vimshell-unite-sources|
+プラグインの作成		|vimshell-create-plugin|
+FAQ			|vimshell-faq|
+変更履歴		|vimshell-changelog|
+
+==============================================================================
+はじめに						*vimshell-introduction*
+
+Vimshellはvim scriptだけで書かれていて外部のシェルに一切依存しない最高のシェルです．
+単純な実装であるためにemacsのeshellほど洗練されていません．
+ほかのVimのプラグインと合わせて使えることがVimshellの一番の特徴です．
+
+VimShellはよいシェルの環境がないWindowsでも動きます．
+ただしWindowsではVimshellのすべての機能をつかうことはできません．
+
+Vimshellは外部のシェルから便利な機能を引き継ぐことができます．
+zshで利用できる機能をVimshellは標準で備えています．
+
+Vimshellは，使いやすいシェルという目標がありますが，一般に使われるシェルとの完璧な互換性を目指しているわけではありません．
+なので変数のルールといった動作がよく使われているシェルとは少し違っています．
