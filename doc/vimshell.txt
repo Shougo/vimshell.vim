@@ -47,7 +47,7 @@ Changelog		|vimshell-changelog|
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
 
-Vimshell is an extreme shell that doesn't depend on external shells but is
+*vimshell* is an extreme shell that doesn't depend on external shells but is
 written completely in pure Vim script. To be honest the implementation is not
 as mature as eshell yet. The most important characteristic of vimshell is that
 it can collaborate with other Vim plugins. Additionally, for example, vimshell
