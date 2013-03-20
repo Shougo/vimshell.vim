@@ -1488,6 +1488,7 @@ CHANGELOG						*vimshell-changelog*
 
 2013-03-20
 - Improved command not found and signal behavior.
+- Fixed for completion.
 
 2013-03-16
 - Fixed complete position problem.

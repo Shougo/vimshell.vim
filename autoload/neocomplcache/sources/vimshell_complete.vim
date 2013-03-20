@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2013.
+" Last Modified: 20 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,7 +62,12 @@ function! s:source.get_keyword_pos(cur_text) "{{{
   endif
 
   let arg = get(args, -1, '')
+  if arg =~ "'"
+    return -1
+  endif
+
   let pos = col('.')-len(arg)-1
+
   if arg =~ '/' && '\%(\\[^[:alnum:].-]\|\f\|[:]\)\+$'
     " Filename completion.
     let pos += match(arg,
