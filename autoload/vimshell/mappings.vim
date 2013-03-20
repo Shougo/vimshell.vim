@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 31 Jan 2013.
+" Last Modified: 20 Mar 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -325,7 +325,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     " Command not found.
     let oldline = line
     let line = vimshell#hook#call_filter('notfound', context, line)
-    if line !=# oldline
+    if line != '' && line !=# oldline
       " Retry.
       call setpos('.', a:oldpos)
       call vimshell#set_prompt_command(line)
@@ -333,7 +333,8 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     endif
 
     " Error.
-    call vimshell#error_line({}, v:exception)
+    call vimshell#error_line({}, 'command not found: ' . matchstr(v:exception,
+          \ 'File "\zs.*\ze" is not found.'))
     call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return
