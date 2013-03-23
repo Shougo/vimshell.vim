@@ -73,7 +73,7 @@ vimshell reads .vimshrc as initialize file.
 It might be helpful to add alias configurations.
 
 Note: vimshell has nothing to do with bash or zsh, so as to have no
-compatiblities.  vimshell doesn't read .bashrc or .zshrc, but environment
+compatibilities.  vimshell doesn't read .bashrc or .zshrc, but environment
 variables by "vimshell-internal-source".
 
 ==============================================================================
@@ -96,7 +96,7 @@ COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
 		Runs vimshell. The {path} will be its current directory.
-		If aother vimshell buffer exists, switches to the vimshell
+		If another vimshell buffer exists, switches to the vimshell
 		buffer and changes its current directory to {path}.
 		If you omit {path}, it uses Vim's current directory (or does
 		not change the current directory).
@@ -178,7 +178,7 @@ COMMANDS 					*vimshell-commands*
 		Like as |:VimShell|, but move to current directory.
 
 :VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
-		Like as |:VimShell|, but move to buffer's dirrectory.
+		Like as |:VimShell|, but move to buffer's directory.
 
 :VimShellExecute {command}			*:VimShellExecute*
 		It does not run vimshell, but launches a terminal program you
@@ -226,7 +226,7 @@ g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		You can define additional prompt to substitute a string for
 		this.  Unlike |g:vimshell_prompt|, it can be a non-fixed
-		string.  You can get multi-line prompt by seperating "user
+		string.  You can get multi-line prompt by separating "user
 		prompt" with \n.
 
 		This example will be helpful to show current directory
@@ -236,16 +236,16 @@ g:vimshell_user_prompt				*g:vimshell_user_prompt*
 <
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		It's zsh-like right prompt. This value is a string value which
-		is an expression of Vim script. similar to
+		is an expression of Vim script. Similar to
 		|g:vimshell_user_prompt|, but this calculates the window size,
 		and shows the prompt on preferable position.
 		Initial value is empty.
 
 g:vimshell_no_default_keymappings
 					*g:vimshell_no_default_keymappings*
-		Disables all default key mapings in vimshell.
+		Disables all default key mappings in vimshell.
 
-		You can not use vimshell funcitons unless you set new
+		You can not use vimshell functions unless you set new
 		key mappings, so it is for hackers who have understood the
 		inner behaviors, and not recommended for newbies.
 
@@ -259,7 +259,7 @@ g:vimshell_use_terminal_command
 		Initial value is "".
 
 g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
-		Sets a temporaly directory used by vimshell. And history file
+		Sets a temporary directory used by vimshell. And history file
 		is saved in this directory.
 
 		Initial value is "expand('~/.vimshell')".
@@ -276,7 +276,7 @@ g:vimshell_max_directory_stack		*g:vimshell_max_directory_stack*
 
 g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
 		Sets a setting file read by vimshell first.
-		This is similar to .bashrc in bash. It is convinience when you
+		This is similar to .bashrc in bash. It is convenient when you
 		define aliases.
 
 		Initial Value is "expand('~/.vimshrc')".
@@ -298,7 +298,7 @@ g:vimshell_disable_escape_highlight
 
 g:vimshell_cat_command				*g:vimshell_cat_command*
 		Sets $PAGER command path.
-		Note: This variable is useful for using pager comands.
+		Note: This variable is useful for using pager commands.
 		For example, "git log".
 		Note: You *must not* set "core.pager" variable in your
 		.gitconfig.
@@ -308,7 +308,7 @@ g:vimshell_cat_command				*g:vimshell_cat_command*
 g:vimshell_editor_command			*g:vimshell_editor_command*
 		Sets $EDITOR command path.
 		
-		Note: This variable is useful for using editor comands.
+		Note: This variable is useful for using editor commands.
 		For example, "git commit" or "git rebase -i" commands.
 		Note: This feature required GUI Vim and supported
 		|+clientserver| feature.
@@ -403,7 +403,7 @@ g:vimshell_interactive_command_options
 		command that take some particular options or doesn't work well
 		interactively, like in windows environments.
 
-		Defalut value is too complicated, so please refer
+		Default value is too complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_interpreter_commands
@@ -412,7 +412,7 @@ g:vimshell_interactive_interpreter_commands
 		assignments of an interpreter name without arguments of
 		|:VimShellInteractive|.
 
-		Defalut value is too complicated, so please refer
+		Default value is too complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_encodings
@@ -423,7 +423,7 @@ g:vimshell_interactive_encodings
 		If the key contains "/", vimshell will check if command path
 		matches it.
 
-		Defalut value is complicated, so please refer
+		Default value is complicated, so please refer
 		autoload/vimshell/plugin/vimshell.vim.
 
 g:vimshell_interactive_echoback_commands
@@ -434,7 +434,7 @@ g:vimshell_interactive_echoback_commands
 		does.
 		This value has effect only on windows.
 
-		Defalut value is complicated, so please refer
+		Default value is complicated, so please refer
 		plugin/vimshell.vim
 
 g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
@@ -452,7 +452,7 @@ g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
 		|vimshell-internal-iexe| is running, and otherwise
 		does.
 
-		Defalut value is complicated, so please refer
+		Default value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_commands
@@ -465,12 +465,12 @@ g:vimshell_interactive_cygwin_commands
 		To know about fakecygpty, you should refer
 		|vimshell-tips-fakecygpty|.
 
-		Defalut value is complicated, so please refer
+		Default value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:vimshell_interactive_cygwin_path
 					*g:vimshell_interactive_cygwin_path*
-		It is assigned to the pass vimshell reffers when launching
+		It is assigned to the pass vimshell refers when launching
 		programs via fakecygpty.
 		If the first argument of |vimshell-internal-iexe| is
 		fakecygpty, vimshell searches command from
@@ -490,9 +490,9 @@ g:vimshell_interactive_monochrome_commands
 				*g:vimshell_interactive_monochrome_commands*
 		This is a dictionary variable with command name key, and the
 		value is an assignment of commands which you want to disable
-		hilighting.
+		highlighting.
 
-		Defalut value is complicated, so please refer
+		Default value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
 g:unite_source_vimshell_external_history_path	*g:unite_source_vimshell_external_history_path*
@@ -979,7 +979,7 @@ exe [{option}...] {command} 			*vimshell-internal-exe*
 						*vimshell-execute-options*
 		--encoding={encoding-name}
 					*vimshell-execute-options-encoding*
-		If differnt from 'encoding' and {encoding-name}, vimshell will
+		If different from 'encoding' and {encoding-name}, vimshell will
 		convert encoding automatically.
 		If omit this option, used "char".
 
@@ -999,7 +999,7 @@ gendoc {command} {args}				*vimshell-internal-gendoc*
 gexe {command}					*vimshell-internal-gexe*
 		Execute {command} with args. Execute external command
 		forcibly.
-		Differnt from exe, it is specialized GUI command.
+		Different from exe, it is specialized GUI command.
 
 h [{pattern}]						*vimshell-internal-h*
 		Executes {pattern} matched history. If {pattern} is number,
@@ -1073,7 +1073,7 @@ popd [{directory-stack-number}]
 		directory.  To view {directory-stack-number}, use
 		|vimshell-internal-dirs|.  If omit {directory-stack-number},
 		used 0.
-		Note: If differnt from other shells, do not remove not
+		Note: If different from other shells, do not remove not
 		duplicated candidates.
 
 pwd 						*vimshell-internal-pwd*
@@ -1117,7 +1117,7 @@ sudo {command} [{args}]				*vimshell-internal-sudo*
 texe [{options}...] {command}			*vimshell-internal-texe*
 		Execute {command} with args.
 		Note: Execute external command forcibly.
-		Differnt from exe and iexe, it execute terminal command.  This
+		Different from exe and iexe, it execute terminal command.  This
 		command creates new buffer.
 		Note: Pipe is not supported.
 		
@@ -1179,7 +1179,7 @@ special commands. But parsing is difficult.
 
 alias {alias-name} = {command}			*vimshell-special-alias*
 		Defines alias. Vimshell replaces {alias-name} as {command}.
-		Differnt from other shells, "=" with spaces is valid.
+		Different from other shells, "=" with spaces is valid.
 		
 		The alias can take arguments. To get arguments, use $$args
 		variable.
@@ -1191,7 +1191,7 @@ alias {alias-name} = {command}			*vimshell-special-alias*
 galias {global-alias-name} = {command}
 						*vimshell-internal-galias*
 		Defines global alias. Vimshell replaces {global-alias-name} as
-		{command}.  Differnt from |vimshell-special-alias|, global
+		{command}.  Different from |vimshell-special-alias|, global
 		alias in arguments is expanded. This feature is like to zsh
 		global alias.
 		
@@ -1210,7 +1210,7 @@ let ${var-name} = {expression}				*vimshell-special-let*
 >
 		vimshell% let $Hoge = $hoge
 <
-		Differnt from other shells, "=" with spaces is valid.
+		Different from other shells, "=" with spaces is valid.
 		The {expression} is Vim script expression.
 		But, you must add prefix "$" in variable name head.
 		Executed status is write in "$$status".
@@ -1426,7 +1426,7 @@ vimshell/history
 		|unite#sources#vimshell_history#start_complete()|.
 		Note: Default mapping is <C-l>.
 
-		Exmaple:
+		Example:
 >
 		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
 <
