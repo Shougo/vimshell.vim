@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Mar 2013.
+" Last Modified: 02 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -228,7 +228,8 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
     let start = searchpos('^' . vimshell#escape_match(
           \ vimshell#get_prompt()), 'bWen')[0]
     if start > 0
-      call s:highlight_with(start + 1, line('$'), b:interactive.syntax)
+      call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|^%s\)"',
+            \ vimshell#escape_match(vimshell#get_prompt())), b:interactive.syntax)
     endif
 
     let b:interactive.syntax = &filetype
@@ -469,7 +470,7 @@ function! s:highlight_with(start, end, syntax) "{{{
   execute printf('syntax include @highlightWith%d syntax/%s.vim',
         \              cnt, a:syntax)
   let &l:iskeyword = save_isk
-  execute printf('syntax region highlightWith%d start=/\%%%dl/ end=/\%%%dl$/ '
+  execute printf('syntax region highlightWith%d start=/\%%%dl/ end=%s keepend '
         \            . 'contains=@highlightWith%d,VimShellError',
         \             cnt, a:start, a:end, cnt)
   let b:highlight_count = cnt + 1
