@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2013.
+" Last Modified: 02 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -762,7 +762,9 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
       call vimshell#parser#execute_continuation(is_insert)
     catch
       " Error.
-      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      if v:exception !~# '^Vim:Interrupt'
+        call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+      endif
       let context = vimshell#get_context()
       let b:vimshell.continuation = {}
       call vimshell#print_prompt(context)

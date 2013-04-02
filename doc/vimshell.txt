@@ -1486,6 +1486,9 @@ unfold.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-04-02
+- Fixed for interrupt problem.
+
 2013-03-20
 - Improved command not found and signal behavior.
 - Fixed for completion.

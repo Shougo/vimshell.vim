@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2013.
+" Last Modified: 02 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -769,8 +769,10 @@ function! vimshell#execute(cmdline, ...) "{{{
   try
     call vimshell#parser#eval_script(a:cmdline, context)
   catch
-    let message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line(context.fd, message)
+    if v:exception !~# '^Vim:Interrupt'
+      let message = v:exception . ' ' . v:throwpoint
+      call vimshell#error_line(context.fd, message)
+    endif
     return 1
   endtry
 
@@ -787,8 +789,10 @@ function! vimshell#execute_async(cmdline, ...) "{{{
   try
     return vimshell#parser#eval_script(a:cmdline, context)
   catch
-    let message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line(context.fd, message)
+    if v:exception !~# '^Vim:Interrupt'
+      let message = v:exception . ' ' . v:throwpoint
+      call vimshell#error_line(context.fd, message)
+    endif
 
     let context = vimshell#get_context()
     let b:vimshell.continuation = {}
