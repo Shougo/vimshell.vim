@@ -1314,7 +1314,7 @@ postinput					*vimshell-hook-postinput*
 postexit					*vimshell-hook-postexit*
 		This hook called when after (external) command exit.
 		The first argument is {command}. {command} is executed command
-		name. The second argument is {cmdline}. {command} is executed
+		name. The second argument is {cmdline}. {cmdline} is executed
 		command line. You can get exit value by
 		"b:vimshell.system_variables['status']".
 		Note: This hook is usually used in interactive buffer.
