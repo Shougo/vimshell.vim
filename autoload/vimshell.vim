@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2013.
+" Last Modified: 20 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -923,11 +923,12 @@ function! s:initialize_vimshell(path, context) "{{{
 endfunction"}}}
 function! vimshell#set_highlight() "{{{
   " Set syntax.
-  let prompt_pattern = string('^' . escape(
-        \ vimshell#escape_match(vimshell#get_prompt()), "'"))
-  let secondary_prompt_pattern = string('^' . escape(
-        \ vimshell#escape_match(
-        \ vimshell#get_secondary_prompt()), "'"))
+  let prompt_pattern = '/^' .
+        \ escape(vimshell#escape_match(
+        \ vimshell#get_prompt()), '/') . '/'
+  let secondary_prompt_pattern = '/^' .
+        \ escape(vimshell#escape_match(
+        \ vimshell#get_secondary_prompt()), '/') . '/'
   execute 'syntax match vimshellPrompt'
         \ prompt_pattern 'nextgroup=vimshellCommand'
   execute 'syntax match vimshellPrompt'
