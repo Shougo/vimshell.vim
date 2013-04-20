@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 21 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,9 +53,11 @@ function! s:command.execute(commands, context) "{{{
   " Execute command.
   call s:init_process(commands, a:context, options)
 
-  " Move line.
-  call append(line('.'), '')
-  normal! j
+  if vimshell#check_prompt()
+    " Move line.
+    call append('.', '')
+    call cursor(line('.')+1, 0)
+  endif
 
   let b:interactive.output_pos = getpos('.')
 

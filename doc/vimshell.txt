@@ -1486,6 +1486,9 @@ unfold.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-04-21
+- Fixed exe internal command.
+
 2013-04-20
 - Fixed vimshell#set_highlight().
 
