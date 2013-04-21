@@ -610,7 +610,7 @@ function! vimshell#cd(directory) "{{{
     " Substitute path sepatator.
     let directory = substitute(directory, '/', '\\', 'g')
   endif
-  execute g:vimshell_cd_command a:directory
+  execute g:vimshell_cd_command directory
 
   if exists('*unite#sources#directory_mru#_append')
     " Append directory.
