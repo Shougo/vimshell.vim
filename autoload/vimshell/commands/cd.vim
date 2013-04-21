@@ -54,16 +54,14 @@ function! s:command.execute(args, context) "{{{
   let cwd = getcwd()
   if isdirectory(dir)
     " Move to directory.
-    let b:vimshell.current_dir = fnamemodify(dir, ':p')
-    call vimshell#cd(b:vimshell.current_dir)
+    call vimshell#cd(dir)
   elseif dir =~ '^-\d*$'
     " Popd.
     return vimshell#execute_internal_command('popd', [ dir[1:] ],
           \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(dir)
     " Move to parent directory.
-    let b:vimshell.current_dir = fnamemodify(dir, ':p:h')
-    call vimshell#cd(b:vimshell.current_dir)
+    call vimshell#cd(dir)
   else
     " Check cd path.
     let dirs = split(globpath(&cdpath, dir), '\n')
@@ -79,14 +77,16 @@ function! s:command.execute(args, context) "{{{
     endif
 
     if isdirectory(dirs[0])
-      let b:vimshell.current_dir = fnamemodify(dirs[0], ':p')
-      call vimshell#cd(b:vimshell.current_dir)
+      call vimshell#cd(dirs[0])
     else
       call vimshell#error_line(a:context.fd,
             \ printf('cd: File "%s" is not found.', dir))
       return
     endif
   endif
+
+  let b:vimshell.current_dir =
+        \ vimshell#util#substitute_path_separator(getcwd())
 
   if empty(b:vimshell.directory_stack)
         \ || cwd !=# b:vimshell.directory_stack[0]

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Apr 2013.
+" Last Modified: 21 Apr 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -605,7 +605,12 @@ function! vimshell#get_alias_pattern() "{{{
   return '^\s*[[:alnum:].+#_@!%:-]\+'
 endfunction"}}}
 function! vimshell#cd(directory) "{{{
-  execute g:vimshell_cd_command fnameescape(a:directory)
+  let directory = fnameescape(a:directory)
+  if vimshell#is_windows()
+    " Substitute path sepatator.
+    let directory = substitute(directory, '/', '\\', 'g')
+  endif
+  execute g:vimshell_cd_command a:directory
 
   if exists('*unite#sources#directory_mru#_append')
     " Append directory.
