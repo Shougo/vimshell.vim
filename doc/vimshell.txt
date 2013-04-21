@@ -1483,6 +1483,12 @@ unfold.
 	let $PATH="~/bin:/local/usr/bin:/".$PATH
 <
 
+Q: Why vimshell does not support "\" path separator in Windows?
+https://github.com/Shougo/vimshell/issues/86
+
+A: Because we would love to provide compatibility between Windows and UNIX
+with same script. The path separator is just an evil shit.
+
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
