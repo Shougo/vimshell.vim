@@ -97,120 +97,256 @@ function! vimshell#terminal#print(string, is_error) "{{{
   let newstr = ''
   let pos = 0
 
-  " Optimize checkstr.
-  let string = a:string
-  while string =~ '\%(\e\[[0-9;]*m\)\{2,}'
-    let string = substitute(string,
-          \ '\e\[[0-9;]*\zsm\e\[\ze[0-9;]*m', ';', 'g')
-  endwhile
-  let max = len(string)
+"  " Optimize checkstr.
+"  let string = a:string
+"  while string =~ '\%(\e\[[0-9;]*m\)\{2,}'
+"    let string = substitute(string,
+"          \ '\e\[[0-9;]*\zsm\e\[\ze[0-9;]*m', ';', 'g')
+"  endwhile
+  let max = len(a:string)
+
+  let state_ground           = 0
+  let state_esc              = 1
+  let state_csi_parameter    = 2
+  let state_csi_intermediate = 3
+  let state_osc              = 4
+  let state_ss2              = 5
+  let state_ss3              = 6
+  let state_str              = 7
+  let state_esc_intermediate = 8
+  let state_osc_esc          = 9
+  let state_str_esc          = 10
+  let state = state_ground
+  let pbytes = '' " parameter bytes
+  let ibytes = '' " intermediate bytes
 
   while pos < max
-    let char = string[pos]
+    let char = a:string[pos]
+    let c = char2nr(char)
 
-    if char !~ '[[:cntrl:]]' "{{{
-      let newstr .= char
-      let pos += 1
-      continue
-      "}}}
-    elseif char == "\<C-h>" "{{{
-      " Print rest string.
-      call s:output_string(newstr)
-      let newstr = ''
-
-      if pos + 1 < max && string[pos+1] == "\<C-h>"
-        " <C-h><C-h>
-        call s:control.delete_multi_backword_char()
-        let pos += 2
+    if state == state_ground
+      if c == 0x1b  " ESC
+        let state = state_esc
+      elseif c < 0x20
+        " evaluate control characters
+        call s:dispatch_control_char(c)
       else
-        " <C-h>
-        call s:control.delete_backword_char()
-        let pos += 1
+        call s:output_string(char)
       endif
-
-      continue
-      "}}}
-    elseif char == "\<ESC>" "{{{
-      " Check escape sequence.
-      let checkstr = string[pos+1 :]
-      if checkstr == ''
-        break
-      endif
-
-      " Check CSI pattern.
-      if checkstr =~ '^\[[0-9;]*.'
-        let matchstr = matchstr(checkstr, '^\[[0-9;]*.')
-
-        if has_key(s:escape_sequence_csi, matchstr[-1:])
-          call s:output_string(newstr)
-          let newstr = ''
-
-          call call(s:escape_sequence_csi[matchstr[-1:]],
-                \ [matchstr], s:escape)
-
-          let pos += len(matchstr) + 1
-          continue
+    elseif state == state_esc
+      " - ISO-6429 independent escape sequense
+      "     ESC F
+      " - ISO-2022 designation sequence
+      "     ESC I ... I F
+      if c == 0x5b  " [
+        let pbytes = ''
+        let state = state_csi_parameter
+      elseif c == 0x5d  " ]
+        let pbytes = char
+        let ibytes = ''
+        let state = state_osc
+      elseif c == 0x4e  " N, single shift G2
+        let state = state_ss2
+      elseif c == 0x4f  " O, single shift G3
+        let state = state_ss3
+      elseif c == 0x50 || c == 0x58 || c == 0x5e || c == 0x5f
+        " P(DCS) or X(SOS) or ^(PM) or _(APC)
+        let pbytes = char
+        let ibytes = ''
+        let state = state_str
+      elseif c < 0x20  " control character
+        if c == 0x1b  " ESC
+          " fall back to ESC state
+          let state = state_esc
+        elseif c == 0x18 || c == 0x1a  " CAN / SUB
+          " cancel escape sequence
+          let state = state_ground
+        else
+          " evaluate control characters (interrupt processing)
+          call s:dispatch_control_char(c)
         endif
+      elseif c <= 0x2f  " SP to /, ISO-2022 intermediate bytes
+        let ibytes = char
+        let state = state_esc_intermediate
+      elseif c <= 0x7e  " 0 to ~, ISO-6429 independent ESC sequence
+        call s:dispatch_independent_esc(char)
+        let state = state_ground
+      elseif c == 0x7f  " control character DEL
+        " TODO: evaluate DEL (interrupt processing)
+      else  " illigal sequence
+        let state = state_ground
       endif
-
-      " Check simple pattern.
-      let checkchar1 = checkstr[0]
-      if has_key(s:escape_sequence_simple_char1, checkchar1) "{{{
-        call s:output_string(newstr)
-        let newstr = ''
-
-        call call(s:escape_sequence_simple_char1[checkchar1], [''], s:escape)
-
-        let pos += 2
-        continue
-      endif"}}}
-      let checkchar2 = checkstr[: 1]
-      if checkchar2 != '' &&
-            \ has_key(s:escape_sequence_simple_char2, checkchar2) "{{{
-        call s:output_string(newstr)
-        let newstr = ''
-
-        call call(s:escape_sequence_simple_char2[checkchar2], [''], s:escape)
-
-        let pos += 3
-        continue
-      endif"}}}
-
-      let matched = 0
-      " Check match pattern.
-      for pattern in keys(s:escape_sequence_match) "{{{
-        if checkstr =~ pattern
-          let matched = 1
-
-          " Print rest string.
-          call s:output_string(newstr)
-          let newstr = ''
-
-          let matchstr = matchstr(checkstr, pattern)
-
-          call call(s:escape_sequence_match[pattern], [matchstr], s:escape)
-
-          let pos += len(matchstr) + 1
-          break
+    elseif state == state_csi_parameter
+      " parse control sequence
+      "
+      " CSI P ... P I ... I F
+      "     ^
+      if c > 0x7e
+        if c == 0x7f  " control character DEL
+          " TODO: evaluate DEL (interrupt processing)
+        else
+          " ill-formed sequence
+          let state = state_ground
         endif
-      endfor"}}}
-
-      if matched
-        continue
-      endif"}}}
-    elseif has_key(s:control_sequence, char) "{{{
-      " Check other pattern.
-      " Print rest string.
-      call s:output_string(newstr)
-      let newstr = ''
-
-      call call(s:control_sequence[char], [], s:control)
-
-      let pos += 1
-      continue
-    endif"}}}
-
-    let newstr .= char
+      elseif c > 0x3f  " Final byte, @ to ~
+        call s:dispatch_control_function(pbytes, '', char)
+        let state = state_ground
+      elseif c > 0x2f  " parameter bytes, 0 to ?
+        let pbytes .= char
+      elseif c > 0x1f  " intermediate bytes, SP to /
+        let ibytes = char
+        let state = state_csi_intermediate
+      elseif c == 0x1b  # ESC
+        " fall back to ESC state
+        let state = state_esc
+      elseif c == 0x18 || c == 0x1a  " CAN, SUB
+        " cancel control function
+        state = state_ground
+      else
+        " evaluate control characters (interrupt processing)
+        call s:dispatch_control_char(c)
+      endif
+    elseif state == state_csi_intermediate
+      " parse control function
+      "
+      " CSI P ... P I ... I F
+      "             ^
+      if c > 0x7e
+        if c == 0x7f  " control character DEL
+          " TODO: evaluate DEL (interrupt processing)
+        else
+          state = state_ground
+        endif
+      elseif c > 0x3f  " Final byte, @ to ~
+        call s:dispatch_control_function(pbytes, ibytes, char)
+        let state = state_ground
+      elseif c > 0x2f
+        " invalid sequence
+        let state = state_ground
+      elseif c > 0x1f  " intermediate bytes, SP to /
+        let ibytes .= char
+      elseif c == 0x1b  " ESC
+        " fall back to ESC state
+        let state = state_esc
+      elseif c == 0x18 || c == 0x1a  " CAN, SUB
+        " cancel control function
+        let state = state_ground
+      else
+        " evaluate control characters (interrupt processing)
+        call s:dispatch_control_char(c)
+      endif
+    elseif state == state_esc_intermediate
+      if c > 0x7e:
+        if c == 0x7f:  " control character DEL
+          " TODO: evaluate DEL (interrupt processing)
+        else
+          " invalid sequence
+          let state = state_ground
+        endif
+      elseif c > 0x2f  " 0 to ~, Final byte of ISO-2022 designation sequence
+        call s:dispatch_esc_sequence(ibytes, char)
+        let state = state_ground
+      elseif c > 0x1f  " SP to /
+        let ibytes .= char
+        let state = state_esc_intermediate
+      elseif c == 0x1b  " ESC
+        " ill-formed sequence
+        let state = state_esc
+      elseif c == 0x18 || c == 0x1a
+        " cancel control function
+        let state = state_ground
+      else
+        " evaluate control characters (interrupt processing)
+        call s:dispatch_control_char(c)
+      endif
+    elseif state == state_osc
+      " parse control string
+      if c == 0x07  " BEL
+        call s:dispatch_osc(ibytes)
+        let state = state_ground
+      elseif c < 0x08
+        " ill-formed sequence
+        let state = state_ground
+      elseif c < 0x0e
+        let ibytes .= char
+      elseif c == 0x1b
+        let state = state_osc_esc
+      elseif c < 0x20
+        let state = state_ground
+      else
+        let ibytes .= char
+      endif
+    elseif state == state_str
+      " parse control string
+      " 00/08 - 00/13, 02/00 - 07/14
+      if c < 0x08:
+        let state = state_ground
+      elseif c < 0x0e:
+        let ibytes .= char
+      elseif c == 0x1b:
+        let state = state_str_esc
+      elseif c < 0x20:
+        context.dispatch_invalid(seq)
+        let state = state_ground
+      else
+        let ibytes .= char
+      endif
+    elseif state == state_osc_esc
+      " parse control string
+      if c == 0x5c:
+        call s:dispatch_osc(ibytes)
+        let state = state_ground
+      else
+        let state = state_esc  " broken OSC
+      endif
+    elseif state == state_str_esc
+      " parse control string
+      " 00/08 - 00/13, 02/00 - 07/14
+      if c == 0x5c
+        call s:dispatch_control_string(pbytes, ibytes)
+        let state = state_ground
+      else
+        let state = state_ground
+      endif
+    elseif state == state_ss3
+      if c < 0x20:  " control character
+        if c == 0x1b:  # ESC
+          seq = [0x1b, 0x4f]
+          " fall back to ESC state
+          let state = state_esc
+        elseif c == 0x18 || c == 0x1a:
+          " illigal sequence
+          let state = state_ground
+        else
+          " evaluate control characters (interrupt processing)
+          call s:dispatch_control_char(c)
+        endif
+      elseif c < 0x7f  " SS3 final byte
+        call s:dispatch_ss3(char)
+        let state = state_ground
+      else
+        " evaluate control characters (interrupt processing)
+        call s:dispatch_control_char(c)
+      endif
+    elseif state == state_ss2
+      if c < 0x20:  " control character
+        if c == 0x1b:  " ESC
+          " fall back to ESC state
+          let state = state_esc
+        elseif c == 0x18 || c == 0x1a:
+          let state = state_ground
+        else
+          " evaluate control characters (interrupt processing)
+          call s:dispatch_control_char(c)
+        endif
+      elseif c < 0x7f:  " SS2 final byte
+        call s:dispatch_ss2(char)
+        let state = state_ground
+      else
+        " evaluate control characters (interrupt processing)
+        call s:dispatch_control_char(c)
+      endif
+    endif
     let pos += 1
   endwhile
 
@@ -263,6 +399,59 @@ function! vimshell#terminal#clear_highlight() "{{{
     " Restore wrap.
     let &l:wrap = b:interactive.terminal.wrap
   endif
+endfunction"}}}
+
+function! s:dispatch_independent_esc(char) "{{{
+  if has_key(s:escape_sequence_simple_char1, a:char)
+    call call(s:escape_sequence_simple_char1[a:char], [''], s:escape)
+  endif
+endfunction"}}}
+
+function! s:dispatch_control_function(pbytes, ibytes, char) "{{{
+  if has_key(s:escape_sequence_csi, a:char)
+    call call(s:escape_sequence_csi[a:char], [a:pbytes], s:escape)
+  endif
+endfunction"}}}
+
+function! s:dispatch_esc_sequence(ibytes, char) "{{{
+  if has_key(s:escape_sequence_simple_char1, a:char)
+    call call(s:escape_sequence_simple_char1[a:char], [''], s:escape)
+  endif
+endfunction"}}}
+
+function! s:dispatch_osc(ibytes) "{{{
+endfunction"}}}
+
+function! s:dispatch_control_string(p, ibytes) "{{{
+endfunction"}}}
+
+function! s:dispatch_control_char(c) "{{{
+  if a:c == 0x08
+    if s:virtual.col > 1
+      let s:virtual.col -= 1
+    endif
+  elseif a:c == 0x09
+    " TODO: apply tab stop manipulation
+    let s:virtual.col += 8 - s:virtual.col % 8
+    let l:width = len(s:virtual.lines[1])
+    if s:virtual.col > l:width 
+      let s:virtual.col = l:width
+    endif
+  elseif a:c == 0x0d
+    let s:virtual.col = 1
+  elseif a:c == 0x0a
+    if s:virtual.line >= len(s:virtual.lines)
+      call s:scroll_down(1)
+    else
+      let s:virtual.line += 1
+    endif
+  endif
+endfunction"}}}
+
+function! s:dispatch_ss3(char) "{{{
+endfunction"}}}
+
+function! s:dispatch_ss2(char) "{{{
 endfunction"}}}
 
 function! s:optimized_print(string, is_error) "{{{
@@ -767,10 +956,14 @@ function! s:escape.highlight(matchstr) "{{{
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr) "{{{
-  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
-
-  let s:virtual.line = get(args, 0, 1)
-  let s:virtual.col = get(args, 1, 1)
+  if a:matchstr == ""
+    let s:virtual.line = 1
+    let s:virtual.col = 1
+  else
+    let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
+    let s:virtual.line = get(args, 0, 1)
+    let s:virtual.col = get(args, 1, 1)
+  endif
   if s:virtual.line !~ '^\d\+$' || s:virtual.col !~ '^\d\+$'
     call unite#print_error(
           \ 'Move cursor escape sequence format error: str = "'
