@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Mar 2013.
+" Last Modified: 02 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -34,13 +34,12 @@ endfunction"}}}
 let s:source = {
       \ 'name' : 'vimshell_complete',
       \ 'kind' : 'ftplugin',
+      \ 'min_pattern_length' :
+      \      g:neocomplcache_auto_completion_start_length,
       \ 'filetypes' : { 'vimshell' : 1, },
       \}
 
 function! s:source.initialize() "{{{
-  " Initialize.
-  call neocomplcache#set_completion_length('vimshell_complete',
-        \ g:neocomplcache_auto_completion_start_length)
 endfunction"}}}
 
 function! s:source.get_keyword_pos(cur_text) "{{{

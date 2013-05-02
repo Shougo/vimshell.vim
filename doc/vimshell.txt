@@ -1492,6 +1492,9 @@ with same script. The path separator is just an evil shit.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-05-02
+- Set min_pattern_length in neocomplcache source.
+
 2013-04-21
 - Fixed exe internal command.
 
