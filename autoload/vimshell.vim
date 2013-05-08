@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2013.
+" Last Modified: 08 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -870,6 +870,11 @@ endfunction"}}}
 function! vimshell#set_syntax(syntax_name) "{{{
   let b:interactive.syntax = a:syntax_name
 endfunction"}}}
+function! vimshell#get_status_string() "{{{
+  return !exists('b:vimshell') ? '' : (
+        \ (!empty(b:vimshell.continuation) ? '[async] ' : '') .
+        \ b:vimshell.current_dir)
+endfunction"}}}
 
 function! s:initialize_vimshell(path, context) "{{{
   " Load history.
@@ -892,6 +897,9 @@ function! s:initialize_vimshell(path, context) "{{{
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.continuation = {}
   let b:vimshell.prompts_save = {}
+  let b:vimshell.statusline = '*vimshell* : %{vimshell#get_status_string()}'
+        \ . "\ %=%{printf('%s %4d/%d',b:vimshell.right_prompt, line('.'), line('$'))}"
+  let b:vimshell.right_prompt = ''
 
   " Default settings.
   call s:default_settings()
@@ -925,6 +933,8 @@ function! s:initialize_vimshell(path, context) "{{{
 
   call vimshell#help#init()
   call vimshell#interactive#init()
+
+  call s:restore_statusline()
 endfunction"}}}
 function! vimshell#set_highlight() "{{{
   " Set syntax.
@@ -1138,6 +1148,7 @@ function! s:insert_user_and_right_prompt() "{{{
 
   try
     let right_prompt = eval(vimshell#get_right_prompt())
+    let b:vimshell.right_prompt = right_prompt
   catch
     let message = v:exception . ' ' . v:throwpoint
     echohl WarningMsg | echomsg message | echohl None
@@ -1216,6 +1227,7 @@ function! s:event_bufwin_enter(bufnr) "{{{
       endif
     endfor
 
+    call s:restore_statusline()
   finally
     if exists('winnr')
       execute winnr.'wincmd w'
@@ -1227,6 +1239,16 @@ function! s:event_bufwin_leave() "{{{
     call vimshell#initialize_tab_variable()
   endif
   let t:vimshell.last_vimshell_bufnr = bufnr('%')
+endfunction"}}}
+function! s:restore_statusline()  "{{{
+  if &filetype !=# 'vimshell' || !g:vimshell_force_overwrite_statusline
+    return
+  endif
+
+  if &l:statusline != b:vimshell.statusline
+    " Restore statusline.
+    let &l:statusline = b:vimshell.statusline
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

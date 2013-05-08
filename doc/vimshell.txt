@@ -241,8 +241,17 @@ g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		and shows the prompt on preferable position.
 		Initial value is empty.
 
-g:vimshell_no_default_keymappings
+					*g:vimshell_force_overwrite_statusline*
+g:vimshell_force_overwrite_statusline
+		If this variable is 1, vimshell will overwrite 'statusline'
+		automatically.
+		Note: If you want to change 'statusline' in vimshell buffer,
+		you must set it to 0.
+
+		The default value is 0.
+
 					*g:vimshell_no_default_keymappings*
+g:vimshell_no_default_keymappings
 		Disables all default key mappings in vimshell.
 
 		You can not use vimshell functions unless you set new
@@ -828,8 +837,12 @@ Insert mode default key mappings.
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
 
-vimshell#interactive#send({expr})
+vimshell#get_status_string()			 *vimshell#get_status_string()*
+		Returns vimshell status string. It is useful to custom
+		statusline.
+
 					*vimshell#interactive#send()*
+vimshell#interactive#send({expr})
 		It sends {expr} to the interpreter in background buffer of
 		vimshell, iexe, texe.  You can control interpreter as if you
 		are using |quickrun|.
@@ -837,8 +850,8 @@ vimshell#interactive#send({expr})
 		Note: If interpreter is not loaded in current tab, you can run
 		interpreter command.
 
-vimshell#interactive#send_string({expr})
 					*vimshell#interactive#send_string()*
+vimshell#interactive#send_string({expr})
 		Deprecated. Use |vimshell#interactive#send()| instead; they
 		are equivalent.
 
@@ -1491,6 +1504,9 @@ with same script. The path separator is just an evil shit.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2013-05-08
+- Added g:vimshell_force_overwrite_statusline option.
 
 2013-05-02
 - Set min_pattern_length in neocomplcache source.
