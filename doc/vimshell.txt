@@ -218,6 +218,9 @@ VARIABLES 					*vimshell-variables*
 g:vimshell_prompt				*g:vimshell_prompt*
 		Sets vimshell default prompt string. Initial value is
 		"vimshell%".
+		Note: This is fixed string. You cannot change it
+		dynamically(for example : current directory).
+		(cf: |g:vimshell_user_prompt|)
 
 g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 		Sets vimshell default secondary prompt string. Initial value
@@ -225,9 +228,10 @@ g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		You can define additional prompt to substitute a string for
-		this.  Unlike |g:vimshell_prompt|, it can be a non-fixed
+		this.
+		Note: Unlike |g:vimshell_prompt|, it can be a non-fixed
 		string.  You can get multi-line prompt by separating "user
-		prompt" with \n.
+		prompt" with "\n".
 
 		This example will be helpful to show current directory
 		everytime.
@@ -1501,6 +1505,11 @@ https://github.com/Shougo/vimshell/issues/86
 
 A: Because we would love to provide compatibility between Windows and UNIX
 with same script. The path separator is just an evil shit.
+
+Q: I want to change |g:vimshell_prompt| dyanmically.
+
+A: You cannot do it. |g:vimshell_prompt| is fixed string.
+But you can change |g:vimshell_user_prompt| dynamically instead of it.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
