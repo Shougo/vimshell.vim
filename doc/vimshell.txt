@@ -225,6 +225,9 @@ g:vimshell_prompt				*g:vimshell_prompt*
 g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 		Sets vimshell default secondary prompt string. Initial value
 		is "%%".
+		Note: This is fixed string. You cannot change it
+		dynamically(for example : current directory).
+		(cf: |g:vimshell_user_prompt|)
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		You can define additional prompt to substitute a string for
