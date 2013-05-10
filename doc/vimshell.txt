@@ -1509,10 +1509,14 @@ https://github.com/Shougo/vimshell/issues/86
 A: Because we would love to provide compatibility between Windows and UNIX
 with same script. The path separator is just an evil shit.
 
-Q: I want to change |g:vimshell_prompt| dyanmically.
+Q: I want to change |g:vimshell_prompt| dynamically.
 
 A: You cannot do it. |g:vimshell_prompt| is fixed string.
 But you can change |g:vimshell_user_prompt| dynamically instead of it.
+
+Note: In below page(Japanese), it emulates dynamic prompt in vimshell.
+http://kannokanno.hatenablog.com/entry/2013/05/10/140947
+But this behavior is unexpected. It may be not worked in later version.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
