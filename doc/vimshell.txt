@@ -1521,6 +1521,9 @@ But this behavior is unexpected. It may be not worked in later version.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-05-11
+- Improved $LINES behavior.
+
 2013-05-08
 - Added g:vimshell_force_overwrite_statusline option.
 
