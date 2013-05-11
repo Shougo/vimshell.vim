@@ -150,7 +150,7 @@ function! s:init_process(commands, context, options) "{{{
   let b:interactive.stderr_cache = ''
   let b:interactive.cmdline = join(cmdline, '|')
   let b:interactive.width = winwidth(0)
-  let b:interactive.height = winheight(0)
+  let b:interactive.height = g:vimshell_scrollback_limit
   let b:interactive.prompt_history = {}
   let b:interactive.echoback_linenr = 0
   let b:interactive.command =

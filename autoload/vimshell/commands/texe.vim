@@ -142,7 +142,7 @@ function! s:command.execute(commands, context) "{{{
         \ 'echoback_linenr' : 0,
         \ 'save_cursor' : getpos('.'),
         \ 'width' : winwidth(0),
-        \ 'height' : winheight(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(vimshell#util#is_windows() ?

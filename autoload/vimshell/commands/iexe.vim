@@ -157,7 +157,7 @@ function! s:command.execute(commands, context) "{{{
         \ 'echoback_linenr' : 0,
         \ 'prompt_nr' : line('.'),
         \ 'width' : winwidth(0),
-        \ 'height' : winheight(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(use_cygpty ? args[1] : args[0], ':t:r'),

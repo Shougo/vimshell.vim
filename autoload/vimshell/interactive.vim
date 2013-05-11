@@ -35,11 +35,13 @@ augroup vimshell
         \ call s:check_all_output(0)
   autocmd CursorHold,CursorHoldI *
         \ call s:check_all_output(1)
-  autocmd CursorMovedI * call vimshell#interactive#check_current_output()
-  autocmd BufWinEnter,WinEnter * call s:winenter()
+  autocmd CursorMovedI *
+        \ call vimshell#interactive#check_current_output()
+  autocmd BufWinEnter,WinEnter *
+        \ call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(expand('<afile>'))
-  autocmd VimResized *
+  autocmd CursorHoldI,VimResized *
         \ call s:resize(expand('<afile>'))
 augroup END
 
@@ -852,8 +854,7 @@ function! s:resize(bufname) "{{{
     return
   endif
 
-  if winwidth(0) != b:interactive.width ||
-        \ winheight(0) != b:interactive.height
+  if winwidth(0) != b:interactive.width
     " Set new window size.
     call b:interactive.process.set_winsize(
           \ winwidth(0), g:vimshell_scrollback_limit)

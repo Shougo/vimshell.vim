@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2013.
+" Last Modified: 11 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,7 +80,7 @@ function! vimshell#int_mappings#define_default_mappings() "{{{
   inoremap <buffer><expr> <SID>(bs-ctrl-])
         \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   inoremap <buffer><silent> <Plug>(vimshell_int_command_complete)
-        \ <C-o>:call <SID>command_complete()<CR>
+        \ <C-o>:call vimshell#int_mappings#command_complete()<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)
         \ col('.') == col('$') ? "" : "\<ESC>lDa"
   "}}}
@@ -238,7 +238,7 @@ function! s:restart_command() "{{{
 
   startinsert!
 endfunction"}}}
-function! s:command_complete() "{{{
+function! vimshell#int_mappings#command_complete() "{{{
   let prompt = vimshell#interactive#get_prompt()
   let command = b:interactive.command
   let cur_text = vimshell#interactive#get_cur_text()

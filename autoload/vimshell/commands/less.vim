@@ -126,7 +126,7 @@ function! s:init(commands, context, options, interactive) "{{{
   call a:interactive.process.stdin.close()
 
   let a:interactive.width = winwidth(0)
-  let a:interactive.height = winheight(0)
+  let a:interactive.height = g:vimshell_scrollback_limit
 
   let args = ''
   for command in a:commands
