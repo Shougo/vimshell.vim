@@ -332,8 +332,6 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
 
   " Set autocommands.
   augroup vimshell
-    autocmd InsertEnter <buffer>
-          \ call s:insert_enter()
     autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
     autocmd BufWinEnter,WinEnter <buffer>
@@ -352,13 +350,6 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   endif
 endfunction"}}}
 
-function! s:insert_enter() "{{{
-  if winwidth(0) != b:interactive.width ||
-        \ winheight(0) != b:interactive.height
-    " Set new window size.
-    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
-  endif
-endfunction"}}}
 function! s:event_bufwin_enter() "{{{
   if has('conceal')
     setlocal conceallevel=3

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2013.
+" Last Modified: 11 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -39,6 +39,8 @@ augroup vimshell
   autocmd BufWinEnter,WinEnter * call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(expand('<afile>'))
+  autocmd VimResized *
+        \ call s:resize(expand('<afile>'))
 augroup END
 
 " Dummy.
@@ -844,6 +846,18 @@ function! s:winleave(bufname) "{{{
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
 
   call vimshell#terminal#restore_title()
+endfunction"}}}
+function! s:resize(bufname) "{{{
+  if !exists('b:interactive')
+    return
+  endif
+
+  if winwidth(0) != b:interactive.width ||
+        \ winheight(0) != b:interactive.height
+    " Set new window size.
+    call b:interactive.process.set_winsize(
+          \ winwidth(0), g:vimshell_scrollback_limit)
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
