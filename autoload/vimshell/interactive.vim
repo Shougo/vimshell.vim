@@ -41,8 +41,6 @@ augroup vimshell
         \ call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(expand('<afile>'))
-  autocmd CursorHoldI,VimResized *
-        \ call s:resize(expand('<afile>'))
 augroup END
 
 " Dummy.
@@ -788,6 +786,13 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     endif
   endif
 
+  " Check window size.
+  if winwidth(0) != a:interactive.width
+    " Set new window size.
+    call a:interactive.process.set_winsize(
+          \ winwidth(0), g:vimshell_scrollback_limit)
+  endif
+
   if !is_insert && type !=# 'vimshell'
     call setpos('.', intbuffer_pos)
   endif
@@ -848,17 +853,6 @@ function! s:winleave(bufname) "{{{
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
 
   call vimshell#terminal#restore_title()
-endfunction"}}}
-function! s:resize(bufname) "{{{
-  if !exists('b:interactive')
-    return
-  endif
-
-  if winwidth(0) != b:interactive.width
-    " Set new window size.
-    call b:interactive.process.set_winsize(
-          \ winwidth(0), g:vimshell_scrollback_limit)
-  endif
 endfunction"}}}
 
 " vim: foldmethod=marker
