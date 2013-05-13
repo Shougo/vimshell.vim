@@ -71,7 +71,21 @@ function! s:command.execute(args, context) "{{{
   let cmdline = vimproc#util#iconv(cmdline, &encoding, options['--encoding'])
   let stdin = vimproc#util#iconv(stdin, &encoding, options['--encoding'])
 
+  " Set environment variables.
+  let environments_save = vimshell#set_variables({
+        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
+        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$LINES' : g:vimshell_scrollback_limit,
+        \ '$EDITOR' : vimshell#get_editor_name(),
+        \ '$GIT_EDITOR' : vimshell#get_editor_name(),
+        \ '$PAGER' : g:vimshell_cat_command,
+        \ '$GIT_PAGER' : g:vimshell_cat_command,
+        \})
+
   let result = system(printf('%s %s', cmdline, stdin))
+
+  " Restore environment variables.
+  call vimshell#restore_variables(environments_save)
 
   " Convert encoding.
   let result = vimproc#util#iconv(result, options['--encoding'], &encoding)

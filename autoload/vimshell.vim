@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 08 May 2013.
+" Last Modified: 14 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -918,6 +918,8 @@ function! s:initialize_vimshell(path, context) "{{{
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
+        \ 'width' : winwidth(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \ 'hook_functions_table' : {},
         \}
 

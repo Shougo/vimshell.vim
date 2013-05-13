@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2013.
+" Last Modified: 14 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,6 +80,8 @@ function! s:command.execute(commands, context) "{{{
         \ 'command' : commands[0].args[0],
         \ 'cmdline' : join(commands[0].args),
         \ 'stdout_cache' : '',
+        \ 'width' : winwidth(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \}
 
   return s:init(a:commands, a:context, options, interactive)
