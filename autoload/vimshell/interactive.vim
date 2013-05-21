@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2013.
+" Last Modified: 21 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,6 +31,7 @@ let s:update_time_save = &updatetime
 
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
+  autocmd VimLeave * call s:vimleave()
   autocmd CursorMovedI *
         \ call s:check_all_output(0)
   autocmd CursorHold,CursorHoldI *
@@ -363,19 +364,7 @@ function! vimshell#interactive#exit() "{{{
   endif
 
   " Get status.
-  let [cond, status] = b:interactive.process.waitpid()
-  if cond != 'exit'
-    try
-      " Kill process.
-      " 15 == SIGTERM
-      call b:interactive.process.kill(15)
-      call b:interactive.process.waitpid()
-    catch
-      " Error.
-      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      call vimshell#interactive#exit()
-    endtry
-  endif
+  let [cond, status] = s:kill_process(b:interactive)
 
   let b:interactive.status = str2nr(status)
   let b:interactive.cond = cond
@@ -412,15 +401,7 @@ function! vimshell#interactive#force_exit() "{{{
   endif
 
   " Kill processes.
-  try
-    " 15 == SIGTERM
-    call b:interactive.process.kill(15)
-    call b:interactive.process.waitpid()
-  catch
-    " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#interactive#exit()
-  endtry
+  let [cond, status] = s:kill_process(b:interactive)
 
   if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
@@ -443,15 +424,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
   endif
 
   if get(interactive.process, 'is_valid', 0)
-    " Kill process.
-    try
-      " 15 == SIGTERM
-      call interactive.process.kill(15)
-      call interactive.process.waitpid()
-    catch
-      " Error.
-      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    endtry
+    let [cond, status] = s:kill_process(interactive)
   endif
   let interactive.process.is_valid = 0
 
@@ -853,6 +826,32 @@ function! s:winleave(bufname) "{{{
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
 
   call vimshell#terminal#restore_title()
+endfunction"}}}
+function! s:vimleave() "{{{
+  " Kill all processes.
+  for interactive in map(filter(range(1, bufnr('$')),
+        \ "type(getbufvar(v:val, 'interactive')) == type({})
+        \  && get(get(getbufvar(v:val, 'interactive'),
+        \     'process', {}), 'is_valid', 0)"),
+        \ "getbufvar(v:val, 'interactive')")
+    call s:kill_process(interactive)
+  endfor
+endfunction"}}}
+
+function! s:kill_process(interactive) "{{{
+  " Get status.
+  let [cond, status] = a:interactive.process.waitpid()
+  if cond != 'exit'
+    try
+      " Kill process.
+      " 15 == SIGTERM
+      call a:interactive.process.kill(15)
+      call a:interactive.process.waitpid()
+    catch
+    endtry
+  endif
+
+  return [cond, status]
 endfunction"}}}
 
 " vim: foldmethod=marker
