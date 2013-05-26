@@ -85,9 +85,6 @@ http://github.com/Shougo/vimproc
 You must install and compile vimproc Ver.5.0(or later) before using vimshell
 (refer to |vimproc-install|).
 
-Note: To enable all the features of vimshell, neocomplcache is required.
-https://github.com/Shougo/neocomplcache
-
 ==============================================================================
 INTERFACE					*vimshell-interface*
 
@@ -604,13 +601,11 @@ Insert mode key mappings.
 <Plug>(vimshell_command_complete)
 					*i_<Plug>(vimshell_command_complete)*
 		Start completion.
-		Note: Required neocomplcache plugin.
-		https://github.com/Shougo/neocomplcache
 
 <Plug>(vimshell_zsh_complete)		*i_<Plug>(vimshell_zsh_complete)*
 		Start completion using zsh.
 		Note: Required zsh and unite plugin.
-		https://github.com/Shougo/neocomplcache
+		https://github.com/Shougo/unite.vim
 		Note: It is not worked in Windows!
 
 <Plug>(vimshell_push_current_line)
@@ -1520,6 +1515,9 @@ But this behavior is unexpected. It may be not worked in later version.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2013-05-26
+- Improved omnifunc.
 
 2013-05-14
 - Fixed errors.

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2013.
+" Last Modified: 26 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -129,7 +129,8 @@ endfunction"}}}
 function! s:delete_backward_char(is_auto_select) "{{{
   if !pumvisible()
     let prefix = ''
-  elseif a:is_auto_select || (exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select)
+  elseif a:is_auto_select ||
+        \ vimshell#util#is_auto_select()
     let prefix = "\<C-e>"
   else
     let prefix = "\<C-y>"
@@ -137,7 +138,8 @@ function! s:delete_backward_char(is_auto_select) "{{{
 
   " Prevent backspace over prompt
   let cur_text = vimshell#get_cur_line()
-  if !has_key(b:interactive.prompt_history, line('.')) || cur_text !=# b:interactive.prompt_history[line('.')]
+  if !has_key(b:interactive.prompt_history, line('.'))
+        \ || cur_text !=# b:interactive.prompt_history[line('.')]
     return prefix . "\<BS>"
   else
     return prefix
@@ -163,14 +165,15 @@ endfunction"}}}
 function! s:delete_backward_line() "{{{
   if !pumvisible()
     let prefix = ''
-  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
+  elseif vimshell#util#is_auto_select()
     let prefix = "\<C-e>"
   else
     let prefix = "\<C-y>"
   endif
 
   let len = !has_key(b:interactive.prompt_history, line('.')) ?
-        \ len(getline('.')) : len(substitute(vimshell#interactive#get_cur_text(), '.', 'x', 'g'))
+        \ len(getline('.')) :
+        \ len(substitute(vimshell#interactive#get_cur_text(), '.', 'x', 'g'))
 
   return prefix . repeat("\<BS>", len)
 endfunction"}}}

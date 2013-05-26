@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2013.
+" Last Modified: 26 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -164,6 +164,10 @@ function! vimshell#util#is_cmdwin() "{{{
   return bufname('%') ==# '[Command Line]'
 endfunction"}}}
 
+function! vimshell#util#is_auto_select() "{{{
+  return get(g:, 'neocomplcache_enable_auto_select', 0)
+endfunction"}}}
+
 function! vimshell#util#path2project_directory(...)
   return call(s:V.path2project_directory, a:000)
 endfunction
@@ -194,6 +198,40 @@ function! s:buflisted(bufnr) "{{{
   return exists('t:unite_buffer_dictionary') ?
         \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
+endfunction"}}}
+
+function! vimshell#util#glob(pattern, ...) "{{{
+  if a:pattern =~ "'"
+    " Use glob('*').
+    let cwd = getcwd()
+    let base = vimshell#util#substitute_path_separator(
+          \ fnamemodify(a:pattern, ':h'))
+    execute 'lcd' fnameescape(base)
+
+    let files = map(split(vimshell#util#substitute_path_separator(
+          \ glob('*')), '\n'), "base . '/' . v:val")
+
+    execute 'lcd' fnameescape(cwd)
+
+    return files
+  endif
+
+  " let is_force_glob = get(a:000, 0, 0)
+  let is_force_glob = get(a:000, 0, 1)
+
+  if !is_force_glob && a:pattern =~ '^[^\\*]\+/\*'
+        \ && vimshell#util#has_vimproc() && exists('*vimproc#readdir')
+    return filter(vimproc#readdir(a:pattern[: -2]), 'v:val !~ "/\\.\\.\\?$"')
+  else
+    " Escape [.
+    if vimshell#util#is_windows()
+      let glob = substitute(a:pattern, '\[', '\\[[]', 'g')
+    else
+      let glob = escape(a:pattern, '[')
+    endif
+
+    return split(vimshell#util#substitute_path_separator(glob(glob)), '\n')
+  endif
 endfunction"}}}
 
 " vim: foldmethod=marker

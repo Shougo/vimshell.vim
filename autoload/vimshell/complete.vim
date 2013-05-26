@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jul 2012.
+" Last Modified: 26 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,32 +27,135 @@
 " Complete function. This provides simple file completion.
 function! vimshell#complete#start() "{{{
   if len(&omnifunc) == 0
-    setlocal omnifunc=vimshell#complete#candidate
+    setlocal omnifunc=vimshell#complete#omnifunc
   endif
+
   call feedkeys("\<c-x>\<c-o>", "n")
   return ''
 endfunction"}}}
-function! vimshell#complete#candidate(findstart, base) "{{{
-  let line = getline('.')
-  let prompt_len = len(vimshell#get_prompt())
-  if a:findstart
-    let part = matchstr(line, '\(\\\s\|[^ \\]\+\)*$')
-    if len(part) == 0
-      let pos = col('.')
-    else
-      let pos = strridx(line, part)
-    endif
-    return pos
-  endif
-  let files = filter(map(map(split(glob(a:base . '*'), "\n"),
-  \ "isdirectory(v:val)?v:val.'/':v:val"),
-  \ "fnameescape(substitute(v:val, '\\', '/', 'g'))"),
-  \ 'stridx(v:val, a:base)==0')
 
-  if line[prompt_len :] =~ '^\s*cd\s'
-    call filter(files, 'v:val=~"/$"')
+function! vimshell#complete#omnifunc(findstart, base) "{{{
+  if a:findstart
+    return vimshell#complete#get_keyword_position()
+  else
+    return vimshell#complete#gather_candidates(a:base)
   endif
-  return files
+endfunction"}}}
+
+function! vimshell#complete#get_keyword_position() "{{{
+  if !vimshell#check_prompt() || !empty(b:vimshell.continuation)
+    " Ignore.
+    return -1
+  endif
+
+  let cur_text = vimshell#get_cur_text()
+
+  try
+    let args = vimproc#parser#split_args_through(cur_text)
+  catch /^Exception:/
+    return -1
+  endtry
+
+  if cur_text =~ '\s\+$'
+    " Add blank argument.
+    call add(args, '')
+  endif
+
+  let arg = get(args, -1, '')
+  if arg =~ "'"
+    return -1
+  endif
+
+  let pos = col('.')-len(arg)-1
+
+  if arg =~ '/' && '\%(\\[^[:alnum:].-]\|\f\|[:]\)\+$'
+    " Filename completion.
+    let pos += match(arg,
+          \ '\%(\\[^[:alnum:].-]\|\f\|[:]\)\+$')
+  endif
+
+  return pos
+endfunction"}}}
+
+function! vimshell#complete#gather_candidates(complete_str) "{{{
+  let cur_text = vimshell#get_cur_text()
+
+  try
+    let args = vimproc#parser#split_args_through(cur_text)
+  catch /^Exception:/
+    return []
+  endtry
+
+  if empty(args)
+    let args = ['']
+  endif
+  let cur_keyword_str = args[-1]
+
+  let _ = (len(args) <= 1) ?
+        \ s:get_complete_commands(cur_keyword_str) :
+        \ s:get_complete_args(cur_keyword_str, args)
+
+  if a:complete_str =~ '^\$'
+    let _ += vimshell#complete#helper#variables(a:complete_str)
+  endif
+
+  return s:get_omni_list(_)
+endfunction"}}}
+
+function! s:get_complete_commands(cur_keyword_str) "{{{
+  if a:cur_keyword_str =~ '/'
+    " Filename completion.
+    return vimshell#complete#helper#files(a:cur_keyword_str)
+  endif
+
+  let directories =
+        \ vimshell#complete#helper#directories(a:cur_keyword_str)
+  if a:cur_keyword_str =~ '^\./'
+    for keyword in directories
+      let keyword.word = './' . keyword.word
+    endfor
+  endif
+
+  let _ = directories
+        \ + vimshell#complete#helper#cdpath_directories(a:cur_keyword_str)
+        \ + vimshell#complete#helper#aliases(a:cur_keyword_str)
+        \ + vimshell#complete#helper#internals(a:cur_keyword_str)
+
+  if len(a:cur_keyword_str) >= 1
+    let _ += vimshell#complete#helper#executables(a:cur_keyword_str)
+  endif
+
+  return _
+endfunction"}}}
+
+function! s:get_complete_args(cur_keyword_str, args) "{{{
+  " Get command name.
+  let command = fnamemodify(a:args[0], ':t:r')
+
+  let a:args[-1] = a:cur_keyword_str
+
+  return vimshell#complete#helper#args(command, a:args[1:])
+endfunction"}}}
+
+function! s:get_omni_list(list) "{{{
+  let omni_list = []
+
+  " Convert string list.
+  for val in deepcopy(a:list)
+    if type(val) == type('')
+      let dict = { 'word' : val, 'menu' : '[sh]' }
+    else
+      let dict = val
+      let dict.menu = has_key(dict, 'menu') ?
+            \ '[sh] ' . dict.menu : '[sh]'
+    endif
+
+    call add(omni_list, dict)
+
+    unlet val
+  endfor
+
+  return omni_list
 endfunction"}}}
 
 " vim: foldmethod=marker
