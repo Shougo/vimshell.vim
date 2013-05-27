@@ -1516,6 +1516,9 @@ But this behavior is unexpected. It may be not worked in later version.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-05-27
+- Fixed filename completion.
+
 2013-05-26
 - Improved omnifunc.
 

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" Last Modified: 27 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -154,7 +154,8 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...) "{{{
   if vimshell#util#is_windows()
     let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
-          \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
+          \ 'isdirectory(v:val.orig) || "." .
+          \  fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
           \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(exts)
   else
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
@@ -285,8 +286,11 @@ function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) 
 endfunction"}}}
 
 function! vimshell#complete#helper#get_files(path, complete_str) "{{{
-  let candidates = vimshell#complete#helper#keyword_filter(
-        \ s:get_glob_files(a:path, a:complete_str), a:complete_str)
+  let candidates = s:get_glob_files(a:path, a:complete_str)
+  if a:path == ''
+    let candidates = vimshell#complete#helper#keyword_filter(
+          \ candidates, a:complete_str)
+  endif
   return  sort(filter(copy(candidates),
         \   'v:val.action__is_directory')) +
         \ sort(filter(copy(candidates),
@@ -302,30 +306,18 @@ function! s:get_glob_files(path, complete_str) "{{{
   let glob = (complete_str !~ '\*$')?
         \ complete_str . '*' : complete_str
 
-  if a:path == '' && complete_str !~ '/'
-    if !has_key(s:cached_files, getcwd())
-      call s:caching_current_files()
-    endif
-
-    let files = copy(s:cached_files[getcwd()])
+  if a:path == ''
+    let files = neocomplcache#util#glob(glob)
   else
-    let ftype = getftype(glob)
-    if ftype != '' && ftype !=# 'dir'
-      " Note: If glob() device files, Vim may freeze!
+    try
+      let globs = globpath(path, glob)
+    catch
       return []
-    endif
-
-    if a:path == ''
-      let files = vimshell#util#glob(glob)
-    else
-      try
-        let globs = globpath(path, glob)
-      catch
-        return []
-      endtry
-      let files = split(substitute(globs, '\\', '/', 'g'), '\n')
-    endif
+    endtry
+    let files = split(vimshell#util#substitute_path_separator(globs), '\n')
   endif
+
+  let files = filter(files, "v:val !~ '/.$'")
 
   let files = map(
         \ files, "{
