@@ -174,8 +174,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   " History completion.
   inoremap <buffer> <expr><silent> <C-l>
         \ unite#sources#vimshell_history#start_complete(!0)
-  inoremap <buffer> <expr><silent> <C-l>
-        \ unite#sources#vimshell_history#start_complete(!0)
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.
