@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" Last Modified: 29 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -92,8 +92,8 @@ function! vimshell#complete#gather_candidates(complete_str) "{{{
   let cur_keyword_str = args[-1]
 
   let _ = (len(args) <= 1) ?
-        \ s:get_complete_commands(cur_keyword_str) :
-        \ s:get_complete_args(cur_keyword_str, args)
+        \ s:get_complete_commands(a:complete_str) :
+        \ s:get_complete_args(a:complete_str, args)
 
   if a:complete_str =~ '^\$'
     let _ += vimshell#complete#helper#variables(a:complete_str)
