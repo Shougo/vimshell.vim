@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 28 May 2013.
+" Last Modified: 03 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ let s:source = {
       \ 'name' : 'vimshell',
       \ 'kind' : 'manual',
       \ 'min_pattern_length' :
-      \      g:neocomplete_auto_completion_start_length,
+      \      g:neocomplete#auto_completion_start_length,
       \ 'filetypes' : { 'vimshell' : 1, },
       \ 'is_volatile' : 1,
       \ 'sorters' : [],
