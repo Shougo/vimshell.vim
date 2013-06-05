@@ -30,23 +30,22 @@ let s:command = {
       \ 'description' : 'cdup {ancestor-directory-name}',
       \}
 function! s:command.execute(args, context) "{{{
-  " Move to upper directory.
+  " Move to parent directory.
 
   if empty(a:args)
-    call vimshell#error_line(a:context.fd, self.description)
-    return 0
-  endif
+    let directory = '..'
+  else
+    let current_dir = b:vimshell.current_dir
+    let target = get(a:args, 0)
 
-  let current_dir = b:vimshell.current_dir
-  let target = get(a:args, 0)
-
-  let directory = matchstr(current_dir,
-        \ '.*/\V' . escape(target, '\') . '/')
-
-  if directory == ''
-    " Try partial match.
     let directory = matchstr(current_dir,
-          \ '.*/.*\V' . escape(target, '\') . '\m.*/')
+          \ '.*/\V' . escape(target, '\') . '/')
+
+    if directory == ''
+      " Try partial match.
+      let directory = matchstr(current_dir,
+            \ '.*/.*\V' . escape(target, '\') . '\m.*/')
+    endif
   endif
 
   if directory == ''

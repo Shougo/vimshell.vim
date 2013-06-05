@@ -969,7 +969,9 @@ cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
 
 cdup {parent-directory-name}			*vimshell-internal-cdup*
 		Changes current directory to the ancestor directory named as
-		{parent-directory-name}.
+		{parent-directory-name}. {parent-directory-name} is searched
+		by substring match.
+		It omit arguments, change directory to parent directory.
 
 clear 							*vimshell-internal-clear*
 		Clear display.
