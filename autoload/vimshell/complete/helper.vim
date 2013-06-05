@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 May 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -307,7 +307,7 @@ function! s:get_glob_files(path, complete_str) "{{{
         \ complete_str . '*' : complete_str
 
   if a:path == ''
-    let files = neocomplcache#util#glob(glob)
+    let files = vimshell#util#glob(glob)
   else
     try
       let globs = globpath(path, glob)
@@ -353,7 +353,7 @@ function! s:get_glob_files(path, complete_str) "{{{
     let abbr = dict.word
     if dict.action__is_directory && dict.word !~ '/$'
       let abbr .= '/'
-      if get(g:, 'neocomplcache_enable_auto_delimiter', 0)
+      if vimshell#util#is_auto_delimiter()
         let dict.word .= '/'
       endif
     elseif vimshell#util#is_windows()

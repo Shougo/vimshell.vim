@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: scp.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jun 2012.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,15 +43,13 @@ function! s:command.complete(args) "{{{
         \ arglead, cmdline, len(cmdline)) +
         \ vimshell#complete#helper#files(arglead)
 
-  if !neocomplcache#is_auto_complete()
-    " Manual complete only.
-    let ssh_files = map(unite#sources#ssh#complete_file(
+  " Todo: Manual complete only.
+  let ssh_files = map(unite#sources#ssh#complete_file(
         \ split('//' . substitute(arglead,
         \     ':', '/', ''), ':'), unite#get_context(),
         \ arglead, cmdline, cursorpos),
         \ "substitute(v:val, ':\\d\\+/', ':', '')")
-    let _ += ssh_files
-  endif
+  let _ += ssh_files
 
   return _
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 May 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -664,10 +664,7 @@ function! s:check_all_output(is_hold) "{{{
     elseif mode() ==# 'i' && exists('b:interactive') &&
         \ !empty(b:interactive.process)
         \ && b:interactive.process.is_valid
-      let is_complete_hold = get(g:,
-            \ 'neocomplcache_enable_cursor_hold_i', 0)
-            \ && !get(g:,
-            \ 'neocomplcache_enable_insert_char_pre', 0)
+      let is_complete_hold = vimshell#util#is_complete_hold()
       if (a:is_hold && !is_complete_hold)
             \ || (!a:is_hold && is_complete_hold)
         setlocal modifiable
@@ -676,9 +673,7 @@ function! s:check_all_output(is_hold) "{{{
       endif
 
       " Skip next auto completion.
-      if exists('*neocomplcache#skip_next_complete')
-        call neocomplcache#skip_next_complete()
-      endif
+      call vimshell#util#skip_next_complete()
     endif
   elseif &updatetime < s:update_time_save
         \ && &filetype !=# 'unite'

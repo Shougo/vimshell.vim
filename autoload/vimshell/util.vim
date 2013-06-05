@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Jun 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -169,9 +169,31 @@ function! vimshell#util#is_auto_select() "{{{
         \ get(g:, 'neocomplete#enable_auto_select', 0)
 endfunction"}}}
 
+function! vimshell#util#is_complete_hold() "{{{
+  return (get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
+        \ && !get(g:, 'neocomplcache_enable_insert_char_pre', 0)) ||
+        \ (get(g:, 'neocomplete#enable_cursor_hold_i', 0)
+        \ && !get(g:, 'neocomplete#enable_insert_char_pre', 0))
+endfunction"}}}
+
+function! vimshell#util#is_auto_delimiter() "{{{
+  return get(g:, 'neocomplcache_enable_auto_delimiter', 0) ||
+        \ get(g:, 'neocomplete#enable_auto_delimiter', 0)
+endfunction"}}}
+
 function! vimshell#util#path2project_directory(...)
   return call(s:V.path2project_directory, a:000)
 endfunction
+
+function! vimshell#util#skip_next_complete() "{{{
+  " Skip next auto completion.
+  if exists('*neocomplcache#skip_next_complete')
+    call neocomplcache#skip_next_complete()
+  endif
+  if exists('*neocomplete#skip_next_complete')
+    call neocomplete#skip_next_complete()
+  endif
+endfunction"}}}
 
 function! vimshell#util#alternate_buffer() "{{{
   if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))

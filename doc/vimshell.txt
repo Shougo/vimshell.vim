@@ -1516,6 +1516,9 @@ But this behavior is unexpected. It may be not worked in later version.
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
 
+2013-06-05
+- Deleted neocomplcache dependencies.
+
 2013-05-28
 - Added neocomplete source.
 

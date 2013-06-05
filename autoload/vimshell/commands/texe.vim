@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 May 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -193,6 +193,8 @@ function! s:default_settings() "{{{
   setlocal tabstop=8
   setlocal foldcolumn=0
   setlocal foldmethod=manual
+  setlocal omnifunc=
+  setlocal completefunc=
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=n
@@ -246,11 +248,6 @@ function! s:init_bg(args, context) "{{{
 endfunction"}}}
 
 function! s:insert_enter() "{{{
-  if exists(':NeoComplCacheDisable')
-    " Lock neocomplcache.
-    NeoComplCacheLock
-  endif
-
   if !exists('b:interactive')
     return
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2013.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -57,9 +57,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
   endif
 
   " Skip next auto completion.
-  if exists('*neocomplcache#skip_next_complete')
-    call neocomplcache#skip_next_complete()
-  endif
+  call vimshell#util#skip_next_complete()
 
   if &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) && (vimshell#check_prompt()
