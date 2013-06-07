@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 07 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,8 +185,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ "\<Plug>(vimshell_execute_by_background)")
   " Insert last word.
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
-  " Run help.
-  imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
   " Interrupt.
   imap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Delete char.
@@ -194,8 +192,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)
   " Delete line.
   imap <buffer> <C-k>     <Plug>(vimshell_delete_forward_line)
-  " Move to previous window.
-  imap <buffer> <C-x>     <Plug>(vimshell_move_previous_window)
 endfunction"}}}
 function! vimshell#mappings#smart_map(vimshell_map, execute_map)
   return empty(b:vimshell.continuation) ? a:vimshell_map : a:execute_map

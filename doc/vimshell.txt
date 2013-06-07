@@ -703,12 +703,10 @@ Insert mode default key mappings.
 <C-z>	(while execute)	<Plug>(vimshell_execute_by_background)
 	(other)		<Plug>(vimshell_push_current_line)
 <C-t>			<Plug>(vimshell_insert_last_word)
-<C-x><C-h>		<Plug>(vimshell_run_help)
 <C-c>			<Plug>(vimshell_interrupt)
 <C-h>			<Plug>(vimshell_delete_backward_char)
 <BS>			<Plug>(vimshell_delete_backward_char)
 <C-k>			<Plug>(vimshell_delete_forward_line)
-<C-x>			<Plug>(vimshell_move_previous_window)
 
 VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 
 				*vimshell-interactive-buffer-key-mappings*
@@ -1521,6 +1519,9 @@ But this behavior is unexpected. It may be not worked in later version.
 
 ==============================================================================
 CHANGELOG						*vimshell-changelog*
+
+2013-06-07
+- Deleted <C-x> default mapping.
 
 2013-06-05
 - Deleted neocomplcache dependencies.
