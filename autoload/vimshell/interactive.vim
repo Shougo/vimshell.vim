@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 13 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -665,11 +665,10 @@ function! s:check_all_output(is_hold) "{{{
         \ !empty(b:interactive.process)
         \ && b:interactive.process.is_valid
       let is_complete_hold = vimshell#util#is_complete_hold()
-      if (a:is_hold && !is_complete_hold)
-            \ || (!a:is_hold && is_complete_hold)
+      if a:is_hold != is_complete_hold
         setlocal modifiable
-        call feedkeys(is_complete_hold ?
-              \ "\<C-r>\<ESC>" : "a\<BS>", 'n')
+        call feedkeys((is_complete_hold ?
+              \ "\<C-r>\<ESC>" : "a\<BS>"), 'n')
       endif
 
       " Skip next auto completion.
