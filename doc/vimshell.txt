@@ -33,6 +33,7 @@ Interface		|vimshell-interface|
   Key mappings		  |vimshell-key-mappings|
     Vimshell buffer key mappings    |vimshell-buffer-key-mappings|
     Interactive buffer key mappings |vimshell-interactive-buffer-key-mappings|
+  Options		  |vimshell-options|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
@@ -92,67 +93,14 @@ COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
 		Runs vimshell. The {path} will be its current directory.
-		If another vimshell buffer exists, switches to the vimshell
-		buffer and changes its current directory to {path}.
+		If another vimshell buffer exists in current tab, switches to
+		the vimshell buffer and changes its current directory to
+		{path}.
 		If you omit {path}, it uses Vim's current directory (or does
 		not change the current directory).
 
-						*vimshell-options*
-		{options} are options for a vimshell buffer.  You may give the
-		following parameters for a option; you must escape with \ when
-		it contains spaces.
-
-						*vimshell-options-buffer-name*
-		-buffer-name={buffer-name}
-		Specifies a buffer name. The default buffer name is 'default'.
-		Note: Buffer name must not contain spaces.
-
-						*vimshell-options-toggle*
-		-toggle
-		Close vimshell buffer window if this vimshell buffer name
-		window is exists.
-
-						*vimshell-options-create*
-		-create
-		Create new vimshell buffer.
-
-						*vimshell-options-split*
-		-split
-		Split vimshell buffer window. |vimshell-options-split-command|
-		is used.
-
-						*vimshell-options-popup*
-		-popup
-		Popup split vimshell buffer window.
-		|vimshell-options-split-command| is used.
-
-					*vimshell-options-split-command*
-		-split-command={command-name}
-		Specify split command.
-
-						*vimshell-options-prompt*
-		-prompt={prompt}
-		Specify prompt string. If omit it,
-		|g:vimshell_prompt| is used.
-
-					*vimshell-options-secondary-prompt*
-		-secondary-prompt={secondary-prompt}
-		Specify secondary prompt string. If omit it,
-		|g:vimshell_secondary_prompt| is used.
-
-						*vimshell-options-user-prompt*
-		-user-prompt={user-prompt}
-		Specify secondary prompt string. If omit it,
-		|g:vimshell_user_prompt| is used.
-
-					*vimshell-options-right-prompt*
-		-right-prompt={right-prompt}
-		Specify right prompt string. If omit it,
-		|g:vimshell_right_prompt| is used.
-
-						*vimshell-options-project*
-		-project
-		Move to project directory.
+		{options} are options for a vimshell buffer. See
+		|vimshell-options|.
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Runs vimshell as the same :VimShell, but it creates a new
@@ -176,24 +124,27 @@ COMMANDS 					*vimshell-commands*
 :VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
 		Like as |:VimShell|, but move to buffer's directory.
 
-:VimShellExecute {command}			*:VimShellExecute*
+:VimShellExecute [{option}] {command}			*:VimShellExecute*
 		It does not run vimshell, but launches a terminal program you
 		Specify by {command}, and this program runs in background.
 		You can use vimshell like as GNU screen.
+		{option} is same to |vimshell-internal-bg| options.
 
-:VimShellInteractive [{command}]		*:VimShellInteractive*
+:VimShellInteractive [{option}] [{command}]		*:VimShellInteractive*
 		It does not run vimshell, but launches a interpreter program
 		you specify by {command}.  It is same as Emacs's M-x
 		{interpreter-name}.  You leave out {command}, vimshell uses
 		the value in |g:vimshell_interactive_interpreter_commands|.
+		{option} is same to |vimshell-internal-iexe| options.
 
 		Resize window example:
 >
 		VimShellInteractive --split='split | resize 20' irb
 <
-:VimShellTerminal {command}			*:VimShellTerminal*
+:VimShellTerminal [{option}] {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
 		it launches a terminal program you Specify by {command}.
+		{option} is same to |vimshell-internal-texe| options.
 		Note: This is not completed function.
 
 :[range]VimShellSendString {string}		*:VimShellSendString*
@@ -885,6 +836,64 @@ vimshell#hook#add({hook-point}, {hook-name}, {func})
 vimshell#hook#remove({hook-point}, {hook-name})
 						*vimshell#hook#remove()*
 		Delete {hook-name} function in {hook-point}.
+
+------------------------------------------------------------------------------
+OPTIONS 					*vimshell-options*
+		{options} are options for a vimshell buffer.  You may give the
+		following parameters for a option; you must escape with "\"
+		when it contains spaces.
+
+						*vimshell-options-buffer-name*
+		-buffer-name={buffer-name}
+		Specifies a buffer name. The default buffer name is 'default'.
+		Note: Buffer name must not contain spaces.
+
+						*vimshell-options-toggle*
+		-toggle
+		Close vimshell buffer window if this vimshell buffer name
+		window is exists.
+
+						*vimshell-options-create*
+		-create
+		Create new vimshell buffer.
+
+						*vimshell-options-split*
+		-split
+		Split vimshell buffer window. And
+		|vimshell-options-split-command| is used.
+
+						*vimshell-options-popup*
+		-popup
+		Popup split vimshell buffer window.
+		|vimshell-options-split-command| is used.
+
+					*vimshell-options-split-command*
+		-split-command={command-name}
+		Specify split command.
+
+						*vimshell-options-prompt*
+		-prompt={prompt}
+		Specify prompt string. If omit it,
+		|g:vimshell_prompt| is used.
+
+					*vimshell-options-secondary-prompt*
+		-secondary-prompt={secondary-prompt}
+		Specify secondary prompt string. If omit it,
+		|g:vimshell_secondary_prompt| is used.
+
+						*vimshell-options-user-prompt*
+		-user-prompt={user-prompt}
+		Specify secondary prompt string. If omit it,
+		|g:vimshell_user_prompt| is used.
+
+						*vimshell-options-right-prompt*
+		-right-prompt={right-prompt}
+		Specify right prompt string. If omit it,
+		|g:vimshell_right_prompt| is used.
+
+						*vimshell-options-project*
+		-project
+		Move to project directory.
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
