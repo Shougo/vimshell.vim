@@ -390,6 +390,14 @@ g:vimshell_enable_transient_user_prompt
 
 		Default value is 0.
 
+g:vimshell_execute_file_list
+					*g:vimshell_execute_file_list*
+		This is a dictionary value that has keys of the extensions
+		and values of command arguments.
+		This is used to define default file execution command.
+
+		Default value is {}.
+
 g:vimshell_interactive_no_save_history_commands
 			*g:vimshell_interactive_no_save_history_commands*
 		This is a dictionary value which key is a command name that
@@ -840,7 +848,13 @@ vimshell#get_status_string()			 *vimshell#get_status_string()*
 		Returns vimshell status string. It is useful to custom
 		statusline.
 
-					*vimshell#interactive#send()*
+vimshell#set_execute_file({exts}, {command})	 *vimshell#set_execute_file()*
+		Define file execution command when it has {exts}.
+		{exts} is comma separated file extensions.
+		{command} is command arguments.
+		(See: |g:vimshell_execute_file_list|)
+
+						*vimshell#interactive#send()*
 vimshell#interactive#send({expr})
 		It sends {expr} to the interpreter in background buffer of
 		vimshell, iexe, texe.  You can control interpreter as if you
@@ -885,12 +899,6 @@ EXAMPLES						*vimshell-examples*
 	else
 	  " Display user name on Linux.
 	  let g:vimshell_prompt = $USER."% "
-	
-	  call vimshell#set_execute_file('bmp,jpg,png,gif', 'gexe eog')
-	  call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
-	  let g:vimshell_execute_file_list['zip'] = 'zipinfo'
-	  call vimshell#set_execute_file('tgz,gz', 'gzcat')
-	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 	endif
 	
 	" Initialize execute file list.
