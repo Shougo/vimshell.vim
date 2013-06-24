@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Jun 2013.
+" Last Modified: 24 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -116,9 +116,13 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ <ESC>:call <SID>exit()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_hide)
         \ <ESC>:call <SID>hide()<CR>
+  inoremap <expr><buffer><silent> <Plug>(vimshell_history_unite)
+        \ unite#sources#vimshell_history#start_complete(!0)
+  inoremap <expr><buffer><silent> <Plug>(vimshell_history_neocomplete)
+        \ neocomplete#start_manual_complete('vimshell/history')
   "}}}
 
-  if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
+  if get(g:, 'vimshell_no_default_keymappings', 0)
     return
   endif
 
@@ -168,9 +172,11 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
+
   " History completion.
-  inoremap <buffer> <expr><silent> <C-l>
-        \ unite#sources#vimshell_history#start_complete(!0)
+  imap <buffer> <expr><silent> <C-l>
+        \ <Plug>(vimshell_history_unite)
+
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.
