@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" Last Modified: 24 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -83,10 +83,12 @@ function! vimshell#int_mappings#define_default_mappings() "{{{
         \ <C-o>:call vimshell#int_mappings#command_complete()<CR>
   inoremap <buffer><expr> <Plug>(vimshell_int_delete_forward_line)
         \ col('.') == col('$') ? "" : "\<ESC>lDa"
+  inoremap <buffer><expr><silent>
+        \ <Plug>(vimshell_int_history_unite)
+        \ unite#sources#vimshell_history#start_complete(!0)
   "}}}
 
-  if (exists('g:vimshell_no_default_keymappings')
-        \ && g:vimshell_no_default_keymappings)
+  if get(g:, 'vimshell_no_default_keymappings', 0)
     return
   endif
 
@@ -116,8 +118,7 @@ function! vimshell#int_mappings#define_default_mappings() "{{{
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>      <C-]><Plug>(vimshell_int_execute_line)
   imap <buffer> <C-c>     <Plug>(vimshell_int_interrupt)
-  inoremap <buffer> <expr><silent> <C-l>
-        \ unite#sources#vimshell_history#start_complete(!0)
+  imap <buffer> <C-l>     <Plug>(vimshell_int_history_unite)
   imap <buffer> <C-v>  <Plug>(vimshell_int_send_input)
   inoremap <buffer> <C-n>     <C-n>
   imap <buffer><expr> <TAB>

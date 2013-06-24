@@ -174,8 +174,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
 
   " History completion.
-  imap <buffer> <expr><silent> <C-l>
-        \ <Plug>(vimshell_history_unite)
+  imap <buffer> <C-l> <Plug>(vimshell_history_unite)
 
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)

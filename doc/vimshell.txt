@@ -622,11 +622,11 @@ Insert mode key mappings.
 		Quit vimshell buffer.
 
 <Plug>(vimshell_history_unite)		*i_<Plug>(vimshell_history_unite)*
-		Execute vimshell histories by unite interface.
+		Execute vimshell history by unite interface.
 		Note: To use it, you must install |unite.vim| plugin.
 
 <Plug>(vimshell_history_neocomplete)
-		Execute vimshell histories by neocomplete interface.
+		Execute vimshell history by neocomplete interface.
 		Note: To use it, you must install |neocomplete| plugin.
 
 Normal mode default key mappings.
@@ -765,6 +765,11 @@ Insert mode key mappings.
 <Plug>(vimshell_int_delete_forward_line)
 				*i_<Plug>(vimshell_int_delete_forward_line)*
 		Delete forward line from cursor.
+<Plug>(vimshell_int_history_unite)
+				*i_<Plug>(vimshell_int_history_unite)*
+		Execute vimshell history by unite interface.
+		Note: To use it, you must install |unite.vim| plugin.
+
 
 Normal mode default key mappings.
 {lhs}			{rhs}
@@ -795,7 +800,7 @@ Insert mode default key mappings.
 <C-k>			<Plug>(vimshell_int_delete_forward_line)
 <CR>			<Plug>(vimshell_int_execute_line)
 <C-c>			<Plug>(vimshell_int_interrupt)
-<C-l>			Start vimshell/history source
+<C-l>			<Plug>(vimshell_int_history_unite)
 <C-v>			<Plug>(vimshell_int_send_input)
 <C-n>			<C-n>
 <TAB>			Select candidate or start completion
@@ -1471,7 +1476,8 @@ vimshell/history
 
 		Example:
 >
-		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+		inoremap <buffer> <expr><silent> <C-l>
+		\ unite#sources#vimshell_history#start_complete()
 <
 			*vimshell-unite-source-vimshell-external_history*
 vimshell/external_history
