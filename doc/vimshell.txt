@@ -93,11 +93,14 @@ COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
 		Runs vimshell. The {path} will be its current directory.
+
+		If you omit {path}, it uses Vim's current directory (or does
+		not change the current directory).
+
 		If another vimshell buffer exists in current tab, switches to
 		the vimshell buffer and changes its current directory to
 		{path}.
-		If you omit {path}, it uses Vim's current directory (or does
-		not change the current directory).
+		Note: This feature is if installed unite.vim only.
 
 		{options} are options for a vimshell buffer. See
 		|vimshell-options|.
