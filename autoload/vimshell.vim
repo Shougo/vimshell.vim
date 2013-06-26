@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 26 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -176,8 +176,8 @@ function! vimshell#start(path, ...) "{{{
         \ t:vimshell.last_vimshell_bufnr),
         \ "buflisted(v:val) &&
         \  getbufvar(v:val, '&filetype') ==# 'vimshell'")
-    if (!exists('t:unite_buffer_dictionary')
-          \    || has_key(t:unite_buffer_dictionary, bufnr))
+    if (exists('t:unite_buffer_dictionary')
+          \    && has_key(t:unite_buffer_dictionary, bufnr))
       call s:switch_vimshell(bufnr, context, path)
       return
     endif
