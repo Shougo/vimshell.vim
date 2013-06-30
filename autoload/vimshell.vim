@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Jun 2013.
+" Last Modified: 30 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1126,9 +1126,9 @@ function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos) "{{{
   return map(vimshell#complete#helper#command_args(args), 'v:val.word')
 endfunction"}}}
 function! s:insert_user_and_right_prompt() "{{{
-  for user in split(vimshell#get_user_prompt(), "\\n")
+  for user in split(eval(vimshell#get_user_prompt()), "\\n", 1)
     try
-      let secondary = '[%] ' . eval(user)
+      let secondary = '[%] ' . user
     catch
       let message = v:exception . ' ' . v:throwpoint
       echohl WarningMsg | echomsg message | echohl None
