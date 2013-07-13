@@ -177,6 +177,7 @@ g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
 		"". This value is evaluated when vimshell redraws prompt.
 		Note: You cannot get multi-line prompt.
 		Note: If you set it, you must set prompt_pattern.
+		Note: You cannot change prompt color dynamically.
 >
 		" Use current directory as vimshell prompt.
 		let g:vimshell_prompt_expr = 'fnamemodify(getcwd(), ":~")."> "'
