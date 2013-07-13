@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jun 2013.
+" Last Modified: 14 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -627,20 +627,18 @@ function! vimshell#interactive#check_current_output() "{{{
   endif
 endfunction"}}}
 function! s:check_all_output(is_hold) "{{{
-  if vimshell#util#is_cmdwin()
-    return
-  endif
+  let updated = 0
 
-  let winnrs = filter(range(1, winnr('$')),
+  if mode() ==# 'n'
+    for bufnr in filter(range(1, bufnr('$')),
         \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
         \  && get(get(getbufvar(winbufnr(v:val), 'interactive'),
         \     'process', {}), 'is_valid', 0)")
-
-  if mode() ==# 'n'
-    for winnr in winnrs
       " Check output.
-      call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
-            \ winbufnr(winnr), bufnr('%'))
+      if s:cache_output(a:interactive) && bufwinnr(bufnr) > 0
+        let updated = 1
+        call s:check_output(a:interactive, bufwinnr(bufnr), bufnr('%'))
+      endif
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
@@ -651,7 +649,11 @@ function! s:check_all_output(is_hold) "{{{
     endif
   endif
 
-  if len(winnrs) > 0
+  if vimshell#util#is_cmdwin()
+    return
+  endif
+
+  if exists('b:interactive') || updated
     if &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
       let s:update_time_save = &updatetime
@@ -774,29 +776,23 @@ function! s:cache_output(interactive) "{{{
     return 0
   endif
 
-  let outputed = 0
   if !a:interactive.process.stdout.eof
-    let read = a:interactive.process.stdout.read(10000, 0)
-    if read != ''
-      let outputed = 1
-    endif
-    let a:interactive.stdout_cache = read
+    let a:interactive.stdout_cache .=
+          \ a:interactive.process.stdout.read(10000, 0)
   endif
 
   if !a:interactive.process.stderr.eof
-    let read = a:interactive.process.stderr.read(10000, 0)
-    if read != ''
-      let outputed = 1
-    endif
-    let a:interactive.stderr_cache = read
+    let a:interactive.stderr_cache .=
+          \ a:interactive.process.stderr.read(10000, 0)
   endif
 
   if a:interactive.process.stderr.eof &&
         \ a:interactive.process.stdout.eof
-    let outputed = 1
+    return 2
   endif
 
-  return outputed
+  return a:interactive.stdout_cache != '' ||
+        \ a:interactive.stderr_cache
 endfunction"}}}
 function! s:is_skk_enabled() "{{{
   return (exists('b:skk_on') && b:skk_on)
