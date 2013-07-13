@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -224,11 +224,10 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
 
   if b:interactive.syntax !=# &filetype
     " Set highlight.
-    let start = searchpos('^' . vimshell#escape_match(
-          \ vimshell#get_prompt()), 'bWen')[0]
+    let start = searchpos(context.prompt_pattern, 'bWen')[0]
     if start > 0
-      call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|^%s\)"',
-            \ vimshell#escape_match(vimshell#get_prompt())), b:interactive.syntax)
+      call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|%s\)"',
+            \ context.prompt_pattern), b:interactive.syntax)
     endif
 
     let b:interactive.syntax = &filetype

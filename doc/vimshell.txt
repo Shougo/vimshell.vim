@@ -172,6 +172,21 @@ g:vimshell_prompt				*g:vimshell_prompt*
 		dynamically(for example : current directory).
 		(cf: |g:vimshell_user_prompt|)
 
+g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
+		Sets vimshell default prompt expression. Initial value is
+		"". This value is evaluated when vimshell redraws prompt.
+		Note: You cannot get multi-line prompt.
+		Note: If you set it, you must set prompt_pattern.
+>
+		" Use current directory as vimshell prompt.
+		let g:vimshell_prompt_expr = 'getcwd()."> "'
+		let g:vimshell_prompt_pattern = '^\f\+> '
+<
+g:vimshell_prompt_pattern			*g:vimshell_prompt_pattern*
+		Sets the pattern which matches vimshell prompt. Initial value
+		is "".  If it is not set, vimshell will set the pattern
+		automatically.
+
 g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 		Sets vimshell default secondary prompt string. Initial value
 		is "%%".
@@ -891,6 +906,16 @@ OPTIONS 					*vimshell-options*
 		-prompt={prompt}
 		Specify prompt string. If omit it,
 		|g:vimshell_prompt| is used.
+
+						*vimshell-options-prompt_expr*
+		-prompt_expr={expr}
+		Specify prompt expression. If omit it,
+		|g:vimshell_prompt_expr| is used.
+
+						*vimshell-options-prompt_pattern*
+		-prompt_pattern={expr}
+		Specify prompt pattern. If omit it,
+		|g:vimshell_prompt_pattern| is used.
 
 					*vimshell-options-secondary-prompt*
 		-secondary-prompt={secondary-prompt}

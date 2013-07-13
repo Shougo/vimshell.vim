@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jun 2013.
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,7 +53,7 @@ function! s:source.get_complete_position(context) "{{{
     return -1
   endif
 
-  return len(vimshell#get_prompt())
+  return vimshell#get_prompt_length()
 endfunction "}}}
 
 function! s:source.gather_candidates(context) "{{{
