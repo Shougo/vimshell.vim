@@ -179,7 +179,7 @@ g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
 		Note: If you set it, you must set prompt_pattern.
 >
 		" Use current directory as vimshell prompt.
-		let g:vimshell_prompt_expr = 'getcwd()."> "'
+		let g:vimshell_prompt_expr = 'fnamemodify(getcwd(), ":~")."> "'
 		let g:vimshell_prompt_pattern = '^\f\+> '
 <
 g:vimshell_prompt_pattern			*g:vimshell_prompt_pattern*
@@ -204,7 +204,7 @@ g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		This example will be helpful to show current directory
 		everytime.
 >
-		let g:vimshell_user_prompt = 'getcwd()'
+		let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 <
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		It's zsh-like right prompt. This value is a string value which
