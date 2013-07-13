@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Jun 2013.
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nnoremap <buffer><expr> <Plug>(vimshell_change_line)
         \ vimshell#check_prompt() ?
         \ printf('0%dlc$', vimshell#util#strchars(
-        \ vimshell#get_prompt())) : 'ddO'
+        \ matchstr(getline('.'), b:vimshell.context.prompt_pattern))) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line)
         \ <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
@@ -356,7 +356,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
+    call search(vimshell#get_context().prompt_pattern . '.\?', 'bWe')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val < line(".")'), 'vimshell#compare_number')
@@ -367,7 +367,7 @@ function! s:previous_prompt() "{{{
 endfunction"}}}
 function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
+    call search(vimshell#get_context().prompt_pattern . '.\?', 'We')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val > line(".")'), 'vimshell#compare_number')
@@ -377,7 +377,7 @@ function! s:next_prompt() "{{{
   endif
 endfunction"}}}
 function! s:select_previous_prompt() "{{{
-  let prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
+  let prompt_pattern = vimshell#get_context().prompt_pattern
   let [linenr, col] = searchpos(prompt_pattern, 'bWen')
   if linenr == 0
     return ''
@@ -387,7 +387,7 @@ function! s:select_previous_prompt() "{{{
 endfunction"}}}
 function! s:select_next_prompt() "{{{
   let prompt_pattern = vimshell#get_user_prompt() != '' ?
-        \ '^' . vimshell#escape_match(vimshell#get_prompt()) : '^\[%\] '
+        \ vimshell#get_context().prompt_pattern : '^\[%\] '
   let [linenr, col] = searchpos(prompt_pattern, 'Wen')
   if linenr == 0
     return ''
@@ -396,18 +396,15 @@ function! s:select_next_prompt() "{{{
   return (linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output() "{{{
-  let prompt = vimshell#escape_match(vimshell#get_prompt())
-  if vimshell#get_user_prompt() != ''
-    let nprompt = '^\[%\] '
-  else
-    let nprompt = '^' . prompt
-  endif
-  let pprompt = '^' . prompt
+  let prompt_pattern = vimshell#get_context().prompt_pattern
+  let nprompt = vimshell#get_user_prompt() != '' ?
+        \ '^\[%\] ' : prompt_pattern
+  let pprompt = prompt_pattern
 
   " Search next prompt.
   if getline('.') =~ nprompt
     let next_line = line('.')
-  elseif vimshell#get_user_prompt() != '' && getline('.') =~ '^' . prompt
+  elseif vimshell#get_user_prompt() != '' && getline('.') =~ prompt_pattern
     let [next_line, next_col] = searchpos(nprompt, 'bWn')
   else
     let [next_line, next_col] = searchpos(nprompt, 'Wn')
@@ -441,13 +438,14 @@ function! s:insert_last_word() "{{{
   startinsert!
 endfunction"}}}
 function! s:run_help() "{{{
-  if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  if !vimshell#check_prompt()
     startinsert!
     return
   endif
 
   " Delete prompt string.
-  let line = substitute(getline('.'), '^' . vimshell#escape_match(vimshell#get_prompt()), '', '')
+  let line = substitute(getline('.'),
+        \ vimshell#get_context().prompt_pattern, '', '')
   if line =~ '^\s*$'
     startinsert!
     return
@@ -462,7 +460,7 @@ function! s:run_help() "{{{
   elseif has_key(b:vimshell.galias_table, program)
     let program = b:vimshell.galias_table[program]
   endif
-  
+
   if exists(':Ref')
     execute 'Ref man' program
   elseif exists(':Man')
@@ -472,12 +470,13 @@ function! s:run_help() "{{{
   endif
 endfunction"}}}
 function! s:paste_prompt() "{{{
+  let prompt_pattern = vimshell#get_context().prompt_pattern
   let prompt = getline('.')
-  if prompt !~# vimshell#escape_match(vimshell#get_prompt())
+  if prompt !~# prompt_pattern
     return
   endif
 
-  if getline('$') !~# vimshell#escape_match(vimshell#get_prompt())
+  if getline('$') !~# prompt_pattern
         \ || vimshell#get_prompt_command(getline('$')) != ''
     " Insert prompt line.
     call append(line('$'), prompt)
@@ -562,7 +561,7 @@ function! s:delete_backward_char() "{{{
 
   " Prevent backspace over prompt
   let cur_text = vimshell#get_cur_line()
-  if cur_text !=# vimshell#get_prompt()
+  if cur_text !~# vimshell#get_context().prompt_pattern . '$'
     return prefix . "\<BS>"
   else
     return prefix
@@ -618,18 +617,19 @@ function! s:interrupt(is_insert) "{{{
   call vimshell#interactive#send_char(3)
 endfunction"}}}
 function! s:insert_enter() "{{{
-  if !vimshell#head_match(getline('.'), vimshell#get_prompt())
+  if !vimshell#check_prompt()
     startinsert
     return
   endif
 
-  if col('.') <= len(vimshell#get_prompt())
-    if len(vimshell#get_prompt()) + 1 >= col('$')
+  let prompt_len = vimshell#get_prompt_length()
+  if col('.') <= prompt_len
+    if prompt_len + 1 >= col('$')
       startinsert!
       return
     else
       let pos = getpos('.')
-      let pos[2] = len(vimshell#get_prompt()) + 1
+      let pos[2] = vimshell#get_prompt_length() + 1
       call setpos('.', pos)
     endif
   endif

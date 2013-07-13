@@ -172,6 +172,22 @@ g:vimshell_prompt				*g:vimshell_prompt*
 		dynamically(for example : current directory).
 		(cf: |g:vimshell_user_prompt|)
 
+g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
+		Sets vimshell default prompt expression. Initial value is
+		"". This value is evaluated when vimshell redraws prompt.
+		Note: You cannot get multi-line prompt.
+		Note: If you set it, you must set prompt_pattern.
+		Note: You cannot change prompt color dynamically.
+>
+		" Use current directory as vimshell prompt.
+		let g:vimshell_prompt_expr = 'fnamemodify(getcwd(), ":~")."> "'
+		let g:vimshell_prompt_pattern = '^\f\+> '
+<
+g:vimshell_prompt_pattern			*g:vimshell_prompt_pattern*
+		Sets the pattern which matches vimshell prompt. Initial value
+		is "".  If it is not set, vimshell will set the pattern
+		automatically.
+
 g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
 		Sets vimshell default secondary prompt string. Initial value
 		is "%%".
@@ -189,7 +205,7 @@ g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		This example will be helpful to show current directory
 		everytime.
 >
-		let g:vimshell_user_prompt = 'getcwd()'
+		let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 <
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
 		It's zsh-like right prompt. This value is a string value which
@@ -892,6 +908,16 @@ OPTIONS 					*vimshell-options*
 		Specify prompt string. If omit it,
 		|g:vimshell_prompt| is used.
 
+						*vimshell-options-prompt_expr*
+		-prompt_expr={expr}
+		Specify prompt expression. If omit it,
+		|g:vimshell_prompt_expr| is used.
+
+						*vimshell-options-prompt_pattern*
+		-prompt_pattern={expr}
+		Specify prompt pattern. If omit it,
+		|g:vimshell_prompt_pattern| is used.
+
 					*vimshell-options-secondary-prompt*
 		-secondary-prompt={secondary-prompt}
 		Specify secondary prompt string. If omit it,
@@ -1544,11 +1570,8 @@ with same script. The path separator is just an evil shit.
 Q: I want to change |g:vimshell_prompt| dynamically.
 
 A: You cannot do it. |g:vimshell_prompt| is fixed string.
-But you can change |g:vimshell_user_prompt| dynamically instead of it.
-
-Note: In below page(Japanese), it emulates dynamic prompt in vimshell.
-http://kannokanno.hatenablog.com/entry/2013/05/10/140947
-But this behavior is unexpected. It may be not worked in later version.
+But you can change |g:vimshell_prompt_expr| or |g:vimshell_user_prompt|
+dynamically instead of it.
 
 Q: I want to execute history by completion interface.
 
