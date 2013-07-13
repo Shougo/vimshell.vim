@@ -443,7 +443,7 @@ function! vimshell#get_prompt(...) "{{{
   if &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation)
     let context = vimshell#get_context()
-    if context.prompt_expr != ''
+    if context.prompt_expr != '' && context.prompt_pattern != ''
       return eval(context.prompt_expr)
     endif
 
