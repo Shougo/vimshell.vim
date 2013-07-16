@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Jul 2013.
+" Last Modified: 16 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -450,10 +450,7 @@ function! vimshell#get_prompt(...) "{{{
     return context.prompt
   endif
 
-  return &filetype ==# 'vimshell' &&
-        \ empty(b:vimshell.continuation) ?
-        \  :
-        \ vimshell#interactive#get_prompt(line, interactive)
+  return vimshell#interactive#get_prompt(line, interactive)
 endfunction"}}}
 function! vimshell#get_secondary_prompt() "{{{
   return get(vimshell#get_context(),
