@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2013.
+" Last Modified: 17 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -631,9 +631,9 @@ function! s:check_all_output(is_hold) "{{{
 
   if mode() ==# 'n'
     for bufnr in filter(range(1, bufnr('$')),
-        \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
-        \  && get(get(getbufvar(winbufnr(v:val), 'interactive'),
-        \     'process', {}), 'is_valid', 0)")
+        \ "type(getbufvar(v:val, 'interactive')) == type({})
+        \  && get(get(getbufvar(v:val, 'interactive'),
+        \        'process', {}), 'is_valid', 0)")
       let interactive = getbufvar(bufnr, 'interactive')
       " Check output.
       if s:cache_output(interactive) && bufwinnr(bufnr) > 0
