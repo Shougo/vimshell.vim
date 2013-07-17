@@ -636,9 +636,9 @@ function! s:check_all_output(is_hold) "{{{
         \        'process', {}), 'is_valid', 0)")
       let interactive = getbufvar(bufnr, 'interactive')
       " Check output.
-      if s:cache_output(interactive) && bufwinnr(bufnr) > 0
+      if s:cache_output(interactive)
         let updated = 1
-        call s:check_output(interactive, bufwinnr(bufnr), bufnr('%'))
+        call s:check_output(interactive, bufnr, bufnr('%'))
       endif
     endfor
   elseif mode() ==# 'i'
@@ -697,6 +697,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
 
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
         \ || vimshell#util#is_cmdwin()
+        \ || (a:bufnr != a:bufnr_save && bufwinnr(a:bufnr) < 0)
     return
   endif
 
