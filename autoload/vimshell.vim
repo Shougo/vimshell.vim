@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Jul 2013.
+" Last Modified: 18 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -1152,22 +1152,25 @@ function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos) "{{{
   return map(vimshell#complete#helper#command_args(args), 'v:val.word')
 endfunction"}}}
 function! s:insert_user_and_right_prompt() "{{{
-  for user in split(eval(vimshell#get_user_prompt()), "\\n", 1)
-    try
-      let secondary = '[%] ' . user
-    catch
-      let message = v:exception . ' ' . v:throwpoint
-      echohl WarningMsg | echomsg message | echohl None
+  let user_prompt = vimshell#get_user_prompt()
+  if user_prompt != ''
+    for user in split(eval(user_prompt), "\\n", 1)
+      try
+        let secondary = '[%] ' . user
+      catch
+        let message = v:exception . ' ' . v:throwpoint
+        echohl WarningMsg | echomsg message | echohl None
 
-      let secondary = '[%] '
-    endtry
+        let secondary = '[%] '
+      endtry
 
-    if getline('$') == ''
-      call setline('$', secondary)
-    else
-      call append('$', secondary)
-    endif
-  endfor
+      if getline('$') == ''
+        call setline('$', secondary)
+      else
+        call append('$', secondary)
+      endif
+    endfor
+  endif
 
   " Insert right prompt line.
   if vimshell#get_right_prompt() == ''
@@ -1188,7 +1191,7 @@ function! s:insert_user_and_right_prompt() "{{{
     return
   endif
 
-  let user_prompt_last = (vimshell#get_user_prompt() != '') ?
+  let user_prompt_last = (user_prompt != '') ?
         \   getline('$') : '[%] '
   let winwidth = (winwidth(0)+1)/2*2 - 5
   let padding_len =
