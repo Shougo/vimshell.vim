@@ -180,8 +180,9 @@ g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
 		Note: You cannot change prompt color dynamically.
 >
 		" Use current directory as vimshell prompt.
-		let g:vimshell_prompt_expr = 'fnamemodify(getcwd(), ":~")."> "'
-		let g:vimshell_prompt_pattern = '^\f\+> '
+		let g:vimshell_prompt_expr =
+		\ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
+		let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
 <
 g:vimshell_prompt_pattern			*g:vimshell_prompt_pattern*
 		Sets the pattern which matches vimshell prompt. Initial value
