@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Jul 2013.
+" Last Modified: 29 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,8 +69,7 @@ let s:vimshell_options = [
       \ '-project',
       \]
 
-let s:V = vital#of('vimshell')
-let s:BM = s:V.import('Vim.BufferManager')
+let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
 let s:manager = s:BM.new()  " creates new manager
 call s:manager.config('opener', 'silent edit')
 call s:manager.config('range', 'current')
@@ -587,8 +586,7 @@ function! vimshell#set_execute_file(exts, program) "{{{
         \ a:exts, a:program)
 endfunction"}}}
 function! vimshell#system(...) "{{{
-  let V = vital#of('vimshell')
-  return call(V.system, a:000)
+  return call(vimshell#util#get_vital().system, a:000)
 endfunction"}}}
 function! vimshell#open(filename) "{{{
   call vimproc#open(a:filename)

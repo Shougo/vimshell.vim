@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 29 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -25,7 +25,12 @@
 "=============================================================================
 
 let s:V = vital#of('vimshell')
-let s:List = vital#of('vimshell').import('Data.List')
+
+function! vimshell#util#get_vital() "{{{
+  return s:V
+endfunction"}}}
+
+let s:List = s:V.import('Data.List')
 
 function! vimshell#util#truncate_smart(...) "{{{
   return call(s:V.truncate_smart, a:000)
