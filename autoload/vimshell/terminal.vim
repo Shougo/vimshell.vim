@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 11 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -770,7 +770,7 @@ function! s:escape.move_cursor(matchstr) "{{{
   let s:virtual.line = get(args, 0, 1)
   let s:virtual.col = get(args, 1, 1)
   if s:virtual.line !~ '^\d\+$' || s:virtual.col !~ '^\d\+$'
-    call unite#print_error(
+    call vimshell#echo_error(
           \ 'Move cursor escape sequence format error: str = "'
           \ . a:matchstr . '"')
     return

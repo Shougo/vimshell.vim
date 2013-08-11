@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jul 2013.
+" Last Modified: 11 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -158,7 +158,7 @@ function! vimshell#util#input_yesno(message) "{{{
     endif
 
     " Retry.
-    call unite#print_error('Invalid input.')
+    call vimshell#echo_error('Invalid input.')
     let yesno = input(a:message . ' [yes/no]: ')
   endwhile
 
