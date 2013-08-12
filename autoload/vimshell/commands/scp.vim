@@ -27,7 +27,7 @@
 let s:command = {
       \ 'name' : 'scp',
       \ 'kind' : 'external',
-      \ 'description' : 'ssh {src} {dest}',
+      \ 'description' : 'scp {src} {dest}',
       \}
 function! s:command.complete(args) "{{{
   let arglead = get(a:args, -1, '')
