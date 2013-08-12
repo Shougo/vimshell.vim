@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jul 2013.
+" Last Modified: 12 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -160,12 +160,12 @@ function! vimshell#start(path, ...) "{{{
     " Create shell buffer.
     call s:create_shell(path, context)
     return
+  elseif context.toggle
+        \ && vimshell#close(context.buffer_name)
+    return
   elseif &filetype ==# 'vimshell'
     " Search vimshell buffer.
     call s:switch_vimshell(bufnr('%'), context, path)
-    return
-  elseif context.toggle
-        \ && vimshell#close(context.buffer_name)
     return
   endif
 
