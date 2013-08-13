@@ -765,7 +765,12 @@ function! s:escape.highlight(matchstr) "{{{
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr) "{{{
-  let args = split(matchstr(a:matchstr, '[0-9;]\+'), ';', 1)
+  let params = matchstr(a:matchstr, '[0-9;]\+')
+  if params == ''
+    let args = [1, 1]
+  else
+    let args = split(params, ';', 1)
+  endif
 
   let s:virtual.line = get(args, 0, 1)
   let s:virtual.col = get(args, 1, 1)
