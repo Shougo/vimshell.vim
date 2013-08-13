@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Aug 2013.
+" Last Modified: 13 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -260,20 +260,7 @@ function! vimshell#get_options() "{{{
   return copy(s:vimshell_options)
 endfunction"}}}
 function! vimshell#close(buffer_name) "{{{
-  let buffer_name = a:buffer_name
-  if buffer_name !~ '@\d\+$'
-    " Add postfix.
-    let prefix = vimshell#util#is_windows() ?
-          \ '[vimshell] - ' : '*vimshell* - '
-    let prefix .= buffer_name
-    let buffer_name = prefix . s:get_postfix(prefix, 0)
-  endif
-
-  " Note: must escape file-pattern.
-  let buffer_name =
-        \ vimshell#util#escape_file_searching(buffer_name)
-
-  let quit_winnr = bufwinnr(buffer_name)
+  let quit_winnr = vimshell#util#get_vimshell_winnr(a:buffer_name)
   if quit_winnr > 0
     " Hide unite buffer.
     silent execute quit_winnr 'wincmd w'

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Aug 2013.
+" Last Modified: 13 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -260,6 +260,19 @@ function! vimshell#util#glob(pattern, ...) "{{{
 
     return split(vimshell#util#substitute_path_separator(glob(glob)), '\n')
   endif
+endfunction"}}}
+function! vimshell#util#get_vimshell_winnr(buffer_name) "{{{
+  for winnr in filter(range(1, winnr('$')),
+        \ "getbufvar(winbufnr(v:val), '&filetype') ==# 'vimshell'")
+    let buffer_context = get(getbufvar(
+          \ winbufnr(winnr), 'vimshell'), 'context', {})
+    if !empty(buffer_context) &&
+          \ buffer_context.buffer_name ==# a:buffer_name
+      return winnr
+    endif
+  endfor
+
+  return -1
 endfunction"}}}
 
 " vim: foldmethod=marker
