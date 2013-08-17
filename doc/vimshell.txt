@@ -1433,7 +1433,7 @@ block							*vimshell-tips-block*
 <
 wild card					*vimshell-tips-wildcard*
 		Vimshell supports wildcard. If wildcard files are not found,
-		an error is occured.
+		an error is occurred.
 >
 		vimshell% ls *.htm
 <
