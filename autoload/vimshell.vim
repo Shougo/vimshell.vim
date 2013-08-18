@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2013.
+" Last Modified: 18 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -200,8 +200,7 @@ function! s:create_shell(path, context) "{{{
   let context = a:context
 
   " Create new buffer.
-  let prefix = vimshell#util#is_windows() ?
-        \ '[vimshell] - ' : '*vimshell* - '
+  let prefix = '[vimshell] - '
   let prefix .= a:context.profile_name
   let postfix = s:get_postfix(prefix, 1)
   let bufname = prefix . postfix
