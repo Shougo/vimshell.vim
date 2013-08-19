@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Aug 2013.
+" Last Modified: 19 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -496,7 +496,7 @@ function! vimshell#set_prompt_command(string) "{{{
   if !vimshell#check_prompt()
     " Search prompt.
     let [lnum, col] = searchpos(
-          \ vimshell#get_context().prompt_pattern), 'bnW')
+          \ vimshell#get_context().prompt_pattern, 'bnW')
   else
     let lnum = '.'
   endif
