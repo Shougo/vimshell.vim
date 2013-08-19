@@ -496,7 +496,7 @@ function! vimshell#set_prompt_command(string) "{{{
   if !vimshell#check_prompt()
     " Search prompt.
     let [lnum, col] = searchpos(
-          \ vimshell#get_context().prompt_pattern), 'bnW')
+          \ vimshell#get_context().prompt_pattern, 'bnW')
   else
     let lnum = '.'
   endif
