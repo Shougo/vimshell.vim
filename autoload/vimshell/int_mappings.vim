@@ -244,7 +244,6 @@ function! s:restart_command() "{{{
 endfunction"}}}
 function! vimshell#int_mappings#command_complete() "{{{
   let prompt = vimshell#interactive#get_prompt()
-  let command = b:interactive.command
   let cur_text = vimshell#interactive#get_cur_text()
   call setline('.', prompt)
   let prompt_linenr = line('.')

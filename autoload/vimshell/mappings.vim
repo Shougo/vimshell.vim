@@ -244,7 +244,7 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
     call vimshell#interactive#execute_pty_inout(a:is_insert)
 
     try
-      let ret = vimshell#parser#execute_continuation(a:is_insert)
+      call vimshell#parser#execute_continuation(a:is_insert)
     catch
       " Error.
       if v:exception !~# '^Vim\%((\a\+)\)\?:Interrupt'
