@@ -181,7 +181,7 @@ function! s:command.complete(args) "{{{
   elseif vimshell#util#is_windows() &&
         \ len(a:args) > 1 && a:args[1] == 'fakecygpty'
     return vimshell#complete#helper#executables(
-          \ a:args[-1], g:vimshell_interactive_cygwin_path) :
+          \ a:args[-1], g:vimshell_interactive_cygwin_path)
   endif
 
   return vimshell#complete#helper#args(a:args[1], a:args[2:])
@@ -340,7 +340,6 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 
-  let bufnr = bufnr('%')
   call vimshell#restore_pos(a:old_pos)
 
   if get(a:context, 'is_single_command', 0)

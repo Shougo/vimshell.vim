@@ -38,7 +38,6 @@ function! s:command.execute(args, context) "{{{
     return
   endif
 
-  let cnt = 0
   let arguments = join(a:args)
   if arguments =~ '^\d\+$'
     let pop = str2nr(arguments)

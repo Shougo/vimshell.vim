@@ -38,7 +38,7 @@ function! s:command.execute(args, context) "{{{
 
   if empty(args)
     if a:context.fd.stdin == ''
-      vimshell#error_line(a:context.fd, 'view: Filename required.')
+      call vimshell#error_line(a:context.fd, 'view: Filename required.')
       return
     endif
 

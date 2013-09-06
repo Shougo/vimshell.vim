@@ -89,7 +89,6 @@ function! vimshell#complete#gather_candidates(complete_str) "{{{
   if empty(args)
     let args = ['']
   endif
-  let cur_keyword_str = args[-1]
 
   let _ = (len(args) <= 1) ?
         \ s:get_complete_commands(a:complete_str) :
