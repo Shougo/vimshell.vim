@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Aug 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -184,6 +184,13 @@ endfunction"}}}
 function! vimshell#util#is_auto_delimiter() "{{{
   return get(g:, 'neocomplcache_enable_auto_delimiter', 0) ||
         \ get(g:, 'neocomplete#enable_auto_delimiter', 0)
+endfunction"}}}
+
+" Sudo check.
+function! vimshell#util#is_sudo() "{{{
+  return $SUDO_USER != '' && $USER !=# $SUDO_USER
+      \ && $HOME !=# expand('~'.$USER)
+      \ && $HOME ==# expand('~'.$SUDO_USER)
 endfunction"}}}
 
 function! vimshell#util#path2project_directory(...)

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: help.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Sep 2012.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -78,14 +78,22 @@ function! vimshell#help#get_cached_doc() "{{{
   return s:cached_doc
 endfunction"}}}
 function! vimshell#help#set_cached_doc(cache) "{{{
+  if vimshell#util#is_sudo()
+    return
+  endif
+
   let s:cached_doc = a:cache
-  let doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  let doc_path = vimshell#get_data_directory() .'/cached-doc'
   call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), doc_path)
 endfunction"}}}
 
 function! s:load_cached_doc() "{{{
   let s:cached_doc = {}
-  let doc_path = g:vimshell_temporary_directory.'/cached-doc'
+  if vimshell#util#is_sudo()
+    return
+  endif
+
+  let doc_path = vimshell#get_data_directory().'/cached-doc'
   if !filereadable(doc_path)
     call writefile([], doc_path)
   endif

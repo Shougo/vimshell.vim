@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Aug 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -753,6 +753,13 @@ function! vimshell#is_interactive() "{{{
   return b:interactive.type ==# 'interactive'
         \ || (b:interactive.type ==# 'vimshell' && is_valid)
 endfunction"}}}
+function! vimshell#get_data_directory()
+  if !isdirectory(g:vimshell_temporary_directory) && !vimshell#util#is_sudo()
+    call mkdir(g:vimshell_temporary_directory, 'p')
+  endif
+
+  return g:vimshell_temporary_directory
+endfunction
 "}}}
 
 " User helper functions.

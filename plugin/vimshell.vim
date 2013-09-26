@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Jun 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,16 +29,6 @@ if exists('g:loaded_vimshell')
 elseif v:version < 702
   echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
   finish
-elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
-      \ && $HOME !=# expand('~'.$USER)
-      \ && $HOME ==# expand('~'.$SUDO_USER)
-  echohl Error
-  echomsg 'vimshell disabled: "sudo vim" is detected and $HOME is set to '
-        \.'your user''s home. '
-        \.'You may want to use the sudo.vim plugin, the "-H" option '
-        \.'with "sudo" or set always_set_home in /etc/sudoers instead.'
-  echohl None
-  finish
 endif
 
 let s:save_cpo = &cpo
@@ -55,9 +45,6 @@ let g:vimshell_temporary_directory =
       \ substitute(fnamemodify(get(
       \   g:, 'vimshell_temporary_directory', '~/.vimshell'),
       \  ':p'), '\\', '/', 'g')
-if !isdirectory(g:vimshell_temporary_directory)
-  call mkdir(g:vimshell_temporary_directory, 'p')
-endif
 let g:vimshell_max_command_history =
       \ get(g:, 'vimshell_max_command_history', 1000)
 let g:vimshell_max_directory_stack =
@@ -66,9 +53,6 @@ let g:vimshell_vimshrc_path =
       \ substitute(fnamemodify(get(
       \   g:, 'vimshell_vimshrc_path', '~/.vimshrc'),
       \  ':p'), '\\', '/', 'g')
-if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))
-  call mkdir(fnamemodify(g:vimshell_vimshrc_path, ':p:h'), 'p')
-endif
 let g:vimshell_escape_colors =
       \ get(g:, 'vimshell_escape_colors', [
         \ '#6c6c6c', '#ff6666', '#66ff66', '#ffd30a',

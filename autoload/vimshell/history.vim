@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -62,24 +62,32 @@ function! vimshell#history#append(command) "{{{
   call vimshell#history#write(histories)
 endfunction"}}}
 function! vimshell#history#read() "{{{
+  if vimshell#util#is_sudo()
+    return []
+  endif
+
   let history_path = s:get_history_path()
   return filereadable(history_path) ?
         \ readfile(history_path) : []
 endfunction"}}}
 function! vimshell#history#write(list) "{{{
+  if vimshell#util#is_sudo()
+    return []
+  endif
+
   " Save history file.
   call writefile(a:list, s:get_history_path())
 endfunction"}}}
 
 function! s:get_history_path() "{{{
   if &filetype ==# 'vimshell' && empty(b:vimshell.continuation)
-    let history_path = g:vimshell_temporary_directory . '/command-history'
+    let history_path = vimshell#get_data_directory() . '/command-history'
     if !filereadable(history_path)
       " Create file.
       call writefile([], history_path)
     endif
   else
-    let history_dir = g:vimshell_temporary_directory . '/int-history'
+    let history_dir = vimshell#get_data_directory() . '/int-history'
     if !isdirectory(fnamemodify(history_dir, ':p'))
       call mkdir(fnamemodify(history_dir, ':p'), 'p')
     endif
