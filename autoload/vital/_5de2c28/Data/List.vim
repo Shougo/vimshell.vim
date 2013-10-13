@@ -227,15 +227,7 @@ endfunction
 
 " similar to Haskell's Prelude.foldr
 function! s:foldr(f, init, xs)
-  let memo = a:init
-  for i in reverse(range(0, len(a:xs) - 1))
-    let x = a:xs[i]
-    let expr = substitute(a:f, 'v:val', string(x), 'g')
-    let expr = substitute(expr, 'v:memo', string(memo), 'g')
-    unlet memo
-    let memo = eval(expr)
-  endfor
-  return memo
+  return s:foldl(a:f, a:init, reverse(copy(a:xs)))
 endfunction
 
 " similar to Haskell's Prelude.fold11
