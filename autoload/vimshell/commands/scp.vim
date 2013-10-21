@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: scp.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 21 Oct 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,15 +30,16 @@ let s:command = {
       \ 'description' : 'ssh {src} {dest}',
       \}
 function! s:command.complete(args) "{{{
-  if !exists('*unite#get_all_sources')
-        \ || empty(unite#get_all_sources('ssh'))
-    return []
-  endif
-
-  " Use unite-ssh function.
   let arglead = get(a:args, -1, '')
   let cmdline = join(a:args)
   let cursorpos = len(cmdline)
+
+  if !exists('*unite#get_all_sources')
+        \ || empty(unite#get_all_sources('ssh'))
+    return vimshell#complete#helper#files(arglead)
+  endif
+
+  " Use unite-ssh function.
   let _ =  unite#sources#ssh#command_complete_host(
         \ arglead, cmdline, len(cmdline)) +
         \ vimshell#complete#helper#files(arglead)
@@ -48,7 +49,7 @@ function! s:command.complete(args) "{{{
         \ split('//' . substitute(arglead,
         \     ':', '/', ''), ':'), unite#get_context(),
         \ arglead, cmdline, cursorpos),
-        \ "substitute(v:val, ':\\d\\+/', ':', '')")
+        \ "substitute(v:val, '/', ':', '')")
   let _ += ssh_files
 
   return _
