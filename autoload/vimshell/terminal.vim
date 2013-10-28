@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Feb 2013.
+" Last Modified: 11 Aug 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -193,9 +193,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
   endif
 
   " Skip next auto completion.
-  if exists('*neocomplcache#skip_next_complete')
-    call neocomplcache#skip_next_complete()
-  endif
+  call vimshell#util#skip_next_complete()
 
   if &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) && (vimshell#check_prompt()
@@ -1017,7 +1015,7 @@ function! s:escape.highlight(matchstr) "{{{
   endif
 endfunction"}}}
 function! s:escape.move_cursor(matchstr) "{{{
-  if a:matchstr == ""
+  if a:matchstr == '' 
     let s:virtual.line = 1
     let s:virtual.col = 1
   else
@@ -1025,8 +1023,9 @@ function! s:escape.move_cursor(matchstr) "{{{
     let s:virtual.line = get(args, 0, 1)
     let s:virtual.col = get(args, 1, 1)
   endif
+
   if s:virtual.line !~ '^\d\+$' || s:virtual.col !~ '^\d\+$'
-    call unite#print_error(
+    call vimshell#echo_error(
           \ 'Move cursor escape sequence format error: str = "'
           \ . a:matchstr . '"')
     return

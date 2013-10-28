@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vimshell_complete.vim
+" FILE: cdup.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" Last Modified: 07 Jul 2010
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,32 +24,45 @@
 " }}}
 "=============================================================================
 
-let s:save_cpo = &cpo
-set cpo&vim
-
-function! neocomplcache#sources#vimshell_complete#define() "{{{
-  return s:source
-endfunction"}}}
-
-let s:source = {
-      \ 'name' : 'vimshell_complete',
-      \ 'kind' : 'ftplugin',
-      \ 'min_pattern_length' :
-      \      g:neocomplcache_auto_completion_start_length,
-      \ 'filetypes' : { 'vimshell' : 1, },
-      \ 'is_volatile' : 1,
-      \ 'sorters' : [],
+let s:command = {
+      \ 'name' : 'cdup',
+      \ 'kind' : 'internal',
+      \ 'description' : 'cdup {ancestor-directory-name}',
       \}
+function! s:command.execute(args, context) "{{{
+  " Move to parent directory.
 
-function! s:source.get_keyword_pos(cur_text) "{{{
-  return vimshell#complete#get_keyword_position()
+  if empty(a:args)
+    let directory = '..'
+  else
+    let current_dir = b:vimshell.current_dir
+    let target = get(a:args, 0)
+
+    let directory = matchstr(current_dir,
+          \ '.*/\V' . escape(target, '\') . '/')
+
+    if directory == ''
+      " Try partial match.
+      let directory = matchstr(current_dir,
+            \ '.*/.*\V' . escape(target, '\') . '\m.*/')
+    endif
+  endif
+
+  if directory == ''
+    call vimshell#error_line(a:context.fd,
+          \ printf('%s : Can''t find "%s" directory in "%s"',
+          \ self.name, target, b:vimshell.current_dir))
+    return 0
+  endif
+
+  return vimshell#execute_internal_command('cd',
+        \ [directory], a:context)
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return vimshell#complete#gather_candidates(a:cur_keyword_str)
+function! s:command.complete(args) "{{{
+  return split(b:vimshell.current_dir, '/')
 endfunction"}}}
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
-
-" vim: foldmethod=marker
+function! vimshell#commands#cdup#define()
+  return s:command
+endfunction

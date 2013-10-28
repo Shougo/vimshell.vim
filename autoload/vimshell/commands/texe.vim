@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 29 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,8 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:V = vital#of('vimshell')
-let s:BM = s:V.import('Vim.BufferManager')
+let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
 let s:manager = s:BM.new()  " creates new manager
 call s:manager.config('opener', 'silent edit')
 call s:manager.config('range', 'current')
@@ -108,7 +107,7 @@ function! s:command.execute(commands, context) "{{{
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
-        \ '$LINES' : winheight(0),
+        \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'terminal',
         \ '$EDITOR' : vimshell#get_editor_name(),
         \ '$GIT_EDITOR' : vimshell#get_editor_name(),
@@ -142,7 +141,7 @@ function! s:command.execute(commands, context) "{{{
         \ 'echoback_linenr' : 0,
         \ 'save_cursor' : getpos('.'),
         \ 'width' : winwidth(0),
-        \ 'height' : winheight(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
         \ 'command' : fnamemodify(vimshell#util#is_windows() ?
@@ -193,6 +192,8 @@ function! s:default_settings() "{{{
   setlocal tabstop=8
   setlocal foldcolumn=0
   setlocal foldmethod=manual
+  setlocal omnifunc=
+  setlocal completefunc=
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=n
@@ -246,18 +247,8 @@ function! s:init_bg(args, context) "{{{
 endfunction"}}}
 
 function! s:insert_enter() "{{{
-  if exists(':NeoComplCacheDisable')
-    " Lock neocomplcache.
-    NeoComplCacheLock
-  endif
-
   if !exists('b:interactive')
     return
-  endif
-
-  if winwidth(0) != b:interactive.width || winheight(0) != b:interactive.height
-    " Set new window size.
-    call b:interactive.process.set_winsize(winwidth(0), winheight(0))
   endif
 
   if exists('+guicursor')

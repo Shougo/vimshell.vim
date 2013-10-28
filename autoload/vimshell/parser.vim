@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2013.
+" Last Modified: 20 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -114,15 +114,14 @@ function! vimshell#parser#execute_command(commands, context) "{{{
       " Execute external commands.
       return vimshell#execute_internal_command('exe', commands, context)
     endif
+  elseif has_key(get(internal_commands, program, {}), 'execute')
+    " Internal commands.
+    return vimshell#execute_internal_command(program, args, context)
   elseif !executable(dir) && isdirectory(dir)
     " Directory.
     " Change the working directory like zsh.
     " Call internal cd command.
-    echomsg string(dir)
     return vimshell#execute_internal_command('cd', [dir], context)
-  elseif has_key(get(internal_commands, program, {}), 'execute')
-    " Internal commands.
-    return vimshell#execute_internal_command(program, args, context)
   else "{{{
     let ext = fnamemodify(program, ':e')
 
@@ -225,11 +224,10 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
 
   if b:interactive.syntax !=# &filetype
     " Set highlight.
-    let start = searchpos('^' . vimshell#escape_match(
-          \ vimshell#get_prompt()), 'bWen')[0]
+    let start = searchpos(context.prompt_pattern, 'bWen')[0]
     if start > 0
-      call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|^%s\)"',
-            \ vimshell#escape_match(vimshell#get_prompt())), b:interactive.syntax)
+      call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|%s\)"',
+            \ context.prompt_pattern), b:interactive.syntax)
     endif
 
     let b:interactive.syntax = &filetype

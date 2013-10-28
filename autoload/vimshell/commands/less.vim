@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Jan 2013.
+" Last Modified: 29 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,8 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:V = vital#of('vimshell')
-let s:BM = s:V.import('Vim.BufferManager')
+let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
 let s:manager = s:BM.new()  " creates new manager
 call s:manager.config('opener', 'silent edit')
 call s:manager.config('range', 'current')
@@ -80,6 +79,8 @@ function! s:command.execute(commands, context) "{{{
         \ 'command' : commands[0].args[0],
         \ 'cmdline' : join(commands[0].args),
         \ 'stdout_cache' : '',
+        \ 'width' : winwidth(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \}
 
   return s:init(a:commands, a:context, options, interactive)
@@ -104,7 +105,7 @@ function! s:init(commands, context, options, interactive) "{{{
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
         \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
-        \ '$LINES' : winheight(0),
+        \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'less',
         \ '$EDITOR' : vimshell#get_editor_name(),
         \ '$GIT_EDITOR' : vimshell#get_editor_name(),
@@ -126,7 +127,7 @@ function! s:init(commands, context, options, interactive) "{{{
   call a:interactive.process.stdin.close()
 
   let a:interactive.width = winwidth(0)
-  let a:interactive.height = winheight(0)
+  let a:interactive.height = g:vimshell_scrollback_limit
 
   let args = ''
   for command in a:commands
@@ -246,13 +247,6 @@ endfunction "}}}
 
 function! s:print_output(line_num) "{{{
   setlocal modifiable
-
-  if winwidth(0) != b:interactive.width
-        \ || winheight(0) != b:interactive.height
-    " Set new window size.
-    call b:interactive.process.set_winsize(
-          \ winwidth(0), winheight(0))
-  endif
 
   $
 

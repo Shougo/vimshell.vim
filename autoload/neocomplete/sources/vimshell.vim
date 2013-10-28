@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vimshell_complete.vim
+" FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" Last Modified: 03 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -27,26 +27,26 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#sources#vimshell_complete#define() "{{{
+function! neocomplete#sources#vimshell#define() "{{{
   return s:source
 endfunction"}}}
 
 let s:source = {
-      \ 'name' : 'vimshell_complete',
-      \ 'kind' : 'ftplugin',
+      \ 'name' : 'vimshell',
+      \ 'kind' : 'manual',
       \ 'min_pattern_length' :
-      \      g:neocomplcache_auto_completion_start_length,
+      \      g:neocomplete#auto_completion_start_length,
       \ 'filetypes' : { 'vimshell' : 1, },
       \ 'is_volatile' : 1,
       \ 'sorters' : [],
       \}
 
-function! s:source.get_keyword_pos(cur_text) "{{{
+function! s:source.get_complete_position(context) "{{{
   return vimshell#complete#get_keyword_position()
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return vimshell#complete#gather_candidates(a:cur_keyword_str)
+function! s:source.gather_candidates(context) "{{{
+  return vimshell#complete#gather_candidates(a:context.complete_str)
 endfunction"}}}
 
 let &cpo = s:save_cpo

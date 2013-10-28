@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2013.
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -46,7 +46,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nnoremap <buffer><expr> <Plug>(vimshell_change_line)
         \ vimshell#check_prompt() ?
         \ printf('0%dlc$', vimshell#util#strchars(
-        \ vimshell#get_prompt())) : 'ddO'
+        \ matchstr(getline('.'), b:vimshell.context.prompt_pattern))) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line)
         \ <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
@@ -74,11 +74,12 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ <SID>select_next_prompt()
 
   inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete)
-        \ pumvisible() ? "\<C-n>" : vimshell#parser#check_wildcard() ?
-        \ <SID>expand_wildcard() :
-        \ exists('*neocomplcache#is_enabled') && neocomplcache#is_enabled() ?
-        \    neocomplcache#start_manual_complete() :
-        \    vimshell#complete#start()
+        \ pumvisible() ?
+        \   "\<C-n>" :
+        \ !empty(b:vimshell.continuation) ?
+        \   "\<C-o>:call vimshell#int_mappings#command_complete()\<CR>" :
+        \ vimshell#parser#check_wildcard() ?
+        \   <SID>expand_wildcard() : vimshell#complete#start()
   inoremap <buffer><silent><expr> <Plug>(vimshell_zsh_complete)
         \ unite#sources#vimshell_zsh_complete#start_complete(!0)
   inoremap <buffer><silent> <Plug>(vimshell_push_current_line)
@@ -115,9 +116,13 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ <ESC>:call <SID>exit()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_hide)
         \ <ESC>:call <SID>hide()<CR>
+  inoremap <expr><buffer><silent> <Plug>(vimshell_history_unite)
+        \ unite#sources#vimshell_history#start_complete(!0)
+  inoremap <expr><buffer><silent> <Plug>(vimshell_history_neocomplete)
+        \ neocomplete#start_manual_complete('vimshell/history')
   "}}}
 
-  if exists('g:vimshell_no_default_keymappings') && g:vimshell_no_default_keymappings
+  if get(g:, 'vimshell_no_default_keymappings', 0)
     return
   endif
 
@@ -167,11 +172,10 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ getline('.')[col('.') - 2] ==# "\<C-]>" ? "\<BS>" : ''
   imap <buffer> <C-]>               <C-]><SID>(bs-ctrl-])
   imap <buffer> <CR>                <C-]><Plug>(vimshell_enter)
+
   " History completion.
-  inoremap <buffer> <expr><silent> <C-l>
-        \ unite#sources#vimshell_history#start_complete(!0)
-  inoremap <buffer> <expr><silent> <C-l>
-        \ unite#sources#vimshell_history#start_complete(!0)
+  imap <buffer> <C-l> <Plug>(vimshell_history_unite)
+
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
   " Move to Beginning of command.
@@ -186,8 +190,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ "\<Plug>(vimshell_execute_by_background)")
   " Insert last word.
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
-  " Run help.
-  imap <buffer> <C-x><C-h> <Plug>(vimshell_run_help)
   " Interrupt.
   imap <buffer> <C-c> <Plug>(vimshell_interrupt)
   " Delete char.
@@ -195,8 +197,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)
   " Delete line.
   imap <buffer> <C-k>     <Plug>(vimshell_delete_forward_line)
-  " Move to previous window.
-  imap <buffer> <C-x>     <Plug>(vimshell_move_previous_window)
 endfunction"}}}
 function! vimshell#mappings#smart_map(vimshell_map, execute_map)
   return empty(b:vimshell.continuation) ? a:vimshell_map : a:execute_map
@@ -244,7 +244,7 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
     call vimshell#interactive#execute_pty_inout(a:is_insert)
 
     try
-      let ret = vimshell#parser#execute_continuation(a:is_insert)
+      call vimshell#parser#execute_continuation(a:is_insert)
     catch
       " Error.
       if v:exception !~# '^Vim\%((\a\+)\)\?:Interrupt'
@@ -356,7 +356,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'bWe')
+    call search(vimshell#get_context().prompt_pattern . '.\?', 'bWe')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val < line(".")'), 'vimshell#compare_number')
@@ -367,7 +367,7 @@ function! s:previous_prompt() "{{{
 endfunction"}}}
 function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search('^' . vimshell#escape_match(vimshell#get_prompt()) . '.\?', 'We')
+    call search(vimshell#get_context().prompt_pattern . '.\?', 'We')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
           \ 'v:val > line(".")'), 'vimshell#compare_number')
@@ -377,7 +377,7 @@ function! s:next_prompt() "{{{
   endif
 endfunction"}}}
 function! s:select_previous_prompt() "{{{
-  let prompt_pattern = '^' . vimshell#escape_match(vimshell#get_prompt())
+  let prompt_pattern = vimshell#get_context().prompt_pattern
   let [linenr, col] = searchpos(prompt_pattern, 'bWen')
   if linenr == 0
     return ''
@@ -387,7 +387,7 @@ function! s:select_previous_prompt() "{{{
 endfunction"}}}
 function! s:select_next_prompt() "{{{
   let prompt_pattern = vimshell#get_user_prompt() != '' ?
-        \ '^' . vimshell#escape_match(vimshell#get_prompt()) : '^\[%\] '
+        \ vimshell#get_context().prompt_pattern : '^\[%\] '
   let [linenr, col] = searchpos(prompt_pattern, 'Wen')
   if linenr == 0
     return ''
@@ -396,18 +396,15 @@ function! s:select_next_prompt() "{{{
   return (linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output() "{{{
-  let prompt = vimshell#escape_match(vimshell#get_prompt())
-  if vimshell#get_user_prompt() != ''
-    let nprompt = '^\[%\] '
-  else
-    let nprompt = '^' . prompt
-  endif
-  let pprompt = '^' . prompt
+  let prompt_pattern = vimshell#get_context().prompt_pattern
+  let nprompt = vimshell#get_user_prompt() != '' ?
+        \ '^\[%\] ' : prompt_pattern
+  let pprompt = prompt_pattern
 
   " Search next prompt.
   if getline('.') =~ nprompt
     let next_line = line('.')
-  elseif vimshell#get_user_prompt() != '' && getline('.') =~ '^' . prompt
+  elseif vimshell#get_user_prompt() != '' && getline('.') =~ prompt_pattern
     let [next_line, next_col] = searchpos(nprompt, 'bWn')
   else
     let [next_line, next_col] = searchpos(nprompt, 'Wn')
@@ -441,13 +438,14 @@ function! s:insert_last_word() "{{{
   startinsert!
 endfunction"}}}
 function! s:run_help() "{{{
-  if match(getline('.'), vimshell#escape_match(vimshell#get_prompt())) < 0
+  if !vimshell#check_prompt()
     startinsert!
     return
   endif
 
   " Delete prompt string.
-  let line = substitute(getline('.'), '^' . vimshell#escape_match(vimshell#get_prompt()), '', '')
+  let line = substitute(getline('.'),
+        \ vimshell#get_context().prompt_pattern, '', '')
   if line =~ '^\s*$'
     startinsert!
     return
@@ -462,7 +460,7 @@ function! s:run_help() "{{{
   elseif has_key(b:vimshell.galias_table, program)
     let program = b:vimshell.galias_table[program]
   endif
-  
+
   if exists(':Ref')
     execute 'Ref man' program
   elseif exists(':Man')
@@ -472,12 +470,13 @@ function! s:run_help() "{{{
   endif
 endfunction"}}}
 function! s:paste_prompt() "{{{
+  let prompt_pattern = vimshell#get_context().prompt_pattern
   let prompt = getline('.')
-  if prompt !~# vimshell#escape_match(vimshell#get_prompt())
+  if prompt !~# prompt_pattern
     return
   endif
 
-  if getline('$') !~# vimshell#escape_match(vimshell#get_prompt())
+  if getline('$') !~# prompt_pattern
         \ || vimshell#get_prompt_command(getline('$')) != ''
     " Insert prompt line.
     call append(line('$'), prompt)
@@ -554,7 +553,7 @@ endfunction"}}}
 function! s:delete_backward_char() "{{{
   if !pumvisible()
     let prefix = ''
-  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
+  elseif vimshell#util#is_auto_select()
     let prefix = "\<C-e>"
   else
     let prefix = "\<C-y>"
@@ -562,7 +561,7 @@ function! s:delete_backward_char() "{{{
 
   " Prevent backspace over prompt
   let cur_text = vimshell#get_cur_line()
-  if cur_text !=# vimshell#get_prompt()
+  if cur_text !~# vimshell#get_context().prompt_pattern . '$'
     return prefix . "\<BS>"
   else
     return prefix
@@ -578,7 +577,7 @@ endfunction"}}}
 function! s:delete_backward_line() "{{{
   if !pumvisible()
     let prefix = ''
-  elseif exists('g:neocomplcache_enable_auto_select') && g:neocomplcache_enable_auto_select
+  elseif vimshell#util#is_auto_select()
     let prefix = "\<C-e>"
   else
     let prefix = "\<C-y>"
@@ -618,18 +617,19 @@ function! s:interrupt(is_insert) "{{{
   call vimshell#interactive#send_char(3)
 endfunction"}}}
 function! s:insert_enter() "{{{
-  if !vimshell#head_match(getline('.'), vimshell#get_prompt())
+  if !vimshell#check_prompt()
     startinsert
     return
   endif
 
-  if col('.') <= len(vimshell#get_prompt())
-    if len(vimshell#get_prompt()) + 1 >= col('$')
+  let prompt_len = vimshell#get_prompt_length()
+  if col('.') <= prompt_len
+    if prompt_len + 1 >= col('$')
       startinsert!
       return
     else
       let pos = getpos('.')
-      let pos[2] = len(vimshell#get_prompt()) + 1
+      let pos[2] = vimshell#get_prompt_length() + 1
       call setpos('.', pos)
     endif
   endif

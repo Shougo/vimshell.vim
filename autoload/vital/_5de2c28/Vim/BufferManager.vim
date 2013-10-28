@@ -3,8 +3,13 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! s:_vital_depends()
+  return ['Vim.Buffer']
+endfunction
+
 function! s:_vital_loaded(V)
   let s:V = a:V
+  let s:B = s:V.import('Vim.Buffer')
 endfunction
 
 let s:default_config = {
@@ -18,7 +23,7 @@ let s:Manager = {
 \ }
 
 function! s:Manager.open(bufname, ...)
-  if s:is_cmdwin()
+  if s:B.is_cmdwin()
     " Note: Failed to open buffer in cmdline window.
     return {
   \   'loaded': 0,
@@ -153,7 +158,7 @@ function! s:open(buffer, opener)
   try
     if s:V.is_funcref(a:opener)
       let loaded = !bufloaded(a:buffer)
-      call a:opener(a:bufname)
+      call a:opener(a:buffer)
     elseif a:buffer is 0 || a:buffer is ''
       let loaded = 1
       silent execute a:opener
@@ -175,8 +180,14 @@ function! s:open(buffer, opener)
   return loaded
 endfunction
 
+function! s:_deprecated(fname)
+  echomsg printf("Vital.Vim.BufferManager.%s is deprecated! Please use Vital.Vim.Buffer.%s instead.",
+        \ a:fname, a:fname)
+endfunction
+
 function! s:is_cmdwin()
-  return bufname('%') ==# '[Command Line]'
+  call s:_deprecated("is_cmdwin")
+  return s:B.is_cmdwin()
 endfunction
 
 function! s:_make_config(manager, configs)

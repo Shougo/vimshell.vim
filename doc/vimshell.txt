@@ -33,6 +33,7 @@ Interface		|vimshell-interface|
   Key mappings		  |vimshell-key-mappings|
     Vimshell buffer key mappings    |vimshell-buffer-key-mappings|
     Interactive buffer key mappings |vimshell-interactive-buffer-key-mappings|
+  Options		  |vimshell-options|
 Examples		|vimshell-examples|
 Internal Commands	|vimshell-internal-commands|
 Special Commands	|vimshell-special-commands|
@@ -42,18 +43,17 @@ Tips			|vimshell-tips|
 Unite sources		|vimshell-unite-sources|
 Create plugin		|vimshell-create-plugin|
 FAQ			|vimshell-faq|
-Changelog		|vimshell-changelog|
 
 ==============================================================================
 INTRODUCTION						*vimshell-introduction*
 
 *vimshell* is an extreme shell that doesn't depend on external shells but is
-written completely in pure Vim script. To be honest the implementation is not
-as mature as eshell yet. The most important characteristic of vimshell is that
-it can collaborate with other Vim plugins. Additionally, for example, vimshell
+written completely in pure Vim script.  To be honest the implementation is not
+as mature as eshell yet.  The most important characteristic of vimshell is that
+it can collaborate with other Vim plugins.  Additionally, for example, vimshell
 also works on Windows where there are no good shells at all; note that you
-cannot use full set of vimshell features on Windows though. Furthermore,
-vimshell borrowed handy functionalities from other shells. Vimshell has
+cannot use full set of vimshell features on Windows though.  Furthermore,
+vimshell borrowed handy functionalities from other shells.  Vimshell has
 built-in functionalities that you had to set up to enable if it's on zsh.
 
 Vimshell doesn't pursue being completely compatible with average shells but
@@ -65,7 +65,7 @@ USAGE						*vimshell-usage*
 
 You can start vimshell in ":VimShell", or use helpful keymap already defined.
 Because vimshell works similar with a common shell, you may operate it
-intuitively. But vimshell performs the path appointment in '/'.
+intuitively.  But vimshell performs the path appointment in '/'.
 Vimshell fails to recognize escape sequences when you use '\' on Windows
 for a path and does not work.
 
@@ -82,11 +82,8 @@ INSTALL						*vimshell-install*
 vimshell depends on |vimproc|
 http://github.com/Shougo/vimproc
 
-You must install and compile vimproc Ver.5.0(or later) before using vimshell
+You must install and compile vimproc Ver.5.0 (or later) before using vimshell
 (refer to |vimproc-install|).
-
-Note: To enable all the features of vimshell, neocomplcache is required.
-https://github.com/Shougo/neocomplcache
 
 ==============================================================================
 INTERFACE					*vimshell-interface*
@@ -95,73 +92,23 @@ INTERFACE					*vimshell-interface*
 COMMANDS 					*vimshell-commands*
 
 :VimShell [{options}...] [{path}]		*:VimShell*
-		Runs vimshell. The {path} will be its current directory.
-		If another vimshell buffer exists, switches to the vimshell
-		buffer and changes its current directory to {path}.
+		Runs vimshell.  The {path} will be its current directory.
+
 		If you omit {path}, it uses Vim's current directory (or does
 		not change the current directory).
 
-						*vimshell-options*
-		{options} are options for a vimshell buffer.  You may give the
-		following parameters for a option; you must escape with \ when
-		it contains spaces.
+		If another vimshell buffer exists in the current tab, switches
+		to the vimshell buffer and changes its current directory to
+		{path}.
+		Note: This feature is if installed unite.vim only.
 
-						*vimshell-options-buffer-name*
-		-buffer-name={buffer-name}
-		Specifies a buffer name. The default buffer name is 'default'.
-		Note: Buffer name must not contain spaces.
-
-						*vimshell-options-toggle*
-		-toggle
-		Close vimshell buffer window if this vimshell buffer name
-		window is exists.
-
-						*vimshell-options-create*
-		-create
-		Create new vimshell buffer.
-
-						*vimshell-options-split*
-		-split
-		Split vimshell buffer window. |vimshell-options-split-command|
-		is used.
-
-						*vimshell-options-popup*
-		-popup
-		Popup split vimshell buffer window.
-		|vimshell-options-split-command| is used.
-
-					*vimshell-options-split-command*
-		-split-command={command-name}
-		Specify split command.
-
-						*vimshell-options-prompt*
-		-prompt={prompt}
-		Specify prompt string. If omit it,
-		|g:vimshell_prompt| is used.
-
-					*vimshell-options-secondary-prompt*
-		-secondary-prompt={secondary-prompt}
-		Specify secondary prompt string. If omit it,
-		|g:vimshell_secondary_prompt| is used.
-
-						*vimshell-options-user-prompt*
-		-user-prompt={user-prompt}
-		Specify secondary prompt string. If omit it,
-		|g:vimshell_user_prompt| is used.
-
-					*vimshell-options-right-prompt*
-		-right-prompt={right-prompt}
-		Specify right prompt string. If omit it,
-		|g:vimshell_right_prompt| is used.
-
-						*vimshell-options-project*
-		-project
-		Move to project directory.
+		{options} are options for a vimshell buffer.  See
+		|vimshell-options|.
 
 :VimShellCreate [{options}...] [{path}]		*:VimShellCreate*
 		Runs vimshell as the same :VimShell, but it creates a new
 		vimshell buffer instead of activating other vimshells which
-		are up and runnig.
+		are up and running.
 
 :VimShellTab [{options}...] [{path}]		*:VimShellTab*
 		It's same as |:VimShellCreate|, but creates a new tab.
@@ -171,42 +118,45 @@ COMMANDS 					*vimshell-commands*
 		It will be your help when you want to make vimshell a bit
 		help.  To split it, |g:vimshell_popup_command| is suited
 		command.
-		Note: It sets |vimshell-options-toggle|. You can toggle
+		Note: It sets |vimshell-options-toggle|.  You can toggle
 		vimshell buffer.
 
 :VimShellCurrentDir [{options}...] [{path}]	*:VimShellCurrentDir*
-		Like as |:VimShell|, but move to current directory.
+		Like as |:VimShell|, but move to the current directory.
 
 :VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
 		Like as |:VimShell|, but move to buffer's directory.
 
-:VimShellExecute {command}			*:VimShellExecute*
+:VimShellExecute [{option}] {command}			*:VimShellExecute*
 		It does not run vimshell, but launches a terminal program you
 		Specify by {command}, and this program runs in background.
 		You can use vimshell like as GNU screen.
+		{option} is same to |vimshell-internal-bg| options.
 
-:VimShellInteractive [{command}]		*:VimShellInteractive*
-		It does not run vimshell, but launches a interpreter program
+:VimShellInteractive [{option}] [{command}]		*:VimShellInteractive*
+		It does not run vimshell, but launches an interpreter program
 		you specify by {command}.  It is same as Emacs's M-x
 		{interpreter-name}.  You leave out {command}, vimshell uses
 		the value in |g:vimshell_interactive_interpreter_commands|.
+		{option} is same to |vimshell-internal-iexe| options.
 
 		Resize window example:
 >
 		VimShellInteractive --split='split | resize 20' irb
 <
-:VimShellTerminal {command}			*:VimShellTerminal*
+:VimShellTerminal [{option}] {command}			*:VimShellTerminal*
 		It does not run vimshell, but same as Emacs's ansi-term,
 		it launches a terminal program you Specify by {command}.
-		Note: This is not completed function.
+		{option} is same to |vimshell-internal-texe| options.
+		Note: This is not a completed function.
 
 :[range]VimShellSendString {string}		*:VimShellSendString*
 		It sends selected string to the interpreter in background
 		buffer of vimshell, iexe, texe.  You can control interpreter
 		as if you are using |quickrun|.
 		Cf: |vimshell#interactive#send()|
-		Note: If interpreter is not loaded in current tab, you can run
-		interpreter command.
+		Note: If interpreter is not loaded in the current tab, you
+		can run interpreter command.
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
 		Sets background buffer as {bufname}.  When {bufname} isn't
@@ -216,36 +166,69 @@ COMMANDS 					*vimshell-commands*
 VARIABLES 					*vimshell-variables*
 
 g:vimshell_prompt				*g:vimshell_prompt*
-		Sets vimshell default prompt string. Initial value is
+		Sets vimshell default prompt string.  Initial value is
 		"vimshell%".
+		Note: This is a fixed string.  You cannot change it
+		dynamically (for example: current directory).
+		(cf: |g:vimshell_user_prompt|)
+
+g:vimshell_prompt_expr				*g:vimshell_prompt_expr*
+		Sets vimshell default prompt expression.  Initial value is
+		"".  This value is evaluated when vimshell redraws prompt.
+		Note: You cannot get multi-line prompt.
+		Note: If you set it, you must set prompt_pattern.
+		Note: You cannot change prompt color dynamically.
+>
+		" Use current directory as vimshell prompt.
+		let g:vimshell_prompt_expr =
+		\ 'escape(fnamemodify(getcwd(), ":~").">", "\\[]()?! ")." "'
+		let g:vimshell_prompt_pattern = '^\%(\f\|\\.\)\+> '
+<
+g:vimshell_prompt_pattern			*g:vimshell_prompt_pattern*
+		Sets the pattern which matches vimshell prompt.  Initial value
+		is "".  If it is not set, vimshell will set the pattern
+		automatically.
 
 g:vimshell_secondary_prompt			*g:vimshell_secondary_prompt*
-		Sets vimshell default secondary prompt string. Initial value
+		Sets vimshell default secondary prompt string.  Initial value
 		is "%%".
+		Note: This is fixed string.  You cannot change it
+		dynamically (for example: current directory).
+		(cf: |g:vimshell_user_prompt|)
 
 g:vimshell_user_prompt				*g:vimshell_user_prompt*
 		You can define additional prompt to substitute a string for
-		this.  Unlike |g:vimshell_prompt|, it can be a non-fixed
+		this.
+		Note: Unlike |g:vimshell_prompt|, it can be a non-fixed
 		string.  You can get multi-line prompt by separating "user
-		prompt" with \n.
+		prompt" with "\n".
 
-		This example will be helpful to show current directory
-		everytime.
+		This example will be helpful to show the current directory
+		every time.
 >
-		let g:vimshell_user_prompt = 'getcwd()'
+		let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
 <
 g:vimshell_right_prompt				*g:vimshell_right_prompt*
-		It's zsh-like right prompt. This value is a string value which
-		is an expression of Vim script. Similar to
+		It's zsh-like right prompt.  This value is a string value which
+		is an expression of Vim script.  Similar to
 		|g:vimshell_user_prompt|, but this calculates the window size,
 		and shows the prompt on preferable position.
-		Initial value is empty.
+		Initial value is an empty string.
 
-g:vimshell_no_default_keymappings
+					*g:vimshell_force_overwrite_statusline*
+g:vimshell_force_overwrite_statusline
+		If this variable is 1, vimshell will overwrite 'statusline'
+		automatically.
+		Note: If you want to change 'statusline' in vimshell buffer,
+		you must set it to 0.
+
+		The default value is 0.
+
 					*g:vimshell_no_default_keymappings*
+g:vimshell_no_default_keymappings
 		Disables all default key mappings in vimshell.
 
-		You can not use vimshell functions unless you set new
+		You cannot use vimshell functions unless you set new
 		key mappings, so it is for hackers who have understood the
 		inner behaviors, and not recommended for newbies.
 
@@ -256,10 +239,10 @@ g:vimshell_use_terminal_command
 		"ckw -e" in Windows, "gnome-terminal -e" in Linux,
 		become a candidate of value.
 		
-		Initial value is "".
+		Initial value is an empty string.
 
 g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
-		Sets a temporary directory used by vimshell. And history file
+		Sets a temporary directory used by vimshell.  And history file
 		is saved in this directory.
 
 		Initial value is "expand('~/.vimshell')".
@@ -276,7 +259,7 @@ g:vimshell_max_directory_stack		*g:vimshell_max_directory_stack*
 
 g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
 		Sets a setting file read by vimshell first.
-		This is similar to .bashrc in bash. It is convenient when you
+		This is similar to .bashrc in bash.  It is convenient when you
 		define aliases.
 
 		Initial Value is "expand('~/.vimshrc')".
@@ -313,7 +296,7 @@ g:vimshell_editor_command			*g:vimshell_editor_command*
 		Note: This feature required GUI Vim and supported
 		|+clientserver| feature.
 		Note: To reflect external editor changes, you must write
-		opened temporary buffer and execute|:bdelete| in external
+		opened temporary buffer and execute |:bdelete| in external
 		editor.
 		Note: You *must not* set "core.editor" variable in your
 		.gitconfig.
@@ -329,7 +312,7 @@ g:vimshell_split_command			*g:vimshell_split_command*
 		Vimshell uses this as the Ex command to split window.  If you
 		set this "nicely", vimshell adjusts with the current window
 		size and splits window preferable ("nicely" depends on the
-		winwidth variable.)
+		winwidth variable).
 		Empty means disabling window splitting on vimshell.
 		"tabnew" means vimshell opens new tab.
 		"vsplit" means vertical splitting.
@@ -347,13 +330,13 @@ g:vimshell_popup_command			*g:vimshell_popup_command*
 g:vimshell_popup_height				*g:vimshell_popup_height*
 		This value is split height of |:VimShellPop|.
 		This value is ratio percent against |winheight(0)|.
-		Note: It is not used on non vimshell buffers (ex: interactive
-		buffer.)
+		Note: It is not used on non vimshell buffers (for example:
+		interactive buffer).
 
 		Default value 30.
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
-		This is the Ex command to change current directory.
+		This is the Ex command to change the current directory.
 		The command must interpret |`=|.
 
 		Default value is "lcd".
@@ -377,6 +360,14 @@ g:vimshell_enable_transient_user_prompt
 		prompt line after executing |<Plug>(vimshell_enter)| .
 
 		Default value is 0.
+
+g:vimshell_execute_file_list
+					*g:vimshell_execute_file_list*
+		This is a dictionary value that has keys of the extensions
+		and values of command arguments.
+		This is used to define default file execution command.
+
+		Default value is {}.
 
 g:vimshell_interactive_no_save_history_commands
 			*g:vimshell_interactive_no_save_history_commands*
@@ -588,14 +579,12 @@ Insert mode key mappings.
 <Plug>(vimshell_command_complete)
 					*i_<Plug>(vimshell_command_complete)*
 		Start completion.
-		Note: Required neocomplcache plugin.
-		https://github.com/Shougo/neocomplcache
 
 <Plug>(vimshell_zsh_complete)		*i_<Plug>(vimshell_zsh_complete)*
 		Start completion using zsh.
 		Note: Required zsh and unite plugin.
-		https://github.com/Shougo/neocomplcache
-		Note: It is not worked in Windows!
+		https://github.com/Shougo/unite.vim
+		Note: It does not work in Windows!
 
 <Plug>(vimshell_push_current_line)
 					*i_<Plug>(vimshell_push_current_line)*
@@ -652,6 +641,14 @@ Insert mode key mappings.
 <Plug>(vimshell_exit)				*i_<Plug>(vimshell_exit)*
 		Quit vimshell buffer.
 
+<Plug>(vimshell_history_unite)		*i_<Plug>(vimshell_history_unite)*
+		Execute vimshell history by unite interface.
+		Note: To use it, you must install |unite.vim| plugin.
+
+<Plug>(vimshell_history_neocomplete)
+		Execute vimshell history by neocomplete interface.
+		Note: To use it, you must install |neocomplete| plugin.
+
 Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
@@ -684,7 +681,7 @@ Insert mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
 <CR>			<Plug>(vimshell_enter)
-<C-l>			Start vimshell/history source
+<C-l>			<Plug>(vimshell_history_unite)
 <TAB>			<Plug>(vimshell_command_complete)
 <C-a>			<Plug>(vimshell_move_head)
 <C-u>			<Plug>(vimshell_delete_backward_line)
@@ -692,14 +689,12 @@ Insert mode default key mappings.
 <C-z>	(while execute)	<Plug>(vimshell_execute_by_background)
 	(other)		<Plug>(vimshell_push_current_line)
 <C-t>			<Plug>(vimshell_insert_last_word)
-<C-x><C-h>		<Plug>(vimshell_run_help)
 <C-c>			<Plug>(vimshell_interrupt)
 <C-h>			<Plug>(vimshell_delete_backward_char)
 <BS>			<Plug>(vimshell_delete_backward_char)
 <C-k>			<Plug>(vimshell_delete_forward_line)
-<C-x>			<Plug>(vimshell_move_previous_window)
 
-VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS 
+VIMSHELL INTERACTIVE BUFFER KEY MAPPINGS
 				*vimshell-interactive-buffer-key-mappings*
 
 Normal mode key mappings.
@@ -790,6 +785,11 @@ Insert mode key mappings.
 <Plug>(vimshell_int_delete_forward_line)
 				*i_<Plug>(vimshell_int_delete_forward_line)*
 		Delete forward line from cursor.
+<Plug>(vimshell_int_history_unite)
+				*i_<Plug>(vimshell_int_history_unite)*
+		Execute vimshell history by unite interface.
+		Note: To use it, you must install |unite.vim| plugin.
+
 
 Normal mode default key mappings.
 {lhs}			{rhs}
@@ -820,7 +820,7 @@ Insert mode default key mappings.
 <C-k>			<Plug>(vimshell_int_delete_forward_line)
 <CR>			<Plug>(vimshell_int_execute_line)
 <C-c>			<Plug>(vimshell_int_interrupt)
-<C-l>			Start vimshell/history source
+<C-l>			<Plug>(vimshell_int_history_unite)
 <C-v>			<Plug>(vimshell_int_send_input)
 <C-n>			<C-n>
 <TAB>			Select candidate or start completion
@@ -828,8 +828,18 @@ Insert mode default key mappings.
 ------------------------------------------------------------------------------
 FUNCTIONS 						*vimshell-functions*
 
+vimshell#get_status_string()			 *vimshell#get_status_string()*
+		Returns vimshell status string.  It is useful to custom
+		statusline.
+
+vimshell#set_execute_file({exts}, {command})	 *vimshell#set_execute_file()*
+		Defines file execution command when it has {exts}.
+		{exts} is comma separated file extensions.
+		{command} is command arguments.
+		(See: |g:vimshell_execute_file_list|)
+
+						*vimshell#interactive#send()*
 vimshell#interactive#send({expr})
-					*vimshell#interactive#send()*
 		It sends {expr} to the interpreter in background buffer of
 		vimshell, iexe, texe.  You can control interpreter as if you
 		are using |quickrun|.
@@ -837,14 +847,14 @@ vimshell#interactive#send({expr})
 		Note: If interpreter is not loaded in current tab, you can run
 		interpreter command.
 
-vimshell#interactive#send_string({expr})
 					*vimshell#interactive#send_string()*
-		Deprecated. Use |vimshell#interactive#send()| instead; they
+vimshell#interactive#send_string({expr})
+		Deprecated.  Use |vimshell#interactive#send()| instead; they
 		are equivalent.
 
 
 vimshell#hook#set({hook-point}, {func-list})		*vimshell#hook#set()*
-		Defines hook functions {func-list} in {hook-point}. The old
+		Defines hook functions {func-list} in {hook-point}.  The old
 		hook points are overwrite.  Vimshell call {func-list} by list
 		order.
 
@@ -853,12 +863,80 @@ vimshell#hook#get({hook-point})				*vimshell#hook#get()*
 
 vimshell#hook#add({hook-point}, {hook-name}, {func})
 							*vimshell#hook#add()*
-		Add {hook-name} hook {func} in {hook-point}. If {hook-name} is
+		Adds {hook-name} hook {func} in {hook-point}.  If {hook-name}
 		already exists, overwrite it.
 
 vimshell#hook#remove({hook-point}, {hook-name})
 						*vimshell#hook#remove()*
-		Delete {hook-name} function in {hook-point}.
+		Deletes {hook-name} function in {hook-point}.
+
+------------------------------------------------------------------------------
+OPTIONS 					*vimshell-options*
+		{options} are options for a vimshell buffer.  You may give the
+		following parameters for an option; you must escape with "\"
+		when it contains spaces.
+
+						*vimshell-options-buffer-name*
+		-buffer-name={buffer-name}
+		Specifies a buffer name.  The default buffer name is 'default'.
+		Note: Buffer name must not contain spaces.
+
+						*vimshell-options-toggle*
+		-toggle
+		Close vimshell buffer window if this vimshell buffer name
+		window is exists.
+
+						*vimshell-options-create*
+		-create
+		Create new vimshell buffer.
+
+						*vimshell-options-split*
+		-split
+		Split vimshell buffer window.  And
+		|vimshell-options-split-command| is used.
+
+						*vimshell-options-popup*
+		-popup
+		Popup split vimshell buffer window.
+		|vimshell-options-split-command| is used.
+
+					*vimshell-options-split-command*
+		-split-command={command-name}
+		Specify split command.
+
+						*vimshell-options-prompt*
+		-prompt={prompt}
+		Specify prompt string.  If omit it, |g:vimshell_prompt| is
+		used.
+
+						*vimshell-options-prompt_expr*
+		-prompt_expr={expr}
+		Specify prompt expression.  If omit it,
+		|g:vimshell_prompt_expr| is used.
+
+						*vimshell-options-prompt_pattern*
+		-prompt_pattern={expr}
+		Specify prompt pattern.  If omit it,
+		|g:vimshell_prompt_pattern| is used.
+
+					*vimshell-options-secondary-prompt*
+		-secondary-prompt={secondary-prompt}
+		Specify secondary prompt string.  If omit it,
+		|g:vimshell_secondary_prompt| is used.
+
+						*vimshell-options-user-prompt*
+		-user-prompt={user-prompt}
+		Specify secondary prompt string.  If omit it,
+		|g:vimshell_user_prompt| is used.
+
+						*vimshell-options-right-prompt*
+		-right-prompt={right-prompt}
+		Specify right prompt string.  If omit it,
+		|g:vimshell_right_prompt| is used.
+
+						*vimshell-options-project*
+		-project
+		Move to project directory.
 
 ==============================================================================
 EXAMPLES						*vimshell-examples*
@@ -873,12 +951,6 @@ EXAMPLES						*vimshell-examples*
 	else
 	  " Display user name on Linux.
 	  let g:vimshell_prompt = $USER."% "
-	
-	  call vimshell#set_execute_file('bmp,jpg,png,gif', 'gexe eog')
-	  call vimshell#set_execute_file('mp3,m4a,ogg', 'gexe amarok')
-	  let g:vimshell_execute_file_list['zip'] = 'zipinfo'
-	  call vimshell#set_execute_file('tgz,gz', 'gzcat')
-	    call vimshell#set_execute_file('tbz,bz2', 'bzcat')
 	endif
 	
 	" Initialize execute file list.
@@ -918,7 +990,7 @@ commands will be freeze.
 <
 bg [{option}...] {command}				*vimshell-internal-bg*
 		Opens new buffer and executes {command} by background.
-		Execute external command forcibly.  You can not input to
+		Execute external command forcibly.  You cannot input to
 		{command}.
 		If you press <C-c> in background buffer, kill {command}
 		execution.
@@ -927,7 +999,7 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		vimshell% ls&
 <
 		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior. Refer to |vimshell-execute-options|.
+		the behavior.  Refer to |vimshell-execute-options|.
 		
 		--filetype={filetype-name}
 		Changes output buffer 'filetype' to {filetype-name}.
@@ -942,15 +1014,22 @@ build [{builder-name}, [{args}...]]			*vimshell-internal-build*
 		If you omit {builder-name}, detect builder automatically.
 
 cd {directory-path} [{substitute-pattern}]		*vimshell-internal-cd*
-		Changes current directory to {directory-path}. If omit
-		arguments, change directory to $HOME.
+		Changes the current directory to {directory-path}.  If omit
+		arguments, change the current directory to $HOME.
 		If you set {substitute-pattern}, substitute {directory-path} to
 		{substitute-pattern}.
-		If {directory-path} is not directory, change to file parent
+		If {directory-path} is not a directory, change to file parent
 		directory.
 		If {directory-path} is not found, search 'cdpath'.
 		If {directory-path} starts "-", same to
 		|vimshell-internal-popd|.
+
+cdup {parent-directory-name}			*vimshell-internal-cdup*
+		Changes the current directory to the ancestor directory named
+		as {parent-directory-name}. {parent-directory-name} is
+		searched by substring match.
+		It omit arguments, change the current directory to the parent
+		directory.
 
 clear 							*vimshell-internal-clear*
 		Clear display.
@@ -958,7 +1037,7 @@ clear 							*vimshell-internal-clear*
 dirs [{max}]						*vimshell-internal-dirs*
 		Print directory stack items to {max} .
 		If omit {max}, used 10.
-		If press <Enter> in directory stack, change directory.
+		If press <Enter> in directory stack, change the directory.
 
 echo [{argument}...]				*vimshell-internal-echo*
 		print arguments.
@@ -967,14 +1046,14 @@ eval {expression}				*vimshell-internal-eval*
 		Eval {expression} as vimshell script and print it.
 
 exe [{option}...] {command} 			*vimshell-internal-exe*
-		Execute {command} with arguments. Execute external command
+		Execute {command} with arguments.  Execute the external command
 		forcibly.
-		Note: While executing commands, can not execute other
+		Note: While executing commands, cannot execute other
 		commands.
 		Note: After vimshell Ver.9, exe can read inputs.
 		
 		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior. Refer to |vimshell-execute-options|.
+		the behavior.  Refer to |vimshell-execute-options|.
 		
 						*vimshell-execute-options*
 		--encoding={encoding-name}
@@ -992,30 +1071,30 @@ gcd [{directory-path}]				*vimshell-internal-gcd*
 
 gendoc {command} {args}				*vimshell-internal-gendoc*
 		Executes {command} with {args} and saves output in
-		"g:vimshell_temporary_directory/cached-doc". You can read
+		"g:vimshell_temporary_directory/cached-doc".  You can read
 		cached outputs using |echodoc|.
 		Note: This command caches first output line only.
 
 gexe {command}					*vimshell-internal-gexe*
-		Execute {command} with args. Execute external command
+		Execute {command} with args.  Execute the external command
 		forcibly.
 		Different from exe, it is specialized GUI command.
 
 h [{pattern}]						*vimshell-internal-h*
-		Executes {pattern} matched history. If {pattern} is number,
+		Executes {pattern} matched history.  If {pattern} is number,
 		execute {pattern} number history.  If {pattern} is string,
 		execute first {pattern} matched history.  You can check
-		history number by executing |vimshell-internal-history|. If
+		history number by executing |vimshell-internal-history|.  If
 		you omit {pattern}, execute last command.
 		Note: This command does not add history.
 
 histdel {history-number}			*vimshell-internal-histdel*
-		Deletes {history-number} history. You can check history number
+		Deletes {history-number} history.  You can check history number
 		using |vimshell-internal-history| command.
 
 history [{search-string}]			*vimshell-internal-history*
 		Print directory stack {search-string} items.
-		If omit {search-string}, use 20. If {search-string} is string,
+		If omit {search-string}, use 20.  If {search-string} is string,
 		print matched string candidates.
 		If press <Enter> in history list, execute the history.
 
@@ -1023,7 +1102,7 @@ iexe [{options}...] {command}			*vimshell-internal-iexe*
 		Opens new interactive buffer and execute {command} with args.
 		Execute external command forcibly.
 		Different from exe, this command is for interactive command.
-		Note: Interactive buffer |filetype| is int-{command}. If you
+		Note: Interactive buffer |filetype| is int-{command}.  If you
 		use |:autocmd| for interactive buffer, use "int-*" pattern.
 
 		Note:
@@ -1032,7 +1111,7 @@ iexe [{options}...] {command}			*vimshell-internal-iexe*
 		You may want to check it in your shell's rc file.
 
 		Note: iexe, exe, bg, texe and less interpret options to change
-		their behaviours. Refer |vimshell-execute-options|.
+		their behaviours.  Refer |vimshell-execute-options|.
 
 		--split={split-command}
 		Specifies split command.
@@ -1040,7 +1119,7 @@ iexe [{options}...] {command}			*vimshell-internal-iexe*
 
 less [{options}...] {command}			*vimshell-internal-less*
 		Opens new buffer and executes {command} with arguments.
-		Execute external command forcibly. Vimshell will work like
+		Execute external command forcibly.  Vimshell will work like
 		pager.
 		Note: syntax sugar:
 		{command1} | {command2} | less
@@ -1048,7 +1127,7 @@ less [{options}...] {command}			*vimshell-internal-less*
 		|vimshell-internal-view|.
 		
 		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior. Refer to |vimshell-execute-options|.
+		the behavior.  Refer to |vimshell-execute-options|.
 
 		--split={split-command}
 		Specify split command.
@@ -1104,11 +1183,11 @@ source_shellcmd {shellcmd} [{args}]
 		variables.  After executed the command, vimshell will use
 		changed environment variables.
 		
-		Note: The {shellcmd} must be executable from |system()|. You
+		Note: The {shellcmd} must be executable from |system()|.  You
 		may edit .zshenv/.bashenv.
 
 sudo {command} [{args}]				*vimshell-internal-sudo*
-		Execute super user command. If {command} is "vim", this uses
+		Execute super user command.  If {command} is "vim", this uses
 		|sudo.vim|.
 		http://www.vim.org/scripts/script.php?script_id=729
 		On Windows, "sudo.exe" is necessary.
@@ -1117,14 +1196,14 @@ sudo {command} [{args}]				*vimshell-internal-sudo*
 texe [{options}...] {command}			*vimshell-internal-texe*
 		Execute {command} with args.
 		Note: Execute external command forcibly.
-		Different from exe and iexe, it execute terminal command.  This
+		Different from exe and iexe, it executes terminal command.  This
 		command creates new buffer.
 		Note: Pipe is not supported.
 		
 		Note: This command is under construction.
 		
 		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior. Refer to |vimshell-execute-options|.
+		the behavior.  Refer to |vimshell-execute-options|.
 
 		--split={split-command}
 		Specify split command.
@@ -1135,7 +1214,7 @@ time {command}					*vimshell-internal-time*
 
 view [{options}...] {filenames}...
 						*vimshell-internal-view*
-		Opens {filenames} in other buffer as readonly. If lines is
+		Opens {filenames} in other buffer as readonly.  If lines is
 		less than window size, do not open another buffer.
 		
 		--split={split-command}
@@ -1155,7 +1234,7 @@ vim [{options}...] [{filenames}...]
 		If omit this option, used |g:vimshell_split_command|.
 
 vimdiff {filename1} {filename2}			*vimshell-internal-vimdiff*
-		Compares {filename1} and {filename2} by |:vimdiff|command.
+		Compares {filename1} and {filename2} by |:vimdiff| command.
 
 		--split={split-command}
 		Specify split command.
@@ -1167,21 +1246,21 @@ vimsh [{filename}]				*vimshell-internal-vimsh*
 		If omit {filename}, opens new vimshell buffer.
 
 which {command}					*vimshell-internal-which*
-		Print {command} as full path. The command supports alias.
+		Print {command} as full path.  The command supports alias.
 
 whereis {command}				*vimshell-internal-whereis*
 		Print {command} by full path.
 
 ==============================================================================
 SPECIAL COMMANDS				*vimshell-special-commands*
-Special command is minimum parsed by vimshell. So, you can parse arguments in
-special commands. But parsing is difficult.
+Special command is minimum parsed by vimshell.  So, you can parse arguments in
+special commands.  But parsing is difficult.
 
 alias {alias-name} = {command}			*vimshell-special-alias*
-		Defines alias. Vimshell replaces {alias-name} as {command}.
+		Defines alias.  Vimshell replaces {alias-name} as {command}.
 		Different from other shells, "=" with spaces is valid.
 		
-		The alias can take arguments. To get arguments, use $$args
+		The alias can take arguments.  To get arguments, use $$args
 		variable.
 >
 		vimshell% alias echo=':echo "$$args"'
@@ -1190,9 +1269,9 @@ alias {alias-name} = {command}			*vimshell-special-alias*
 <
 galias {global-alias-name} = {command}
 						*vimshell-internal-galias*
-		Defines global alias. Vimshell replaces {global-alias-name} as
+		Defines global alias.  Vimshell replaces {global-alias-name} as
 		{command}.  Different from |vimshell-special-alias|, global
-		alias in arguments is expanded. This feature is like to zsh
+		alias in arguments is expanded.  This feature is like to zsh
 		global alias.
 		
 		Note: Global alias with pipes is not supported.
@@ -1217,7 +1296,7 @@ let ${var-name} = {expression}				*vimshell-special-let*
 		The prefix "$$" means vimshell internal variables.
 
 sexe {command}					*vimshell-special-sexe*
-		Execute {command} in 'shell'. If the command is wrong in
+		Execute {command} in 'shell'.  If the command is wrong in
 		vimshell, you can use this command.
 		Note: Must be set 'shell' and shell options.
 		Note: In windows, appears DOS window.
@@ -1237,10 +1316,10 @@ vexe {expression}				*vimshell-special-vexe*
 ==============================================================================
 ALTER COMMAND					*vimshell-alter-command*
 
-Vimshell supports altercmd. Altercmd is like abbrev alias.
+Vimshell supports altercmd.  Altercmd is like abbrev alias.
 Original altercmd plugin is here: [http://github.com/kana/vim-altercmd]
 
-To use altercmd, call |vimshell#altercmd#define|function in vimshell buffer.
+To use altercmd, call |vimshell#altercmd#define| function in vimshell buffer.
 Usually, used in autocmd FileType.
 >
 	autocmd FileType vimshell
@@ -1252,7 +1331,7 @@ HOOK							*vimshell-hook*
 Vimshell has not function feature, but can call hook function in hook points.
 So If you learned Vim script and vimshell, customizable vimshell.
 
-Next examples set hook in "chpwd". This hook execute ls internal command when
+Next examples set hook in "chpwd".  This hook execute ls internal command when
 current directory is changed.
 >
 	autocmd FileType vimshell
@@ -1262,7 +1341,7 @@ current directory is changed.
 		call vimshell#execute('ls')
 	endfunction
 <
-Default hook points are below. Hook functions arguments are {args} and
+Default hook points are below.  Hook functions arguments are {args} and
 {context}.  {args} is arguments list, {context} is context information.  But
 some functions arguments is {cmdline}.
 
@@ -1314,15 +1393,15 @@ postinput					*vimshell-hook-postinput*
 postexit					*vimshell-hook-postexit*
 		This hook called when after (external) command exit.
 		The first argument is {command}. {command} is executed command
-		name. The second argument is {cmdline}. {cmdline} is executed
-		command line. You can get exit value by
+		name.  The second argument is {cmdline}. {cmdline} is executed
+		command line.  You can get exit value by
 		"b:vimshell.system_variables['status']".
 		Note: This hook is usually used in interactive buffer.
-		Note: The buffer may be deleted(or closed) in interactive
+		Note: The buffer may be deleted (or closed) in interactive
 		buffer.
 
-To analyze command line, use |vimproc#parser#split_args()|or
-|vimproc#parser#split_args_through()|. These functions arguments are the
+To analyze command line, use |vimproc#parser#split_args()| or
+|vimproc#parser#split_args_through()|.  These functions arguments are the
 command line string. |vimproc#parser#split_args()| evals quoted string, but
 |vimproc#parser#split_args_through()| remains quoted string.
 Note: These functions do not analyze ";", "&&", "||", pipes and redirection.
@@ -1331,14 +1410,14 @@ Note: These functions do not analyze ";", "&&", "||", pipes and redirection.
 TIPS							*vimshell-tips*
 
 directory stack				*vimshell-tips-directory-stack*
-		Vimshell supports directory stack like bash or zsh. And
+		Vimshell supports directory stack like bash or zsh.  And
 		auto_pushd automatically.  So, pushd command does not exist.
 		To view directory stack, use |vimshell-internal-dirs|.
 		To cd from directory stack, use |vimshell-internal-popd|.
 		"cd -" is also supported.
 
 auto_cd						*vimshell-tips-auto_cd*
-		Vimshell supports auto_cd like zsh. If you execute with a
+		Vimshell supports auto_cd like zsh.  If you execute with a
 		directory name, vimshell moves to the current directory.
 		Note: The setting is nothing.
 
@@ -1354,8 +1433,8 @@ block							*vimshell-tips-block*
 		-> 00 01 02 03 04 05 06 07 08 09
 <
 wild card					*vimshell-tips-wildcard*
-		Vimshell supports wildcard. If wildcard files are not found,
-		an error is occured.
+		Vimshell supports wildcard.  If wildcard files are not found,
+		an error is occurred.
 >
 		vimshell% ls *.htm
 <
@@ -1383,7 +1462,7 @@ fakecygpty					*vimshell-tips-fakecygpty*
 >
 		> fakecygpty ssh
 <
-		fakecygpty original source code is in Meadow. But I distribute
+		fakecygpty original source code is in Meadow.  But I distribute
 		the source.
 		http://github.com/Shougo/fakecygpty
 		To compile the source code, execute the command below.
@@ -1421,19 +1500,20 @@ UNITE SOURCES					*vimshell-unite-sources*
 
 				*vimshell-unite-source-vimshell-history*
 vimshell/history
-		Nominates vimshell histories as candidates. This source is
-		also available on interactive buffer. This source is used in
+		Nominates vimshell histories as candidates.  This source is
+		also available on interactive buffer.  This source is used in
 		|unite#sources#vimshell_history#start_complete()|.
 		Note: Default mapping is <C-l>.
 
 		Example:
 >
-		inoremap <buffer> <expr><silent> <C-l>  unite#sources#vimshell_history#start_complete()
+		inoremap <buffer> <expr><silent> <C-l>
+		\ unite#sources#vimshell_history#start_complete()
 <
 			*vimshell-unite-source-vimshell-external_history*
 vimshell/external_history
-		Nominates external shell histories as candidates. This source
-		is also available in interactive buffer. This source is used
+		Nominates external shell histories as candidates.  This source
+		is also available in interactive buffer.  This source is used
 		in |unite#sources#vimshell_history#start_complete()|.
 		Note: Edit histories is invalid.
 		Vimshell searches external history path from $SHELL
@@ -1487,204 +1567,21 @@ Q: Why vimshell does not support "\" path separator in Windows?
 https://github.com/Shougo/vimshell/issues/86
 
 A: Because we would love to provide compatibility between Windows and UNIX
-with same script. The path separator is just an evil shit.
+with same script.  The path separator is just an evil shit.
 
-==============================================================================
-CHANGELOG						*vimshell-changelog*
+Q: I want to change |g:vimshell_prompt| dynamically.
 
-2013-04-21
-- Fixed exe internal command.
+A: You cannot do it. |g:vimshell_prompt| is fixed string.
+But you can change |g:vimshell_prompt_expr| or |g:vimshell_user_prompt|
+dynamically instead of it.
 
-2013-04-20
-- Fixed vimshell#set_highlight().
+Q: I want to execute history by completion interface.
 
-2013-04-02
-- Fixed for interrupt problem.
-- Improved set highlight.
-
-2013-03-20
-- Improved command not found and signal behavior.
-- Fixed for completion.
-
-2013-03-16
-- Fixed complete position problem.
-- Improved syntax highlight in unite sources.
-
-2013-03-02
-- Version 10.0 development is started.
-
-------------------------------------------------------------------------------
-ChangeLog 9.2
-
-2013-03-02
-- Fixed vimshell#cd().
-
-2013-02-11
-- Fixed update behavior.
-- Fixed bg command.
-
-2013-02-10
-- Fixed parse options.
-
-2013-02-09
-- Improved vexe behavior.
-- Fixed vimshell_complete source.
-
-2013-02-02
-- Changed default_action in vimshell/history kind.
-
-2013-01-31
-- Improved <Plug>(vimshell_interrupt) behavior.
-
-2013-01-21
-- Improved error output.
-- Fixed error syntax patterns.
-
-2013-01-20
-- Improved append histories.
-- Improved vexe behavior.
-- Improved print error string behavior.
-
-2013-01-17
-- Simplify history execution behavior.
-- Added g:vimshell_enable_transient_user_prompt option.
-- Improved <Plug>(vimshell_enter) behavior.
-
-2013-01-15
-- Added -project option.
-
-2013-01-13
-- Improved restore current directory behavior.
-
-2013-01-12
-- Improved g:vimshell_interactive_encodings behavior.
-
-2013-01-11
-- Don't set wrap option.
-
-2013-01-06
-- Skip completion inner quote.
-
-2013-01-02
-- Improved set highlight.
-- Improved documentation.
-
-2013-01-01
-- Fixed vimshell_complete behavior.
-
-2012-12-29
-- Improved set syntax timing.
-
-2012-12-25
-- Set UTF-8 in fakecygpty.
-- Fixed output for carriage return.
-
-2012-12-21
-- Fixed :VimShellSendString behavior.
-
-2012-12-02
-- Fixed auto_cd behavior.
-
-2012-11-17
-- Fixed for skip next complete.
-
-2012-10-26
-- Fixed error message on exit.
-
-2012-10-23
-- Fixed check of autochdir.
-
-2012-10-21
-- Improved hangup behavior.
-- Renamed vimshell#interactive#send_string() to vimshell#interactive#send()
-
-2012-10-20
-- Added postexit hook.
-
-2012-10-19
-- Fixed get_history_path().
-
-2012-10-16
-- Improved command search behavior.
-
-2012-10-13
-- Fixed neocomplcache check.
-- Fixed source internal command.
-
-2012-10-02
-- Added unite__new_candidate action.
-
-2012-09-27
-- Fixed multiple iexe problem.
-
-2012-09-24
-- Fixed sexe error.
-- Optimized load commands.
-
-2012-09-23
-- Improved get_cursor_filename pattern.
-
-2012-09-19
-- Added FAQ section.
-
-2012-09-13
-- Added Tips.
-
-2012-09-11
-- Improved set editor variables.
-
-2012-09-09
-- Improved send string.
-- Improved :VimShellSendString behavior.
-
-2012-09-08
-- Fixed interactive freeze problem(test).
-- Fixed nomodifiable errors.
-
-2012-09-02
-- Improved to open buffer.
-- Renamed vimshell#switch_shell().
-
-2012-08-31
-- Added vimshell/zsh_complete source(imcomplete).
-- Added condition check.
-- Improved vimshell/zsh_complete source candidates.
-- Added <Plug>(vimshell_zsh_complete) keymapping.
-
-2012-08-28
-- Added vimshell#interactive#send_string().
-- Improved documentation.
-- Improved vimshell#interactive#quit_buffer().
-
-2012-08-26
-- Improved switch vimshell behavior.
-
-2012-08-22
-- Added depends.
-
-2012-08-21
-- Improved :VimShellSendString behavior.
-- Fixed <Plug>(vimshell_clear) behavior.
-- Fixed switch vimshell behavior.
-- Fixed for interactive bufnr.
-- Fixed for :VimShellSendString.
-- Fixed undo point.
-
-2012-08-20
-- Improved :VimShellSendString behavior.
-- Fixed :VimShellSendString behavior.
-
-2012-08-18
-- Fixed for internal commands.
-- Use vimproc#util#iconv().
-
-2012-08-15
-- Improved postfix.
-- Improved loaded check.
-- Fixed for password pattern.
-
-2012-08-14
-- Version 9.2 development is started.
+A: You can use |<Plug>(vimshell_history_neocomplete)| mapping.
+Note: |neocomplete| is required.
+>
+	imap <buffer><C-g> <Plug>(vimshell_history_neocomplete)
+<
 
 ==============================================================================
 vim:tw=78:ts=8:ft=help:norl:noet:fen:isk+=-:

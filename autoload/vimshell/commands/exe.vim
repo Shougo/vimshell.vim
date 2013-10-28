@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: exe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Apr 2013.
+" Last Modified: 11 May 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -118,7 +118,7 @@ function! s:init_process(commands, context, options) "{{{
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
-        \ '$LINES' : winheight(0),
+        \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'execute',
         \ '$EDITOR' : vimshell#get_editor_name(),
         \ '$GIT_EDITOR' : vimshell#get_editor_name(),
@@ -150,7 +150,7 @@ function! s:init_process(commands, context, options) "{{{
   let b:interactive.stderr_cache = ''
   let b:interactive.cmdline = join(cmdline, '|')
   let b:interactive.width = winwidth(0)
-  let b:interactive.height = winheight(0)
+  let b:interactive.height = g:vimshell_scrollback_limit
   let b:interactive.prompt_history = {}
   let b:interactive.echoback_linenr = 0
   let b:interactive.command =

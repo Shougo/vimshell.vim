@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Apr 2013.
+" Last Modified: 17 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,12 +31,15 @@ let s:update_time_save = &updatetime
 
 augroup vimshell
   autocmd VimEnter * set vb t_vb=
+  autocmd VimLeave * call s:vimleave()
   autocmd CursorMovedI *
         \ call s:check_all_output(0)
   autocmd CursorHold,CursorHoldI *
         \ call s:check_all_output(1)
-  autocmd CursorMovedI * call vimshell#interactive#check_current_output()
-  autocmd BufWinEnter,WinEnter * call s:winenter()
+  autocmd CursorMovedI *
+        \ call vimshell#interactive#check_current_output()
+  autocmd BufWinEnter,WinEnter *
+        \ call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(expand('<afile>'))
 augroup END
@@ -361,19 +364,7 @@ function! vimshell#interactive#exit() "{{{
   endif
 
   " Get status.
-  let [cond, status] = b:interactive.process.waitpid()
-  if cond != 'exit'
-    try
-      " Kill process.
-      " 15 == SIGTERM
-      call b:interactive.process.kill(15)
-      call b:interactive.process.waitpid()
-    catch
-      " Error.
-      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      call vimshell#interactive#exit()
-    endtry
-  endif
+  let [cond, status] = s:kill_process(b:interactive)
 
   let b:interactive.status = str2nr(status)
   let b:interactive.cond = cond
@@ -410,15 +401,7 @@ function! vimshell#interactive#force_exit() "{{{
   endif
 
   " Kill processes.
-  try
-    " 15 == SIGTERM
-    call b:interactive.process.kill(15)
-    call b:interactive.process.waitpid()
-  catch
-    " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    call vimshell#interactive#exit()
-  endtry
+  let [cond, status] = s:kill_process(b:interactive)
 
   if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
@@ -441,15 +424,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
   endif
 
   if get(interactive.process, 'is_valid', 0)
-    " Kill process.
-    try
-      " 15 == SIGTERM
-      call interactive.process.kill(15)
-      call interactive.process.waitpid()
-    catch
-      " Error.
-      call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-    endtry
+    let [cond, status] = s:kill_process(interactive)
   endif
   let interactive.process.is_valid = 0
 
@@ -652,20 +627,19 @@ function! vimshell#interactive#check_current_output() "{{{
   endif
 endfunction"}}}
 function! s:check_all_output(is_hold) "{{{
-  if vimshell#util#is_cmdwin()
-    return
-  endif
-
-  let winnrs = filter(range(1, winnr('$')),
-        \ "type(getbufvar(winbufnr(v:val), 'interactive')) == type({})
-        \  && get(get(getbufvar(winbufnr(v:val), 'interactive'),
-        \     'process', {}), 'is_valid', 0)")
+  let updated = 0
 
   if mode() ==# 'n'
-    for winnr in winnrs
+    for bufnr in filter(range(1, bufnr('$')),
+        \ "type(getbufvar(v:val, 'interactive')) == type({})
+        \  && get(get(getbufvar(v:val, 'interactive'),
+        \        'process', {}), 'is_valid', 0)")
+      let interactive = getbufvar(bufnr, 'interactive')
       " Check output.
-      call s:check_output(getbufvar(winbufnr(winnr), 'interactive'),
-            \ winbufnr(winnr), bufnr('%'))
+      if s:cache_output(interactive)
+        let updated = 1
+        call s:check_output(interactive, bufnr, bufnr('%'))
+      endif
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
@@ -676,7 +650,11 @@ function! s:check_all_output(is_hold) "{{{
     endif
   endif
 
-  if len(winnrs) > 0
+  if vimshell#util#is_cmdwin()
+    return
+  endif
+
+  if exists('b:interactive') || updated
     if &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
       let s:update_time_save = &updatetime
@@ -689,23 +667,17 @@ function! s:check_all_output(is_hold) "{{{
     elseif mode() ==# 'i' && exists('b:interactive') &&
         \ !empty(b:interactive.process)
         \ && b:interactive.process.is_valid
-      let is_complete_hold = get(g:,
-            \ 'neocomplcache_enable_cursor_hold_i', 0)
-            \ && !get(g:,
-            \ 'neocomplcache_enable_insert_char_pre', 0)
-      if (a:is_hold && !is_complete_hold)
-            \ || (!a:is_hold && is_complete_hold)
+      let is_complete_hold = vimshell#util#is_complete_hold()
+      if a:is_hold != is_complete_hold
         setlocal modifiable
-        call feedkeys(is_complete_hold ?
-              \ "\<C-r>\<ESC>" : "a\<BS>", 'n')
+        call feedkeys((is_complete_hold ?
+              \ "\<C-r>\<ESC>" : "a\<BS>"), 'n')
       endif
 
       " Skip next auto completion.
-      if exists('*neocomplcache#skip_next_complete')
-        call neocomplcache#skip_next_complete()
-      endif
+      call vimshell#util#skip_next_complete()
     endif
-  elseif &updatetime < s:update_time_save
+  elseif &updatetime == g:vimshell_interactive_update_time
         \ && &filetype !=# 'unite'
     " Restore updatetime.
     let &updatetime = s:update_time_save
@@ -725,6 +697,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
 
   if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
         \ || vimshell#util#is_cmdwin()
+        \ || (a:bufnr != a:bufnr_save && bufwinnr(a:bufnr) < 0)
     return
   endif
 
@@ -784,6 +757,13 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     endif
   endif
 
+  " Check window size.
+  if winwidth(0) != a:interactive.width
+    " Set new window size.
+    call a:interactive.process.set_winsize(
+          \ winwidth(0), g:vimshell_scrollback_limit)
+  endif
+
   if !is_insert && type !=# 'vimshell'
     call setpos('.', intbuffer_pos)
   endif
@@ -798,29 +778,23 @@ function! s:cache_output(interactive) "{{{
     return 0
   endif
 
-  let outputed = 0
   if !a:interactive.process.stdout.eof
-    let read = a:interactive.process.stdout.read(10000, 0)
-    if read != ''
-      let outputed = 1
-    endif
-    let a:interactive.stdout_cache = read
+    let a:interactive.stdout_cache .=
+          \ a:interactive.process.stdout.read(10000, 0)
   endif
 
   if !a:interactive.process.stderr.eof
-    let read = a:interactive.process.stderr.read(10000, 0)
-    if read != ''
-      let outputed = 1
-    endif
-    let a:interactive.stderr_cache = read
+    let a:interactive.stderr_cache .=
+          \ a:interactive.process.stderr.read(10000, 0)
   endif
 
   if a:interactive.process.stderr.eof &&
         \ a:interactive.process.stdout.eof
-    let outputed = 1
+    return 2
   endif
 
-  return outputed
+  return a:interactive.stdout_cache != '' ||
+        \ a:interactive.stderr_cache
 endfunction"}}}
 function! s:is_skk_enabled() "{{{
   return (exists('b:skk_on') && b:skk_on)
@@ -844,6 +818,32 @@ function! s:winleave(bufname) "{{{
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
 
   call vimshell#terminal#restore_title()
+endfunction"}}}
+function! s:vimleave() "{{{
+  " Kill all processes.
+  for interactive in map(filter(range(1, bufnr('$')),
+        \ "type(getbufvar(v:val, 'interactive')) == type({})
+        \  && get(get(getbufvar(v:val, 'interactive'),
+        \     'process', {}), 'is_valid', 0)"),
+        \ "getbufvar(v:val, 'interactive')")
+    call s:kill_process(interactive)
+  endfor
+endfunction"}}}
+
+function! s:kill_process(interactive) "{{{
+  " Get status.
+  let [cond, status] = a:interactive.process.waitpid()
+  if cond != 'exit'
+    try
+      " Kill process.
+      " 15 == SIGTERM
+      call a:interactive.process.kill(15)
+      call a:interactive.process.waitpid()
+    catch
+    endtry
+  endif
+
+  return [cond, status]
 endfunction"}}}
 
 " vim: foldmethod=marker

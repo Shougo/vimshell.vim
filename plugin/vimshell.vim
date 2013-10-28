@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Feb 2013.
+" Last Modified: 26 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -29,31 +29,10 @@ if exists('g:loaded_vimshell')
 elseif v:version < 702
   echoerr 'vimshell does not work this version of Vim "' . v:version . '".'
   finish
-elseif $SUDO_USER != '' && $USER !=# $SUDO_USER
-      \ && $HOME !=# expand('~'.$USER)
-      \ && $HOME ==# expand('~'.$SUDO_USER)
-  echohl Error
-  echomsg 'vimshell disabled: "sudo vim" is detected and $HOME is set to '
-        \.'your user''s home. '
-        \.'You may want to use the sudo.vim plugin, the "-H" option '
-        \.'with "sudo" or set always_set_home in /etc/sudoers instead.'
-  echohl None
-  finish
 endif
 
 let s:save_cpo = &cpo
 set cpo&vim
-
-if exists(':NeoBundleDepends') "{{{
-  NeoBundleDepends 'Shougo/vimproc', {
-        \ 'build' : {
-        \     'windows' : 'echo "Sorry, cannot update vimproc binary file in Windows."',
-        \     'cygwin' : 'make -f make_cygwin.mak',
-        \     'mac' : 'make -f make_mac.mak',
-        \     'unix' : 'make -f make_unix.mak',
-        \    },
-        \ }
-endif"}}}
 
 " Obsolute options check. "{{{
 "}}}
@@ -66,9 +45,6 @@ let g:vimshell_temporary_directory =
       \ substitute(fnamemodify(get(
       \   g:, 'vimshell_temporary_directory', '~/.vimshell'),
       \  ':p'), '\\', '/', 'g')
-if !isdirectory(g:vimshell_temporary_directory)
-  call mkdir(g:vimshell_temporary_directory, 'p')
-endif
 let g:vimshell_max_command_history =
       \ get(g:, 'vimshell_max_command_history', 1000)
 let g:vimshell_max_directory_stack =
@@ -77,9 +53,6 @@ let g:vimshell_vimshrc_path =
       \ substitute(fnamemodify(get(
       \   g:, 'vimshell_vimshrc_path', '~/.vimshrc'),
       \  ':p'), '\\', '/', 'g')
-if !isdirectory(fnamemodify(g:vimshell_vimshrc_path, ':p:h'))
-  call mkdir(fnamemodify(g:vimshell_vimshrc_path, ':p:h'), 'p')
-endif
 let g:vimshell_escape_colors =
       \ get(g:, 'vimshell_escape_colors', [
         \ '#6c6c6c', '#ff6666', '#66ff66', '#ffd30a',
@@ -111,6 +84,8 @@ let g:vimshell_scrollback_limit =
       \ get(g:, 'vimshell_scrollback_limit', 1000)
 let g:vimshell_enable_transient_user_prompt =
       \ get(g:, 'vimshell_enable_transient_user_prompt', 0)
+let g:vimshell_force_overwrite_statusline =
+      \ get(g:, 'vimshell_force_overwrite_statusline', 0)
 
 " For interactive commands.
 let g:vimshell_interactive_no_save_history_commands =

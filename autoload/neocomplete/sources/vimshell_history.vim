@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: vimshell_complete.vim
-" AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 May 2013.
+" FILE: vimshell_history.vim
+" AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,32 +24,41 @@
 " }}}
 "=============================================================================
 
-let s:save_cpo = &cpo
-set cpo&vim
-
-function! neocomplcache#sources#vimshell_complete#define() "{{{
+function! neocomplete#sources#vimshell_history#define() "{{{
   return s:source
-endfunction"}}}
+endfunction "}}}
 
 let s:source = {
-      \ 'name' : 'vimshell_complete',
-      \ 'kind' : 'ftplugin',
-      \ 'min_pattern_length' :
-      \      g:neocomplcache_auto_completion_start_length,
-      \ 'filetypes' : { 'vimshell' : 1, },
-      \ 'is_volatile' : 1,
+      \ 'name' : 'vimshell/history',
+      \ 'kind' : 'manual',
+      \ 'hooks' : {},
+      \ 'max_candidates' : 100,
+      \ 'matchers' : [],
       \ 'sorters' : [],
-      \}
+      \ 'mark' : '[history]',
+      \ }
 
-function! s:source.get_keyword_pos(cur_text) "{{{
-  return vimshell#complete#get_keyword_position()
+function! s:source.hooks.on_init(context) "{{{
+  let a:context.source__histories = vimshell#history#read()
+endfunction"}}}
+function! s:source.hooks.on_post_filter(context) "{{{
+  for candidate in a:context.candidates
+    let candidate.abbr =
+          \ substitute(candidate.word, '\s\+$', '>-', '')
+  endfor
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
-  return vimshell#complete#gather_candidates(a:cur_keyword_str)
-endfunction"}}}
+function! s:source.get_complete_position(context) "{{{
+  if neocomplete#is_auto_complete() || !vimshell#check_prompt()
+    return -1
+  endif
 
-let &cpo = s:save_cpo
-unlet s:save_cpo
+  return vimshell#get_prompt_length()
+endfunction "}}}
 
-" vim: foldmethod=marker
+function! s:source.gather_candidates(context) "{{{
+  return filter(copy(a:context.source__histories),
+        \ 'stridx(v:val, a:context.complete_str) >= 0')
+endfunction "}}}
+
+" ies foldmethod=marker

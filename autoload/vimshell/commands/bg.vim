@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Feb 2013.
+" Last Modified: 29 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,8 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:V = vital#of('vimshell')
-let s:BM = s:V.import('Vim.BufferManager')
+let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
 let s:manager = s:BM.new()  " creates new manager
 call s:manager.config('opener', 'silent edit')
 call s:manager.config('range', 'current')
@@ -70,7 +69,7 @@ function! s:command.execute(commands, context) "{{{
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
         \ '$COLUMNS' : winwidth(0)-5,
-        \ '$LINES' : winheight(0),
+        \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'background',
         \ '$EDITOR' : vimshell#get_editor_name(),
         \ '$GIT_EDITOR' : vimshell#get_editor_name(),
@@ -97,6 +96,8 @@ function! s:command.execute(commands, context) "{{{
         \ 'echoback_linenr' : 0,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
+        \ 'width' : winwidth(0),
+        \ 'height' : g:vimshell_scrollback_limit,
         \ 'hook_functions_table' : {},
         \}
 

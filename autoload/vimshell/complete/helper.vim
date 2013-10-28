@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Oct 2012.
+" Last Modified: 05 Jun 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -31,13 +31,8 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...) "{{{
     call vimshell#echo_error('Too many arguments.')
   endif
 
-  if !exists('*neocomplcache#sources#filename_complete#get_complete_words')
-    return []
-  endif
-
   let path = (a:0 == 1 ? a:1 : '.')
-  let list = neocomplcache#sources#filename_complete#get_complete_words(
-        \ a:cur_keyword_str, path)
+  let list = vimshell#complete#helper#get_files(path, a:cur_keyword_str)
 
   " Extend pseudo files.
   if a:cur_keyword_str =~ '^/dev/'
@@ -159,7 +154,8 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...) "{{{
   if vimshell#util#is_windows()
     let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
-          \ 'isdirectory(v:val.orig) || "." . fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
+          \ 'isdirectory(v:val.orig) || "." .
+          \  fnamemodify(v:val.orig, ":e") =~? '.string(exts) :
           \ '"." . fnamemodify(v:val.orig, ":e") =~? '.string(exts)
   else
     let pattern = (a:cur_keyword_str =~ '[/\\]')?
@@ -233,8 +229,17 @@ function! vimshell#complete#helper#command_args(args) "{{{
 endfunction"}}}
 function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
   let _ = []
-  let _ += neocomplcache#sources#vim_complete#helper#environment(
-        \ vimshell#get_cur_text(), a:cur_keyword_str)
+
+  if !exists('s:envlist')
+    " Get environment variables list.
+    let s:envlist = []
+    for line in split(system('set'), '\n')
+      let word = '$' . toupper(matchstr(line, '^\h\w*'))
+      call add(s:envlist, { 'word' : word, 'kind' : 'e' })
+    endfor
+  endif
+
+  let _ += s:envlist
 
   if a:cur_keyword_str =~ '^$\l'
     let _ += map(keys(b:vimshell.variables), "'$' . v:val")
@@ -246,17 +251,10 @@ function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
 endfunction"}}}
 
 function! vimshell#complete#helper#call_omnifunc(omnifunc) "{{{
-  " Note: neocomplcache#sources#completefunc_complete#call_completefunc()
-  "     is not working. :-(
-  " if exists(':NeoComplCacheDisable')
-  if 0
-    return neocomplcache#sources#completefunc_complete#call_completefunc(a:omnifunc)
-  else
-    " Set complete function.
-    let &l:omnifunc = a:omnifunc
+  " Set complete function.
+  let &l:omnifunc = a:omnifunc
 
-    return "\<C-x>\<C-o>\<C-p>"
-  endif
+  return "\<C-x>\<C-o>\<C-p>"
 endfunction"}}}
 function! vimshell#complete#helper#restore_omnifunc(omnifunc) "{{{
   if &l:omnifunc !=# a:omnifunc
@@ -285,6 +283,100 @@ function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) 
         \          string(cur_keyword))
 
   return filter(a:list, expr)
+endfunction"}}}
+
+function! vimshell#complete#helper#get_files(path, complete_str) "{{{
+  let candidates = s:get_glob_files(a:path, a:complete_str)
+  if a:path == ''
+    let candidates = vimshell#complete#helper#keyword_filter(
+          \ candidates, a:complete_str)
+  endif
+  return  sort(filter(copy(candidates),
+        \   'v:val.action__is_directory')) +
+        \ sort(filter(copy(candidates),
+        \   '!v:val.action__is_directory'))
+endfunction"}}}
+
+function! s:get_glob_files(path, complete_str) "{{{
+  let path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
+
+  let complete_str = vimshell#util#substitute_path_separator(
+        \ substitute(a:complete_str, '\\\(.\)', '\1', 'g'))
+
+  let glob = (complete_str !~ '\*$')?
+        \ complete_str . '*' : complete_str
+
+  if a:path == ''
+    let files = vimshell#util#glob(glob)
+  else
+    try
+      let globs = globpath(path, glob)
+    catch
+      return []
+    endtry
+    let files = split(vimshell#util#substitute_path_separator(globs), '\n')
+  endif
+
+  let files = filter(files, "v:val !~ '/.$'")
+
+  let files = map(
+        \ files, "{
+        \    'word' : v:val,
+        \    'orig' : v:val,
+        \    'action__is_directory' : isdirectory(v:val),
+        \ }")
+
+  if a:complete_str =~ '^\$\h\w*'
+    let env = matchstr(a:complete_str, '^\$\h\w*')
+    let env_ev = eval(env)
+    if vimshell#util#is_windows()
+      let env_ev = substitute(env_ev, '\\', '/', 'g')
+    endif
+    let len_env = len(env_ev)
+  else
+    let len_env = 0
+  endif
+
+  let home_pattern = '^'.
+        \ vimshell#util#substitute_path_separator(
+        \ expand('~')).'/'
+  let exts = escape(substitute($PATHEXT, ';', '\\|', 'g'), '.')
+
+  let candidates = []
+  for dict in files
+    let dict.orig = dict.word
+
+    if len_env != 0 && dict.word[: len_env-1] == env_ev
+      let dict.word = env . dict.word[len_env :]
+    endif
+
+    let abbr = dict.word
+    if dict.action__is_directory && dict.word !~ '/$'
+      let abbr .= '/'
+      if vimshell#util#is_auto_delimiter()
+        let dict.word .= '/'
+      endif
+    elseif vimshell#util#is_windows()
+      if '.'.fnamemodify(dict.word, ':e') =~ exts
+        let abbr .= '*'
+      endif
+    elseif executable(dict.word)
+      let abbr .= '*'
+    endif
+    let dict.abbr = abbr
+
+    if a:complete_str =~ '^\~/'
+      let dict.word = substitute(dict.word, home_pattern, '\~/', '')
+      let dict.abbr = substitute(dict.abbr, home_pattern, '\~/', '')
+    endif
+
+    " Escape word.
+    let dict.word = escape(dict.word, ' ;*?[]"={}''')
+
+    call add(candidates, dict)
+  endfor
+
+  return candidates
 endfunction"}}}
 
 " vim: foldmethod=marker

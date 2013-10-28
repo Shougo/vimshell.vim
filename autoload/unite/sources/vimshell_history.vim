@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 16 Mar 2013.
+" Last Modified: 13 Jul 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@ let s:current_histories = []
 function! s:source.hooks.on_init(args, context) "{{{
   call unite#sources#vimshell_history#_change_histories(
         \ vimshell#history#read())
-  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
+  let a:context.source__cur_keyword_pos = vimshell#get_prompt_length()
 endfunction"}}}
 function! s:source.hooks.on_syntax(args, context) "{{{
   let save_current_syntax = get(b:, 'current_syntax', '')
@@ -59,7 +59,7 @@ function! s:source.hooks.on_syntax(args, context) "{{{
   endtry
 endfunction"}}}
 function! s:source.hooks.on_close(args, context) "{{{
-  let a:context.source__cur_keyword_pos = len(vimshell#get_prompt())
+  let a:context.source__cur_keyword_pos = vimshell#get_prompt_length()
   if vimshell#history#read() != s:current_histories
     call vimshell#history#write(s:current_histories)
   endif

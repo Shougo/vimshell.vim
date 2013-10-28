@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int-earthquake.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Feb 2012.
+" Last Modified: 17 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -69,7 +69,7 @@ syntax keyword int_earthquakeKeyword
       \ :sh :plugin_install :edit_config :alias :reauthorize
 
 augroup vimshell-int_earthquake
-  autocmd!
+  autocmd! * <buffer>
   autocmd ColorScheme <buffer>    call s:color_scheme()
 augroup END
 

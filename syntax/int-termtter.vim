@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/int-termtter.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 15 Jan 2012.
+" Last Modified: 17 Sep 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -59,7 +59,7 @@ syntax keyword int_termtterKeyword
       \ rt s save search sent_list set settings show shows stats status switch u unblock update user vi_editing_mode
 
 augroup vimshell-int-termtter
-  autocmd!
+  autocmd! * <buffer>
   autocmd ColorScheme <buffer>    call s:color_scheme()
 augroup END
 

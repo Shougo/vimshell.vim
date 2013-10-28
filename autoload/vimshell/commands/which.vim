@@ -48,6 +48,13 @@ function! s:command.execute(args, context) "{{{
   
   call vimshell#print_line(a:context.fd, line)
 endfunction"}}}
+function! s:command.complete(args) "{{{
+  if len(a:args) == 1
+    return vimshell#complete#helper#executables(a:args[-1])
+  endif
+
+  return []
+endfunction"}}}
 
 function! vimshell#commands#which#define()
   return s:command

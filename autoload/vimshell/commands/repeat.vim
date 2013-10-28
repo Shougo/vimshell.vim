@@ -33,7 +33,7 @@ function! s:command.execute(args, context) "{{{
   " Repeat command.
 
   if len(a:args) < 2 || a:args[0] !~ '\d\+'
-    call vimshell#error_line(a:fd, 'repeat: Arguments error.')
+    call vimshell#error_line(a:context.fd, 'repeat: Arguments error.')
     return
   endif
 
