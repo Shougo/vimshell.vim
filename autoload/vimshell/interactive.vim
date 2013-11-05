@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jul 2013.
+" Last Modified: 05 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -794,7 +794,7 @@ function! s:cache_output(interactive) "{{{
   endif
 
   return a:interactive.stdout_cache != '' ||
-        \ a:interactive.stderr_cache
+        \ a:interactive.stderr_cache != ''
 endfunction"}}}
 function! s:is_skk_enabled() "{{{
   return (exists('b:skk_on') && b:skk_on)
