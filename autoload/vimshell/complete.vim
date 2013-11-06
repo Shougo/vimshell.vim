@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: complete.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 06 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,7 +26,7 @@
 
 " Complete function. This provides simple file completion.
 function! vimshell#complete#start() "{{{
-  if len(&omnifunc) == 0
+  if &l:omnifunc == ''
     setlocal omnifunc=vimshell#complete#omnifunc
   endif
 
@@ -88,6 +88,10 @@ function! vimshell#complete#gather_candidates(complete_str) "{{{
 
   if empty(args)
     let args = ['']
+  endif
+
+  if cur_text =~ '\s\+$'
+    call add(args, '')
   endif
 
   let _ = (len(args) <= 1) ?
