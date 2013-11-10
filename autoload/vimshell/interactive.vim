@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Nov 2013.
+" Last Modified: 10 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -644,7 +644,7 @@ function! s:check_all_output(is_hold) "{{{
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
     let ret = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
-    if ret
+    if !ret
       " Skip update.
       return
     endif
