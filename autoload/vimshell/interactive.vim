@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 10 Nov 2013.
+" Last Modified: 11 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -643,11 +643,7 @@ function! s:check_all_output(is_hold) "{{{
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
-    let ret = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
-    if !ret
-      " Skip update.
-      return
-    endif
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
 
   if vimshell#util#is_cmdwin()
@@ -670,8 +666,7 @@ function! s:check_all_output(is_hold) "{{{
       let is_complete_hold = vimshell#util#is_complete_hold()
       if a:is_hold != is_complete_hold
         setlocal modifiable
-        call feedkeys((is_complete_hold ?
-              \ "\<C-r>\<ESC>" : "a\<BS>"), 'n')
+        call feedkeys("a\<BS>", 'n')
       endif
 
       " Skip next auto completion.
