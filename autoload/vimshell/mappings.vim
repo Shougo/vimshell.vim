@@ -86,8 +86,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ <ESC>:call <SID>push_current_line()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)
         \ <ESC>:call <SID>insert_last_word()<CR>
-  inoremap <buffer><silent> <Plug>(vimshell_run_help)
-        \ <ESC>:call <SID>run_help()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_head)
         \ <ESC>:call <SID>move_head()<CR>
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)
@@ -436,38 +434,6 @@ function! s:insert_last_word() "{{{
   endif
   call setline(line('.'), getline('.') . word)
   startinsert!
-endfunction"}}}
-function! s:run_help() "{{{
-  if !vimshell#check_prompt()
-    startinsert!
-    return
-  endif
-
-  " Delete prompt string.
-  let line = substitute(getline('.'),
-        \ vimshell#get_context().prompt_pattern, '', '')
-  if line =~ '^\s*$'
-    startinsert!
-    return
-  endif
-
-  let program = split(line)[0]
-  if program !~ '\h\w*'
-    startinsert!
-    return
-  elseif has_key(b:vimshell.alias_table, program)
-    let program = b:vimshell.alias_table[program]
-  elseif has_key(b:vimshell.galias_table, program)
-    let program = b:vimshell.galias_table[program]
-  endif
-
-  if exists(':Ref')
-    execute 'Ref man' program
-  elseif exists(':Man')
-    execute 'Man' program
-  else
-    call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
-  endif
 endfunction"}}}
 function! vimshell#mappings#_paste_prompt() "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern

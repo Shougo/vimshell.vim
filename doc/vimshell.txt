@@ -597,9 +597,6 @@ Insert mode key mappings.
 <Plug>(vimshell_insert_last_word)
 		Insert command last word.
 
-<Plug>(vimshell_run_help)			*i_<Plug>(vimshell_run_help)*
-		View internal command help.
-
 <Plug>(vimshell_move_head)			*i_<Plug>(vimshell_move_head)*
 		Move to line head.
 
