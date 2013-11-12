@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Nov 2013.
+" Last Modified: 12 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -261,7 +261,7 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
 
   if vimshell#check_prompt() && line('.') != line('$')
     " History execution.
-    call s:paste_prompt()
+    call vimshell#mappings#_paste_prompt()
   endif
 
   if line('.') == line('$')
@@ -469,7 +469,7 @@ function! s:run_help() "{{{
     call vimshell#error_line({}, 'Please install ref.vim or manpageview.vim.')
   endif
 endfunction"}}}
-function! s:paste_prompt() "{{{
+function! vimshell#mappings#_paste_prompt() "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern
   let prompt = getline('.')
   if prompt !~# prompt_pattern
@@ -620,6 +620,12 @@ function! s:insert_enter() "{{{
   if !vimshell#check_prompt()
     startinsert
     return
+  endif
+
+  if line('.') != line('$')
+    " Paste prompt line.
+    call vimshell#mappings#_paste_prompt()
+    call cursor('$', 0)
   endif
 
   let prompt_len = vimshell#get_prompt_length()
