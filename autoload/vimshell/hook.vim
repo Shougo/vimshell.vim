@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: hook.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2013.
+" Last Modified: 13 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -48,10 +48,10 @@ function! vimshell#hook#call(hook_point, context, args) "{{{
     call call(table[key], [a:args, context], {})
   endfor
 endfunction"}}}
-function! vimshell#hook#call_filter(hook_point, context, args) "{{{
+function! vimshell#hook#call_filter(hook_point, context, cmdline) "{{{
   if !exists('b:interactive') || !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
-    return a:args
+    return a:cmdline
   endif
 
   let context = copy(a:context)
@@ -59,13 +59,18 @@ function! vimshell#hook#call_filter(hook_point, context, args) "{{{
   call vimshell#set_context(context)
 
   " Call hook function.
-  let args = a:args
+  let cmdline = a:cmdline
   let table = b:interactive.hook_functions_table[a:hook_point]
   for key in sort(keys(table))
-    let args = call(table[key], [args, context], {})
+    let ret = call(table[key], [cmdline, context], {})
+
+    if type(ret) != type(0)
+      " Use new value.
+      let cmdline = ret
+    endif
   endfor
 
-  return args
+  return cmdline
 endfunction"}}}
 function! vimshell#hook#set(hook_point, func_list) "{{{
   if !exists('b:interactive')
