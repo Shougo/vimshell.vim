@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2013.
+" Last Modified: 13 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,7 +36,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_delete_previous_output)
         \ :<C-u>call <SID>delete_previous_output()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_paste_prompt)
-        \ :<C-u>call <SID>paste_prompt()<CR>
+        \ :<C-u>call vimshell#mappings#_paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_end_argument)
         \ :<C-u>call <SID>move_end_argument()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_hide)
