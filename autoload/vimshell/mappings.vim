@@ -590,8 +590,9 @@ function! s:insert_enter() "{{{
 
   if line('.') != line('$')
     " Paste prompt line.
+    let save_col = col('.')
     call vimshell#mappings#_paste_prompt()
-    call cursor('$', 0)
+    call cursor('$', save_col)
   endif
 
   let prompt_len = vimshell#get_prompt_length()
