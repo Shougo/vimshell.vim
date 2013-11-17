@@ -224,9 +224,9 @@ function! s:init_bg(args, context) "{{{
     return
   endif
 
-  call vimshell#cd(cwd)
-
   call s:default_settings()
+
+  call vimshell#cd(cwd)
 
   let use_cygpty = vimshell#util#is_windows() &&
         \ a:args[0] =~ '^fakecygpty\%(\.exe\)\?$'

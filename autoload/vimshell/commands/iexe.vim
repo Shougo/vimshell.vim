@@ -317,11 +317,11 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
 
   let [a:new_pos[2], a:new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(cwd)
-
   let b:interactive = a:interactive
 
   call s:default_settings()
+
+  call vimshell#cd(cwd)
 
   let syntax = 'int-' . a:interactive.command
   let &filetype = syntax

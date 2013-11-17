@@ -138,8 +138,6 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
 
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
-  call vimshell#cd(cwd)
-
   " Common.
   setlocal nolist
   setlocal buftype=nofile
@@ -157,6 +155,8 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
   let &filetype = a:options['--filetype']
 
   let b:interactive = a:interactive
+
+  call vimshell#cd(cwd)
 
   " Set syntax.
   syn region   InteractiveError   start=+!!!+ end=+!!!+
