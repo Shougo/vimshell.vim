@@ -888,10 +888,7 @@ function! s:initialize_vimshell(path, context) "{{{
   " Initialize variables.
   let b:vimshell = {}
 
-  " Change current directory.
   let b:vimshell.current_dir = a:path
-  call vimshell#cd(a:path)
-
   let b:vimshell.alias_table = {}
   let b:vimshell.galias_table = {}
   let b:vimshell.altercmd_table = {}
@@ -908,6 +905,9 @@ function! s:initialize_vimshell(path, context) "{{{
 
   " Default settings.
   call s:default_settings()
+
+  " Change current directory.
+  call vimshell#cd(a:path)
 
   call vimshell#set_context(a:context)
 
