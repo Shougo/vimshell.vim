@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2013.
+" Last Modified: 19 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -152,6 +152,11 @@ function! vimshell#start(path, ...) "{{{
   if path != ''
     let path = vimshell#util#substitute_path_separator(
           \ fnamemodify(vimshell#util#expand(a:path), ':p'))
+
+    if !isdirectory(path)
+      " Don't use argument path.
+      let path = ''
+    endif
   endif
 
   let context = s:initialize_context(get(a:000, 0, {}))
