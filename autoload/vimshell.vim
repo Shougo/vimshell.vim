@@ -154,6 +154,8 @@ function! vimshell#start(path, ...) "{{{
           \ fnamemodify(vimshell#util#expand(a:path), ':p'))
 
     if !isdirectory(path)
+      call vimshell#echo_error(
+            \ printf('[vimshell] argument path: "%s" invalid!', path))
       " Don't use argument path.
       let path = ''
     endif
