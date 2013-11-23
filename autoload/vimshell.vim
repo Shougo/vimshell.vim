@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 19 Nov 2013.
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -55,214 +55,22 @@ endif"}}}
 if !exists('g:vimshell_execute_file_list')
   let g:vimshell_execute_file_list = {}
 endif
-if !exists('s:internal_commands')
-  let s:internal_commands = {}
-endif
-
-let s:vimshell_options = [
-      \ '-buffer-name=', '-toggle', '-create',
-      \ '-split', '-split-command=', '-popup',
-      \ '-winwidth=', '-winminwidth=',
-      \ '-prompt=', '-secondary-prompt=',
-      \ '-user-prompt=', '-right-prompt=',
-      \ '-prompt-expr=', '-prompt-pattern=',
-      \ '-project',
-      \]
-
-let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
-let s:manager = s:BM.new()  " creates new manager
-call s:manager.config('opener', 'silent edit')
-call s:manager.config('range', 'current')
 "}}}
 
-function! vimshell#head_match(checkstr, headstr) "{{{
-  return stridx(a:checkstr, a:headstr) == 0
-endfunction"}}}
-function! vimshell#tail_match(checkstr, tailstr) "{{{
-  return a:tailstr == '' || a:checkstr ==# a:tailstr
-        \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
-endfunction"}}}
-
-" User utility functions.
-function! s:default_settings() "{{{
-  " Common.
-  setlocal bufhidden=hide
-  setlocal buftype=nofile
-  setlocal nolist
-  setlocal noswapfile
-  setlocal tabstop=8
-  setlocal foldcolumn=0
-  setlocal foldmethod=manual
-  setlocal winfixheight
-  if has('conceal')
-    setlocal conceallevel=3
-    setlocal concealcursor=nvi
-  endif
-  if exists('&colorcolumn')
-    setlocal colorcolumn=
-  endif
-
-  " For vimshell.
-  setlocal bufhidden=hide
-  setlocal noreadonly
-  setlocal iskeyword+=-,+,\\,!,~
-
-  " Set autocommands.
-  augroup vimshell
-    autocmd BufDelete,VimLeavePre <buffer>
-          \ call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd BufEnter,BufWinEnter,WinEnter <buffer>
-          \ call vimshell#handlers#_on_bufwin_enter(expand('<abuf>'))
-    autocmd BufLeave,BufWinLeave,WinLeave <buffer>
-          \ call vimshell#handlers#_on_bufwin_leave()
-    autocmd CursorMoved <buffer>
-          \ call vimshell#interactive#check_current_output()
-  augroup end
-
-  call vimshell#handlers#_on_bufwin_enter(bufnr('%'))
-
-  " Define mappings.
-  call vimshell#mappings#define_default_mappings()
-endfunction"}}}
-function! vimshell#set_dictionary_helper(variable, keys, value) "{{{
-  return vimshell#util#set_default_dictionary_helper(a:variable, a:keys, a:value)
-endfunction"}}}
-
 " vimshell plugin utility functions. "{{{
-function! vimshell#start(path, ...) "{{{
-  if vimshell#util#is_cmdwin()
-    call vimshell#echo_error(
-          \ '[vimshell] Command line buffer is detected!')
-    call vimshell#echo_error(
-          \ '[vimshell] Please close command line buffer.')
-    return
-  endif
-
-  " Detect autochdir option. "{{{
-  if exists('+autochdir') && &autochdir
-    call vimshell#echo_error(
-          \ '[vimshell] Detected autochdir!')
-    call vimshell#echo_error(
-          \ '[vimshell] vimshell don''t work if you set autochdir option.')
-    return
-  endif
-  "}}}
-
-  let path = a:path
-  if path != ''
-    let path = vimshell#util#substitute_path_separator(
-          \ fnamemodify(vimshell#util#expand(a:path), ':p'))
-
-    if !isdirectory(path)
-      call vimshell#echo_error(
-            \ printf('[vimshell] argument path: "%s" invalid!', path))
-      " Don't use argument path.
-      let path = ''
-    endif
-  endif
-
-  let context = s:initialize_context(get(a:000, 0, {}))
-
-  if context.create
-    " Create shell buffer.
-    call s:create_shell(path, context)
-    return
-  elseif context.toggle
-        \ && vimshell#close(context.buffer_name)
-    return
-  elseif &filetype ==# 'vimshell'
-    " Search vimshell buffer.
-    call s:switch_vimshell(bufnr('%'), context, path)
-    return
-  endif
-
-  if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
-  endif
-  for bufnr in filter(insert(range(1, bufnr('$')),
-        \ t:vimshell.last_vimshell_bufnr),
-        \ "buflisted(v:val) &&
-        \  getbufvar(v:val, '&filetype') ==# 'vimshell'")
-    if (!exists('t:unite_buffer_dictionary')
-          \    || has_key(t:unite_buffer_dictionary, bufnr))
-      call s:switch_vimshell(bufnr, context, path)
-      return
-    endif
-  endfor
-
-  " Create shell buffer.
-  call s:create_shell(path, context)
-endfunction"}}}
-function! s:create_shell(path, context) "{{{
-  let path = a:path
-  if path == ''
-    " Use current directory.
-    let path = vimshell#util#substitute_path_separator(getcwd())
-  endif
-
-  if a:context.project
-    let path = vimshell#util#path2project_directory(path)
-  endif
-
-  let context = a:context
-
-  " Create new buffer.
-  let prefix = '[vimshell] - '
-  let prefix .= a:context.profile_name
-  let postfix = s:get_postfix(prefix, 1)
-  let bufname = prefix . postfix
-
-  if a:context.split_command != ''
-    let [new_pos, old_pos] =
-          \ vimshell#split(a:context.split_command)
-  endif
-
-  " Save swapfile option.
-  let swapfile_save = &swapfile
-  set noswapfile
-
-  try
-    let ret = s:manager.open(bufname)
-  finally
-    let &swapfile = swapfile_save
-  endtry
-
-  if !ret.loaded
-    call vimshell#echo_error(
-          \ '[vimshell] Failed to open Buffer.')
-    return
-  endif
-
-  call s:initialize_vimshell(path, a:context)
-  call vimshell#interactive#set_send_buffer(bufname('%'))
-
-  call vimshell#print_prompt(a:context)
-
-  call vimshell#start_insert()
-
-  " Check prompt value. "{{{
-  let prompt = vimshell#get_prompt()
-  if vimshell#head_match(prompt, vimshell#get_secondary_prompt())
-        \ || vimshell#head_match(vimshell#get_secondary_prompt(), prompt)
-    call vimshell#echo_error(printf('Head matched g:vimshell_prompt("%s")'.
-          \ ' and your g:vimshell_secondary_prompt("%s").',
-          \ prompt, vimshell#get_secondary_prompt()))
-    finish
-  elseif vimshell#head_match(prompt, '[%] ')
-        \ || vimshell#head_match('[%] ', prompt)
-    call vimshell#echo_error(printf('Head matched g:vimshell_prompt("%s")'.
-          \ ' and your g:vimshell_user_prompt("[%] ").', prompt))
-    finish
-  elseif vimshell#head_match('[%] ', vimshell#get_secondary_prompt())
-        \ || vimshell#head_match(vimshell#get_secondary_prompt(), '[%] ')
-    call vimshell#echo_error(printf('Head matched g:vimshell_user_prompt("[%] ")'.
-          \ ' and your g:vimshell_secondary_prompt("%s").',
-          \ vimshell#get_secondary_prompt()))
-    finish
-  endif"}}}
-endfunction"}}}
 
 function! vimshell#get_options() "{{{
+  if !exists('s:vimshell_options')
+    let s:vimshell_options = [
+          \ '-buffer-name=', '-toggle', '-create',
+          \ '-split', '-split-command=', '-popup',
+          \ '-winwidth=', '-winminwidth=',
+          \ '-prompt=', '-secondary-prompt=',
+          \ '-user-prompt=', '-right-prompt=',
+          \ '-prompt-expr=', '-prompt-pattern=',
+          \ '-project',
+          \]
+  endif
   return copy(s:vimshell_options)
 endfunction"}}}
 function! vimshell#close(buffer_name) "{{{
@@ -281,16 +89,10 @@ function! vimshell#close(buffer_name) "{{{
   return quit_winnr > 0
 endfunction"}}}
 function! vimshell#available_commands(...) "{{{
-  let command = get(a:000, 0, '')
-  call s:initialize_internal_commands(command)
-
-  return s:internal_commands
+  call vimshell#init#_internal_commands(get(a:000, 0, ''))
+  return vimshell#variables#internal_commands()
 endfunction"}}}
 function! vimshell#execute_internal_command(command, args, context) "{{{
-  if !has_key(s:internal_commands, a:command)
-    call s:initialize_internal_commands(a:command)
-  endif
-
   if empty(a:context)
     let context = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
   else
@@ -301,14 +103,12 @@ function! vimshell#execute_internal_command(command, args, context) "{{{
     let context.fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
   endif
 
-  if !has_key(s:internal_commands, a:command)
+  let internal = vimshell#init#_internal_commands(a:command)
+  if empty(internal)
     call vimshell#error_line(context.fd,
           \ printf('Internal command : "%s" is not found.', a:command))
     return
-  endif
-
-  let internal = s:internal_commands[a:command]
-  if internal.kind ==# 'execute'
+  elseif internal.kind ==# 'execute'
     " Convert args.
     let args = type(get(a:args, 0, '')) == type('') ?
           \ [{ 'args' : a:args, 'fd' : context.fd}] : a:args
@@ -555,11 +355,11 @@ function! vimshell#check_prompt(...) "{{{
 endfunction"}}}
 function! vimshell#check_secondary_prompt(...) "{{{
   let line = a:0 == 0 ? getline('.') : getline(a:1)
-  return vimshell#head_match(line, vimshell#get_secondary_prompt())
+  return vimshell#util#head_match(line, vimshell#get_secondary_prompt())
 endfunction"}}}
 function! vimshell#check_user_prompt(...) "{{{
   let line = a:0 == 0 ? line('.') : a:1
-  if !vimshell#head_match(getline(line-1), '[%] ')
+  if !vimshell#util#head_match(getline(line-1), '[%] ')
     " Not found.
     return 0
   endif
@@ -567,7 +367,7 @@ function! vimshell#check_user_prompt(...) "{{{
   while 1
     let line -= 1
 
-    if !vimshell#head_match(getline(line-1), '[%] ')
+    if !vimshell#util#head_match(getline(line-1), '[%] ')
       break
     endif
   endwhile
@@ -814,7 +614,7 @@ function! vimshell#execute_async(cmdline, ...) "{{{
   endtry
 endfunction"}}}
 function! vimshell#set_context(context) "{{{
-  let context = s:initialize_context(a:context)
+  let context = vimshell#init#_context(a:context)
   let s:context = context
   if exists('b:vimshell')
     let b:vimshell.context = context
@@ -883,68 +683,6 @@ function! vimshell#get_status_string() "{{{
         \ b:vimshell.current_dir)
 endfunction"}}}
 
-function! s:initialize_vimshell(path, context) "{{{
-  " Load history.
-  let g:vimshell#hist_buffer = vimshell#history#read()
-
-  " Initialize variables.
-  let b:vimshell = {}
-
-  let b:vimshell.current_dir = a:path
-  let b:vimshell.alias_table = {}
-  let b:vimshell.galias_table = {}
-  let b:vimshell.altercmd_table = {}
-  let b:vimshell.commandline_stack = []
-  let b:vimshell.variables = {}
-  let b:vimshell.system_variables = { 'status' : 0 }
-  let b:vimshell.directory_stack = []
-  let b:vimshell.prompt_current_dir = {}
-  let b:vimshell.continuation = {}
-  let b:vimshell.prompts_save = {}
-  let b:vimshell.statusline = '*vimshell* : %{vimshell#get_status_string()}'
-        \ . "\ %=%{printf('%s %4d/%d',b:vimshell.right_prompt, line('.'), line('$'))}"
-  let b:vimshell.right_prompt = ''
-
-  " Default settings.
-  call s:default_settings()
-
-  " Change current directory.
-  call vimshell#cd(a:path)
-
-  call vimshell#set_context(a:context)
-
-  " Set interactive variables.
-  let b:interactive = {
-        \ 'type' : 'vimshell',
-        \ 'syntax' : 'vimshell',
-        \ 'process' : {},
-        \ 'continuation' : {},
-        \ 'fd' : a:context.fd,
-        \ 'encoding' : &encoding,
-        \ 'is_pty' : 0,
-        \ 'echoback_linenr' : -1,
-        \ 'stdout_cache' : '',
-        \ 'stderr_cache' : '',
-        \ 'width' : winwidth(0),
-        \ 'height' : g:vimshell_scrollback_limit,
-        \ 'hook_functions_table' : {},
-        \}
-
-  " Load rc file.
-  if filereadable(g:vimshell_vimshrc_path)
-    call vimshell#execute_internal_command('vimsh',
-          \ [g:vimshell_vimshrc_path],
-          \ { 'has_head_spaces' : 0, 'is_interactive' : 0 })
-    let b:vimshell.loaded_vimshrc = 1
-  endif
-
-  setfiletype vimshell
-
-  call vimshell#help#init()
-  call vimshell#interactive#init()
-
-  call vimshell#handlers#_restore_statusline()
-endfunction"}}}
 function! vimshell#set_highlight() "{{{
   " Set syntax.
   let prompt_pattern = '/' .
@@ -962,162 +700,6 @@ function! vimshell#set_highlight() "{{{
         \ contains=vimshellDirectory,vimshellConstants,
         \vimshellArguments,vimshellQuoted,vimshellString,
         \vimshellVariable,vimshellSpecial,vimshellComment
-endfunction"}}}
-function! s:initialize_context(context) "{{{
-  let default_context = {
-    \ 'buffer_name' : 'default',
-    \ 'no_quit' : 0,
-    \ 'toggle' : 0,
-    \ 'create' : 0,
-    \ 'simple' : 0,
-    \ 'split' : 0,
-    \ 'popup' : 0,
-    \ 'winwidth' : 0,
-    \ 'winminwidth' : 0,
-    \ 'project' : 0,
-    \ 'direction' : '',
-    \ 'prompt' : get(g:,
-    \      'vimshell_prompt', 'vimshell% '),
-    \ 'prompt_expr' : get(g:,
-    \      'vimshell_prompt_expr', ''),
-    \ 'prompt_pattern' : get(g:,
-    \      'vimshell_prompt_pattern', ''),
-    \ 'secondary_prompt' : get(g:,
-    \      'vimshell_secondary_prompt', '%% '),
-    \ 'user_prompt' : get(g:,
-    \      'vimshell_user_prompt', ''),
-    \ 'right_prompt' : get(g:,
-    \      'vimshell_right_prompt', ''),
-    \ }
-  let context = extend(default_context, a:context)
-
-  " Complex initializer.
-  if !has_key(context, 'profile_name')
-    let context.profile_name = context.buffer_name
-  endif
-  if !has_key(context, 'split_command')
-    if context.popup && g:vimshell_popup_command == ''
-      " Default popup command.
-      let context.split_command = 'split | resize '
-            \ . winheight(0)*g:vimshell_popup_height/100
-    elseif context.popup
-      let context.split_command = g:vimshell_popup_command
-    elseif context.split
-      let context.split_command = g:vimshell_split_command
-    else
-      let context.split_command = ''
-    endif
-  endif
-
-  " Set prompt pattern.
-  if context.prompt_pattern == ''
-    if context.prompt_expr != ''
-      " Error.
-      call vimshell#echo_error(
-            \ 'Your prompt_pattern is invalid. '.
-            \ 'You must set prompt_pattern in vimshell.')
-    endif
-
-    let context.prompt_pattern =
-          \ '^' . vimshell#escape_match(context.prompt)
-  endif
-
-  if &l:modified && !&l:hidden
-    " Split automatically.
-    let context.split = 1
-  endif
-
-  " Initialize.
-  let context.has_head_spaces = 0
-  let context.is_interactive = 1
-  let context.is_insert = 1
-  let context.fd = { 'stdin' : '', 'stdout': '', 'stderr': ''}
-
-  return context
-endfunction"}}}
-function! s:initialize_internal_commands(command) "{{{
-  " Initialize internal commands table.
-  if a:command =~ '\.'
-    " Search pattern error.
-    return
-  endif
-
-  " Search autoload.
-  for list in split(globpath(&runtimepath,
-        \ 'autoload/vimshell/commands/' . a:command . '*.vim'), '\n')
-    let command_name = fnamemodify(list, ':t:r')
-    if command_name == '' ||
-          \ has_key(s:internal_commands, command_name)
-      continue
-    endif
-
-    let result = {'vimshell#commands#'.command_name.'#define'}()
-
-    for command in (type(result) == type([])) ?
-          \ result : [result]
-      if !has_key(command, 'description')
-        let command.description = ''
-      endif
-
-      let s:internal_commands[command.name] = command
-    endfor
-
-    unlet result
-  endfor
-endfunction"}}}
-function! vimshell#initialize_tab_variable() "{{{
-  let t:vimshell = {
-        \ 'last_vimshell_bufnr' : -1,
-        \ 'last_interactive_bufnr' : -1,
-        \ }
-endfunction"}}}
-function! s:switch_vimshell(bufnr, context, path) "{{{
-  if bufwinnr(a:bufnr) > 0
-    execute bufwinnr(a:bufnr) 'wincmd w'
-  else
-    if a:context.split_command != ''
-      let [new_pos, old_pos] =
-            \ vimshell#split(a:context.split_command)
-    endif
-
-    execute 'buffer' a:bufnr
-  endif
-
-  if !empty(b:vimshell.continuation)
-    return
-  endif
-
-  if a:path != '' && isdirectory(a:path)
-    " Change current directory.
-    let current = fnamemodify(a:path, ':p')
-    let b:vimshell.current_dir = current
-    call vimshell#cd(current)
-  endif
-
-  if getline('$') =~# a:context.prompt_pattern.'$'
-    " Delete current prompt.
-    let promptnr = vimshell#check_user_prompt(line('$')) > 0 ?
-          \ vimshell#check_user_prompt(line('$')) . ',' : ''
-    execute 'silent ' . promptnr . '$delete _'
-  endif
-
-  normal! zb
-
-  call vimshell#print_prompt()
-  call vimshell#start_insert()
-endfunction"}}}
-function! s:get_postfix(prefix, is_create) "{{{
-  let buffers = get(a:000, 0, range(1, bufnr('$')))
-  let buflist = vimshell#util#sort_by(filter(map(buffers,
-        \ 'bufname(v:val)'), 'stridx(v:val, a:prefix) >= 0'),
-        \ "str2nr(matchstr(v:val, '\\d\\+$'))")
-  if empty(buflist)
-    return ''
-  endif
-
-  let num = matchstr(buflist[-1], '@\zs\d\+$')
-  return num == '' && !a:is_create ? '' :
-        \ '@' . (a:is_create ? (num + 1) : num)
 endfunction"}}}
 function! vimshell#complete(arglead, cmdline, cursorpos) "{{{
   let _ = []

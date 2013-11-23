@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jun 2013.
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -184,7 +184,7 @@ function! vimshell#complete#helper#buffers(cur_keyword_str) "{{{
   let bufnumber = 1
   while bufnumber <= bufnr('$')
     if buflisted(bufnumber) &&
-          \ vimshell#head_match(bufname(bufnumber), a:cur_keyword_str)
+          \ vimshell#util#head_match(bufname(bufnumber), a:cur_keyword_str)
       let keyword = bufname(bufnumber)
       let dict = { 'word' : escape(keyword, ' *?[]"={}'), 'menu' : 'buffer' }
       call add(ret, dict)

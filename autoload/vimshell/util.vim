@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 26 Sep 2013.
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -280,6 +280,14 @@ function! vimshell#util#get_vimshell_winnr(buffer_name) "{{{
   endfor
 
   return -1
+endfunction"}}}
+
+function! vimshell#util#head_match(checkstr, headstr) "{{{
+  return stridx(a:checkstr, a:headstr) == 0
+endfunction"}}}
+function! vimshell#util#tail_match(checkstr, tailstr) "{{{
+  return a:tailstr == '' || a:checkstr ==# a:tailstr
+        \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
 endfunction"}}}
 
 " vim: foldmethod=marker

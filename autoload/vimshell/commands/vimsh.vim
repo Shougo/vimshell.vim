@@ -33,7 +33,7 @@ function! s:command.execute(args, context) "{{{
   " Create new vimshell or execute script.
   if empty(a:args)
     let bufnr = bufnr('%')
-    call vimshell#start(getcwd(), {'create' : 1})
+    call vimshell#init#_start(getcwd(), {'create' : 1})
     execute 'buffer' bufnr
 
     return

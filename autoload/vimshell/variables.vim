@@ -1,7 +1,7 @@
 "=============================================================================
-" FILE: h.vim
+" FILE: variables.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 30 Jul 2010
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,61 +24,18 @@
 " }}}
 "=============================================================================
 
-let s:command = {
-      \ 'name' : 'h',
-      \ 'kind' : 'internal',
-      \ 'description' : 'h [{pattern}]',
-      \}
-function! s:command.execute(args, context) "{{{
-  " Execute from history.
+let s:save_cpo = &cpo
+set cpo&vim
 
-  let histories = vimshell#history#read()
-  if empty(a:args) || a:args[0] =~ '^\d\+'
-    if empty(a:args)
-      let num = 0
-    else
-      let num = str2nr(a:args[0])
-    endif
-
-    if num >= len(histories)
-      " Error.
-      call vimshell#error_line(a:context.fd, 'h: Not found in history.')
-      return
-    endif
-
-    let hist = histories[num]
-  else
-    let args = join(a:args)
-    for h in histories
-      if vimshell#util#head_match(h, args)
-        let hist = h
-        break
-      endif
-    endfor
-
-    if !exists('hist')
-      " Error.
-      call vimshell#error_line(a:context.fd, 'h: Not found in history.')
-      return
-    endif
+function! vimshell#variables#internal_commands() "{{{
+  if !exists('s:internal_commands')
+    let s:internal_commands = {}
   endif
 
-  if a:context.has_head_spaces
-    let hist = ' ' . hist
-  endif
-  call vimshell#set_prompt_command(hist)
-
-  let context = a:context
-  let context.is_interactive = 0
-  let context.fd = a:context.fd
-  try
-    call vimshell#parser#eval_script(hist, context)
-  catch /.*/
-    call vimshell#error_line({}, v:exception)
-    call vimshell#error_line({}, v:throwpoint)
-  endtry
+  return s:internal_commands
 endfunction"}}}
 
-function! vimshell#commands#h#define()
-  return s:command
-endfunction
+let &cpo = s:save_cpo
+unlet s:save_cpo
+
+" vim: foldmethod=marker

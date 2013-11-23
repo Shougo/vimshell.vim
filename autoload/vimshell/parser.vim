@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Nov 2013.
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -434,7 +434,7 @@ function! vimshell#parser#getopt(args, optsyntax, ...) "{{{
     let found = 0
 
     for opt in optsyntax['arg=']
-      if vimshell#head_match(arg, opt.'=')
+      if vimshell#util#head_match(arg, opt.'=')
         let found = 1
 
         " Get argument value.

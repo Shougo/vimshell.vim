@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jul 2013.
+" Last Modified: 23 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -194,76 +194,76 @@ endfunction
 " Set interactive options. "{{{
 if vimshell#util#is_windows()
   " Windows only options.
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'bash,bc,gosh,python,zsh', '-i')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'irb', '--inf-ruby-mode')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'powershell', '-Command -')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'scala', '-Xnojline')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'nyaos', '-t')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'fsi', '--gui- --readline-')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'sbt',
         \  '-Djline.WindowsTerminal.directConsole=false')
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_command_options, 'ipython,ipython3',
         \ '--TerminalInteractiveShell.readline_use=False')
 
-  call vimshell#set_dictionary_helper(
+  call vimshell#util#set_dictionary_helper(
         \ g:vimshell_interactive_cygwin_commands, 'tail,zsh,ssh', 1)
 endif
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_command_options, 'termtter', '--monochrome')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_command_options, 'php', '-a')
 
 " Set interpreter commands.
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'ruby', 'irb')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'python', 'python')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'perl', 'perlsh')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'perl6', 'perl6')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'sh', 'sh')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'zsh', 'zsh')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'bash', 'bash')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'erlang', 'erl')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'scheme', 'gosh')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'clojure', 'clj')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'lisp', 'clisp')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'ps1', 'powershell')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'haskell', 'ghci')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'dosbatch', 'cmdproxy')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'scala',
       \  vimshell#util#is_windows() ? 'scala.bat' : 'scala')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'ocaml', 'ocaml')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'sml', 'sml')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'javascript', 'js')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_interpreter_commands, 'php', 'php')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_prompts, 'termtter', '> ')
-call vimshell#set_dictionary_helper(
+call vimshell#util#set_dictionary_helper(
       \ g:vimshell_interactive_monochrome_commands, 'earthquake', '1')
 "}}}
 

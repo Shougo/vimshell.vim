@@ -53,7 +53,7 @@ function! s:command.execute(args, context) "{{{
   let list = []
   let cnt = 0
   for hist in histories
-    if vimshell#head_match(hist, search)
+    if vimshell#util#head_match(hist, search)
       call add(list, [cnt, hist])
     endif
 
