@@ -318,8 +318,8 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
 
   if getline('$') =~# a:context.prompt_pattern.'$'
     " Delete current prompt.
-    let promptnr = vimshell#check_user_prompt(line('$')) > 0 ?
-          \ vimshell#check_user_prompt(line('$')) . ',' : ''
+    let promptnr = vimshell#view#_check_user_prompt(line('$')) > 0 ?
+          \ vimshell#view#_check_user_prompt(line('$')) . ',' : ''
     execute 'silent ' . promptnr . '$delete _'
   endif
 

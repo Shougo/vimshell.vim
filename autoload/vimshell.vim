@@ -32,7 +32,7 @@ if !exists('g:loaded_vimshell')
 endif
 
 function! vimshell#version() "{{{
-  return '1000'
+  return str2nr(printf('%02d%02d', 11, 0))
 endfunction"}}}
 
 function! vimshell#echo_error(string) "{{{
@@ -96,44 +96,8 @@ function! vimshell#get_cur_line() "{{{
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   return cur_text
 endfunction"}}}
-function! vimshell#get_prompt_linenr() "{{{
-  if b:interactive.type !=# 'interactive'
-        \ && b:interactive.type !=# 'vimshell'
-    return 0
-  endif
-
-  let [line, col] = searchpos(
-        \ vimshell#get_context().prompt_pattern, 'nbcW')
-  return line
-endfunction"}}}
 function! vimshell#check_prompt(...) "{{{
-  if &filetype !=# 'vimshell' || !empty(b:vimshell.continuation)
-    return call('vimshell#get_prompt', a:000) != ''
-  endif
-
-  let line = a:0 == 0 ? getline('.') : getline(a:1)
-  return line =~# vimshell#get_context().prompt_pattern
-endfunction"}}}
-function! vimshell#check_secondary_prompt(...) "{{{
-  let line = a:0 == 0 ? getline('.') : getline(a:1)
-  return vimshell#util#head_match(line, vimshell#get_secondary_prompt())
-endfunction"}}}
-function! vimshell#check_user_prompt(...) "{{{
-  let line = a:0 == 0 ? line('.') : a:1
-  if !vimshell#util#head_match(getline(line-1), '[%] ')
-    " Not found.
-    return 0
-  endif
-
-  while 1
-    let line -= 1
-
-    if !vimshell#util#head_match(getline(line-1), '[%] ')
-      break
-    endif
-  endwhile
-
-  return line
+  return call('vimshell#view#_check_prompt', a:000)
 endfunction"}}}
 function! vimshell#set_execute_file(exts, program) "{{{
   return vimshell#util#set_dictionary_helper(g:vimshell_execute_file_list,
@@ -144,9 +108,6 @@ function! vimshell#open(filename) "{{{
 endfunction"}}}
 function! vimshell#cd(directory) "{{{
   return vimshell#view#_cd(a:directory)
-endfunction"}}}
-function! vimshell#check_cursor_is_end() "{{{
-  return vimshell#get_cur_line() ==# getline('.')
 endfunction"}}}
 function! vimshell#execute_current_line(is_insert) "{{{
   return &filetype ==# 'vimshell' ?

@@ -272,6 +272,10 @@ function! vimshell#helpers#vimshell_execute_complete(arglead, cmdline, cursorpos
   return map(vimshell#complete#helper#command_args(args), 'v:val.word')
 endfunction"}}}
 
+function! vimshell#helpers#check_cursor_is_end() "{{{
+  return vimshell#get_cur_line() ==# getline('.')
+endfunction"}}}
+
 let &cpo = s:save_cpo
 unlet s:save_cpo
 

@@ -303,9 +303,10 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     return
   endtry
 
-  if g:vimshell_enable_transient_user_prompt && vimshell#check_user_prompt()
+  if g:vimshell_enable_transient_user_prompt
+        \ && vimshell#view#_check_user_prompt()
     " Delete previous user prompt.
-    execute vimshell#check_user_prompt().',-1 delete _'
+    execute vimshell#view#_check_user_prompt().',-1 delete _'
   endif
 
   " Call preparse filter.
@@ -614,7 +615,7 @@ function! s:insert_head() "{{{
   call s:insert_enter()
 endfunction"}}}
 function! s:append_enter() "{{{
-  if vimshell#check_cursor_is_end()
+  if vimshell#helpers#check_cursor_is_end()
     call s:append_end()
   else
     normal! l

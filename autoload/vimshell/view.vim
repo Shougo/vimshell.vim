@@ -76,7 +76,7 @@ function! vimshell#view#_get_prompt_command(...) "{{{
   let lnum += 1
   let secondary_prompt = vimshell#get_secondary_prompt()
   while lnum <= line('$') && !vimshell#check_prompt(lnum)
-    if vimshell#check_secondary_prompt(lnum)
+    if vimshell#view#_check_secondary_prompt(lnum)
       " Append secondary command.
       if line =~ '\\$'
         let line = substitute(line, '\\$', '', '')
@@ -132,7 +132,7 @@ function! vimshell#view#_print_prompt(...) "{{{
   endif
 
   " Save current directory.
-  let b:vimshell.prompt_current_dir[vimshell#get_prompt_linenr()] = getcwd()
+  let b:vimshell.prompt_current_dir[s:get_prompt_linenr()] = getcwd()
 
   let context = a:0 >= 1? a:1 : vimshell#get_context()
 
@@ -289,6 +289,47 @@ function! s:insert_user_and_right_prompt() "{{{
   let prompts_save.user_prompt_last = user_prompt_last
   let prompts_save.winwidth = winwidth
   let b:vimshell.prompts_save[line('$')] = prompts_save
+endfunction"}}}
+
+function! vimshell#view#_check_prompt(...) "{{{
+  if &filetype !=# 'vimshell' || !empty(b:vimshell.continuation)
+    return call('vimshell#get_prompt', a:000) != ''
+  endif
+
+  let line = a:0 == 0 ? getline('.') : getline(a:1)
+  return line =~# vimshell#get_context().prompt_pattern
+endfunction"}}}
+function! vimshell#view#_check_secondary_prompt(...) "{{{
+  let line = a:0 == 0 ? getline('.') : getline(a:1)
+  return vimshell#util#head_match(line, vimshell#get_secondary_prompt())
+endfunction"}}}
+function! vimshell#view#_check_user_prompt(...) "{{{
+  let line = a:0 == 0 ? line('.') : a:1
+  if !vimshell#util#head_match(getline(line-1), '[%] ')
+    " Not found.
+    return 0
+  endif
+
+  while 1
+    let line -= 1
+
+    if !vimshell#util#head_match(getline(line-1), '[%] ')
+      break
+    endif
+  endwhile
+
+  return line
+endfunction"}}}
+
+function! s:get_prompt_linenr() "{{{
+  if b:interactive.type !=# 'interactive'
+        \ && b:interactive.type !=# 'vimshell'
+    return 0
+  endif
+
+  let [line, col] = searchpos(
+        \ vimshell#get_context().prompt_pattern, 'nbcW')
+  return line
 endfunction"}}}
 
 let &cpo = s:save_cpo

@@ -285,7 +285,7 @@ function! s:insert_head() "{{{
   call s:insert_enter()
 endfunction"}}}
 function! s:append_enter() "{{{
-  if vimshell#check_cursor_is_end()
+  if vimshell#helpers#check_cursor_is_end()
     call s:append_end()
   else
     normal! l
