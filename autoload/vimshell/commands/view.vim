@@ -63,7 +63,7 @@ function! s:command.execute(args, context) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
-  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--split'])
 
   for filename in filenames
     try

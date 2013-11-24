@@ -95,7 +95,7 @@ function! s:command.execute(commands, context) "{{{
           \})
   endif
 
-  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--split'])
 
   call s:init_bg(args, a:context)
 

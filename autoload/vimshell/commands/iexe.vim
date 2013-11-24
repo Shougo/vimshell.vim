@@ -116,7 +116,7 @@ function! s:command.execute(commands, context) "{{{
           \})
   endif
 
-  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--split'])
 
   " Set environment variables.
   let environments_save = vimshell#util#set_variables({

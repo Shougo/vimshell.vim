@@ -122,7 +122,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
   " Save current directiory.
   let cwd = getcwd()
 
-  let [new_pos, old_pos] = vimshell#helpers#split(a:options['--helpers#split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(a:options['--split'])
 
   let args = ''
   for command in a:commands
