@@ -245,7 +245,7 @@ function! s:create_shell(path, context) "{{{
 
   if a:context.split_command != ''
     let [new_pos, old_pos] =
-          \ vimshell#split(a:context.split_command)
+          \ vimshell#helpers#split(a:context.helpers#split_command)
   endif
 
   " Save swapfile option.
@@ -299,7 +299,7 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
   else
     if a:context.split_command != ''
       let [new_pos, old_pos] =
-            \ vimshell#split(a:context.split_command)
+            \ vimshell#helpers#split(a:context.helpers#split_command)
     endif
 
     execute 'buffer' a:bufnr

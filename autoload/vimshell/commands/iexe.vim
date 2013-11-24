@@ -116,7 +116,7 @@ function! s:command.execute(commands, context) "{{{
           \})
   endif
 
-  let [new_pos, old_pos] = vimshell#split(options['--split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
 
   " Set environment variables.
   let environments_save = vimshell#set_variables({
@@ -340,11 +340,11 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 
-  call vimshell#restore_pos(a:old_pos)
+  call vimshell#helpers#restore_pos(a:old_pos)
 
   if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, a:is_insert)
-    call vimshell#restore_pos(a:new_pos)
+    call vimshell#helpers#restore_pos(a:new_pos)
   endif
 endfunction"}}}
 

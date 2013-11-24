@@ -212,7 +212,7 @@ function! s:push_current_line() "{{{
   " Todo:
   " Print command line stack.
   " let stack = map(deepcopy(b:vimshell.commandline_stack),
-  "       \ 'vimshell#get_prompt_command(v:val)')
+  "       \ 'vimshell#view#_get_prompt_command(v:val)')
   " call append('.', stack)
 
   " Set prompt line.
@@ -268,7 +268,7 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
 endfunction"}}}
 function! s:execute_command_line(is_insert, oldpos) "{{{
   " Get command line.
-  let line = vimshell#get_prompt_command()
+  let line = vimshell#view#_get_prompt_command()
   let context = {
         \ 'has_head_spaces' : line =~ '^\s\+',
         \ 'is_interactive' : 1,
@@ -328,7 +328,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     if line != '' && line !=# oldline
       " Retry.
       call setpos('.', a:oldpos)
-      call vimshell#set_prompt_command(line)
+      call vimshell#view#_set_prompt_command(line)
       return s:execute_command_line(a:is_insert, a:oldpos)
     endif
 
@@ -443,7 +443,7 @@ function! vimshell#mappings#_paste_prompt() "{{{
   endif
 
   if getline('$') !~# prompt_pattern
-        \ || vimshell#get_prompt_command(getline('$')) != ''
+        \ || vimshell#view#_get_prompt_command(getline('$')) != ''
     " Insert prompt line.
     call append(line('$'), prompt)
   else
@@ -473,7 +473,7 @@ function! s:clear(is_insert) "{{{
     return vimshell#int_mappings#clear()
   endif
 
-  let lines = split(vimshell#get_prompt_command(), "\<NL>", 1)
+  let lines = split(vimshell#view#_get_prompt_command(), "\<NL>", 1)
 
   " Hangup current process.
   call s:hangup(a:is_insert)
@@ -485,7 +485,7 @@ function! s:clear(is_insert) "{{{
   call vimshell#terminal#init()
 
   call vimshell#print_prompt()
-  call vimshell#set_prompt_command(lines[0])
+  call vimshell#view#_set_prompt_command(lines[0])
   call append('$', map(lines[1:],
         \ string(vimshell#get_secondary_prompt()).'.v:val'))
   $
@@ -496,10 +496,10 @@ function! s:clear(is_insert) "{{{
 endfunction"}}}
 function! s:expand_wildcard() "{{{
   " Wildcard.
-  if empty(vimshell#get_current_args())
+  if empty(vimshell#helpers#get_current_args())
     return ''
   endif
-  let wildcard = vimshell#get_current_args()[-1]
+  let wildcard = vimshell#helpers#get_current_args()[-1]
   let expanded = vimproc#parser#expand_wildcard(wildcard)
 
   return (pumvisible() ? "\<C-e>" : '')
@@ -648,7 +648,7 @@ function! s:execute_by_background(is_insert) "{{{
         \ 'hook_functions_table' : {},
         \}
 
-  let [new_pos, old_pos] = vimshell#split(g:vimshell_split_command)
+  let [new_pos, old_pos] = vimshell#helpers#split(g:vimshell_helpers#split_command)
 
   call vimshell#commands#iexe#init(context, interactive,
         \ new_pos, old_pos, a:is_insert)

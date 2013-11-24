@@ -404,7 +404,7 @@ endfunction"}}}
 
 " Misc.
 function! vimshell#parser#check_wildcard() "{{{
-  let args = vimshell#get_current_args()
+  let args = vimshell#helpers#get_current_args()
   return !empty(args) && args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
 function! vimshell#parser#getopt(args, optsyntax, ...) "{{{

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: variables.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,6 +33,20 @@ function! vimshell#variables#internal_commands() "{{{
   endif
 
   return s:internal_commands
+endfunction"}}}
+function! vimshell#variables#options() "{{{
+  if !exists('s:vimshell_options')
+    let s:vimshell_options = [
+          \ '-buffer-name=', '-toggle', '-create',
+          \ '-split', '-split-command=', '-popup',
+          \ '-winwidth=', '-winminwidth=',
+          \ '-prompt=', '-secondary-prompt=',
+          \ '-user-prompt=', '-right-prompt=',
+          \ '-prompt-expr=', '-prompt-pattern=',
+          \ '-project',
+          \]
+  endif
+  return copy(s:vimshell_options)
 endfunction"}}}
 
 let &cpo = s:save_cpo

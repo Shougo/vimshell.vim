@@ -45,7 +45,7 @@ function! s:command.execute(args, context) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
-  let [new_pos, old_pos] = vimshell#split(options['--split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
 
   try
     silent edit `=args[0]`
@@ -59,11 +59,11 @@ function! s:command.execute(args, context) "{{{
 
   vertical diffsplit `=a:args[1]`
 
-  call vimshell#restore_pos(old_pos)
+  call vimshell#helpers#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(new_pos)
+    call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

@@ -155,12 +155,12 @@ function! vimshell#interactive#send(expr) "{{{
   let winnr = bufwinnr(last_interactive_bufnr)
   if winnr <= 0
     " Open buffer.
-    let [new_pos, old_pos] = vimshell#split(
+    let [new_pos, old_pos] = vimshell#helpers#split(
           \ g:vimshell_split_command)
 
     execute 'buffer' last_interactive_bufnr
   else
-    let [new_pos, old_pos] = vimshell#split('')
+    let [new_pos, old_pos] = vimshell#helpers#split('')
     execute winnr 'wincmd w'
   endif
 
@@ -208,7 +208,7 @@ function! vimshell#interactive#send(expr) "{{{
 
     let line = substitute(substitute(
           \ string, "\<LF>", '; ', 'g'), '; $', '', '')
-    call vimshell#set_prompt_command(line)
+    call vimshell#view#_set_prompt_command(line)
 
     let ret = vimshell#execute_async(line)
 
@@ -227,7 +227,7 @@ function! vimshell#interactive#send(expr) "{{{
   endif
 
   stopinsert
-  call vimshell#restore_pos(old_pos)
+  call vimshell#helpers#restore_pos(old_pos)
 endfunction"}}}
 function! vimshell#interactive#send_string(...) "{{{
   echohl WarningMsg | echomsg 'vimshell#interactive#send_string() is deprecated; use vimshell#interactive#send() instead' | echohl None

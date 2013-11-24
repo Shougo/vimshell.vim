@@ -66,7 +66,7 @@ function! s:command.execute(args, context) "{{{
   if a:context.has_head_spaces
     let hist = ' ' . hist
   endif
-  call vimshell#set_prompt_command(hist)
+  call vimshell#view#_set_prompt_command(hist)
 
   let context = a:context
   let context.is_interactive = 0

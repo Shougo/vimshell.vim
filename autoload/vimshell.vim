@@ -46,20 +46,6 @@ endif
 "}}}
 
 " vimshell plugin utility functions. "{{{
-function! vimshell#get_options() "{{{
-  if !exists('s:vimshell_options')
-    let s:vimshell_options = [
-          \ '-buffer-name=', '-toggle', '-create',
-          \ '-split', '-split-command=', '-popup',
-          \ '-winwidth=', '-winminwidth=',
-          \ '-prompt=', '-secondary-prompt=',
-          \ '-user-prompt=', '-right-prompt=',
-          \ '-prompt-expr=', '-prompt-pattern=',
-          \ '-project',
-          \]
-  endif
-  return copy(s:vimshell_options)
-endfunction"}}}
 function! vimshell#available_commands(...) "{{{
   call vimshell#init#_internal_commands(get(a:000, 0, ''))
   return vimshell#variables#internal_commands()
@@ -98,14 +84,7 @@ function! vimshell#print_prompt(...) "{{{
   return call('vimshell#view#_print_prompt', a:000)
 endfunction"}}}
 function! vimshell#print_secondary_prompt() "{{{
-  if &filetype !=# 'vimshell' || line('.') != line('$')
-    return
-  endif
-
-  " Insert secondary prompt line.
-  call append('$', vimshell#get_secondary_prompt())
-  $
-  let &modified = 0
+  return call('vimshell#view#_print_secondary_prompt', a:000)
 endfunction"}}}
 function! vimshell#get_command_path(program) "{{{
   " Command search.
@@ -120,24 +99,7 @@ function! vimshell#start_insert(...) "{{{
   return call('vimshell#view#_start_insert', a:000)
 endfunction"}}}
 function! vimshell#get_prompt(...) "{{{
-  let line = get(a:000, 0, line('.'))
-  let interactive = get(a:000, 1,
-        \ (exists('b:interactive') ? b:interactive : {}))
-  if empty(interactive)
-    return ''
-  endif
-
-  if &filetype ==# 'vimshell' &&
-        \ empty(b:vimshell.continuation)
-    let context = vimshell#get_context()
-    if context.prompt_expr != '' && context.prompt_pattern != ''
-      return eval(context.prompt_expr)
-    endif
-
-    return context.prompt
-  endif
-
-  return vimshell#interactive#get_prompt(line, interactive)
+  return call('vimshell#view#_get_prompt', a:000)
 endfunction"}}}
 function! vimshell#get_secondary_prompt() "{{{
   return get(vimshell#get_context(),
@@ -160,75 +122,9 @@ function! vimshell#get_cur_text() "{{{
   let cur_line = vimshell#get_cur_line()
   return cur_line[vimshell#get_prompt_length(cur_line) :]
 endfunction"}}}
-function! vimshell#get_prompt_command(...) "{{{
-  " Get command without prompt.
-  if a:0 > 0
-    return a:1[vimshell#get_prompt_length(a:1) :]
-  endif
-
-  if !vimshell#check_prompt()
-    " Search prompt.
-    let [lnum, col] = searchpos(
-          \ vimshell#get_context().prompt_pattern, 'bnW')
-  else
-    let lnum = '.'
-  endif
-  let line = getline(lnum)[vimshell#get_prompt_length(getline(lnum)) :]
-
-  let lnum += 1
-  let secondary_prompt = vimshell#get_secondary_prompt()
-  while lnum <= line('$') && !vimshell#check_prompt(lnum)
-    if vimshell#check_secondary_prompt(lnum)
-      " Append secondary command.
-      if line =~ '\\$'
-        let line = substitute(line, '\\$', '', '')
-      else
-        let line .= "\<NL>"
-      endif
-
-      let line .= getline(lnum)[len(secondary_prompt):]
-    endif
-
-    let lnum += 1
-  endwhile
-
-  return line
-endfunction"}}}
-function! vimshell#set_prompt_command(string) "{{{
-  if !vimshell#check_prompt()
-    " Search prompt.
-    let [lnum, col] = searchpos(
-          \ vimshell#get_context().prompt_pattern, 'bnW')
-  else
-    let lnum = '.'
-  endif
-
-  call setline(lnum, vimshell#get_prompt() . a:string)
-endfunction"}}}
 function! vimshell#get_cur_line() "{{{
   let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
   return cur_text
-endfunction"}}}
-function! vimshell#get_current_args(...) "{{{
-  let cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
-
-  let statements = vimproc#parser#split_statements(cur_text)
-  if empty(statements)
-    return []
-  endif
-
-  let commands = vimproc#parser#split_commands(statements[-1])
-  if empty(commands)
-    return []
-  endif
-
-  let args = vimproc#parser#split_args_through(commands[-1])
-  if vimshell#get_cur_text() =~ '\\\@!\s\+$'
-    " Add blank argument.
-    call add(args, '')
-  endif
-
-  return args
 endfunction"}}}
 function! vimshell#get_prompt_linenr() "{{{
   if b:interactive.type !=# 'interactive'
@@ -314,76 +210,8 @@ function! vimshell#execute_current_line(is_insert) "{{{
         \ vimshell#mappings#execute_line(a:is_insert) :
         \ vimshell#int_mappings#execute_line(a:is_insert)
 endfunction"}}}
-function! vimshell#get_cursor_filename() "{{{
-  let filename_pattern = (b:interactive.type ==# 'vimshell') ?
-        \'\s\?\%(\f\+\s\)*\f\+' :
-        \'[[:alnum:];/?:@&=+$,_.!~*|#-]\+'
-  let cur_text = matchstr(getline('.'), '^.*\%'
-        \ . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
-  let next_text = matchstr('a'.getline('.')[len(cur_text) :],
-        \ '^'.filename_pattern)[1:]
-  let filename = matchstr(cur_text, filename_pattern . '$') . next_text
-
-  if has('conceal') && b:interactive.type ==# 'vimshell'
-        \ && filename =~ '\[\%[%\]]\|^%$'
-    " Skip user prompt.
-    let filename = matchstr(getline('.'), filename_pattern, 3)
-  endif
-
-  return vimshell#util#expand(filename)
-endfunction"}}}
 function! vimshell#next_prompt(context, ...) "{{{
-  if &filetype !=# 'vimshell'
-    return
-  endif
-
-  let is_insert = get(a:000, 0, get(a:context, 'is_insert', 1))
-
-  if line('.') == line('$')
-    call vimshell#print_prompt(a:context)
-    call vimshell#start_insert(is_insert)
-    return
-  endif
-
-  " Search prompt.
-  call search(vimshell#get_context().prompt_pattern.'.\?', 'We')
-  if is_insert
-    if vimshell#get_prompt_command() == ''
-      startinsert!
-    else
-      normal! l
-    endif
-  endif
-
-  stopinsert
-endfunction"}}}
-function! vimshell#split(command) "{{{
-  let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
-  if a:command != ''
-    let command =
-          \ a:command !=# 'nicely' ? a:command :
-          \ winwidth(0) > 2 * &winwidth ? 'vsplit' : 'split'
-    execute command
-  endif
-
-  let new_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
-
-  return [new_pos, old_pos]
-endfunction"}}}
-function! vimshell#restore_pos(pos) "{{{
-  if tabpagenr() != a:pos[0]
-    execute 'tabnext' a:pos[0]
-  endif
-
-  if winnr() != a:pos[1]
-    execute a:pos[1].'wincmd w'
-  endif
-
-  if bufnr('%') !=# a:pos[2]
-    execute 'buffer' a:pos[2]
-  endif
-
-  call setpos('.', a:pos[3])
+  return call('vimshell#view#_next_prompt', [a:context] + a:000)
 endfunction"}}}
 function! vimshell#is_interactive() "{{{
   let is_valid = get(get(b:interactive, 'process', {}), 'is_valid', 0)
@@ -401,47 +229,10 @@ endfunction
 
 " User helper functions.
 function! vimshell#execute(cmdline, ...) "{{{
-  if !empty(b:vimshell.continuation)
-    " Kill process.
-    call vimshell#interactive#hang_up(bufname('%'))
-  endif
-
-  let context = a:0 >= 1? a:1 : vimshell#get_context()
-  let context.is_interactive = 0
-  try
-    call vimshell#parser#eval_script(a:cmdline, context)
-  catch
-    if v:exception !~# '^Vim:Interrupt'
-      let message = v:exception . ' ' . v:throwpoint
-      call vimshell#error_line(context.fd, message)
-    endif
-    return 1
-  endtry
-
-  return b:vimshell.system_variables.status
+  return call('vimshell#helpers#execute', [a:cmdline] + a:000)
 endfunction"}}}
 function! vimshell#execute_async(cmdline, ...) "{{{
-  if !empty(b:vimshell.continuation)
-    " Kill process.
-    call vimshell#interactive#hang_up(bufname('%'))
-  endif
-
-  let context = a:0 >= 1 ? a:1 : vimshell#get_context()
-  let context.is_interactive = 1
-  try
-    return vimshell#parser#eval_script(a:cmdline, context)
-  catch
-    if v:exception !~# '^Vim:Interrupt'
-      let message = v:exception . ' ' . v:throwpoint
-      call vimshell#error_line(context.fd, message)
-    endif
-
-    let context = vimshell#get_context()
-    let b:vimshell.continuation = {}
-    call vimshell#print_prompt(context)
-    call vimshell#start_insert(mode() ==# 'i')
-    return 1
-  endtry
+  return call('vimshell#helpers#execute_async', [a:cmdline] + a:000)
 endfunction"}}}
 function! vimshell#set_context(context) "{{{
   let context = vimshell#init#_context(a:context)
@@ -518,7 +309,7 @@ function! vimshell#complete(arglead, cmdline, cursorpos) "{{{
 
   " Option names completion.
   try
-    let _ += filter(vimshell#get_options(),
+    let _ += filter(vimshell#variables#options(),
           \ 'stridx(v:val, a:arglead) == 0')
   catch
   endtry
@@ -542,67 +333,6 @@ function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos) "{{{
   endif
 
   return map(vimshell#complete#helper#command_args(args), 'v:val.word')
-endfunction"}}}
-function! s:insert_user_and_right_prompt() "{{{
-  let user_prompt = vimshell#get_user_prompt()
-  if user_prompt != ''
-    for user in split(eval(user_prompt), "\\n", 1)
-      try
-        let secondary = '[%] ' . user
-      catch
-        let message = v:exception . ' ' . v:throwpoint
-        echohl WarningMsg | echomsg message | echohl None
-
-        let secondary = '[%] '
-      endtry
-
-      if getline('$') == ''
-        call setline('$', secondary)
-      else
-        call append('$', secondary)
-      endif
-    endfor
-  endif
-
-  " Insert right prompt line.
-  if vimshell#get_right_prompt() == ''
-    return
-  endif
-
-  try
-    let right_prompt = eval(vimshell#get_right_prompt())
-    let b:vimshell.right_prompt = right_prompt
-  catch
-    let message = v:exception . ' ' . v:throwpoint
-    echohl WarningMsg | echomsg message | echohl None
-
-    let right_prompt = ''
-  endtry
-
-  if right_prompt == ''
-    return
-  endif
-
-  let user_prompt_last = (user_prompt != '') ?
-        \   getline('$') : '[%] '
-  let winwidth = (winwidth(0)+1)/2*2 - 5
-  let padding_len =
-        \ (len(user_prompt_last)+len(vimshell#get_right_prompt())+1
-        \          > winwidth) ?
-        \ 1 : winwidth - (len(user_prompt_last)+len(right_prompt))
-  let secondary = printf('%s%s%s', user_prompt_last,
-        \ repeat(' ', padding_len), right_prompt)
-  if getline('$') == '' || vimshell#get_user_prompt() != ''
-    call setline('$', secondary)
-  else
-    call append('$', secondary)
-  endif
-
-  let prompts_save = {}
-  let prompts_save.right_prompt = right_prompt
-  let prompts_save.user_prompt_last = user_prompt_last
-  let prompts_save.winwidth = winwidth
-  let b:vimshell.prompts_save[line('$')] = prompts_save
 endfunction"}}}
 function! vimshell#get_prompt_length(...) "{{{
   return len(matchstr(get(a:000, 0, getline('.')),

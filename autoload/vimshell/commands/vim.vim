@@ -39,7 +39,7 @@ function! s:command_vim.execute(args, context) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
-  let [new_pos, old_pos] = vimshell#split(options['--split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(options['--helpers#split'])
 
   for filename in empty(args) ?
         \ [a:context.fd.stdin] : args
@@ -58,12 +58,12 @@ function! s:command_vim.execute(args, context) "{{{
 
   call vimshell#cd(cwd)
 
-  call vimshell#restore_pos(old_pos)
+  call vimshell#helpers#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command')
         \ && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(new_pos)
+    call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

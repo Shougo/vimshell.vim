@@ -97,7 +97,7 @@ function! s:init(commands, context, options, interactive) "{{{
   " Save current directiory.
   let cwd = getcwd()
 
-  let [new_pos, old_pos] = vimshell#split(a:options['--split'])
+  let [new_pos, old_pos] = vimshell#helpers#split(a:options['--helpers#split'])
 
   " Set environment variables.
   let environments_save = vimshell#set_variables({
@@ -211,11 +211,11 @@ function! s:init(commands, context, options, interactive) "{{{
 
   call s:print_output(winheight(0))
 
-  call vimshell#restore_pos(old_pos)
+  call vimshell#helpers#restore_pos(old_pos)
 
   if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#restore_pos(new_pos)
+    call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

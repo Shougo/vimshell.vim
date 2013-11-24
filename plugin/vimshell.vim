@@ -252,8 +252,7 @@ function! s:call_vimshell(default, args) "{{{
     let arg = substitute(arg, '\\\( \)', '\1', 'g')
 
     let arg_key = substitute(arg, '=\zs.*$', '', '')
-    let matched_list = filter(copy(vimshell#get_options()),
-          \  'v:val ==# arg_key')
+    let matched_list = filter(vimshell#options(), 'v:val ==# arg_key')
     for option in matched_list
       let key = substitute(substitute(option, '-', '_', 'g'),
             \ '=$', '', '')[1:]

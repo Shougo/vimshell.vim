@@ -94,6 +94,98 @@ function! vimshell#helpers#imdisable() "{{{
     let &l:iminsert = 0
   endif
 endfunction"}}}
+function! vimshell#helpers#get_current_args(...) "{{{
+  let cur_text = a:0 == 0 ? vimshell#get_cur_text() : a:1
+
+  let statements = vimproc#parser#split_statements(cur_text)
+  if empty(statements)
+    return []
+  endif
+
+  let commands = vimproc#parser#split_commands(statements[-1])
+  if empty(commands)
+    return []
+  endif
+
+  let args = vimproc#parser#split_args_through(commands[-1])
+  if vimshell#get_cur_text() =~ '\\\@!\s\+$'
+    " Add blank argument.
+    call add(args, '')
+  endif
+
+  return args
+endfunction"}}}
+function! vimshell#helpers#split(command) "{{{
+  let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
+  if a:command != ''
+    let command =
+          \ a:command !=# 'nicely' ? a:command :
+          \ winwidth(0) > 2 * &winwidth ? 'vsplit' : 'split'
+    execute command
+  endif
+
+  let new_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
+
+  return [new_pos, old_pos]
+endfunction"}}}
+function! vimshell#helpers#restore_pos(pos) "{{{
+  if tabpagenr() != a:pos[0]
+    execute 'tabnext' a:pos[0]
+  endif
+
+  if winnr() != a:pos[1]
+    execute a:pos[1].'wincmd w'
+  endif
+
+  if bufnr('%') !=# a:pos[2]
+    execute 'buffer' a:pos[2]
+  endif
+
+  call setpos('.', a:pos[3])
+endfunction"}}}
+function! vimshell#helpers#execute(cmdline, ...) "{{{
+  if !empty(b:vimshell.continuation)
+    " Kill process.
+    call vimshell#interactive#hang_up(bufname('%'))
+  endif
+
+  let context = a:0 >= 1? a:1 : vimshell#get_context()
+  let context.is_interactive = 0
+  try
+    call vimshell#parser#eval_script(a:cmdline, context)
+  catch
+    if v:exception !~# '^Vim:Interrupt'
+      let message = v:exception . ' ' . v:throwpoint
+      call vimshell#error_line(context.fd, message)
+    endif
+    return 1
+  endtry
+
+  return b:vimshell.system_variables.status
+endfunction"}}}
+function! vimshell#helpers#execute_async(cmdline, ...) "{{{
+  if !empty(b:vimshell.continuation)
+    " Kill process.
+    call vimshell#interactive#hang_up(bufname('%'))
+  endif
+
+  let context = a:0 >= 1 ? a:1 : vimshell#get_context()
+  let context.is_interactive = 1
+  try
+    return vimshell#parser#eval_script(a:cmdline, context)
+  catch
+    if v:exception !~# '^Vim:Interrupt'
+      let message = v:exception . ' ' . v:throwpoint
+      call vimshell#error_line(context.fd, message)
+    endif
+
+    let context = vimshell#get_context()
+    let b:vimshell.continuation = {}
+    call vimshell#print_prompt(context)
+    call vimshell#start_insert(mode() ==# 'i')
+    return 1
+  endtry
+endfunction"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

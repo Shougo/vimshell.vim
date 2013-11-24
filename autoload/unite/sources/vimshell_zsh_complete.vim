@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_zsh_complete.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -44,7 +44,7 @@ function! s:source.hooks.on_init(args, context) "{{{
   let a:context.source__input = vimshell#get_cur_text()
 
   try
-    let args = vimshell#get_current_args(a:context.source__input)
+    let args = vimshell#helpers#get_current_args(a:context.source__input)
 
     if len(args) <= 1
       let pos = vimshell#get_prompt_length()
@@ -143,7 +143,7 @@ function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
 
   let cmdline = vimshell#get_cur_text()
   try
-    let args = vimshell#get_current_args(cmdline)
+    let args = vimshell#helpers#get_current_args(cmdline)
   catch /^Exception:/
     return ''
   endtry

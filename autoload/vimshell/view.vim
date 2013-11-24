@@ -27,6 +27,71 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! vimshell#view#_get_prompt(...) "{{{
+  let line = get(a:000, 0, line('.'))
+  let interactive = get(a:000, 1,
+        \ (exists('b:interactive') ? b:interactive : {}))
+  if empty(interactive)
+    return ''
+  endif
+
+  if &filetype ==# 'vimshell' &&
+        \ empty(b:vimshell.continuation)
+    let context = vimshell#get_context()
+    if context.prompt_expr != '' && context.prompt_pattern != ''
+      return eval(context.prompt_expr)
+    endif
+
+    return context.prompt
+  endif
+
+  return vimshell#interactive#get_prompt(line, interactive)
+endfunction"}}}
+function! vimshell#view#_set_prompt_command(string) "{{{
+  if !vimshell#check_prompt()
+    " Search prompt.
+    let [lnum, col] = searchpos(
+          \ vimshell#get_context().prompt_pattern, 'bnW')
+  else
+    let lnum = '.'
+  endif
+
+  call setline(lnum, vimshell#get_prompt() . a:string)
+endfunction"}}}
+function! vimshell#view#_get_prompt_command(...) "{{{
+  " Get command without prompt.
+  if a:0 > 0
+    return a:1[vimshell#get_prompt_length(a:1) :]
+  endif
+
+  if !vimshell#check_prompt()
+    " Search prompt.
+    let [lnum, col] = searchpos(
+          \ vimshell#get_context().prompt_pattern, 'bnW')
+  else
+    let lnum = '.'
+  endif
+  let line = getline(lnum)[vimshell#get_prompt_length(getline(lnum)) :]
+
+  let lnum += 1
+  let secondary_prompt = vimshell#get_secondary_prompt()
+  while lnum <= line('$') && !vimshell#check_prompt(lnum)
+    if vimshell#check_secondary_prompt(lnum)
+      " Append secondary command.
+      if line =~ '\\$'
+        let line = substitute(line, '\\$', '', '')
+      else
+        let line .= "\<NL>"
+      endif
+
+      let line .= getline(lnum)[len(secondary_prompt):]
+    endif
+
+    let lnum += 1
+  endwhile
+
+  return line
+endfunction"}}}
 function! vimshell#view#_set_highlight() "{{{
   " Set syntax.
   let prompt_pattern = '/' .
@@ -98,6 +163,16 @@ function! vimshell#view#_print_prompt(...) "{{{
   $
   let &modified = 0
 endfunction"}}}
+function! vimshell#view#_print_secondary_prompt() "{{{
+  if &filetype !=# 'vimshell' || line('.') != line('$')
+    return
+  endif
+
+  " Insert secondary prompt line.
+  call append('$', vimshell#get_secondary_prompt())
+  $
+  let &modified = 0
+endfunction"}}}
 function! vimshell#view#_start_insert(...) "{{{
   if &filetype !=# 'vimshell'
     return
@@ -127,6 +202,31 @@ function! vimshell#view#_cd(directory) "{{{
     " Append directory.
     call unite#sources#directory_mru#_append()
   endif
+endfunction"}}}
+function! vimshell#view#_next_prompt(context, ...) "{{{
+  if &filetype !=# 'vimshell'
+    return
+  endif
+
+  let is_insert = get(a:000, 0, get(a:context, 'is_insert', 1))
+
+  if line('.') == line('$')
+    call vimshell#print_prompt(a:context)
+    call vimshell#start_insert(is_insert)
+    return
+  endif
+
+  " Search prompt.
+  call search(vimshell#get_context().prompt_pattern.'.\?', 'We')
+  if is_insert
+    if vimshell#view#_get_prompt_command() == ''
+      startinsert!
+    else
+      normal! l
+    endif
+  endif
+
+  stopinsert
 endfunction"}}}
 
 function! s:insert_user_and_right_prompt() "{{{

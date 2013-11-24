@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: build.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 07 Feb 2012.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -40,11 +40,11 @@ function! s:command.execute(args, context) "{{{
 
   let new_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]
 
-  noautocmd call vimshell#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    noautocmd call vimshell#restore_pos(new_pos)
+    noautocmd call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}
