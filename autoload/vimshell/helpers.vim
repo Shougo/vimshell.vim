@@ -84,6 +84,16 @@ function! vimshell#helpers#execute_internal_command(command, args, context) "{{{
     return internal.execute(a:args, context)
   endif
 endfunction"}}}
+function! vimshell#helpers#imdisable() "{{{
+  " Disable input method.
+  if exists('g:loaded_eskk') && eskk#is_enabled()
+    call eskk#disable()
+  elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
+    call SkkDisable()
+  elseif exists('&iminsert')
+    let &l:iminsert = 0
+  endif
+endfunction"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

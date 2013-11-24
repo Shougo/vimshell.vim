@@ -166,7 +166,7 @@ function! vimshell#init#_context(context) "{{{
     endif
 
     let context.prompt_pattern =
-          \ '^' . vimshell#escape_match(context.prompt)
+          \ '^' . vimshell#util#escape_match(context.prompt)
   endif
 
   if &l:modified && !&l:hidden

@@ -24,6 +24,9 @@
 " }}}
 "=============================================================================
 
+let s:save_cpo = &cpo
+set cpo&vim
+
 if !exists('g:loaded_vimshell')
   runtime! plugin/vimshell.vim
 endif
@@ -114,24 +117,7 @@ function! vimshell#get_command_path(program) "{{{
   endtry
 endfunction"}}}
 function! vimshell#start_insert(...) "{{{
-  if &filetype !=# 'vimshell'
-    return
-  endif
-
-  let is_insert = (a:0 == 0)? 1 : a:1
-
-  if is_insert
-    " Enter insert mode.
-    $
-    startinsert!
-
-    call vimshell#imdisable()
-  else
-    normal! $
-  endif
-endfunction"}}}
-function! vimshell#escape_match(str) "{{{
-  return escape(a:str, '~" \.^$[]')
+  return call('vimshell#view#_start_insert', a:000)
 endfunction"}}}
 function! vimshell#get_prompt(...) "{{{
   let line = get(a:000, 0, line('.'))
@@ -287,9 +273,6 @@ function! vimshell#set_execute_file(exts, program) "{{{
   return vimshell#util#set_dictionary_helper(g:vimshell_execute_file_list,
         \ a:exts, a:program)
 endfunction"}}}
-function! vimshell#system(...) "{{{
-  return call(vimshell#util#get_vital().system, a:000)
-endfunction"}}}
 function! vimshell#open(filename) "{{{
   call vimproc#open(a:filename)
 endfunction"}}}
@@ -305,27 +288,7 @@ function! vimshell#get_alias_pattern() "{{{
   return '^\s*[[:alnum:].+#_@!%:-]\+'
 endfunction"}}}
 function! vimshell#cd(directory) "{{{
-  let directory = fnameescape(a:directory)
-  if vimshell#util#is_windows()
-    " Substitute path sepatator.
-    let directory = substitute(directory, '/', '\\', 'g')
-  endif
-  execute g:vimshell_cd_command directory
-
-  if exists('*unite#sources#directory_mru#_append')
-    " Append directory.
-    call unite#sources#directory_mru#_append()
-  endif
-endfunction"}}}
-function! vimshell#imdisable() "{{{
-  " Disable input method.
-  if exists('g:loaded_eskk') && eskk#is_enabled()
-    call eskk#disable()
-  elseif exists('b:skk_on') && b:skk_on && exists('*SkkDisable')
-    call SkkDisable()
-  elseif exists('&iminsert')
-    let &l:iminsert = 0
-  endif
+  return vimshell#view#_cd(a:directory)
 endfunction"}}}
 function! vimshell#set_variables(variables) "{{{
   let variables_save = {}
@@ -550,24 +513,6 @@ function! vimshell#get_status_string() "{{{
         \ b:vimshell.current_dir)
 endfunction"}}}
 
-function! vimshell#set_highlight() "{{{
-  " Set syntax.
-  let prompt_pattern = '/' .
-        \ escape(vimshell#get_context().prompt_pattern, '/') . '/'
-  let secondary_prompt_pattern = '/^' .
-        \ escape(vimshell#escape_match(
-        \ vimshell#get_secondary_prompt()), '/') . '/'
-  execute 'syntax match vimshellPrompt'
-        \ prompt_pattern 'nextgroup=vimshellCommand'
-  execute 'syntax match vimshellPrompt'
-        \ secondary_prompt_pattern 'nextgroup=vimshellCommand'
-  syntax match   vimshellCommand '\f\+'
-        \ nextgroup=vimshellLine contained
-  syntax region vimshellLine start='' end='$' keepend contained
-        \ contains=vimshellDirectory,vimshellConstants,
-        \vimshellArguments,vimshellQuoted,vimshellString,
-        \vimshellVariable,vimshellSpecial,vimshellComment
-endfunction"}}}
 function! vimshell#complete(arglead, cmdline, cursorpos) "{{{
   let _ = []
 
@@ -663,5 +608,8 @@ function! vimshell#get_prompt_length(...) "{{{
   return len(matchstr(get(a:000, 0, getline('.')),
         \ vimshell#get_context().prompt_pattern))
 endfunction"}}}
+
+let &cpo = s:save_cpo
+unlet s:save_cpo
 
 " vim: foldmethod=marker

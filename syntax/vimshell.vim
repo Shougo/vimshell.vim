@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: syntax/vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -132,6 +132,6 @@ highlight default link vimshellLink Comment
 highlight default link vimshellDotFiles Identifier
 highlight default link vimshellError Error
 
-call vimshell#set_highlight()
+call vimshell#view#_set_highlight()
 
 let b:current_syntax = 'vimshell'

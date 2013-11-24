@@ -294,5 +294,11 @@ function! vimshell#util#resolve(filename) "{{{
         \  || getftype(a:filename) ==# 'link') ?
         \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
 endfunction"}}}
+function! vimshell#util#escape_match(str) "{{{
+  return escape(a:str, '~" \.^$[]')
+endfunction"}}}
+function! vimshell#util#system(...) "{{{
+  return call(vimshell#util#get_vital().system, a:000)
+endfunction"}}}
 
 " vim: foldmethod=marker

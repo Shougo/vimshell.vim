@@ -202,7 +202,7 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
 
   call vimshell#interactive#execute_pty_inout(a:is_insert)
 
-  call vimshell#imdisable()
+  call vimshell#helpers#imdisable()
 endfunction"}}}
 function! s:paste_prompt() "{{{
   if !has_key(b:interactive.prompt_history, line('.'))

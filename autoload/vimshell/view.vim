@@ -27,6 +27,24 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
+function! vimshell#view#_set_highlight() "{{{
+  " Set syntax.
+  let prompt_pattern = '/' .
+        \ escape(vimshell#get_context().prompt_pattern, '/') . '/'
+  let secondary_prompt_pattern = '/^' .
+        \ escape(vimshell#util#escape_match(
+        \ vimshell#get_secondary_prompt()), '/') . '/'
+  execute 'syntax match vimshellPrompt'
+        \ prompt_pattern 'nextgroup=vimshellCommand'
+  execute 'syntax match vimshellPrompt'
+        \ secondary_prompt_pattern 'nextgroup=vimshellCommand'
+  syntax match   vimshellCommand '\f\+'
+        \ nextgroup=vimshellLine contained
+  syntax region vimshellLine start='' end='$' keepend contained
+        \ contains=vimshellDirectory,vimshellConstants,
+        \vimshellArguments,vimshellQuoted,vimshellString,
+        \vimshellVariable,vimshellSpecial,vimshellComment
+endfunction"}}}
 function! vimshell#view#_close(buffer_name) "{{{
   let quit_winnr = vimshell#util#get_vimshell_winnr(a:buffer_name)
   if quit_winnr > 0
@@ -79,6 +97,36 @@ function! vimshell#view#_print_prompt(...) "{{{
 
   $
   let &modified = 0
+endfunction"}}}
+function! vimshell#view#_start_insert(...) "{{{
+  if &filetype !=# 'vimshell'
+    return
+  endif
+
+  let is_insert = (a:0 == 0)? 1 : a:1
+
+  if is_insert
+    " Enter insert mode.
+    $
+    startinsert!
+
+    call vimshell#helpers#imdisable()
+  else
+    normal! $
+  endif
+endfunction"}}}
+function! vimshell#view#_cd(directory) "{{{
+  let directory = fnameescape(a:directory)
+  if vimshell#util#is_windows()
+    " Substitute path sepatator.
+    let directory = substitute(directory, '/', '\\', 'g')
+  endif
+  execute g:vimshell_cd_command directory
+
+  if exists('*unite#sources#directory_mru#_append')
+    " Append directory.
+    call unite#sources#directory_mru#_append()
+  endif
 endfunction"}}}
 
 function! s:insert_user_and_right_prompt() "{{{
