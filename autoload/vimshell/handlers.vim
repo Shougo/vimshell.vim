@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: handlers.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 12 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -80,7 +80,7 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
 endfunction"}}}
 function! vimshell#handlers#_on_bufwin_leave() "{{{
   if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
+    call vimshell#init#tab_variable()
   endif
   let t:vimshell.last_vimshell_bufnr = bufnr('%')
 endfunction"}}}

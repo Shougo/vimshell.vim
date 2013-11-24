@@ -130,7 +130,7 @@ function! vimshell#interactive#send_region(line1, line2, string) "{{{
 endfunction"}}}
 function! vimshell#interactive#send(expr) "{{{
   if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
+    call vimshell#init#tab_variable()
   endif
 
   if vimshell#util#is_cmdwin()
@@ -280,7 +280,7 @@ function! s:iexe_send_string(string, is_insert, linenr) "{{{
 endfunction"}}}
 function! vimshell#interactive#set_send_buffer(bufname) "{{{
   if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
+    call vimshell#init#tab_variable()
   endif
 
   let bufname = a:bufname == '' ? bufname('%') : a:bufname
@@ -828,7 +828,7 @@ function! s:winleave(bufname) "{{{
   endif
 
   if !exists('t:vimshell')
-    call vimshell#initialize_tab_variable()
+    call vimshell#init#tab_variable()
   endif
 
   let t:vimshell.last_interactive_bufnr = bufnr(a:bufname)
