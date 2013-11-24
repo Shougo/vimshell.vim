@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: source.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2012.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -35,7 +35,7 @@ function! s:command.execute(args, context) "{{{
   endif
 
   for file in a:args
-    call vimshell#execute_internal_command('source_shellcmd',
+    call vimshell#helpers#execute_internal_command('source_shellcmd',
           \ (vimshell#util#is_windows() ? [file] : ['source', file]), a:context)
   endfor
 endfunction"}}}

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: util.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -288,6 +288,11 @@ endfunction"}}}
 function! vimshell#util#tail_match(checkstr, tailstr) "{{{
   return a:tailstr == '' || a:checkstr ==# a:tailstr
         \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
+endfunction"}}}
+function! vimshell#util#resolve(filename) "{{{
+  return ((vimshell#util#is_windows() && fnamemodify(a:filename, ':e') ==? 'LNK')
+        \  || getftype(a:filename) ==# 'link') ?
+        \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
 endfunction"}}}
 
 " vim: foldmethod=marker

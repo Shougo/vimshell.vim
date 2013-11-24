@@ -51,7 +51,7 @@ function! s:command.execute(args, context) "{{{
     call mkdir(arguments)
   endif
 
-  return vimshell#execute_internal_command('cd', a:args, a:context)
+  return vimshell#helpers#execute_internal_command('cd', a:args, a:context)
 endfunction"}}}
 
 function! vimshell#commands#mkcd#define()

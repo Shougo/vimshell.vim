@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -181,7 +181,7 @@ function! s:vimshell_execute(args) "{{{
   try
     let args = vimproc#parser#split_args(a:args)
 
-    call vimshell#execute_internal_command('bg', args, context)
+    call vimshell#helpers#execute_internal_command('bg', args, context)
   catch
     let message = (v:exception !~# '^Vim:')?
           \ v:exception : v:exception . ' ' . v:throwpoint
@@ -217,7 +217,7 @@ function! s:vimshell_interactive(args) "{{{
           \}
     call vimshell#set_context(context)
 
-    call vimshell#execute_internal_command('iexe', args, context)
+    call vimshell#helpers#execute_internal_command('iexe', args, context)
   catch
     let message = (v:exception !~# '^Vim:')?
           \ v:exception : v:exception . ' ' . v:throwpoint
@@ -235,7 +235,7 @@ function! s:vimshell_terminal(args) "{{{
   call vimshell#set_context(context)
 
   try
-    call vimshell#execute_internal_command('texe',
+    call vimshell#helpers#execute_internal_command('texe',
           \ vimproc#parser#split_args(a:args), context)
   catch
     let message = (v:exception !~# '^Vim:')?

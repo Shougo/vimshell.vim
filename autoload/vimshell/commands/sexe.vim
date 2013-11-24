@@ -76,8 +76,8 @@ function! s:command.execute(args, context) "{{{
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : g:vimshell_scrollback_limit,
-        \ '$EDITOR' : vimshell#get_editor_name(),
-        \ '$GIT_EDITOR' : vimshell#get_editor_name(),
+        \ '$EDITOR' : vimshell#helpers#get_editor_name(),
+        \ '$GIT_EDITOR' : vimshell#helpers#get_editor_name(),
         \ '$PAGER' : g:vimshell_cat_command,
         \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 29 Jul 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -50,7 +50,7 @@ function! s:command.execute(commands, context) "{{{
   endif
 
   if !executable(commands[0].args[0])
-    return vimshell#execute_internal_command(
+    return vimshell#helpers#execute_internal_command(
           \ 'view', commands[0].args, a:context)
   endif
 
@@ -107,8 +107,8 @@ function! s:init(commands, context, options, interactive) "{{{
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'less',
-        \ '$EDITOR' : vimshell#get_editor_name(),
-        \ '$GIT_EDITOR' : vimshell#get_editor_name(),
+        \ '$EDITOR' : vimshell#helpers#get_editor_name(),
+        \ '$GIT_EDITOR' : vimshell#helpers#get_editor_name(),
         \ '$PAGER' : g:vimshell_cat_command,
         \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})

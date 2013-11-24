@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -148,14 +148,14 @@ function! s:delete_backward_char(is_auto_select) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
-        \ 'v:val < line(".")'), 'vimshell#compare_number')
+        \ 'v:val < line(".")'))
   if !empty(prompts)
     call cursor(prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
   endif
 endfunction"}}}
 function! s:next_prompt() "{{{
-  let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
-        \ 'v:val > line(".")'), 'vimshell#compare_number')
+  let prompts = sort(filter(map(keys(b:interactive.prompt_history),
+        \ 'str2nr(v:val)'), 'v:val > line(".")'))
   if !empty(prompts)
     call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: time.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Oct 2011.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@ function! s:command.execute(args, context) "{{{
   let start = reltime()
 
   " Execute.
-  call vimshell#execute_internal_command('exe', a:args, context)
+  call vimshell#helpers#execute_internal_command('exe', a:args, context)
 
   call vimshell#print(a:context.fd, printf('time = %s', reltimestr(reltime(start))))
 endfunction"}}}

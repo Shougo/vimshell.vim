@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -33,6 +33,19 @@ call s:manager.config('opener', 'silent edit')
 call s:manager.config('range', 'current')
 
 function! vimshell#init#_start(path, ...) "{{{
+  " Check vimproc. "{{{
+  if !vimshell#util#has_vimproc()
+    call vimshell#echo_error(v:errmsg)
+    call vimshell#echo_error(v:exception)
+    call vimshell#echo_error('Error occured while loading vimproc.')
+    call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
+    return
+  elseif vimproc#version() < 600
+    call vimshell#echo_error('Your vimproc is too old.')
+    call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
+    return
+  endif"}}}
+
   if vimshell#util#is_cmdwin()
     call vimshell#echo_error(
           \ '[vimshell] Command line buffer is detected!')
@@ -71,7 +84,7 @@ function! vimshell#init#_start(path, ...) "{{{
     call s:create_shell(path, context)
     return
   elseif context.toggle
-        \ && vimshell#close(context.buffer_name)
+        \ && vimshell#view#_close(context.buffer_name)
     return
   elseif &filetype ==# 'vimshell'
     " Search vimshell buffer.
@@ -365,7 +378,7 @@ function! s:initialize_vimshell(path, context) "{{{
 
   " Load rc file.
   if filereadable(g:vimshell_vimshrc_path)
-    call vimshell#execute_internal_command('vimsh',
+    call vimshell#helpers#execute_internal_command('vimsh',
           \ [g:vimshell_vimshrc_path],
           \ { 'has_head_spaces' : 0, 'is_interactive' : 0 })
     let b:vimshell.loaded_vimshrc = 1

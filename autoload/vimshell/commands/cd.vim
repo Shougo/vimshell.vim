@@ -48,7 +48,7 @@ function! s:command.execute(args, context) "{{{
   endif
 
   if vimshell#util#is_windows()
-    let dir = vimshell#resolve(dir)
+    let dir = vimshell#util#resolve(dir)
   endif
 
   let cwd = getcwd()
@@ -57,7 +57,7 @@ function! s:command.execute(args, context) "{{{
     call vimshell#cd(dir)
   elseif dir =~ '^-\d*$'
     " Popd.
-    return vimshell#execute_internal_command('popd', [ dir[1:] ],
+    return vimshell#helpers#execute_internal_command('popd', [ dir[1:] ],
           \ { 'has_head_spaces' : 0, 'is_interactive' : 1 })
   elseif filereadable(dir)
     " Move to parent directory.
@@ -73,7 +73,7 @@ function! s:command.execute(args, context) "{{{
     endif
 
     if vimshell#util#is_windows()
-      let dir = vimshell#resolve(dir)
+      let dir = vimshell#util#resolve(dir)
     endif
 
     if isdirectory(dirs[0])

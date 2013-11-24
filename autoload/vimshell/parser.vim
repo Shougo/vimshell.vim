@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -91,7 +91,7 @@ function! vimshell#parser#execute_command(commands, context) "{{{
         \ 'kind', '') ==  'execute'
     " Execute execute commands.
     let commands[0].args = args
-    return vimshell#execute_internal_command(program, commands, context)
+    return vimshell#helpers#execute_internal_command(program, commands, context)
   elseif a:commands[-1].args[-1] =~ '&$'
     " Convert to internal bg command.
     let commands[-1].args[-1] = commands[-1].args[-1][:-2]
@@ -100,7 +100,7 @@ function! vimshell#parser#execute_command(commands, context) "{{{
       call remove(commands[-1].args, -1)
     endif
 
-    return vimshell#execute_internal_command('bg', commands, context)
+    return vimshell#helpers#execute_internal_command('bg', commands, context)
   elseif len(a:commands) > 1
     if a:commands[-1].args[0] == 'less'
       " Execute less(Syntax sugar).
@@ -109,19 +109,19 @@ function! vimshell#parser#execute_command(commands, context) "{{{
         let commands[0].args =
               \ a:commands[-1].args[1:] + commands[0].args
       endif
-      return vimshell#execute_internal_command('less', commands, context)
+      return vimshell#helpers#execute_internal_command('less', commands, context)
     else
       " Execute external commands.
-      return vimshell#execute_internal_command('exe', commands, context)
+      return vimshell#helpers#execute_internal_command('exe', commands, context)
     endif
   elseif has_key(get(internal_commands, program, {}), 'execute')
     " Internal commands.
-    return vimshell#execute_internal_command(program, args, context)
+    return vimshell#helpers#execute_internal_command(program, args, context)
   elseif !executable(dir) && isdirectory(dir)
     " Directory.
     " Change the working directory like zsh.
     " Call internal cd command.
-    return vimshell#execute_internal_command('cd', [dir], context)
+    return vimshell#helpers#execute_internal_command('cd', [dir], context)
   else "{{{
     let ext = fnamemodify(program, ':e')
 
@@ -137,10 +137,10 @@ function! vimshell#parser#execute_command(commands, context) "{{{
       if has_key(g:vimshell_terminal_commands, program)
             \ && g:vimshell_terminal_commands[program]
         " Execute terminal commands.
-        return vimshell#execute_internal_command('texe', commands, context)
+        return vimshell#helpers#execute_internal_command('texe', commands, context)
       else
         " Execute external commands.
-        return vimshell#execute_internal_command('exe', commands, context)
+        return vimshell#helpers#execute_internal_command('exe', commands, context)
       endif
     endif
   endif"}}}

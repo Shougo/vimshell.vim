@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,21 +36,6 @@ function! vimshell#echo_error(string) "{{{
   echohl Error | echo a:string | echohl None
 endfunction"}}}
 
-" Check vimproc. "{{{
-if !vimshell#util#has_vimproc()
-  call vimshell#echo_error(v:errmsg)
-  call vimshell#echo_error(v:exception)
-  call vimshell#echo_error('Error occured while loading vimproc.')
-  call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
-  finish
-endif
-
-if vimproc#version() < 600
-  call vimshell#echo_error('Your vimproc is too old.')
-  call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
-  finish
-endif"}}}
-
 " Initialize. "{{{
 if !exists('g:vimshell_execute_file_list')
   let g:vimshell_execute_file_list = {}
@@ -58,7 +43,6 @@ endif
 "}}}
 
 " vimshell plugin utility functions. "{{{
-
 function! vimshell#get_options() "{{{
   if !exists('s:vimshell_options')
     let s:vimshell_options = [
@@ -73,49 +57,9 @@ function! vimshell#get_options() "{{{
   endif
   return copy(s:vimshell_options)
 endfunction"}}}
-function! vimshell#close(buffer_name) "{{{
-  let quit_winnr = vimshell#util#get_vimshell_winnr(a:buffer_name)
-  if quit_winnr > 0
-    " Hide unite buffer.
-    silent execute quit_winnr 'wincmd w'
-
-    if winnr('$') != 1
-      close
-    else
-      call vimshell#util#alternate_buffer()
-    endif
-  endif
-
-  return quit_winnr > 0
-endfunction"}}}
 function! vimshell#available_commands(...) "{{{
   call vimshell#init#_internal_commands(get(a:000, 0, ''))
   return vimshell#variables#internal_commands()
-endfunction"}}}
-function! vimshell#execute_internal_command(command, args, context) "{{{
-  if empty(a:context)
-    let context = { 'has_head_spaces' : 0, 'is_interactive' : 1 }
-  else
-    let context = a:context
-  endif
-
-  if !has_key(context, 'fd') || empty(context.fd)
-    let context.fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
-  endif
-
-  let internal = vimshell#init#_internal_commands(a:command)
-  if empty(internal)
-    call vimshell#error_line(context.fd,
-          \ printf('Internal command : "%s" is not found.', a:command))
-    return
-  elseif internal.kind ==# 'execute'
-    " Convert args.
-    let args = type(get(a:args, 0, '')) == type('') ?
-          \ [{ 'args' : a:args, 'fd' : context.fd}] : a:args
-    return internal.execute(args, context)
-  else
-    return internal.execute(a:args, context)
-  endif
 endfunction"}}}
 function! vimshell#read(fd) "{{{
   if empty(a:fd) || a:fd.stdin == ''
@@ -148,42 +92,7 @@ function! vimshell#error_line(fd, string) "{{{
   return vimshell#interactive#error_buffer(a:fd, a:string . "\n")
 endfunction"}}}
 function! vimshell#print_prompt(...) "{{{
-  if &filetype !=# 'vimshell' || line('.') != line('$')
-        \ || !empty(b:vimshell.continuation)
-    return
-  endif
-
-  " Save current directory.
-  let b:vimshell.prompt_current_dir[vimshell#get_prompt_linenr()] = getcwd()
-
-  let context = a:0 >= 1? a:1 : vimshell#get_context()
-
-  " Call preprompt hook.
-  call vimshell#hook#call('preprompt', context, [])
-
-  " Search prompt
-  if empty(b:vimshell.commandline_stack)
-    let new_prompt = vimshell#get_prompt()
-  else
-    let new_prompt = b:vimshell.commandline_stack[-1]
-    call remove(b:vimshell.commandline_stack, -1)
-  endif
-
-  if vimshell#get_user_prompt() != '' ||
-        \ vimshell#get_right_prompt() != ''
-    " Insert user prompt line.
-    call s:insert_user_and_right_prompt()
-  endif
-
-  " Insert prompt line.
-  if getline('$') == ''
-    call setline('$', new_prompt)
-  else
-    call append('$', new_prompt)
-  endif
-
-  $
-  let &modified = 0
+  return call('vimshell#view#_print_prompt', a:000)
 endfunction"}}}
 function! vimshell#print_secondary_prompt() "{{{
   if &filetype !=# 'vimshell' || line('.') != line('$')
@@ -384,16 +293,6 @@ endfunction"}}}
 function! vimshell#open(filename) "{{{
   call vimproc#open(a:filename)
 endfunction"}}}
-function! vimshell#trunk_string(string, max) "{{{
-  return printf('%.' . string(a:max-10) . 's..%s', a:string, a:string[-8:])
-endfunction"}}}
-function! vimshell#is_windows() "{{{
-  return has('win32') || has('win64')
-endfunction"}}}
-function! vimshell#resolve(filename) "{{{
-  return ((vimshell#util#is_windows() && fnamemodify(a:filename, ':e') ==? 'LNK') || getftype(a:filename) ==# 'link') ?
-        \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
-endfunction"}}}
 function! vimshell#get_program_pattern() "{{{
   return
         \'^\s*\%([^[:blank:]]\|\\[^[:alnum:]._-]\)\+\ze\%(\s*\%(=\s*\)\?\)'
@@ -407,7 +306,7 @@ function! vimshell#get_alias_pattern() "{{{
 endfunction"}}}
 function! vimshell#cd(directory) "{{{
   let directory = fnameescape(a:directory)
-  if vimshell#is_windows()
+  if vimshell#util#is_windows()
     " Substitute path sepatator.
     let directory = substitute(directory, '/', '\\', 'g')
   endif
@@ -417,9 +316,6 @@ function! vimshell#cd(directory) "{{{
     " Append directory.
     call unite#sources#directory_mru#_append()
   endif
-endfunction"}}}
-function! vimshell#compare_number(i1, i2) "{{{
-  return a:i1 == a:i2 ? 0 : a:i1 > a:i2 ? 1 : -1
 endfunction"}}}
 function! vimshell#imdisable() "{{{
   " Disable input method.
@@ -525,35 +421,6 @@ function! vimshell#restore_pos(pos) "{{{
   endif
 
   call setpos('.', a:pos[3])
-endfunction"}}}
-function! vimshell#get_editor_name() "{{{
-  if !exists('g:vimshell_editor_command')
-    " Set editor command.
-    if has('clientserver') && (has('gui_running') || has('gui'))
-      if has('gui_macvim')
-        " MacVim check.
-        if executable('/Applications/MacVim.app/Contents/MacOS/Vim')
-          let progname = 'Applications/MacVim.app/Contents/MacOS/Vim -g'
-        elseif executable(expand('~/Applications/MacVim.app/Contents/MacOS/Vim'))
-          let progname = expand('~/Applications/MacVim.app/Contents/MacOS/Vim -g')               
-        else
-          echoerr 'You installed MacVim in not default directory! You must set g:vimshell_editor_command manually.'
-          return g:vimshell_cat_command
-        endif
-
-        let progname = '/Applications/MacVim.app/Contents/MacOS/Vim -g'
-      else
-        let progname = has('gui_running') ? v:progname : 'vim -g'
-      endif
-
-      let g:vimshell_editor_command = printf('%s %s --remote-tab-wait-silent',
-            \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
-    else
-      let g:vimshell_editor_command = g:vimshell_cat_command
-    endif
-  endif
-
-  return g:vimshell_editor_command
 endfunction"}}}
 function! vimshell#is_interactive() "{{{
   let is_valid = get(get(b:interactive, 'process', {}), 'is_valid', 0)

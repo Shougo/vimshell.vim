@@ -35,7 +35,7 @@ function! s:command.execute(args, context) "{{{
   let dir = empty(a:args)? getcwd() : a:args[0]
   let b:vimshell.current_dir = dir
 
-  return vimshell#execute_internal_command('cd', [ dir ], a:context)
+  return vimshell#helpers#execute_internal_command('cd', [ dir ], a:context)
 endfunction"}}}
 
 function! vimshell#commands#gcd#define()

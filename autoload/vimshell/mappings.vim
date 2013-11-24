@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Nov 2013.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -278,7 +278,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 
   if line =~ '^\s*-\s*$'
     " Popd.
-    call vimshell#execute_internal_command('cd', ['-'], {})
+    call vimshell#helpers#execute_internal_command('cd', ['-'], {})
   elseif line =~ '^\s*$'
     " Call emptycmd filter.
     let line = vimshell#hook#call_filter('emptycmd', context, line)
@@ -356,8 +356,8 @@ function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
     call search(vimshell#get_context().prompt_pattern . '.\?', 'bWe')
   else
-    let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
-          \ 'v:val < line(".")'), 'vimshell#compare_number')
+    let prompts = sort(filter(map(keys(b:interactive.prompt_history),
+          \ 'str2nr(v:val)'), 'v:val < line(".")'))
     if !empty(prompts)
       call cursor(prompts[-1], len(vimshell#interactive#get_prompt()) + 1)
     endif
@@ -367,8 +367,8 @@ function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
     call search(vimshell#get_context().prompt_pattern . '.\?', 'We')
   else
-    let prompts = sort(filter(map(keys(b:interactive.prompt_history), 'str2nr(v:val)'),
-          \ 'v:val > line(".")'), 'vimshell#compare_number')
+    let prompts = sort(filter(map(keys(b:interactive.prompt_history),
+          \ 'str2nr(v:val)'), 'v:val > line(".")'))
     if !empty(prompts)
       call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
     endif

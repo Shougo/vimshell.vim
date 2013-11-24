@@ -55,7 +55,7 @@ function! s:command.execute(args, context) "{{{
     return 0
   endif
 
-  return vimshell#execute_internal_command('cd',
+  return vimshell#helpers#execute_internal_command('cd',
         \ [directory], a:context)
 endfunction"}}}
 
