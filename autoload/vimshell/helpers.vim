@@ -186,6 +186,91 @@ function! vimshell#helpers#execute_async(cmdline, ...) "{{{
     return 1
   endtry
 endfunction"}}}
+function! vimshell#helpers#get_command_path(program) "{{{
+  " Command search.
+  try
+    return vimproc#get_command_name(a:program)
+  catch /File ".*" is not found./
+    " Not found.
+    return ''
+  endtry
+endfunction"}}}
+
+function! vimshell#helpers#set_alias(name, value) "{{{
+  if !exists('b:vimshell')
+    let b:vimshell = {}
+  endif
+  if !has_key(b:vimshell, 'alias_table')
+    let b:vimshell.alias_table = {}
+  endif
+
+  if a:value == ''
+    " Delete alias.
+    call remove(b:vimshell.alias_table, a:name)
+  else
+    let b:vimshell.alias_table[a:name] = a:value
+  endif
+endfunction"}}}
+function! vimshell#helpers#get_alias(name) "{{{
+  return get(b:vimshell.alias_table, a:name, '')
+endfunction"}}}
+function! vimshell#helpers#set_galias(name, value) "{{{
+  if !exists('b:vimshell')
+    let b:vimshell = {}
+  endif
+  if !has_key(b:vimshell, 'galias_table')
+    let b:vimshell.galias_table = {}
+  endif
+
+  if a:value == ''
+    " Delete alias.
+    call remove(b:vimshell.galias_table, a:name)
+  else
+    let b:vimshell.galias_table[a:name] = a:value
+  endif
+endfunction"}}}
+function! vimshell#helpers#get_galias(name) "{{{
+  return get(b:vimshell.galias_table, a:name, '')
+endfunction"}}}
+
+function! vimshell#helpers#get_program_pattern() "{{{
+  return
+        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:]._-]\)\+\ze\%(\s*\%(=\s*\)\?\)'
+endfunction"}}}
+function! vimshell#helpers#get_alias_pattern() "{{{
+  return '^\s*[[:alnum:].+#_@!%:-]\+'
+endfunction"}}}
+
+function! vimshell#helpers#complete(arglead, cmdline, cursorpos) "{{{
+  let _ = []
+
+  " Option names completion.
+  try
+    let _ += filter(vimshell#variables#options(),
+          \ 'stridx(v:val, a:arglead) == 0')
+  catch
+  endtry
+
+  " Directory name completion.
+  let _ += filter(map(split(glob(a:arglead . '*'), '\n'),
+        \ "isdirectory(v:val) ? v:val.'/' : v:val"),
+        \ 'stridx(v:val, a:arglead) == 0')
+
+  return sort(_)
+endfunction"}}}
+function! vimshell#helpers#vimshell_execute_complete(arglead, cmdline, cursorpos) "{{{
+  " Get complete words.
+  let cmdline = a:cmdline[len(matchstr(
+        \ a:cmdline, vimshell#helpers#get_program_pattern())):]
+
+  let args = vimproc#parser#split_args_through(cmdline)
+  if empty(args) || cmdline =~ '\\\@!\s\+$'
+    " Add blank argument.
+    call add(args, '')
+  endif
+
+  return map(vimshell#complete#helper#command_args(args), 'v:val.word')
+endfunction"}}}
 
 let &cpo = s:save_cpo
 unlet s:save_cpo

@@ -100,7 +100,7 @@ function! s:init(commands, context, options, interactive) "{{{
   let [new_pos, old_pos] = vimshell#helpers#split(a:options['--helpers#split'])
 
   " Set environment variables.
-  let environments_save = vimshell#set_variables({
+  let environments_save = vimshell#util#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
         \ '$VIMSHELL' : 1,
@@ -117,12 +117,12 @@ function! s:init(commands, context, options, interactive) "{{{
   let a:interactive.process = vimproc#plineopen2(a:commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(environments_save)
+  call vimshell#util#restore_variables(environments_save)
 
   " Input from stdin.
   if a:interactive.fd.stdin != ''
     call a:interactive.process.stdin.write(
-          \ vimshell#read(a:context.fd))
+          \ vimshell#interactive#read(a:context.fd))
   endif
   call a:interactive.process.stdin.close()
 

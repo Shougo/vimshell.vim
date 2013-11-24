@@ -142,7 +142,7 @@ function! vimshell#interactive#send(expr) "{{{
   if last_interactive_bufnr <= 0
     let command = input('Please input interpreter command : ',
           \ get(g:vimshell_interactive_interpreter_commands, &filetype, ''),
-          \ 'customlist,vimshell#vimshell_execute_complete')
+          \ 'customlist,vimshell#helpers#vimshell_execute_complete')
     execute 'VimShellInteractive' command
 
     let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
@@ -488,6 +488,27 @@ function! vimshell#interactive#decode_signal(signal) "{{{
   endif
 endfunction"}}}
 
+function! vimshell#interactive#read(fd) "{{{
+  if empty(a:fd) || a:fd.stdin == ''
+    return ''
+  endif
+
+  if a:fd.stdout == '/dev/null'
+    " Nothing.
+    return ''
+  elseif a:fd.stdout == '/dev/clip'
+    " Write to clipboard.
+    return @+
+  else
+    " Read from file.
+    if vimshell#util#is_windows()
+      let ff = "\<CR>\<LF>"
+    else
+      let ff = "\<LF>"
+      return join(readfile(a:fd.stdin), ff) . ff
+    endif
+  endif
+endfunction"}}}
 function! vimshell#interactive#print_buffer(fd, string) "{{{
   if a:string == '' || !exists('b:interactive')
         \|| !&l:modifiable
@@ -605,7 +626,7 @@ endfunction"}}}
 
 function! vimshell#interactive#get_default_encoding(commands) "{{{
   let full_command = tolower(
-        \ vimshell#get_command_path(a:commands[0].args[0]))
+        \ vimshell#helpers#get_command_path(a:commands[0].args[0]))
   let command = fnamemodify(full_command, ':t:r')
   for [path, encoding] in items(g:vimshell_interactive_encodings)
     if (path =~ '/' && stridx(full_command, tolower(path)) >= 0)

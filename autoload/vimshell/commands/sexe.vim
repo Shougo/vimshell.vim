@@ -72,7 +72,7 @@ function! s:command.execute(args, context) "{{{
   let stdin = vimproc#util#iconv(stdin, &encoding, options['--encoding'])
 
   " Set environment variables.
-  let environments_save = vimshell#set_variables({
+  let environments_save = vimshell#util#set_variables({
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$COLUMNS' : winwidth(0)-5,
         \ '$LINES' : g:vimshell_scrollback_limit,
@@ -85,7 +85,7 @@ function! s:command.execute(args, context) "{{{
   let result = system(printf('%s %s', cmdline, stdin))
 
   " Restore environment variables.
-  call vimshell#restore_variables(environments_save)
+  call vimshell#util#restore_variables(environments_save)
 
   " Convert encoding.
   let result = vimproc#util#iconv(result, options['--encoding'], &encoding)

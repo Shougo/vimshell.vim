@@ -300,5 +300,21 @@ endfunction"}}}
 function! vimshell#util#system(...) "{{{
   return call(vimshell#util#get_vital().system, a:000)
 endfunction"}}}
+function! vimshell#util#set_variables(variables) "{{{
+  let variables_save = {}
+  for [key, value] in items(a:variables)
+    let save_value = exists(key) ? eval(key) : ''
+
+    let variables_save[key] = save_value
+    execute 'let' key '= value'
+  endfor
+
+  return variables_save
+endfunction"}}}
+function! vimshell#util#restore_variables(variables) "{{{
+  for [key, value] in items(a:variables)
+    execute 'let' key '= value'
+  endfor
+endfunction"}}}
 
 " vim: foldmethod=marker

@@ -50,27 +50,6 @@ function! vimshell#available_commands(...) "{{{
   call vimshell#init#_internal_commands(get(a:000, 0, ''))
   return vimshell#variables#internal_commands()
 endfunction"}}}
-function! vimshell#read(fd) "{{{
-  if empty(a:fd) || a:fd.stdin == ''
-    return ''
-  endif
-
-  if a:fd.stdout == '/dev/null'
-    " Nothing.
-    return ''
-  elseif a:fd.stdout == '/dev/clip'
-    " Write to clipboard.
-    return @+
-  else
-    " Read from file.
-    if vimshell#util#is_windows()
-      let ff = "\<CR>\<LF>"
-    else
-      let ff = "\<LF>"
-      return join(readfile(a:fd.stdin), ff) . ff
-    endif
-  endif
-endfunction"}}}
 function! vimshell#print(fd, string) "{{{
   return vimshell#interactive#print_buffer(a:fd, a:string)
 endfunction"}}}
@@ -85,15 +64,6 @@ function! vimshell#print_prompt(...) "{{{
 endfunction"}}}
 function! vimshell#print_secondary_prompt() "{{{
   return call('vimshell#view#_print_secondary_prompt', a:000)
-endfunction"}}}
-function! vimshell#get_command_path(program) "{{{
-  " Command search.
-  try
-    return vimproc#get_command_name(a:program)
-  catch /File ".*" is not found./
-    " Not found.
-    return ''
-  endtry
 endfunction"}}}
 function! vimshell#start_insert(...) "{{{
   return call('vimshell#view#_start_insert', a:000)
@@ -172,35 +142,8 @@ endfunction"}}}
 function! vimshell#open(filename) "{{{
   call vimproc#open(a:filename)
 endfunction"}}}
-function! vimshell#get_program_pattern() "{{{
-  return
-        \'^\s*\%([^[:blank:]]\|\\[^[:alnum:]._-]\)\+\ze\%(\s*\%(=\s*\)\?\)'
-endfunction"}}}
-function! vimshell#get_argument_pattern() "{{{
-  return
-        \'[^\\]\s\zs\%([^[:blank:]]\|\\[^[:alnum:].-]\)\+$'
-endfunction"}}}
-function! vimshell#get_alias_pattern() "{{{
-  return '^\s*[[:alnum:].+#_@!%:-]\+'
-endfunction"}}}
 function! vimshell#cd(directory) "{{{
   return vimshell#view#_cd(a:directory)
-endfunction"}}}
-function! vimshell#set_variables(variables) "{{{
-  let variables_save = {}
-  for [key, value] in items(a:variables)
-    let save_value = exists(key) ? eval(key) : ''
-
-    let variables_save[key] = save_value
-    execute 'let' key '= value'
-  endfor
-
-  return variables_save
-endfunction"}}}
-function! vimshell#restore_variables(variables) "{{{
-  for [key, value] in items(a:variables)
-    execute 'let' key '= value'
-  endfor
 endfunction"}}}
 function! vimshell#check_cursor_is_end() "{{{
   return vimshell#get_cur_line() ==# getline('.')
@@ -260,40 +203,10 @@ function! vimshell#get_context() "{{{
   return s:context
 endfunction"}}}
 function! vimshell#set_alias(name, value) "{{{
-  if !exists('b:vimshell')
-    let b:vimshell = {}
-  endif
-  if !has_key(b:vimshell, 'alias_table')
-    let b:vimshell.alias_table = {}
-  endif
-
-  if a:value == ''
-    " Delete alias.
-    call remove(b:vimshell.alias_table, a:name)
-  else
-    let b:vimshell.alias_table[a:name] = a:value
-  endif
-endfunction"}}}
-function! vimshell#get_alias(name) "{{{
-  return get(b:vimshell.alias_table, a:name, '')
+  return vimshell#helpers#set_alias(a:name, a:value)
 endfunction"}}}
 function! vimshell#set_galias(name, value) "{{{
-  if !exists('b:vimshell')
-    let b:vimshell = {}
-  endif
-  if !has_key(b:vimshell, 'galias_table')
-    let b:vimshell.galias_table = {}
-  endif
-
-  if a:value == ''
-    " Delete alias.
-    call remove(b:vimshell.galias_table, a:name)
-  else
-    let b:vimshell.galias_table[a:name] = a:value
-  endif
-endfunction"}}}
-function! vimshell#get_galias(name) "{{{
-  return get(b:vimshell.galias_table, a:name, '')
+  return vimshell#helpers#set_galias(a:name, a:value)
 endfunction"}}}
 function! vimshell#set_syntax(syntax_name) "{{{
   let b:interactive.syntax = a:syntax_name
@@ -305,34 +218,7 @@ function! vimshell#get_status_string() "{{{
 endfunction"}}}
 
 function! vimshell#complete(arglead, cmdline, cursorpos) "{{{
-  let _ = []
-
-  " Option names completion.
-  try
-    let _ += filter(vimshell#variables#options(),
-          \ 'stridx(v:val, a:arglead) == 0')
-  catch
-  endtry
-
-  " Directory name completion.
-  let _ += filter(map(split(glob(a:arglead . '*'), '\n'),
-        \ "isdirectory(v:val) ? v:val.'/' : v:val"),
-        \ 'stridx(v:val, a:arglead) == 0')
-
-  return sort(_)
-endfunction"}}}
-function! vimshell#vimshell_execute_complete(arglead, cmdline, cursorpos) "{{{
-  " Get complete words.
-  let cmdline = a:cmdline[len(matchstr(
-        \ a:cmdline, vimshell#get_program_pattern())):]
-
-  let args = vimproc#parser#split_args_through(cmdline)
-  if empty(args) || cmdline =~ '\\\@!\s\+$'
-    " Add blank argument.
-    call add(args, '')
-  endif
-
-  return map(vimshell#complete#helper#command_args(args), 'v:val.word')
+  return vimshell#helpers#complete(a:arglead, a:cmdline, a:cursorpos)
 endfunction"}}}
 function! vimshell#get_prompt_length(...) "{{{
   return len(matchstr(get(a:000, 0, getline('.')),

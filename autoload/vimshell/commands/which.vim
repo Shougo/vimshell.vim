@@ -35,10 +35,10 @@ function! s:command.execute(args, context) "{{{
   endif
 
   let name = a:args[0]
-  if vimshell#get_alias(name) != ''
-    let line = printf('which: %s: aliased to %s', name, vimshell#get_alias(name))
+  if vimshell#helpers#get_alias(name) != ''
+    let line = printf('which: %s: aliased to %s', name, vimshell#helpers#get_alias(name))
   else
-    let path = vimshell#get_command_path(name)
+    let path = vimshell#helpers#get_command_path(name)
     if path != ''
       let line = printf('which: %s', path)
     else

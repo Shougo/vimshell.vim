@@ -267,7 +267,7 @@ endfunction
 " Parse helper.
 function! vimshell#parser#parse_alias(statement) "{{{
   let statement = s:parse_galias(a:statement)
-  let program = matchstr(statement, vimshell#get_program_pattern())
+  let program = matchstr(statement, vimshell#helpers#get_program_pattern())
   if statement != '' && program  == ''
     throw 'Error: Invalid command name.'
   endif
@@ -276,7 +276,7 @@ function! vimshell#parser#parse_alias(statement) "{{{
         \ !empty(get(b:vimshell.alias_table, program, []))
     " Expand alias.
     let args = vimproc#parser#split_args_through(
-          \ statement[matchend(statement, vimshell#get_program_pattern()) :])
+          \ statement[matchend(statement, vimshell#helpers#get_program_pattern()) :])
     let statement = s:recursive_expand_alias(program, args)
   endif
 
@@ -284,7 +284,7 @@ function! vimshell#parser#parse_alias(statement) "{{{
 endfunction"}}}
 function! vimshell#parser#parse_program(statement) "{{{
   " Get program.
-  let program = matchstr(a:statement, vimshell#get_program_pattern())
+  let program = matchstr(a:statement, vimshell#helpers#get_program_pattern())
   if program  == ''
     throw 'Error: Invalid command name.'
   endif

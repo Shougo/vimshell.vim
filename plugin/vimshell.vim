@@ -145,11 +145,11 @@ command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
       \ vimshell#util#substitute_path_separator(
       \       fnamemodify(bufname('%'), ':p:h')))
 
-command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellExecute
+command! -nargs=+ -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellExecute
       \ call s:vimshell_execute(<q-args>)
-command! -nargs=* -complete=customlist,vimshell#vimshell_execute_complete VimShellInteractive
+command! -nargs=* -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellInteractive
       \ call s:vimshell_interactive(<q-args>)
-command! -nargs=+ -complete=customlist,vimshell#vimshell_execute_complete VimShellTerminal
+command! -nargs=+ -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellTerminal
       \ call s:vimshell_terminal(<q-args>)
 
 command! -range -nargs=? VimShellSendString

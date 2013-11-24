@@ -64,7 +64,7 @@ function! s:command.execute(commands, context) "{{{
   endif
 
   " Set environment variables.
-  let environments_save = vimshell#set_variables({
+  let environments_save = vimshell#util#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -81,7 +81,7 @@ function! s:command.execute(commands, context) "{{{
   let sub = vimproc#plineopen3(commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(environments_save)
+  call vimshell#util#restore_variables(environments_save)
 
   " Set variables.
   let interactive = {
@@ -103,7 +103,8 @@ function! s:command.execute(commands, context) "{{{
 
   " Input from stdin.
   if interactive.fd.stdin != ''
-    call interactive.process.stdin.write(vimshell#read(a:context.fd))
+    call interactive.process.stdin.write(
+          \ vimshell#interactive##read(a:context.fd))
   endif
   call interactive.process.stdin.close()
 

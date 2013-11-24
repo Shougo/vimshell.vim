@@ -113,7 +113,7 @@ function! s:init_process(commands, context, options) "{{{
   endif
 
   " Set environment variables.
-  let environments_save = vimshell#set_variables({
+  let environments_save = vimshell#util#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
         \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
         \ '$VIMSHELL' : 1,
@@ -130,7 +130,7 @@ function! s:init_process(commands, context, options) "{{{
   let sub = vimproc#ptyopen(a:commands)
 
   " Restore environment variables.
-  call vimshell#restore_variables(environments_save)
+  call vimshell#util#restore_variables(environments_save)
 
   let cmdline = []
   for command in a:commands

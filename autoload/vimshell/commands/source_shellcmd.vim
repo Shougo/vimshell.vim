@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: source_shellcmd.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Oct 2012.
+" Last Modified: 24 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -53,7 +53,7 @@ function! s:command.execute(args, context) "{{{
     endif
   endfor
 
-  call vimshell#set_variables(variables)
+  call vimshell#util#set_variables(variables)
 endfunction"}}}
 
 function! vimshell#commands#source_shellcmd#define()
