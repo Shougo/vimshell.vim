@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 25 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -245,7 +245,7 @@ function! s:create_shell(path, context) "{{{
 
   if a:context.split_command != ''
     let [new_pos, old_pos] =
-          \ vimshell#helpers#split(a:context.helpers#split_command)
+          \ vimshell#helpers#split(a:context.split_command)
   endif
 
   " Save swapfile option.
@@ -299,7 +299,7 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
   else
     if a:context.split_command != ''
       let [new_pos, old_pos] =
-            \ vimshell#helpers#split(a:context.helpers#split_command)
+            \ vimshell#helpers#split(a:context.split_command)
     endif
 
     execute 'buffer' a:bufnr

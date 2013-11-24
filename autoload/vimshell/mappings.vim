@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 25 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -649,7 +649,7 @@ function! s:execute_by_background(is_insert) "{{{
         \ 'hook_functions_table' : {},
         \}
 
-  let [new_pos, old_pos] = vimshell#helpers#split(g:vimshell_helpers#split_command)
+  let [new_pos, old_pos] = vimshell#helpers#split(g:vimshell_split_command)
 
   call vimshell#commands#iexe#init(context, interactive,
         \ new_pos, old_pos, a:is_insert)

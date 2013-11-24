@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 25 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -252,7 +252,7 @@ function! s:call_vimshell(default, args) "{{{
     let arg = substitute(arg, '\\\( \)', '\1', 'g')
 
     let arg_key = substitute(arg, '=\zs.*$', '', '')
-    let matched_list = filter(vimshell#options(), 'v:val ==# arg_key')
+    let matched_list = filter(vimshell#variables#options(), 'v:val ==# arg_key')
     for option in matched_list
       let key = substitute(substitute(option, '-', '_', 'g'),
             \ '=$', '', '')[1:]
