@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helpers.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 25 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,9 +30,9 @@ set cpo&vim
 function! vimshell#helpers#get_editor_name() "{{{
   if !exists('g:vimshell_editor_command')
     " Set editor command.
-    if has('clientserver') && (has('gui_running') || has('gui'))
-      let g:vimshell_editor_command = g:vimshell_cat_command
+    let g:vimshell_editor_command = g:vimshell_cat_command
 
+    if has('clientserver') && (has('gui_running') || has('gui'))
       if has('gui_macvim')
         " MacVim check.
         if executable('/Applications/MacVim.app/Contents/MacOS/Vim')
