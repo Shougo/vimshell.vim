@@ -645,6 +645,7 @@ Insert mode key mappings.
 		Execute vimshell history by unite interface.
 		Note: To use it, you must install |unite.vim| plugin.
 
+				*i_<Plug>(vimshell_history_neocomplete)*
 <Plug>(vimshell_history_neocomplete)
 		Execute vimshell history by neocomplete interface.
 		Note: To use it, you must install |neocomplete| plugin.
