@@ -438,20 +438,15 @@ function! s:insert_last_word() "{{{
 endfunction"}}}
 function! vimshell#mappings#_paste_prompt() "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern
-  let prompt = getline('.')
-  if prompt !~# prompt_pattern
+  if getline('.') !~# prompt_pattern
     return
   endif
 
-  if getline('$') !~# prompt_pattern
-        \ || vimshell#view#_get_prompt_command(getline('$')) != ''
-    " Insert prompt line.
-    call append(line('$'), prompt)
-  else
-    " Set prompt line.
-    call setline(line('$'), prompt)
-  endif
-  $
+  let command = getline('.')[vimshell#get_prompt_length(getline('.')) :]
+  call cursor('$', 0)
+
+  " Set prompt line.
+  call vimshell#view#_set_prompt_command(command)
 endfunction"}}}
 function! s:move_head() "{{{
   call s:insert_head()
