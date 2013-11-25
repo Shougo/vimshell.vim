@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 25 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -656,9 +656,10 @@ function! s:check_all_output(is_hold) "{{{
         \  && get(get(getbufvar(v:val, 'interactive'),
         \        'process', {}), 'is_valid', 0)")
       let interactive = getbufvar(bufnr, 'interactive')
+      let updated = 1
+
       " Check output.
       if s:cache_output(interactive)
-        let updated = 1
         call s:check_output(interactive, bufnr, bufnr('%'))
       endif
     endfor
