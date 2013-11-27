@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: texe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 27 Nov 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -36,6 +36,10 @@ let s:command = {
       \}
 function! s:command.execute(commands, context) "{{{
   " Interactive execute command.
+  if empty(a:commands)
+    return
+  endif
+
   if len(a:commands) > 1
     call vimshell#error_line(a:context.fd, 'iexe: this command is not supported pipe.')
     return
