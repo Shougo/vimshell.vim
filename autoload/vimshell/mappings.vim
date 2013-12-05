@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2013.
+" Last Modified: 06 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -49,8 +49,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ matchstr(getline('.'), b:vimshell.context.prompt_pattern))) : 'ddO'
   nmap  <buffer> <Plug>(vimshell_delete_line)
         \ <Plug>(vimshell_change_line)<ESC>
-  nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
-        \ :<C-u>call <SID>move_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_hangup)
         \ :<C-u>call <SID>hangup(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)
@@ -64,7 +62,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_clear)
         \ :<C-u>call <SID>clear(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_move_head)
-        \ :<C-u>call <SID>move_head()<CR><ESC>l
+        \ :<C-u>call <SID>move_head()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
         \ :<C-u>call <SID>execute_by_background(0)<CR>
 
@@ -87,7 +85,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   inoremap <buffer><silent> <Plug>(vimshell_insert_last_word)
         \ <ESC>:call <SID>insert_last_word()<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_head)
-        \ <ESC>:call <SID>move_head()<CR>
+        \ <ESC>:call <SID>insert_head()<CR>
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_line)
         \ <SID>delete_backward_line()
   inoremap <buffer><silent><expr> <Plug>(vimshell_delete_backward_word)
@@ -449,7 +447,12 @@ function! vimshell#mappings#_paste_prompt() "{{{
   call vimshell#view#_set_prompt_command(command)
 endfunction"}}}
 function! s:move_head() "{{{
-  call s:insert_head()
+  if !vimshell#check_prompt()
+    normal! ^
+    return
+  endif
+
+  call cursor(0, vimshell#get_prompt_length() + 1)
 endfunction"}}}
 function! s:move_end_argument() "{{{
   normal! 0
@@ -597,9 +600,7 @@ function! s:insert_enter() "{{{
       startinsert!
       return
     else
-      let pos = getpos('.')
-      let pos[2] = vimshell#get_prompt_length() + 1
-      call setpos('.', pos)
+      call cursor(0, vimshell#get_prompt_length() + 1)
     endif
   endif
 
