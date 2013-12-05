@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 05 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -239,28 +239,23 @@ function! vimshell#terminal#restore_title() "{{{
   let &titlestring = b:interactive.terminal.titlestring_save
 endfunction"}}}
 function! vimshell#terminal#clear_highlight() "{{{
+  if !s:use_conceal()
+    return
+  endif
+
   if !has_key(b:interactive, 'terminal')
     call vimshell#terminal#init()
   endif
 
   for syntax_names in values(b:interactive.terminal.syntax_names)
-    if s:use_conceal()
-      execute 'highlight clear' syntax_names
-      execute 'syntax clear' syntax_names
-    else
-      for syntax_name in values(syntax_names)
-        execute 'highlight clear' syntax_name
-        execute 'syntax clear' syntax_name
-      endfor
-    endif
+    execute 'highlight clear' syntax_names
+    execute 'syntax clear' syntax_names
   endfor
 
   let b:interactive.terminal.syntax_names = {}
 
-  if s:use_conceal()
-    " Restore wrap.
-    let &l:wrap = b:interactive.terminal.wrap
-  endif
+  " Restore wrap.
+  let &l:wrap = b:interactive.terminal.wrap
 endfunction"}}}
 
 function! s:optimized_print(string, is_error) "{{{
@@ -417,9 +412,6 @@ function! s:scroll_up(number) "{{{
 
   let i = 0
   while i < a:number
-    " Clear previous highlight.
-    call s:clear_highlight_line(b:interactive.terminal.region_top + i)
-
     let s:virtual.lines[b:interactive.terminal.region_top + i] = ''
     let i += 1
   endwhile
@@ -436,27 +428,12 @@ function! s:scroll_down(number) "{{{
 
   let i = 0
   while i < a:number
-    " Clear previous highlight.
-    call s:clear_highlight_line(b:interactive.terminal.region_bottom - i)
-
     let s:virtual.lines[b:interactive.terminal.region_bottom - i] = ''
     let i += 1
   endwhile
 endfunction"}}}
-function! s:clear_highlight_line(linenr) "{{{
-  if s:use_conceal()
-    return
-  endif
-
-  if has_key(b:interactive.terminal.syntax_names, a:linenr)
-    for [col, prev_syntax] in items(b:interactive.terminal.syntax_names[a:linenr])
-      execute 'highlight clear' prev_syntax
-      execute 'syntax clear' prev_syntax
-    endfor
-  endif
-endfunction"}}}
 function! s:use_conceal() "{{{
-  return has('conceal') && b:interactive.type !=# 'terminal'
+  return has('conceal')
 endfunction"}}}
 
 " Note: Real pos is 0 origin.
@@ -625,14 +602,12 @@ function! s:escape.highlight(matchstr) "{{{
     return
   endif
 
-  if s:use_conceal()
-    call s:output_string("\<ESC>" . a:matchstr)
+  call s:output_string("\<ESC>" . a:matchstr)
 
-    " Check cached highlight.
-    if a:matchstr =~ '^\[0\?m$'
-          \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
-      return
-    endif
+  " Check cached highlight.
+  if a:matchstr =~ '^\[0\?m$'
+        \ || has_key(b:interactive.terminal.syntax_names, a:matchstr)
+    return
   endif
 
   let highlight = ''
@@ -728,41 +703,18 @@ function! s:escape.highlight(matchstr) "{{{
 
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   let col += 1
-  if s:use_conceal()
-    let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
-          \ . '_' . line . '_' . col
-    let syntax_command = printf('start=+\e\%s+ end=+\ze\e[\[0*m]\|$+ ' .
-          \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
+  let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
+        \ . '_' . line . '_' . col
+  let syntax_command = printf('start=+\e\%s+ end=+\ze\e[\[0*m]\|$+ ' .
+        \ 'contains=vimshellEscapeSequenceConceal oneline', a:matchstr)
 
-    execute 'syntax region' syntax_name syntax_command
-    execute 'highlight' syntax_name highlight
+  execute 'syntax region' syntax_name syntax_command
+  execute 'highlight' syntax_name highlight
 
-    let b:interactive.terminal.syntax_names[a:matchstr] = syntax_name
+  let b:interactive.terminal.syntax_names[a:matchstr] = syntax_name
 
-    " Note: When use concealed text, wrapped text is wrong...
-    setlocal nowrap
-  else
-    let syntax_name = 'EscapeSequenceAt_' . bufnr('%')
-          \ . '_' . line . '_' . (col+1)
-    let syntax_command = printf(
-          \ 'start=+\%%%sl\%%%sc+ end=+.*+ contains=ALL oneline', line, col)
-
-    if !has_key(b:interactive.terminal.syntax_names, line)
-      let b:interactive.terminal.syntax_names[line] = {}
-    endif
-    if has_key(b:interactive.terminal.syntax_names[line], col)
-      " Clear previous highlight.
-      let prev_syntax =
-            \ b:interactive.terminal.syntax_names[line][col]
-      execute 'highlight clear' prev_syntax
-      execute 'syntax clear' prev_syntax
-    endif
-    let b:interactive.terminal.syntax_names[line][col] = syntax_name
-
-    execute 'syntax region' syntax_name syntax_command
-    execute 'highlight link' syntax_name 'Normal'
-    execute 'highlight' syntax_name highlight
-  endif
+  " Note: When use concealed text, wrapped text is wrong...
+  setlocal nowrap
 endfunction"}}}
 function! s:escape.move_cursor(matchstr) "{{{
   let params = matchstr(a:matchstr, '[0-9;]\+')
@@ -813,9 +765,6 @@ function! s:escape.setup_scrolling_region(matchstr) "{{{
   let b:interactive.terminal.region_bottom = bottom
 endfunction"}}}
 function! s:escape.clear_line(matchstr) "{{{
-  " Clear previous highlight.
-  call s:clear_highlight_line(s:virtual.line)
-
   let [line, col] = s:get_real_pos(s:virtual.line, s:virtual.col)
   call s:set_screen_pos(line, col)
 
@@ -839,9 +788,6 @@ function! s:escape.clear_screen(matchstr) "{{{
     " Clear screen from cursor down.
     call s:escape.clear_line(0)
     for linenr in filter(keys(s:virtual.lines), 'v:val > s:virtual.line')
-      " Clear previous highlight.
-      call s:clear_highlight_line(s:virtual.line)
-
       " Clear line.
       let s:virtual.lines[linenr] = ''
     endfor
@@ -849,9 +795,6 @@ function! s:escape.clear_screen(matchstr) "{{{
     " Clear screen from cursor up.
     call s:escape.clear_line(1)
     for linenr in filter(keys(s:virtual.lines), 'v:val < s:virtual.line')
-      " Clear previous highlight.
-      call s:clear_highlight_line(s:virtual.line)
-
       " Clear line.
       let s:virtual.lines[linenr] = ''
     endfor
