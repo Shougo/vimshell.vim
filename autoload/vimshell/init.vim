@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2013.
+" Last Modified: 09 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -347,8 +347,11 @@ function! s:initialize_vimshell(path, context) "{{{
   let b:vimshell.prompt_current_dir = {}
   let b:vimshell.continuation = {}
   let b:vimshell.prompts_save = {}
-  let b:vimshell.statusline = '*vimshell* : %{vimshell#get_status_string()}'
-        \ . "\ %=%{printf('%s %4d/%d',b:vimshell.right_prompt, line('.'), line('$'))}"
+  let b:vimshell.statusline =
+        \ '*vimshell* : %{vimshell#get_status_string()}'
+        \ . "\ %=%{printf('%s %4d/%d',"
+        \ . "(exists('b:vimshell') ? b:vimshell.right_prompt : ''),"
+        \ . "line('.'), line('$'))}"
   let b:vimshell.right_prompt = ''
 
   " Default settings.
