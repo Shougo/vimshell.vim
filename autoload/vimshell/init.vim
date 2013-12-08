@@ -348,10 +348,9 @@ function! s:initialize_vimshell(path, context) "{{{
   let b:vimshell.continuation = {}
   let b:vimshell.prompts_save = {}
   let b:vimshell.statusline =
-        \ '*vimshell* : %{vimshell#get_status_string()}'
-        \ . "\ %=%{printf('%s %4d/%d',"
-        \ . "(exists('b:vimshell') ? b:vimshell.right_prompt : ''),"
-        \ . "line('.'), line('$'))}"
+        \ '*vimshell* : %{vimshell#get_status_string()}' .
+        \ "\ %=%{exists('b:vimshell') ? printf('%s %4d/%d',
+        \  b:vimshell.right_prompt, line('.'), line('$')) : ''}"
   let b:vimshell.right_prompt = ''
 
   " Default settings.
