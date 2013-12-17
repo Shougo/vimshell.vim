@@ -1046,6 +1046,12 @@ echo [{argument}...]				*vimshell-internal-echo*
 eval {expression}				*vimshell-internal-eval*
 		Eval {expression} as vimshell script and print it.
 
+						*vimshell-internal-export*
+export [{variable-name}={value} , ...]
+		Change {variable-name} environment variable to {value}.
+		If the arguments is empty, print current environment variables.
+		You can use this command like other shells.
+
 exe [{option}...] {command} 			*vimshell-internal-exe*
 		Execute {command} with arguments.  Execute the external command
 		forcibly.
