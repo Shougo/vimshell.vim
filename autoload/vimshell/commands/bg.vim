@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Nov 2013.
+" Last Modified: 18 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -115,7 +115,7 @@ function! s:command.execute(commands, context) "{{{
   return vimshell#commands#bg#init(a:commands, a:context, options, interactive)
 endfunction"}}}
 function! s:command.complete(args) "{{{
-    return vimshell#complete#helper#command_args(a:args)
+  return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
 function! vimshell#commands#bg#define()

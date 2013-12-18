@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: helper.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 23 Nov 2013.
+" Last Modified: 18 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -230,16 +230,8 @@ endfunction"}}}
 function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
   let _ = []
 
-  if !exists('s:envlist')
-    " Get environment variables list.
-    let s:envlist = []
-    for line in split(system('set'), '\n')
-      let word = '$' . toupper(matchstr(line, '^\h\w*'))
-      call add(s:envlist, { 'word' : word, 'kind' : 'e' })
-    endfor
-  endif
-
-  let _ += s:envlist
+  let _ += map(copy(vimshell#complete#helper#environments(
+        \ a:cur_keyword_str)), "'$' . v:val")
 
   if a:cur_keyword_str =~ '^$\l'
     let _ += map(keys(b:vimshell.variables), "'$' . v:val")
@@ -247,7 +239,17 @@ function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
     let _ += map(keys(b:vimshell.system_variables), "'$$' . v:val")
   endif
 
-  return vimshell#complete#helper#keyword_filter(_, a:cur_keyword_str)
+  return vimshell#complete#helper#keyword_simple_filter(_, a:cur_keyword_str)
+endfunction"}}}
+function! vimshell#complete#helper#environments(cur_keyword_str) "{{{
+  if !exists('s:envlist')
+    " Get environment variables list.
+    let s:envlist = map(split(system('set'), '\n'),
+          \ "toupper(matchstr(v:val, '^\\h\\w*'))")
+  endif
+
+  return vimshell#complete#helper#keyword_simple_filter(
+        \ s:envlist, a:cur_keyword_str)
 endfunction"}}}
 
 function! vimshell#complete#helper#call_omnifunc(omnifunc) "{{{
@@ -267,9 +269,11 @@ endfunction"}}}
 function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str) "{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
   if &ignorecase
-    let expr = printf('stridx(tolower(v:val.word), %s) == 0', string(tolower(cur_keyword)))
+    let expr = printf('stridx(tolower(v:val.word), %s) == 0',
+          \ string(tolower(cur_keyword)))
   else
-    let expr = printf('stridx(v:val.word, %s) == 0', string(cur_keyword))
+    let expr = printf('stridx(v:val.word, %s) == 0',
+          \ string(cur_keyword))
   endif
 
   return filter(a:list, expr)

@@ -52,6 +52,9 @@ function! s:command.execute(args, context) "{{{
     execute printf('let $%s = %s', varname, string(arg[len(varname)+1:]))
   endfor
 endfunction"}}}
+function! s:command.complete(args) "{{{
+  return vimshell#complete#helper#environments(get(a:args, -1, ''))
+endfunction"}}}
 
 function! vimshell#commands#export#define()
   return s:command
