@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 02 Feb 2013.
+" Last Modified: 24 Dec 2013.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,7 +86,8 @@ let s:kind.action_table.execute = {
 function! s:kind.action_table.execute.func(candidates) "{{{
   let candidate = deepcopy(a:candidates[0])
   let candidate.action__complete_word =
-        \ join(map(copy(a:candidates), 'v:val.action__complete_word'), '; ')
+        \ join(map(copy(a:candidates),
+        \ 'v:val.action__complete_word'), ' && ')
   call unite#take_action('insert', candidate)
 
   call vimshell#execute_current_line(unite#get_context().complete)
@@ -94,15 +95,18 @@ endfunction"}}}
 
 let s:kind.action_table.insert = {
       \ 'description' : 'insert history',
+      \ 'is_selectable' : 1,
       \ }
-function! s:kind.action_table.insert.func(candidate) "{{{
+function! s:kind.action_table.insert.func(candidates) "{{{
   if !vimshell#check_prompt()
     call vimshell#echo_error('Not in command line.')
     return
   endif
 
-  call setline('.',
-        \ vimshell#get_prompt() . a:candidate.action__complete_word)
+  let command = join(map(copy(a:candidates),
+        \ 'v:val.action__complete_word'), ' && ')
+
+  call setline('.', vimshell#get_prompt() . command)
   if unite#get_context().complete
     startinsert!
   else
