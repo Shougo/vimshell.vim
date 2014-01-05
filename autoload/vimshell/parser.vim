@@ -234,19 +234,6 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
   endif
 
   call vimshell#next_prompt(context, a:is_insert)
-  if b:vimshell.context.quit
-    if winnr('$') != 1
-      if b:vimshell.context.popup
-        wincmd p
-      else
-        close
-      endif
-    else
-      call vimshell#util#alternate_buffer()
-    endif
-
-    stopinsert
-  endif
 endfunction
 "}}}
 function! s:execute_statement(statement, context) "{{{

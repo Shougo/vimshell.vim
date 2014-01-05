@@ -939,6 +939,12 @@ OPTIONS 					*vimshell-options*
 		-project
 		Move to project directory.
 
+						*vimshell-options-quit*
+		-quit
+		Quit buffer after command finished.
+		If |vimshell-options-popup| is enabled, switch to previous
+		window.
+
 ==============================================================================
 EXAMPLES						*vimshell-examples*
 >

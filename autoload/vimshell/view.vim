@@ -213,7 +213,24 @@ function! vimshell#view#_next_prompt(context, ...) "{{{
   if line('.') == line('$')
     call vimshell#print_prompt(a:context)
 
-    call vimshell#start_insert(is_insert)
+    if b:vimshell.context.quit
+      if winnr('$') != 1
+        if b:vimshell.context.popup
+          wincmd p
+        else
+          close
+        endif
+      else
+        call vimshell#util#alternate_buffer()
+      endif
+
+      " It is dirty hack.
+      " But :stopinsert does not work..
+      call feedkeys("\<ESC>", 'n')
+    else
+      call vimshell#start_insert(is_insert)
+    endif
+
     return
   endif
 
