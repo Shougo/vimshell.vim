@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 06 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -234,6 +234,19 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
   endif
 
   call vimshell#next_prompt(context, a:is_insert)
+  if b:vimshell.context.quit
+    if winnr('$') != 1
+      if b:vimshell.context.popup
+        wincmd p
+      else
+        close
+      endif
+    else
+      call vimshell#util#alternate_buffer()
+    endif
+
+    stopinsert
+  endif
 endfunction
 "}}}
 function! s:execute_statement(statement, context) "{{{

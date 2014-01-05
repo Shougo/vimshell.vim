@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 09 Dec 2013.
+" Last Modified: 05 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -113,7 +113,7 @@ endfunction"}}}
 function! vimshell#init#_context(context) "{{{
   let default_context = {
     \ 'buffer_name' : 'default',
-    \ 'no_quit' : 0,
+    \ 'quit' : 0,
     \ 'toggle' : 0,
     \ 'create' : 0,
     \ 'simple' : 0,

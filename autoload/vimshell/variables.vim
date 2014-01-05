@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: variables.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 05 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -43,7 +43,7 @@ function! vimshell#variables#options() "{{{
           \ '-prompt=', '-secondary-prompt=',
           \ '-user-prompt=', '-right-prompt=',
           \ '-prompt-expr=', '-prompt-pattern=',
-          \ '-project',
+          \ '-project', '-quit',
           \]
   endif
   return copy(s:vimshell_options)

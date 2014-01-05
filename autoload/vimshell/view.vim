@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2013.
+" Last Modified: 06 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -212,6 +212,7 @@ function! vimshell#view#_next_prompt(context, ...) "{{{
 
   if line('.') == line('$')
     call vimshell#print_prompt(a:context)
+
     call vimshell#start_insert(is_insert)
     return
   endif

@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2013.
+" Last Modified: 05 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -142,7 +142,11 @@ function! vimshell#set_context(context) "{{{
   let context = vimshell#init#_context(a:context)
   let s:context = context
   if exists('b:vimshell')
-    let b:vimshell.context = context
+    if has_key(b:vimshell, 'context')
+      call extend(b:vimshell.context, a:context)
+    else
+      let b:vimshell.context = context
+    endif
   endif
 endfunction"}}}
 function! vimshell#get_context() "{{{
