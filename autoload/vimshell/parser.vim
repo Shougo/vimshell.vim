@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2014.
+" Last Modified: 11 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -76,7 +76,11 @@ function! vimshell#parser#execute_command(commands, context) "{{{
   let commands = a:commands
   let program = commands[0].args[0]
   let args = commands[0].args[1:]
-  let fd = commands[0].fd
+  let fd = {
+        \ 'stdin' : commands[0].fd.stdin,
+        \ 'stdout' : commands[-1].fd.stdout,
+        \ 'stderr' : commands[-1].fd.stderr,
+        \ }
   let context = a:context
   let context.fd = fd
 
