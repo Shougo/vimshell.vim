@@ -246,6 +246,7 @@ function! s:vimshell_terminal(args) "{{{
 endfunction"}}}
 
 function! s:call_vimshell(default, args) "{{{
+  set noautochdir
   let args = []
   let options = a:default
   for arg in split(a:args, '\%(\\\@<!\s\)\+')
