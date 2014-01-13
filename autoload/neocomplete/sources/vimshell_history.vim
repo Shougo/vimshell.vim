@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2013.
+" Last Modified: 13 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -38,9 +38,6 @@ let s:source = {
       \ 'mark' : '[history]',
       \ }
 
-function! s:source.hooks.on_init(context) "{{{
-  let a:context.source__histories = vimshell#history#read()
-endfunction"}}}
 function! s:source.hooks.on_post_filter(context) "{{{
   for candidate in a:context.candidates
     let candidate.abbr =
@@ -57,7 +54,7 @@ function! s:source.get_complete_position(context) "{{{
 endfunction "}}}
 
 function! s:source.gather_candidates(context) "{{{
-  return filter(copy(a:context.source__histories),
+  return filter(copy(vimshell#history#read()),
         \ 'stridx(v:val, a:context.complete_str) >= 0')
 endfunction "}}}
 
