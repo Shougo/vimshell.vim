@@ -73,9 +73,9 @@ function! s:command.execute(args, context) "{{{
   let context.fd = a:context.fd
   try
     call vimshell#parser#eval_script(hist, context)
-  catch /.*/
-    call vimshell#error_line({}, v:exception)
-    call vimshell#error_line({}, v:throwpoint)
+  catch
+    call vimshell#error_line(context.fd, v:exception)
+    call vimshell#error_line(context.fd, v:throwpoint)
   endtry
 endfunction"}}}
 

@@ -44,7 +44,7 @@ function! s:command.execute(args, context) "{{{
     call vimshell#parser#eval_script(line, context)
   catch /.*/
     let message = v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, message)
+    call vimshell#error_line(context.fd, message)
     return
   endtry
 endfunction"}}}

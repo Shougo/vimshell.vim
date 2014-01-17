@@ -77,7 +77,7 @@ function! s:command.execute(args, context) "{{{
     catch
       let message = (v:exception !~# '^Vim:')?
             \ v:exception : v:exception . ' ' . v:throwpoint
-      call vimshell#error_line({},
+      call vimshell#error_line(context.fd,
             \ printf('%s(%d): %s', join(a:args), i, message))
       return
     endtry

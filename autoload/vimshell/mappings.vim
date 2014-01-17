@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2014.
+" Last Modified: 17 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -243,10 +243,11 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
       call vimshell#parser#execute_continuation(a:is_insert)
     catch
       " Error.
-      if v:exception !~# '^Vim\%((\a\+)\)\?:Interrupt'
-        call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      endif
       let context = b:vimshell.continuation.context
+      if v:exception !~# '^Vim\%((\a\+)\)\?:Interrupt'
+        call vimshell#error_line(
+              \ context.fd, v:exception . ' ' . v:throwpoint)
+      endif
       let b:vimshell.continuation = {}
       call vimshell#print_prompt(context)
       call vimshell#start_insert(a:is_insert)
@@ -290,7 +291,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
   endif
 
   " Move to line end.
-  normal! $
+  call cursor(0, col('$'))
 
   try
     call vimshell#parser#check_script(line)
@@ -304,7 +305,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
   if g:vimshell_enable_transient_user_prompt
         \ && vimshell#view#_check_user_prompt()
     " Delete previous user prompt.
-    execute vimshell#view#_check_user_prompt().',-1 delete _'
+    silent execute vimshell#view#_check_user_prompt().',-1 delete _'
   endif
 
   " Call preparse filter.
@@ -332,14 +333,16 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     endif
 
     " Error.
-    call vimshell#error_line({}, 'command not found: ' . matchstr(v:exception,
+    call vimshell#error_line(
+          \ context.fd, 'command not found: ' . matchstr(v:exception,
           \ 'File "\zs.*\ze" is not found.'))
     call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return
   catch
     " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
+    call vimshell#error_line(
+          \ context.fd, v:exception . ' ' . v:throwpoint)
     call vimshell#next_prompt(context, a:is_insert)
     call vimshell#start_insert(a:is_insert)
     return
@@ -413,7 +416,7 @@ function! s:delete_previous_output() "{{{
   normal! 0
   let [prev_line, prev_col] = searchpos(pprompt, 'bWn')
   if prev_line > 0 && next_line - prev_line > 1
-    execute printf('%s,%sdelete', prev_line+1, next_line-1)
+    silent execute printf('%s,%sdelete', prev_line+1, next_line-1)
     call append(line('.')-1, "* Output was deleted *")
   endif
   call s:next_prompt()

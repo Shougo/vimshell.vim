@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Jan 2014.
+" Last Modified: 17 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -320,7 +320,7 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
     " Delete current prompt.
     let promptnr = vimshell#view#_check_user_prompt(line('$')) > 0 ?
           \ vimshell#view#_check_user_prompt(line('$')) . ',' : ''
-    execute 'silent ' . promptnr . '$delete _'
+    silent execute promptnr . '$delete _'
   endif
 
   normal! zb

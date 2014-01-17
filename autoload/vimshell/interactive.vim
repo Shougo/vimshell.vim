@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2014.
+" Last Modified: 17 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -266,8 +266,7 @@ function! s:iexe_send_string(string, is_insert, linenr) "{{{
     endif
   catch
     " Error.
-    call vimshell#error_line({},
-          \ v:exception . ' ' . v:throwpoint)
+    call vimshell#error_line(context.fd, v:exception . ' ' . v:throwpoint)
     call vimshell#interactive#exit()
   endtry
 
@@ -602,8 +601,8 @@ function! s:check_password_input(string) "{{{
     call b:interactive.process.waitpid()
 
     " Error.
-    call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
     let context = vimshell#get_context()
+    call vimshell#error_line(context.fd, v:exception . ' ' . v:throwpoint)
     let b:vimshell.continuation = {}
     call vimshell#print_prompt(context)
     call vimshell#start_insert(mode() ==# 'i')
@@ -616,7 +615,7 @@ function! s:check_scrollback() "{{{
   if output_lines > g:vimshell_scrollback_limit
     let pos = getpos('.')
     " Delete output.
-    execute printf('silent %d,%ddelete _', prompt_nr+1,
+    silent execute printf('%d,%ddelete _', prompt_nr+1,
           \ (line('.')-g:vimshell_scrollback_limit+1))
     if pos != getpos('.')
       call setpos('.', pos)
@@ -752,10 +751,11 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
       call vimshell#parser#execute_continuation(is_insert)
     catch
       " Error.
-      if v:exception !~# '^Vim:Interrupt'
-        call vimshell#error_line({}, v:exception . ' ' . v:throwpoint)
-      endif
       let context = vimshell#get_context()
+      if v:exception !~# '^Vim:Interrupt'
+        call vimshell#error_line(
+              \ context.fd, v:exception . ' ' . v:throwpoint)
+      endif
       let b:vimshell.continuation = {}
       call vimshell#print_prompt(context)
       call vimshell#start_insert(is_insert)

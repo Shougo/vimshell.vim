@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 25 Nov 2013.
+" Last Modified: 17 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -185,7 +185,8 @@ function! s:vimshell_execute(args) "{{{
   catch
     let message = (v:exception !~# '^Vim:')?
           \ v:exception : v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    call vimshell#error_line(
+          \ context.fd, printf('%s: %s', a:args, message))
     return
   endtry
 endfunction"}}}
@@ -221,7 +222,8 @@ function! s:vimshell_interactive(args) "{{{
   catch
     let message = (v:exception !~# '^Vim:')?
           \ v:exception : v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    call vimshell#error_line(
+          \ context.fd, printf('%s: %s', a:args, message))
     return
   endtry
 endfunction"}}}
@@ -240,7 +242,8 @@ function! s:vimshell_terminal(args) "{{{
   catch
     let message = (v:exception !~# '^Vim:')?
           \ v:exception : v:exception . ' ' . v:throwpoint
-    call vimshell#error_line({}, printf('%s: %s', a:args, message))
+    call vimshell#error_line(
+          \ context.fd, printf('%s: %s', a:args, message))
     return
   endtry
 endfunction"}}}
