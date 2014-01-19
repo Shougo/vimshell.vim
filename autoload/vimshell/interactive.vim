@@ -723,10 +723,6 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     return
   endif
 
-  if mode() !=# 'i' && type !=# 'vimshell'
-    let intbuffer_pos = getpos('.')
-  endif
-
   if has_key(a:interactive, 'output_pos')
     call setpos('.', a:interactive.output_pos)
   endif
@@ -770,10 +766,6 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     " Set new window size.
     call a:interactive.process.set_winsize(
           \ winwidth(0), g:vimshell_scrollback_limit)
-  endif
-
-  if !is_insert && type !=# 'vimshell'
-    call setpos('.', intbuffer_pos)
   endif
 
   if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)

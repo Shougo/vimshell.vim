@@ -329,7 +329,8 @@ function! s:print_simple(is_error, lines) "{{{
   let lines = lines[1:]
 
   call append('.', lines)
-  execute 'normal!' (len(lines)).'j$'
+  call cursor(line('.') + len(lines), 0)
+  call cursor(0, col('$'))
 endfunction"}}}
 function! s:set_cursor() "{{{
   " Get real pos(0 origin).
