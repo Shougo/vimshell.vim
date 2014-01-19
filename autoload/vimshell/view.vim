@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2014.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,6 +26,11 @@
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+" Global options definition. "{{{
+let g:vimshell_enable_start_insert =
+      \ get(g:, 'vimshell_enable_start_insert', 1)
+"}}}
 
 function! vimshell#view#_get_prompt(...) "{{{
   let line = get(a:000, 0, line('.'))
@@ -180,14 +185,21 @@ function! vimshell#view#_start_insert(...) "{{{
 
   let is_insert = (a:0 == 0)? 1 : a:1
 
+  call cursor(line('$'), col('$'))
+
   if is_insert
     " Enter insert mode.
-    $
-    startinsert!
+    call vimshell#view#_simple_insert()
 
     call vimshell#helpers#imdisable()
+  endif
+endfunction"}}}
+function! vimshell#view#_simple_insert() "{{{
+  if g:vimshell_enable_start_insert
+    startinsert!
   else
-    normal! $
+    stopinsert
+    call cursor(0, col('$'))
   endif
 endfunction"}}}
 function! vimshell#view#_cd(directory) "{{{

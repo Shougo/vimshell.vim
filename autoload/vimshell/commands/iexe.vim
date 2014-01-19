@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Nov 2013.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -175,7 +175,7 @@ function! s:command.execute(commands, context) "{{{
   call vimshell#interactive#execute_process_out(1)
 
   if b:interactive.process.is_valid
-    startinsert!
+    call vimshell#view#_simple_insert()
   endif
 endfunction"}}}
 function! s:command.complete(args) "{{{
