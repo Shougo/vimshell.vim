@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2014.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -178,7 +178,7 @@ function! vimshell#interactive#send(expr) "{{{
     return
   endif
 
-  $
+  call cursor(line('$'), col('$'))
 
   let list = type(a:expr) == type('') ?
         \ [a:expr] : a:expr
@@ -324,11 +324,7 @@ function! s:set_output_pos(is_insert) "{{{
         \ has_key(b:interactive.process, 'stdout')
         \ && (!b:interactive.process.stdout.eof ||
         \     !b:interactive.process.stderr.eof)
-    if a:is_insert
-      startinsert!
-    else
-      normal! $
-    endif
+    call vimshell#view#_simple_insert(a:is_insert)
 
     let b:interactive.output_pos = getpos('.')
   endif
@@ -389,8 +385,7 @@ function! vimshell#interactive#exit() "{{{
       setlocal modifiable
       call append('$', '*Exit*')
 
-      $
-      normal! $
+      call cursor(line('$'), col('$'))
     endif
   endif
 endfunction"}}}
@@ -409,9 +404,7 @@ function! vimshell#interactive#force_exit() "{{{
     setlocal modifiable
 
     call append('$', '*Killed*')
-    $
-    normal! $
-
+    call cursor(line('$'), col('$'))
     stopinsert
   endif
 endfunction"}}}
@@ -439,9 +432,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
     setlocal modifiable
 
     call append('$', '*Killed*')
-    $
-    normal! $
-
+    call cursor(line('$'), col('$'))
     stopinsert
   endif
 endfunction"}}}
@@ -770,7 +761,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     elseif (!a:interactive.process.stdout.eof
           \   || !a:interactive.process.stderr.eof)
           \ && is_insert
-      startinsert!
+      call vimshell#view#_simple_insert(is_insert)
     endif
   endif
 

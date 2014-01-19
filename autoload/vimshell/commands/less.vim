@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 27 Nov 2013.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -252,7 +252,7 @@ endfunction "}}}
 function! s:print_output(line_num) "{{{
   setlocal modifiable
 
-  $
+  call cursor(line('$'), col('$'))
 
   if b:interactive.stdout_cache == ''
     if b:interactive.process.stdout.eof

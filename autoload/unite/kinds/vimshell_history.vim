@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell/history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Dec 2013.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -110,7 +110,7 @@ function! s:kind.action_table.insert.func(candidates) "{{{
   if unite#get_context().complete
     startinsert!
   else
-    normal! $
+    call cursor(0, col('$'))
   endif
 endfunction"}}}
 

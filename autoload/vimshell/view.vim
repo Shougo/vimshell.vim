@@ -165,7 +165,7 @@ function! vimshell#view#_print_prompt(...) "{{{
     call append('$', new_prompt)
   endif
 
-  $
+  call cursor(line('$'), col('$'))
   let &modified = 0
 endfunction"}}}
 function! vimshell#view#_print_secondary_prompt() "{{{
@@ -175,7 +175,7 @@ function! vimshell#view#_print_secondary_prompt() "{{{
 
   " Insert secondary prompt line.
   call append('$', vimshell#get_secondary_prompt())
-  $
+  call cursor(line('$'), col('$'))
   let &modified = 0
 endfunction"}}}
 function! vimshell#view#_start_insert(...) "{{{
@@ -194,8 +194,10 @@ function! vimshell#view#_start_insert(...) "{{{
     call vimshell#helpers#imdisable()
   endif
 endfunction"}}}
-function! vimshell#view#_simple_insert() "{{{
-  if g:vimshell_enable_start_insert
+function! vimshell#view#_simple_insert(...) "{{{
+  let is_insert = (a:0 == 0)? 1 : a:1
+
+  if is_insert && g:vimshell_enable_start_insert
     startinsert!
   else
     stopinsert

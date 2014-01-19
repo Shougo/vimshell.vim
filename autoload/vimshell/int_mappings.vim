@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -198,7 +198,7 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
     endif
   endif
 
-  $
+  call cursor(line('$'), col('$'))
 
   call vimshell#interactive#execute_pty_inout(a:is_insert)
 
@@ -212,7 +212,7 @@ function! s:paste_prompt() "{{{
   " Set prompt line.
   let cur_text = vimshell#interactive#get_cur_line(line('.'))
   call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . cur_text)
-  $
+  call cursor(line('$'), col('$'))
 endfunction"}}}
 function! s:restart_command() "{{{
   if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid
@@ -240,7 +240,7 @@ function! s:restart_command() "{{{
 
   call vimshell#interactive#execute_process_out(1)
 
-  startinsert!
+  call vimshell#view#_start_insert()
 endfunction"}}}
 function! vimshell#int_mappings#command_complete() "{{{
   let prompt = vimshell#interactive#get_prompt()
@@ -330,7 +330,7 @@ function! vimshell#int_mappings#clear() "{{{
 
   call vimshell#interactive#execute_process_out(1)
 
-  startinsert!
+  call vimshell#view#_start_insert()
 endfunction"}}}
 
 " vim: foldmethod=marker

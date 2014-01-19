@@ -365,7 +365,7 @@ g:vimshell_enable_transient_user_prompt
 g:vimshell_enable_start_insert
 		If it is non-zero, vimshell will start in insert mode.
 
-		Default value is 0.
+		Default value is 1.
 
 					*g:vimshell_execute_file_list*
 g:vimshell_execute_file_list

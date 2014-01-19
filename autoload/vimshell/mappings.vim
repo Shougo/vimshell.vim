@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2014.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -216,7 +216,7 @@ function! s:push_current_line() "{{{
   " Set prompt line.
   call setline('.', vimshell#get_prompt())
 
-  startinsert!
+  call vimshell#view#_simple_insert()
 endfunction"}}}
 function! s:push_and_execute(command) "{{{
   " Check current line.
@@ -490,11 +490,8 @@ function! s:clear(is_insert) "{{{
   call vimshell#view#_set_prompt_command(lines[0])
   call append('$', map(lines[1:],
         \ string(vimshell#get_secondary_prompt()).'.v:val'))
-  $
 
-  if a:is_insert
-    call vimshell#start_insert()
-  endif
+  call vimshell#start_insert(a:is_insert)
 endfunction"}}}
 function! s:expand_wildcard() "{{{
   " Wildcard.

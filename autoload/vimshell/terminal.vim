@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 05 Dec 2013.
+" Last Modified: 20 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -275,7 +275,7 @@ function! s:optimized_print(string, is_error) "{{{
     call s:print_simple(a:is_error, lines)
   endif
 
-  normal! $
+  call cursor(0, col('$'))
   let [s:virtual.line, s:virtual.col] =
         \ s:get_virtual_col(line('.'), col('.')-1)
   call s:set_cursor()
@@ -319,7 +319,8 @@ function! s:print_simple(is_error, lines) "{{{
       call append('.', lines[0])
     endif
 
-    normal! j$
+    call cursor(line('.')+1, 0)
+    call cursor(0, col('$'))
   elseif line('.') != b:interactive.echoback_linenr
     call setline('.', substitute(
           \ getline('.') . lines[0], '[^!]\zs!\{6}\ze[^!]', '', 'g'))
