@@ -254,7 +254,7 @@ function! vimshell#view#_next_prompt(context, ...) "{{{
     if vimshell#view#_get_prompt_command() == ''
       startinsert!
     else
-      normal! l
+      call cursor(0, col('.')+1)
     endif
   endif
 

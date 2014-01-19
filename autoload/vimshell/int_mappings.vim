@@ -281,14 +281,14 @@ function! s:insert_enter() "{{{
   startinsert
 endfunction"}}}
 function! s:insert_head() "{{{
-  normal! 0
+  call cursor(1, 0)
   call s:insert_enter()
 endfunction"}}}
 function! s:append_enter() "{{{
   if vimshell#helpers#check_cursor_is_end()
     call s:append_end()
   else
-    normal! l
+    call cursor(0, col('.') + 1)
     call s:insert_enter()
   endif
 endfunction"}}}

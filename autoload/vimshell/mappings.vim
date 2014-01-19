@@ -413,7 +413,7 @@ function! s:delete_previous_output() "{{{
     let next_line -= 1
   endwhile
 
-  normal! 0
+  call cursor(0, 1)
   let [prev_line, prev_col] = searchpos(pprompt, 'bWn')
   if prev_line > 0 && next_line - prev_line > 1
     silent execute printf('%s,%sdelete', prev_line+1, next_line-1)
@@ -458,7 +458,7 @@ function! s:move_head() "{{{
   call cursor(0, vimshell#get_prompt_length() + 1)
 endfunction"}}}
 function! s:move_end_argument() "{{{
-  normal! 0
+  call cursor(0, 1)
   call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))
 endfunction"}}}
 function! s:delete_line() "{{{
@@ -607,14 +607,14 @@ function! s:insert_enter() "{{{
   startinsert
 endfunction"}}}
 function! s:insert_head() "{{{
-  normal! 0
+  call cursor(0, 1)
   call s:insert_enter()
 endfunction"}}}
 function! s:append_enter() "{{{
   if vimshell#helpers#check_cursor_is_end()
     call s:append_end()
   else
-    normal! l
+    call cursor(0, col('.')+1)
     call s:insert_enter()
   endif
 endfunction"}}}

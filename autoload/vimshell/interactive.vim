@@ -96,7 +96,7 @@ function! vimshell#interactive#send_input() "{{{
   call vimshell#helpers#imdisable()
   call setline('.', vimshell#interactive#get_prompt() . ' ')
 
-  normal! $h
+  call cursor(0, col('$')-1)
   call vimshell#interactive#iexe_send_string(input, 1)
 endfunction"}}}
 function! vimshell#interactive#send_char(char) "{{{

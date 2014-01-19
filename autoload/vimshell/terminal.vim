@@ -65,7 +65,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
         \     vimshell#get_secondary_prompt()))
     " Move line.
     call append(line('.'), '')
-    normal! j
+    call cursor(line('.')+1, 0)
   endif
 
   let current_line = getline('.')
@@ -286,7 +286,7 @@ function! s:print_with_redraw(is_error, lines) "{{{
     if cnt != 1 ||
           \ (s:is_no_echoback() && getline('$') != '')
       call append('.', '')
-      normal! j
+      call cursor(line('.')+1, 0)
     endif
 
     let ls = map(split(line, '\r\ze.', 1), "substitute(v:val, '\\r', '', '')")

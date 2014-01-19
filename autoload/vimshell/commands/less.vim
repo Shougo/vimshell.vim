@@ -229,7 +229,7 @@ function! s:next_line() "{{{
     call s:print_output(2)
   endif
 
-  normal! j
+  call cursor(line('.')+1, 0)
 endfunction "}}}
 function! s:next_screen() "{{{
   if line('.') == line('$')
