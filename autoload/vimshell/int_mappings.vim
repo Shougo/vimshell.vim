@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: int_mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 21 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -198,7 +198,8 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
     endif
   endif
 
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
 
   call vimshell#interactive#execute_pty_inout(a:is_insert)
 
@@ -212,7 +213,8 @@ function! s:paste_prompt() "{{{
   " Set prompt line.
   let cur_text = vimshell#interactive#get_cur_line(line('.'))
   call setline(line('$'), vimshell#interactive#get_prompt(line('$')) . cur_text)
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
 endfunction"}}}
 function! s:restart_command() "{{{
   if exists('b:interactive') && !empty(b:interactive.process) && b:interactive.process.is_valid

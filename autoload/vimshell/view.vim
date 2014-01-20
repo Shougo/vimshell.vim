@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 21 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -165,7 +165,8 @@ function! vimshell#view#_print_prompt(...) "{{{
     call append('$', new_prompt)
   endif
 
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
   let &modified = 0
 endfunction"}}}
 function! vimshell#view#_print_secondary_prompt() "{{{
@@ -175,7 +176,8 @@ function! vimshell#view#_print_secondary_prompt() "{{{
 
   " Insert secondary prompt line.
   call append('$', vimshell#get_secondary_prompt())
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
   let &modified = 0
 endfunction"}}}
 function! vimshell#view#_start_insert(...) "{{{
@@ -185,7 +187,8 @@ function! vimshell#view#_start_insert(...) "{{{
 
   let is_insert = (a:0 == 0)? 1 : a:1
 
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
 
   if is_insert
     " Enter insert mode.

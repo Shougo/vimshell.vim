@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 21 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -178,7 +178,8 @@ function! vimshell#interactive#send(expr) "{{{
     return
   endif
 
-  call cursor(line('$'), col('$'))
+  call cursor(line('$'), 0)
+  call cursor(0, col('$'))
 
   let list = type(a:expr) == type('') ?
         \ [a:expr] : a:expr
@@ -385,7 +386,7 @@ function! vimshell#interactive#exit() "{{{
       setlocal modifiable
       call append('$', '*Exit*')
 
-      call cursor(line('$'), col('$'))
+      call cursor(line('$'), 0)
     endif
   endif
 endfunction"}}}
@@ -404,7 +405,7 @@ function! vimshell#interactive#force_exit() "{{{
     setlocal modifiable
 
     call append('$', '*Killed*')
-    call cursor(line('$'), col('$'))
+    call cursor(line('$'), 0)
     stopinsert
   endif
 endfunction"}}}
@@ -432,7 +433,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
     setlocal modifiable
 
     call append('$', '*Killed*')
-    call cursor(line('$'), col('$'))
+    call cursor(line('$'), 0)
     stopinsert
   endif
 endfunction"}}}
