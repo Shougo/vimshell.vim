@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Jan 2014.
+" Last Modified: 22 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,6 +26,11 @@
 
 let s:save_cpo = &cpo
 set cpo&vim
+
+" Global options definition. "{{{
+let g:vimshell_enable_start_insert =
+      \ get(g:, 'vimshell_enable_start_insert', 1)
+"}}}
 
 let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
 let s:manager = s:BM.new()  " creates new manager
@@ -269,7 +274,9 @@ function! s:create_shell(path, context) "{{{
 
   call vimshell#print_prompt(a:context)
 
-  call vimshell#start_insert()
+  if g:vimshell_enable_start_insert
+    call vimshell#start_insert()
+  endif
 
   " Check prompt value. "{{{
   let prompt = vimshell#get_prompt()
@@ -326,7 +333,9 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
   normal! zb
 
   call vimshell#print_prompt()
-  call vimshell#start_insert()
+  if g:vimshell_enable_start_insert
+    call vimshell#start_insert()
+  endif
 endfunction"}}}
 
 function! s:initialize_vimshell(path, context) "{{{

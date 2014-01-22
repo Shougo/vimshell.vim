@@ -361,9 +361,16 @@ g:vimshell_enable_transient_user_prompt
 
 		Default value is 0.
 
-				*g:vimshell_enable_start_insert*
+					*g:vimshell_enable_start_insert*
 g:vimshell_enable_start_insert
 		If it is non-zero, vimshell will start in insert mode.
+
+		Default value is 1.
+
+					*g:vimshell_enable_stay_insert*
+g:vimshell_enable_stay_insert
+		If it is non-zero, vimshell will stay in insert mode after
+		the command executed.
 
 		Default value is 1.
 

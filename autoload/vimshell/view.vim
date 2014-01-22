@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: view.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jan 2014.
+" Last Modified: 22 Jan 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -28,8 +28,8 @@ let s:save_cpo = &cpo
 set cpo&vim
 
 " Global options definition. "{{{
-let g:vimshell_enable_start_insert =
-      \ get(g:, 'vimshell_enable_start_insert', 1)
+let g:vimshell_enable_stay_insert =
+      \ get(g:, 'vimshell_enable_stay_insert', 1)
 "}}}
 
 function! vimshell#view#_get_prompt(...) "{{{
@@ -200,7 +200,7 @@ endfunction"}}}
 function! vimshell#view#_simple_insert(...) "{{{
   let is_insert = (a:0 == 0)? 1 : a:1
 
-  if is_insert && g:vimshell_enable_start_insert
+  if is_insert && g:vimshell_enable_stay_insert
     startinsert!
   else
     stopinsert
