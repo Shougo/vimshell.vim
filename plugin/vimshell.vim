@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 03 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -56,7 +56,7 @@ let g:vimshell_vimshrc_path =
 let g:vimshell_escape_colors =
       \ get(g:, 'vimshell_escape_colors', [
         \ '#6c6c6c', '#ff6666', '#66ff66', '#ffd30a',
-        \ '#1e95fd', '#ff13ff', '#1bc8c8', '#C0C0C0',
+        \ '#1e95fd', '#ff13ff', '#1bc8c8', '#c0c0c0',
         \ '#383838', '#ff4444', '#44ff44', '#ffb30a',
         \ '#6699ff', '#f820ff', '#4ae2e2', '#ffffff',
         \])
