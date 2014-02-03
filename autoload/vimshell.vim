@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 06 Jan 2014.
+" Last Modified: 04 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,7 +32,7 @@ if !exists('g:loaded_vimshell')
 endif
 
 function! vimshell#version() "{{{
-  return str2nr(printf('%02d%02d', 11, 0))
+  return str2nr(printf('%02d%02d', 11, 1))
 endfunction"}}}
 
 function! vimshell#echo_error(string) "{{{
@@ -123,11 +123,14 @@ function! vimshell#is_interactive() "{{{
         \ || (b:interactive.type ==# 'vimshell' && is_valid)
 endfunction"}}}
 function! vimshell#get_data_directory()
-  if !isdirectory(g:vimshell_temporary_directory) && !vimshell#util#is_sudo()
-    call mkdir(g:vimshell_temporary_directory, 'p')
+  let data_directory = vimshell#util#substitute_path_separator(
+        \ vimshell#util#set_default('g:vimshell_temporary_directory',
+        \ expand('~/.cache/vimshell'), 'g:vimshell_temporary_directory'))
+  if !isdirectory(data_directory) && !vimshell#util#is_sudo()
+    call mkdir(data_directory, 'p')
   endif
 
-  return g:vimshell_temporary_directory
+  return data_directory
 endfunction
 "}}}
 

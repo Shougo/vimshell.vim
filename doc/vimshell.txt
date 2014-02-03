@@ -1,6 +1,6 @@
 *vimshell.txt*	Powerful shell implemented by Vim script
 
-Version: 11.0
+Version: 11.1
 Author : Shougo <Shougo.Matsu@gmail.com>
 License: MIT license  {{{
     Permission is hereby granted, free of charge, to any person obtaining
@@ -241,11 +241,14 @@ g:vimshell_use_terminal_command
 		
 		Initial value is an empty string.
 
-g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
-		Sets a temporary directory used by vimshell.  And history file
-		is saved in this directory.
+g:vimshell_data_directory		*g:vimshell_data_directory*
+		Specify directories to store vimshell configurations.  And
+		history file is saved in this directory.
 
-		Initial value is "expand('~/.vimshell')".
+		Initial value is "expand('~/.cache/vimshell')".
+
+g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
+		Note: It is deprecated name.
 
 g:vimshell_max_command_history		*g:vimshell_max_command_history*
 		Maximum number of entries in history.
