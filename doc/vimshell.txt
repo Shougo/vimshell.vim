@@ -1116,6 +1116,13 @@ h [{pattern}]						*vimshell-internal-h*
 		you omit {pattern}, execute last command.
 		Note: This command does not add history.
 
+		Note: "![{pattern}]" or "!!" equals to "h" command"
+>
+		vimshell% !          # Execute previous command.
+		vimshell% !2         # Execute history number 2 command.
+		vimshell% !!         # Execute previous command.
+		vimshell% !ls        # Execute "ls" matched command.
+<
 histdel {history-number}			*vimshell-internal-histdel*
 		Deletes {history-number} history.  You can check history number
 		using |vimshell-internal-history| command.

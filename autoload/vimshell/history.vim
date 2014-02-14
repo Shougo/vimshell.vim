@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 24 Nov 2013.
+" Last Modified: 14 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,7 +45,7 @@ function! vimshell#history#append(command) "{{{
     let no_history_commands = g:vimshell_interactive_no_save_history_commands
   endif
 
-  if program != '' && has_key(no_history_commands, program)
+  if program == '' || program =~ '^!' || has_key(no_history_commands, program)
     " No history command.
     return
   endif
@@ -61,25 +61,27 @@ function! vimshell#history#append(command) "{{{
 
   call vimshell#history#write(histories)
 endfunction"}}}
-function! vimshell#history#read() "{{{
+function! vimshell#history#read(...) "{{{
   if vimshell#util#is_sudo()
     return []
   endif
 
-  let history_path = s:get_history_path()
+  let history_path = get(a:000, 0, vimshell#history#get_history_path())
   return filereadable(history_path) ?
         \ readfile(history_path) : []
 endfunction"}}}
-function! vimshell#history#write(list) "{{{
+function! vimshell#history#write(list, ...) "{{{
   if vimshell#util#is_sudo()
     return []
   endif
 
+  let history_path = get(a:000, 0, vimshell#history#get_history_path())
+
   " Save history file.
-  call writefile(a:list, s:get_history_path())
+  call writefile(a:list, history_path)
 endfunction"}}}
 
-function! s:get_history_path() "{{{
+function! vimshell#history#get_history_path() "{{{
   if &filetype ==# 'vimshell' && empty(b:vimshell.continuation)
     let history_path = vimshell#get_data_directory() . '/command-history'
     if !filereadable(history_path)

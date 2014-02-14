@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: parser.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 11 Jan 2014.
+" Last Modified: 14 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -96,8 +96,16 @@ function! vimshell#parser#execute_command(commands, context) "{{{
     " Execute execute commands.
     let commands[0].args = args
     return vimshell#helpers#execute_internal_command(program, commands, context)
+  elseif program =~ '^!'
+    " Convert to internal "h" command.
+    if program == '!!'
+      let args = []
+    else
+      let args = [program[1:]] + args
+    endif
+    return vimshell#helpers#execute_internal_command('h', args, context)
   elseif a:commands[-1].args[-1] =~ '&$'
-    " Convert to internal bg command.
+    " Convert to internal "bg" command.
     let commands[-1].args[-1] = commands[-1].args[-1][:-2]
     if commands[-1].args[-1] == ''
       " Delete empty arg.
