@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: init.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 22 Jan 2014.
+" Last Modified: 15 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -32,10 +32,7 @@ let g:vimshell_enable_start_insert =
       \ get(g:, 'vimshell_enable_start_insert', 1)
 "}}}
 
-let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
-let s:manager = s:BM.new()  " creates new manager
-call s:manager.config('opener', 'silent edit')
-call s:manager.config('range', 'current')
+let s:manager = vimshell#util#get_vital().import('Vim.Buffer')
 
 function! vimshell#init#_start(path, ...) "{{{
   " Check vimproc. "{{{
@@ -258,12 +255,12 @@ function! s:create_shell(path, context) "{{{
   set noswapfile
 
   try
-    let ret = s:manager.open(bufname)
+    let loaded = s:manager.open(bufname, 'silent edit')
   finally
     let &swapfile = swapfile_save
   endtry
 
-  if !ret.loaded
+  if !loaded
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return

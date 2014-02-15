@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: less.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 21 Jan 2014.
+" Last Modified: 15 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,10 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
-let s:manager = s:BM.new()  " creates new manager
-call s:manager.config('opener', 'silent edit')
-call s:manager.config('range', 'current')
+let s:manager = vimshell#util#get_vital().import('Vim.Buffer')
 
 let s:command = {
       \ 'name' : 'less',
@@ -138,9 +135,9 @@ function! s:init(commands, context, options, interactive) "{{{
     let args .= join(command.args)
   endfor
 
-  let ret = s:manager.open('less-'.substitute(args,
-        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1))
-  if !ret.loaded
+  let loaded = s:manager.open('less-'.substitute(args,
+        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1), 'silent edit')
+  if !loaded
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return

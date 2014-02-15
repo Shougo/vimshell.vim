@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: iexe.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 15 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,10 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
-let s:manager = s:BM.new()  " creates new manager
-call s:manager.config('opener', 'silent edit')
-call s:manager.config('range', 'current')
+let s:manager = vimshell#util#get_vital().import('Vim.Buffer')
 
 let s:command = {
       \ 'name' : 'iexe',
@@ -310,9 +307,9 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Save current directiory.
   let cwd = getcwd()
 
-  let ret = s:manager.open('iexe-'.substitute(join(a:interactive.args),
-        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1))
-  if !ret.loaded
+  let loaded = s:manager.open('iexe-'.substitute(join(a:interactive.args),
+        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1), 'silent edit')
+  if !loaded
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return

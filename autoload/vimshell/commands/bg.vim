@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: bg.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 18 Dec 2013.
+" Last Modified: 15 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -24,10 +24,7 @@
 " }}}
 "=============================================================================
 
-let s:BM = vimshell#util#get_vital().import('Vim.BufferManager')
-let s:manager = s:BM.new()  " creates new manager
-call s:manager.config('opener', 'silent edit')
-call s:manager.config('range', 'current')
+let s:manager = vimshell#util#get_vital().import('Vim.Buffer')
 
 let s:command = {
       \ 'name' : 'bg',
@@ -133,9 +130,9 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
     let args .= join(command.args)
   endfor
 
-  let ret = s:manager.open('bg-'.substitute(args,
-        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1))
-  if !ret.loaded
+  let loaded = s:manager.open('bg-'.substitute(args,
+        \ '[<>|]', '_', 'g') .'@'.(bufnr('$')+1), 'silent edit')
+  if !loaded
     call vimshell#echo_error(
           \ '[vimshell] Failed to open Buffer.')
     return

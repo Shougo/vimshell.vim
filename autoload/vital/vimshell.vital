@@ -1,4 +1,7 @@
-5de2c28
+vimshell
+450727f
 
-Vim.BufferManager
+Prelude
+Vim.Buffer
 Data.List
+Process
