@@ -56,11 +56,12 @@ function! vimshell#history#append(command) "{{{
   let histories = vimshell#history#read()
 
   " Filtering.
-  let histories = vimshell#util#uniq(insert(histories, command))
+  let histories = vimshell#util#uniq(add(histories, command))
 
-  if g:vimshell_max_command_history > 0
+  if g:vimshell_max_command_history > 0 &&
+        \ len(histories) > g:vimshell_max_command_history
     " Truncate.
-    let histories = histories[: g:vimshell_max_command_history-1]
+    let histories = histories[-g:vimshell_max_command_history :]
   endif
 
   call vimshell#history#write(histories)

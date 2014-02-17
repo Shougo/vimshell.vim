@@ -88,8 +88,8 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return map(copy(a:context.source__current_histories),
-        \ '{ "word" : v:val }')
+  return reverse(map(copy(a:context.source__current_histories),
+        \ '{ "word" : v:val }'))
 endfunction "}}}
 
 " vim: foldmethod=marker

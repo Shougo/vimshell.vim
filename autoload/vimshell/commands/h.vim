@@ -35,12 +35,12 @@ function! s:command.execute(args, context) "{{{
   let histories = vimshell#history#read()
   if empty(a:args) || a:args[0] =~ '^\d\+'
     if empty(a:args)
-      let num = 0
+      let num = -1
     else
       let num = str2nr(a:args[0])
     endif
 
-    if num >= len(histories)
+    if num >= len(histories) || -num > len(histories)
       " Error.
       call vimshell#error_line(a:context.fd, 'h: Not found in history.')
       return

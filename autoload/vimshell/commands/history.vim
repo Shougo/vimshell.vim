@@ -33,7 +33,7 @@ function! s:command.execute(args, context) "{{{
   let histories = vimshell#history#read()
 
   let arguments = join(a:args, ' ')
-  if arguments =~ '^\d\+$'
+  if arguments =~ '^-\?\d\+$'
     let search = ''
     let max = str2nr(arguments)
   elseif empty(arguments)
@@ -45,22 +45,26 @@ function! s:command.execute(args, context) "{{{
     let max = len(histories)
   endif
 
-  if max <=0 || max >= len(histories)
+  if max < 0
+    let max = -max
+  endif
+
+  if max == 0 || max >= len(histories)
     " Overflow.
-    let max = len(histories)
+    let max = 0
   endif
 
   let list = []
   let cnt = 0
   for hist in histories
-    if vimshell#util#head_match(hist, search)
+    if search == '' || vimshell#util#head_match(hist, search)
       call add(list, [cnt, hist])
     endif
 
     let cnt += 1
   endfor
 
-  for [cnt, hist] in list[: max-1]
+  for [cnt, hist] in list[-max :]
     call vimshell#print_line(a:context.fd, printf('%3d: %s', cnt, hist))
   endfor
 endfunction"}}}

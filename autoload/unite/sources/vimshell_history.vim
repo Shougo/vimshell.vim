@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Feb 2014.
+" Last Modified: 17 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -86,8 +86,8 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return map(copy(s:current_histories),
-        \ "{ 'word' : v:val,  }")
+  return reverse(map(copy(s:current_histories),
+        \ "{ 'word' : v:val,  }"))
 endfunction "}}}
 
 function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
