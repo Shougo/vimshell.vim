@@ -252,6 +252,7 @@ g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
 
 g:vimshell_max_command_history		*g:vimshell_max_command_history*
 		Maximum number of entries in history.
+		If it is < 0, you can use infinite histories.
 
 		Initial value is 1000.
 

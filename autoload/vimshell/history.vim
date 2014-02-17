@@ -58,8 +58,10 @@ function! vimshell#history#append(command) "{{{
   " Filtering.
   let histories = vimshell#util#uniq(insert(histories, command))
 
-  " Truncate.
-  let histories = histories[: g:vimshell_max_command_history-1]
+  if g:vimshell_max_command_history > 0
+    " Truncate.
+    let histories = histories[: g:vimshell_max_command_history-1]
+  endif
 
   call vimshell#history#write(histories)
 endfunction"}}}
