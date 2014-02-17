@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_external_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 13 Jul 2013.
+" Last Modified: 17 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -26,8 +26,8 @@
 
 " Variables  "{{{
 call unite#util#set_default('g:unite_source_vimshell_external_history_path',
-      \ fnamemodify($SHELL, ':t') ==# 'zsh' ? expand('~/.zsh-history') :
-      \ fnamemodify($SHELL, ':t') ==# 'bash' ? expand('~/.bash_history') :
+      \ fnamemodify(&shell, ':t') ==# 'zsh' ? expand('~/.zsh-history') :
+      \ fnamemodify(&shell, ':t') ==# 'bash' ? expand('~/.bash_history') :
       \ expand('~/.history')
       \)
 "}}}

@@ -507,7 +507,7 @@ g:unite_source_vimshell_external_history_path
 		It is assignment of a history file that
 		|vimshell/external_history| source recognizes.
 
-		Default value is set to suit for $SHELL value.
+		Default value is set to suit for 'shell' value.
 
 ------------------------------------------------------------------------------
 KEY MAPPINGS 					*vimshell-key-mappings*
