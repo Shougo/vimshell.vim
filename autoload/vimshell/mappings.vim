@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 17 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -171,6 +171,14 @@ function! vimshell#mappings#define_default_mappings() "{{{
 
   " History completion.
   imap <buffer> <C-l> <Plug>(vimshell_history_unite)
+  inoremap <buffer><expr> <C-p> pumvisible() ? "\<C-p>" :
+        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-p>"
+  inoremap <buffer><expr> <C-n> pumvisible() ? "\<C-n>" :
+        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-n>"
+  inoremap <buffer><expr> <Up> pumvisible() ? "\<C-p>" :
+        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>"
+  inoremap <buffer><expr> <Down> pumvisible() ? "\<C-n>" :
+        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-n>"
 
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)

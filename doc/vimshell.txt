@@ -666,6 +666,7 @@ Insert mode key mappings.
 		Execute vimshell history by neocomplete interface.
 		Note: To use it, you must install |neocomplete| plugin.
 
+					*vimshell_default_key_mappings*
 Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
@@ -688,17 +689,21 @@ a			<Plug>(vimshell_append_enter)
 <C-l>			<Plug>(vimshell_clear)
 <C-z>			<Plug>(vimshell_execute_by_background)
 
+					*v_vimshell_default_key_mappings*
 Visual mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
 <C-p>			<Plug>(vimshell_select_previous_prompt)
 <C-n>			<Plug>(vimshell_select_next_prompt)
 
+					*i_vimshell_default_key_mappings*
 Insert mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
 <CR>			<Plug>(vimshell_enter)
 <C-l>			<Plug>(vimshell_history_unite)
+<C-p>/<Up>		<Plug>(vimshell_history_neocomplete)
+<C-n>/<Down>		<Plug>(vimshell_history_neocomplete)
 <TAB>			<Plug>(vimshell_command_complete)
 <C-a>			<Plug>(vimshell_move_head)
 <C-u>			<Plug>(vimshell_delete_backward_line)
@@ -807,7 +812,7 @@ Insert mode key mappings.
 		Execute vimshell history by unite interface.
 		Note: To use it, you must install |unite.vim| plugin.
 
-
+					*vimshell_int_default_key_mappings*
 Normal mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
@@ -826,6 +831,7 @@ i			<Plug>(vimshell_int_insert_enter)
 a			<Plug>(vimshell_int_append_enter)
 <C-l>			<Plug>(vimshell_int_clear)
 
+					*i_vimshell_int_default_key_mappings*
 Insert mode default key mappings.
 {lhs}			{rhs}
 --------		-----------------------------
