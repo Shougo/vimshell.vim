@@ -45,7 +45,9 @@ function! vimshell#history#append(command) "{{{
     let no_history_commands = g:vimshell_interactive_no_save_history_commands
   endif
 
-  if program == '' || program =~ '^\\\?!' || has_key(no_history_commands, program)
+  if program == '' || program =~ '^\\\?!'
+        \ || has_key(no_history_commands, program)
+        \ || isdirectory(program)
     " No history command.
     return
   endif

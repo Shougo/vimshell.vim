@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 04 Feb 2014.
+" Last Modified: 17 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -74,7 +74,7 @@ let g:vimshell_external_history_path =
       \ get(g:, 'vimshell_external_history_path', '')
 let g:vimshell_no_save_history_commands =
       \ get(g:, 'vimshell_no_save_history_commands', {
-      \     'history' : 1, 'h' : 1, 'histdel' : 1
+      \     'history' : 1, 'h' : 1, 'histdel' : 1, 'cd' : 1,
       \ })
 let g:vimshell_scrollback_limit =
       \ get(g:, 'vimshell_scrollback_limit', 1000)
