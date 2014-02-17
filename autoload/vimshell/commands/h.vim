@@ -33,7 +33,7 @@ function! s:command.execute(args, context) "{{{
   " Execute from history.
 
   let histories = vimshell#history#read()
-  if empty(a:args) || a:args[0] =~ '^\d\+'
+  if empty(a:args) || a:args[0] =~ '^-\?\d\+'
     if empty(a:args)
       let num = -1
     else
