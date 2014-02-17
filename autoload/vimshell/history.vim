@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 14 Feb 2014.
+" Last Modified: 17 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -45,7 +45,7 @@ function! vimshell#history#append(command) "{{{
     let no_history_commands = g:vimshell_interactive_no_save_history_commands
   endif
 
-  if program == '' || program =~ '^!' || has_key(no_history_commands, program)
+  if program == '' || program =~ '^\\\?!' || has_key(no_history_commands, program)
     " No history command.
     return
   endif
