@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_external_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2014.
+" Last Modified: 23 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -88,8 +88,8 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return reverse(map(copy(a:context.source__current_histories),
-        \ '{ "word" : v:val }'))
+  return map(vimshell#util#uniq(reverse(
+        \ a:context.source__current_histories)), '{ "word" : v:val }')
 endfunction "}}}
 
 " vim: foldmethod=marker

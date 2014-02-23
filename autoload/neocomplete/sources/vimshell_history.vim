@@ -54,7 +54,7 @@ function! s:source.get_complete_position(context) "{{{
 endfunction "}}}
 
 function! s:source.gather_candidates(context) "{{{
-  return reverse(filter(vimshell#util#uniq(vimshell#history#read()),
+  return reverse(filter(vimshell#util#uniq(reverse(vimshell#history#read())),
         \ 'stridx(v:val, a:context.complete_str) >= 0'))
 endfunction "}}}
 
