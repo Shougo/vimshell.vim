@@ -55,11 +55,9 @@ function! vimshell#history#append(command) "{{{
   " Reload history.
   let histories = vimshell#history#read()
 
-  if empty(histories) || histories[-1] !=# command
-    call add(histories, command)
-  endif
-
   " Filtering.
+  let histories = add(filter(histories, "v:val !=# command"), command)
+
   if g:vimshell_max_command_history > 0 &&
         \ len(histories) > g:vimshell_max_command_history
     " Truncate.
