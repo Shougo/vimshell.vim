@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: history.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2014.
+" Last Modified: 23 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -30,7 +30,7 @@ function! vimshell#history#append(command) "{{{
 
   " Reload history.
   if &filetype ==# 'vimshell'
-    if !empty(b:vimshell.continuation)
+    if !empty(b:vimshell.continuation) && !vimshell#check_prompt()
       " Search program name.
       let statement = b:vimshell.continuation.statements[0].statement
       let program = fnamemodify(vimshell#parser#parse_program(
@@ -87,7 +87,8 @@ function! vimshell#history#write(list, ...) "{{{
 endfunction"}}}
 
 function! vimshell#history#get_history_path() "{{{
-  if &filetype ==# 'vimshell' && empty(b:vimshell.continuation)
+  if &filetype ==# 'vimshell' &&
+        \ (empty(b:vimshell.continuation) || !vimshell#check_prompt())
     let history_path = vimshell#get_data_directory() . '/command-history'
     if !filereadable(history_path)
       " Create file.
