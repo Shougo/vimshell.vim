@@ -56,7 +56,7 @@ function! vimshell#history#append(command) "{{{
   let histories = vimshell#history#read()
 
   " Filtering.
-  let histories = add(filter(histories, "v:val !=# command"), command)
+  let histories = add(unite#util#uniq(histories), command)
 
   if g:vimshell_max_command_history > 0 &&
         \ len(histories) > g:vimshell_max_command_history
