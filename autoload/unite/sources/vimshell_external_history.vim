@@ -69,6 +69,8 @@ function! s:source.hooks.on_syntax(args, context) "{{{
   endtry
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context) "{{{
+  let a:context.candidates = vimshell#util#uniq(a:context.candidates)
+
   let cnt = 0
 
   for candidate in a:context.candidates
@@ -85,11 +87,13 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
 
     let cnt += 1
   endfor
+
+  return a:context.candidates
 endfunction"}}}
 
 function! s:source.gather_candidates(args, context) "{{{
-  return map(vimshell#util#uniq(reverse(
-        \ a:context.source__current_histories)), '{ "word" : v:val }')
+  return map(reverse(a:context.source__current_histories),
+        \ '{ "word" : v:val }')
 endfunction "}}}
 
 " vim: foldmethod=marker
