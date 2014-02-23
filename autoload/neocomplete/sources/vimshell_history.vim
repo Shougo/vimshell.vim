@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: vimshell_history.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2014.
+" Last Modified: 23 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -54,7 +54,7 @@ function! s:source.get_complete_position(context) "{{{
 endfunction "}}}
 
 function! s:source.gather_candidates(context) "{{{
-  return reverse(filter(copy(vimshell#history#read()),
+  return reverse(filter(vimshell#util#uniq(vimshell#history#read()),
         \ 'stridx(v:val, a:context.complete_str) >= 0'))
 endfunction "}}}
 
