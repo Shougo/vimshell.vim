@@ -1350,6 +1350,10 @@ vexe {expression}				*vimshell-special-vexe*
 		You can use prefix ":" instead of vexe.
 		Note: If you use ":", vimshell do not parse anything.
 		
+		--insert
+		Start insert mode after execute {expression}.
+		If omit the option, leave insert mode.
+
 		Example:
 >
 		:ls

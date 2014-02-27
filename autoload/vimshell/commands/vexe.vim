@@ -31,6 +31,11 @@ let s:command = {
       \}
 function! s:command.execute(args, context) "{{{
   " Execute vim command.
+  let [args, options] = vimshell#parser#getopt(a:args, {
+        \ 'noarg' : ['--insert'],
+        \ }, {
+        \ '--insert' : 0,
+        \ })
 
   let context = a:context
   let context.fd = a:context.fd
@@ -44,7 +49,7 @@ function! s:command.execute(args, context) "{{{
     let &verbosefile = verbose
     let &verbose = 0
 
-    for command in split(join(a:args), '\n')
+    for command in split(join(args), '\n')
       silent! execute command
     endfor
   finally
@@ -62,7 +67,11 @@ function! s:command.execute(args, context) "{{{
   if bufnr('%') != bufnr
     call vimshell#next_prompt(a:context)
     call vimshell#helpers#restore_pos(pos)
-    stopinsert
+    if options['--insert']
+      startinsert
+    else
+      stopinsert
+    endif
     return 1
   elseif _ != ''
     call vimshell#print_line(a:context.fd, _)

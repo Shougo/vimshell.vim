@@ -12,8 +12,14 @@ Context Vesting.run()
     VimShellCreate
     call vimshell#set_alias('l2', 'll')
     call vimshell#set_alias('ll', 'ls -l')
-    Should vimshell#parser#parse_alias('l2') ==# 'ls -l'
+    ShouldEqual vimshell#parser#parse_alias('l2'), 'ls -l'
     VimShellCreate -toggle
+  End
+
+  It tests option parser.
+    ShouldEqual vimshell#parser#getopt(['foo', 'bar'], {
+          \ 'noarg' : ['--insert'],
+          \ }), [['foo', 'bar'], {}]
   End
 End
 
