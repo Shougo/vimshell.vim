@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: mappings.vim
 " AUTHOR: Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2014.
+" Last Modified: 27 Feb 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -172,13 +172,13 @@ function! vimshell#mappings#define_default_mappings() "{{{
   " History completion.
   imap <buffer> <C-l> <Plug>(vimshell_history_unite)
   inoremap <buffer><expr> <C-p> pumvisible() ? "\<C-p>" :
-        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-p>"
+        \ neocomplete#start_manual_complete('vimshell/history')
   inoremap <buffer><expr> <C-n> pumvisible() ? "\<C-n>" :
-        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-n>"
+        \ neocomplete#start_manual_complete('vimshell/history')
   inoremap <buffer><expr> <Up> pumvisible() ? "\<C-p>" :
-        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>"
+        \ neocomplete#start_manual_complete('vimshell/history')
   inoremap <buffer><expr> <Down> pumvisible() ? "\<C-n>" :
-        \ neocomplete#start_manual_complete('vimshell/history')."\<C-p>\<C-n>"
+        \ neocomplete#start_manual_complete('vimshell/history')
 
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
