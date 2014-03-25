@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: terminal.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 20 Jan 2014.
+" Last Modified: 25 Mar 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -354,13 +354,13 @@ function! s:set_cursor() "{{{
 
   redraw
 endfunction"}}}
-function! s:is_no_echoback()
+function! s:is_no_echoback() "{{{
   return b:interactive.type ==# 'interactive'
           \ && vimshell#util#is_windows()
           \ && has_key(b:interactive, 'command')
           \ && !get(g:vimshell_interactive_echoback_commands,
           \        b:interactive.command, 0)
-endfunction
+endfunction"}}}
 
 function! s:init_terminal() "{{{
 endfunction"}}}
