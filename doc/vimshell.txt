@@ -400,6 +400,7 @@ g:vimshell_interactive_update_time
 		controls the timing of auto update.
 		|vimshell-internal-iexe| changes 'updatetime' based on this
 		value.
+		If it is 0, this feature is disabled.
 
 		Default value is 500.
 

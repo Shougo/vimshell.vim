@@ -1,7 +1,7 @@
 "=============================================================================
 " FILE: interactive.vim
 " AUTHOR:  Shougo Matsushita <Shougo.Matsu@gmail.com>
-" Last Modified: 17 Feb 2014.
+" Last Modified: 29 Mar 2014.
 " License: MIT license  {{{
 "     Permission is hereby granted, free of charge, to any person obtaining
 "     a copy of this software and associated documentation files (the
@@ -668,7 +668,8 @@ function! s:check_all_output(is_hold) "{{{
   endif
 
   if exists('b:interactive') || updated
-    if &updatetime > g:vimshell_interactive_update_time
+    if g:vimshell_interactive_update_time > 0
+          \ && &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
       let s:update_time_save = &updatetime
       let &updatetime = g:vimshell_interactive_update_time
@@ -689,7 +690,8 @@ function! s:check_all_output(is_hold) "{{{
       " Skip next auto completion.
       call vimshell#util#skip_next_complete()
     endif
-  elseif &updatetime == g:vimshell_interactive_update_time
+  elseif g:vimshell_interactive_update_time > 0
+        \ && &updatetime == g:vimshell_interactive_update_time
         \ && &filetype !=# 'unite'
     " Restore updatetime.
     let &updatetime = s:update_time_save
