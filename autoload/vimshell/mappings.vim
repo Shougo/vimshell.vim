@@ -171,13 +171,13 @@ function! vimshell#mappings#define_default_mappings() "{{{
   " History completion.
   imap <buffer> <C-l> <Plug>(vimshell_history_unite)
   inoremap <buffer><expr> <C-p> pumvisible() ? "\<C-p>" :
-        \ neocomplete#start_manual_complete('vimshell/history')
+        \ <SID>start_history_complete()
   inoremap <buffer><expr> <C-n> pumvisible() ? "\<C-n>" :
-        \ neocomplete#start_manual_complete('vimshell/history')
+        \ <SID>start_history_complete()
   inoremap <buffer><expr> <Up> pumvisible() ? "\<C-p>" :
-        \ neocomplete#start_manual_complete('vimshell/history')
+        \ <SID>start_history_complete()
   inoremap <buffer><expr> <Down> pumvisible() ? "\<C-n>" :
-        \ neocomplete#start_manual_complete('vimshell/history')
+        \ <SID>start_history_complete()
 
   " Command completion.
   imap <buffer> <TAB>  <Plug>(vimshell_command_complete)
@@ -656,6 +656,11 @@ function! s:execute_by_background(is_insert) "{{{
 
   call vimshell#commands#iexe#init(context, interactive,
         \ new_pos, old_pos, a:is_insert)
+endfunction"}}}
+function! s:start_history_complete() "{{{
+  return exists('*neocomplete#start_manual_complete') ?
+        \ neocomplete#start_manual_complete('vimshell/history') :
+        \ ''
 endfunction"}}}
 
 " vim: foldmethod=marker
