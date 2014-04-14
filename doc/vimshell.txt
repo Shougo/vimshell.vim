@@ -1107,7 +1107,7 @@ gcd [{directory-path}]				*vimshell-internal-gcd*
 
 gendoc {command} {args}				*vimshell-internal-gendoc*
 		Executes {command} with {args} and saves output in
-		"g:vimshell_temporary_directory/cached-doc".  You can read
+		"g:vimshell_data_directory/cached-doc".  You can read
 		cached outputs using |echodoc|.
 		Note: This command caches first output line only.
 

@@ -121,16 +121,16 @@ function! vimshell#is_interactive() "{{{
   return b:interactive.type ==# 'interactive'
         \ || (b:interactive.type ==# 'vimshell' && is_valid)
 endfunction"}}}
-function! vimshell#get_data_directory()
+function! vimshell#get_data_directory() "{{{
   let data_directory = vimshell#util#substitute_path_separator(
-        \ vimshell#util#set_default('g:vimshell_temporary_directory',
+        \ vimshell#util#set_default('g:vimshell_data_directory',
         \ expand('~/.cache/vimshell'), 'g:vimshell_temporary_directory'))
   if !isdirectory(data_directory) && !vimshell#util#is_sudo()
     call mkdir(data_directory, 'p')
   endif
 
   return data_directory
-endfunction
+endfunction"}}}
 "}}}
 
 " User helper functions.
