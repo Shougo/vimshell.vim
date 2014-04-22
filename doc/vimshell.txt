@@ -566,6 +566,9 @@ Normal mode key mappings.
 <Plug>(vimshell_hangup)				*<Plug>(vimshell_hangup)*
 		Terminate command.
 
+<Plug>(vimshell_interrupt)			*<Plug>(vimshell_interrupt)*
+		Send interrupt.
+
 <Plug>(vimshell_insert_head)			*<Plug>(vimshell_insert_head)*
 					*<Plug>(vimshell_insert_enter)*
 <Plug>(vimshell_insert_enter)

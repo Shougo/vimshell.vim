@@ -50,6 +50,8 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ <Plug>(vimshell_change_line)<ESC>
   nnoremap <buffer><silent> <Plug>(vimshell_hangup)
         \ :<C-u>call <SID>hangup(0)<CR>
+  nnoremap <buffer><silent> <Plug>(vimshell_interrupt)
+        \ :<C-u>call <SID>interrupt(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)
         \ :<C-u>call <SID>insert_enter()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
