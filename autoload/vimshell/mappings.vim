@@ -134,8 +134,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nmap <buffer> <C-p> <Plug>(vimshell_previous_prompt)
   " Move to next prompt.
   nmap <buffer> <C-n> <Plug>(vimshell_next_prompt)
-  " Remove this output.
-  nmap <buffer> <C-k> <Plug>(vimshell_delete_previous_output)
   " Paste this prompt.
   nmap <buffer> <C-y> <Plug>(vimshell_paste_prompt)
   " Search end argument.
@@ -151,7 +149,8 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nmap <buffer> a         <Plug>(vimshell_append_enter)
   nmap <buffer> ^         <Plug>(vimshell_move_head)
   " Interrupt.
-  nmap <buffer> <C-c> <Plug>(vimshell_hangup)
+  nmap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  nmap <buffer> <C-k> <Plug>(vimshell_hangup)
   " Clear.
   nmap <buffer> <C-l> <Plug>(vimshell_clear)
   " Execute background.
@@ -589,6 +588,9 @@ function! s:interrupt(is_insert) "{{{
   endif
 
   call vimshell#interactive#send_char(3)
+  if !a:is_insert
+    stopinsert
+  endif
 endfunction"}}}
 function! s:insert_enter() "{{{
   if !vimshell#check_prompt()

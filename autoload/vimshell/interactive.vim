@@ -843,7 +843,7 @@ function! s:kill_process(interactive) "{{{
     try
       " Kill process.
       " 15 == SIGTERM
-      call a:interactive.process.kill(15)
+      call a:interactive.process.kill(g:vimproc#SIGTERM)
       call a:interactive.process.waitpid()
     catch
     endtry
