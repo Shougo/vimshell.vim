@@ -68,7 +68,8 @@ function! s:source.hooks.on_syntax(args, context) "{{{
   endtry
 endfunction"}}}
 function! s:source.hooks.on_post_filter(args, context) "{{{
-  let a:context.candidates = vimshell#util#uniq(a:context.candidates)
+  let a:context.candidates = vimshell#util#uniq_by(
+        \ a:context.candidates, 'v:val.word')
 
   let cnt = 0
 

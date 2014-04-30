@@ -168,6 +168,9 @@ endfunction"}}}
 function! vimshell#util#uniq(...) "{{{
   return call(s:get_list().uniq, a:000)
 endfunction"}}}
+function! vimshell#util#uniq_by(...) "{{{
+  return call(s:get_list().uniq_by, a:000)
+endfunction"}}}
 
 function! vimshell#util#has_vimproc(...) "{{{
   return call(s:get_process().has_vimproc, a:000)
