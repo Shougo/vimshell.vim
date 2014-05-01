@@ -201,6 +201,7 @@ function! vimshell#view#_simple_insert(...) "{{{
 
   if is_insert && g:vimshell_enable_stay_insert
     startinsert!
+    startinsert!
   else
     stopinsert
     call cursor(0, col('$'))
