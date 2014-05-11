@@ -225,13 +225,21 @@ function! vimshell#util#path2project_directory(...)
   return call(s:get_prelude().path2project_directory, a:000)
 endfunction
 
-function! vimshell#util#skip_next_complete() "{{{
-  " Skip next auto completion.
-  if exists('*neocomplcache#skip_next_complete')
-    call neocomplcache#skip_next_complete()
+function! vimshell#util#enable_auto_complete() "{{{
+  if exists(':NeoCompleteUnlock')
+    NeoCompleteUnlock
   endif
-  if exists('*neocomplete#skip_next_complete')
-    call neocomplete#skip_next_complete()
+  if exists(':NeoComplcacheUnLock')
+    NeoComplcacheUnLock
+  endif
+endfunction"}}}
+function! vimshell#util#disable_auto_complete() "{{{
+  " Skip next auto completion.
+  if exists(':NeoCompleteLock')
+    NeoCompleteLock
+  endif
+  if exists(':NeoComplcacheLock')
+    NeoComplcacheLock
   endif
 endfunction"}}}
 

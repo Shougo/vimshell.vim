@@ -55,9 +55,6 @@ function! vimshell#terminal#print(string, is_error) "{{{
     echomsg 'print string = ' . string(a:string)
   endif
 
-  " Skip next auto completion.
-  call vimshell#util#skip_next_complete()
-
   if &filetype ==# 'vimshell' &&
         \ empty(b:vimshell.continuation) && (vimshell#check_prompt()
         \ || vimshell#util#head_match(getline('.'),
