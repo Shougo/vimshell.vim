@@ -663,8 +663,10 @@ function! s:check_all_output(is_hold) "{{{
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
-    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    let updated = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
+
+  call vimshell#util#enable_auto_complete()
 
   if exists('b:interactive') || updated
     if g:vimshell_interactive_update_time > 0
@@ -687,10 +689,10 @@ function! s:check_all_output(is_hold) "{{{
           call feedkeys("a\<BS>", 'n')
         endif
 
-        " Skip next auto completion.
-        call vimshell#util#disable_auto_complete()
-      else
-        call vimshell#util#enable_auto_complete()
+        if updated
+          " Skip next auto completion.
+          call vimshell#util#disable_auto_complete()
+        endif
       endif
     endif
   elseif g:vimshell_interactive_update_time > 0
