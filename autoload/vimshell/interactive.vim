@@ -666,7 +666,9 @@ function! s:check_all_output(is_hold) "{{{
     let updated = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
 
-  call vimshell#util#enable_auto_complete()
+  if exists('b:interactive')
+    call vimshell#util#enable_auto_complete()
+  endif
 
   if exists('b:interactive') || updated
     if g:vimshell_interactive_update_time > 0
