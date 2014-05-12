@@ -663,10 +663,10 @@ function! s:check_all_output(is_hold) "{{{
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
-    let updated = s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
 
-  if exists('b:interactive')
+  if exists('b:interactive') && vimshell#get_prompt() != ''
     call vimshell#util#enable_auto_complete()
   endif
 
@@ -689,11 +689,6 @@ function! s:check_all_output(is_hold) "{{{
         if a:is_hold != is_complete_hold
           setlocal modifiable
           call feedkeys("a\<BS>", 'n')
-        endif
-
-        if updated
-          " Skip next auto completion.
-          call vimshell#util#disable_auto_complete()
         endif
       endif
     endif
