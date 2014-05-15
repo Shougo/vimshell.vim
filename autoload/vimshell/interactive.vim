@@ -69,7 +69,7 @@ function! vimshell#interactive#get_prompt(...) "{{{
   endif
 
   " Get prompt line.
-  return get(b:interactive.prompt_history, line, '')
+  return get(get(b:interactive, 'prompt_history', {}), line, '')
 endfunction"}}}
 function! s:chomp_prompt(cur_text, line, interactive) "{{{
   return a:cur_text[len(vimshell#get_prompt(a:line, a:interactive)): ]
