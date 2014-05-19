@@ -41,7 +41,7 @@ function! vimshell#history#append(command) "{{{
     endif
   else
     " Remove "int-" in filetype.
-    let program = &filetype[4:]
+    let program = substitute(&filetype, '^int-', '', 'g')
     let no_history_commands = g:vimshell_interactive_no_save_history_commands
   endif
 
