@@ -26,15 +26,14 @@
 function! vimshell#parser#check_script(script) "{{{
   " Parse check only.
   " Split statements.
-  let script = vimshell#parser#parse_alias(a:script)
-  for statement in vimproc#parser#split_statements(script)
-    let args = vimproc#parser#split_args(statement)
+  for statement in vimproc#parser#split_statements(a:script)
+    let args = vimproc#parser#split_args(
+          \ vimshell#parser#parse_alias(statement))
   endfor
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context) "{{{
   " Split statements.
-  let script = vimshell#parser#parse_alias(a:script)
-  let statements = vimproc#parser#parse_statements(script)
+  let statements = vimproc#parser#parse_statements(a:script)
   let max = len(statements)
 
   let context = a:context
@@ -43,7 +42,8 @@ function! vimshell#parser#eval_script(script, context) "{{{
   let i = 0
   while i < max
     try
-      let ret =  s:execute_statement(statements[i].statement, a:context)
+      let ret =  s:execute_statement(vimshell#parser#parse_alias(
+            \ statements[i].statement), a:context)
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation = {
