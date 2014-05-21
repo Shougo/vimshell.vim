@@ -42,8 +42,7 @@ function! vimshell#parser#eval_script(script, context) "{{{
   let i = 0
   while i < max
     try
-      let ret =  s:execute_statement(vimshell#parser#parse_alias(
-            \ statements[i].statement), a:context)
+      let ret =  s:execute_statement(statements[i].statement, a:context)
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation = {
@@ -248,7 +247,7 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
 endfunction
 "}}}
 function! s:execute_statement(statement, context) "{{{
-  let statement = a:statement
+  let statement = vimshell#parser#parse_alias(a:statement)
 
   " Call preexec filter.
   let statement = vimshell#hook#call_filter(
