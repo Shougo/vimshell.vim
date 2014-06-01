@@ -122,10 +122,11 @@ function! vimshell#is_interactive() "{{{
         \ || (b:interactive.type ==# 'vimshell' && is_valid)
 endfunction"}}}
 function! vimshell#get_data_directory() "{{{
+  let data_directory = vimshell#util#set_default(
+        \ 'g:vimshell_data_directory',
+        \ '~/.cache/vimshell', 'g:vimshell_temporary_directory')
   let data_directory = vimshell#util#substitute_path_separator(
-        \ vimshell#util#set_default('g:vimshell_data_directory',
-        \ '~/.cache/vimshell', 'g:vimshell_temporary_directory'))
-  let data_directory = expand(data_directory)
+        \ expand(data_directory))
   if !isdirectory(data_directory) && !vimshell#util#is_sudo()
     call mkdir(data_directory, 'p')
   endif
