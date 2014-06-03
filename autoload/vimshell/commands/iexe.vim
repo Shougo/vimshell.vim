@@ -339,11 +339,11 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   " Set send buffer.
   call vimshell#interactive#set_send_buffer(bufnr('%'))
 
-  call vimshell#helpers#restore_pos(a:old_pos)
+  noautocmd call vimshell#helpers#restore_pos(a:old_pos)
 
   if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, a:is_insert)
-    call vimshell#helpers#restore_pos(a:new_pos)
+    noautocmd call vimshell#helpers#restore_pos(a:new_pos)
   endif
 endfunction"}}}
 

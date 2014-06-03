@@ -211,11 +211,11 @@ function! s:init(commands, context, options, interactive) "{{{
 
   call s:print_output(winheight(0))
 
-  call vimshell#helpers#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 
   if get(a:context, 'is_single_command', 0)
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#helpers#restore_pos(new_pos)
+    noautocmd call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

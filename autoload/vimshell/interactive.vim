@@ -227,7 +227,7 @@ function! vimshell#interactive#send(expr) "{{{
   endif
 
   stopinsert
-  call vimshell#helpers#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 endfunction"}}}
 function! vimshell#interactive#send_string(...) "{{{
   echohl WarningMsg | echomsg 'vimshell#interactive#send_string() is deprecated; use vimshell#interactive#send() instead' | echohl None

@@ -151,11 +151,11 @@ function! s:command.execute(commands, context) "{{{
         \}
   call vimshell#interactive#init()
 
-  call vimshell#helpers#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command') && a:context.is_single_command
     call vimshell#next_prompt(a:context, 1)
-    call vimshell#helpers#restore_pos(new_pos)
+    noautocmd call vimshell#helpers#restore_pos(new_pos)
 
     if b:interactive.process.is_valid
       startinsert

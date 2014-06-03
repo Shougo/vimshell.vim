@@ -57,12 +57,12 @@ function! s:command_vim.execute(args, context) "{{{
 
   call vimshell#cd(cwd)
 
-  call vimshell#helpers#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 
   if has_key(a:context, 'is_single_command')
         \ && a:context.is_single_command
     call vimshell#next_prompt(a:context, 0)
-    call vimshell#helpers#restore_pos(new_pos)
+    noautocmd call vimshell#helpers#restore_pos(new_pos)
     stopinsert
   endif
 endfunction"}}}

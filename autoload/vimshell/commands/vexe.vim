@@ -61,11 +61,11 @@ function! s:command.execute(args, context) "{{{
   let pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.') ]
   let bufnr = bufnr('%')
 
-  call vimshell#helpers#restore_pos(old_pos)
+  noautocmd call vimshell#helpers#restore_pos(old_pos)
 
   if bufnr('%') != bufnr
     call vimshell#next_prompt(a:context)
-    call vimshell#helpers#restore_pos(pos)
+    noautocmd call vimshell#helpers#restore_pos(pos)
     if options['--insert']
       startinsert
     else
