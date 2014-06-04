@@ -92,7 +92,8 @@ function! vimshell#get_cur_text() "{{{
   return cur_line[vimshell#get_prompt_length(cur_line) :]
 endfunction"}}}
 function! vimshell#get_cur_line() "{{{
-  let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c' . (mode() ==# 'i' ? '' : '.'))
+  let cur_text = matchstr(getline('.'),
+        \ '^.*\%'.col('.').'c' . (mode() ==# 'i' ? '' : '.'))
   return cur_text
 endfunction"}}}
 function! vimshell#check_prompt(...) "{{{
