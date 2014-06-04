@@ -100,9 +100,13 @@ function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
     return ''
   endif
 
-  return unite#start_complete(['vimshell/history', 'vimshell/external_history'], {
-        \ 'start_insert' : a:is_insert,
-        \ 'input' : vimshell#get_cur_text(),
+  return unite#start_complete(
+        \ (empty(b:vimshell.continuation) ?
+        \   ['vimshell/history', 'vimshell/external_history'] :
+        \   ['vimshell/history']),
+        \ {
+        \  'start_insert' : a:is_insert,
+        \  'input' : vimshell#get_cur_text(),
         \ })
 endfunction "}}}
 
