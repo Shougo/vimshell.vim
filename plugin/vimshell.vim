@@ -86,7 +86,7 @@ let g:vimshell_force_overwrite_statusline =
 let g:vimshell_interactive_no_save_history_commands =
       \ get(g:, 'vimshell_interactive_no_save_history_commands', {})
 let g:vimshell_interactive_update_time =
-      \ get(g:, 'vimshell_interactive_update_time', 500)
+      \ get(g:, 'vimshell_interactive_update_time', 200)
 let g:vimshell_interactive_command_options =
       \ get(g:, 'vimshell_interactive_command_options', {})
 let g:vimshell_interactive_interpreter_commands =

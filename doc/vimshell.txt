@@ -402,7 +402,7 @@ g:vimshell_interactive_update_time
 		value.
 		If it is 0, this feature is disabled.
 
-		Default value is 500.
+		Default value is 200.
 
 				*g:vimshell_interactive_command_options*
 g:vimshell_interactive_command_options
