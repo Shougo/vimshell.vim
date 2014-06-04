@@ -83,13 +83,7 @@ function! vimshell#get_right_prompt() "{{{
         \ 'right_prompt', get(g:, 'vimshell_right_prompt', ''))
 endfunction"}}}
 function! vimshell#get_cur_text() "{{{
-  " Get cursor text without prompt.
-  if &filetype !=# 'vimshell'
-    return vimshell#interactive#get_cur_text()
-  endif
-
-  let cur_line = vimshell#get_cur_line()
-  return cur_line[vimshell#get_prompt_length(cur_line) :]
+  return vimshell#interactive#get_cur_text()
 endfunction"}}}
 function! vimshell#get_cur_line() "{{{
   let cur_text = matchstr(getline('.'),
