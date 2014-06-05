@@ -486,7 +486,7 @@ function! s:highlight_with(start, end, syntax) "{{{
   endif
   unlet! b:current_syntax
   let save_isk= &l:iskeyword  " For scheme.
-  execute printf('syntax include @highlightWith%d syntax/%s.vim',
+  execute printf('silent! syntax include @highlightWith%d syntax/%s.vim',
         \              cnt, a:syntax)
   let &l:iskeyword = save_isk
   execute printf('syntax region highlightWith%d start=/\%%%dl/ end=%s keepend '
