@@ -32,7 +32,7 @@ function! vimshell#int_mappings#define_default_mappings() "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_int_execute_line)
         \ :<C-u>call vimshell#execute_current_line(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_paste_prompt)
-        \ :<C-u>call <SID>paste_prompt()<CR>
+        \ :<C-u>call vimshell#int_mappings#_paste_prompt()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_hangup)
         \ :<C-u>call vimshell#interactive#hang_up(bufname('%'))<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_int_exit)
@@ -187,14 +187,7 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
   let command = vimshell#interactive#get_cur_line(line('.'))
 
   if line('.') != line('$')
-    if !has_key(b:interactive.prompt_history, line('$'))
-      " Insert prompt line.
-      call append(line('$'), command)
-    else
-      " Set prompt line.
-      call setline(line('$'),
-            \ b:interactive.prompt_history[line('$')] . command)
-    endif
+    call vimshell#int_mappings#_paste_prompt()
   endif
 
   call cursor(line('$'), 0)
@@ -204,7 +197,7 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
 
   call vimshell#helpers#imdisable()
 endfunction"}}}
-function! s:paste_prompt() "{{{
+function! vimshell#int_mappings#_paste_prompt() "{{{
   if !has_key(b:interactive.prompt_history, line('.'))
     return
   endif

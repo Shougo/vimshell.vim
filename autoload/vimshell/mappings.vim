@@ -93,7 +93,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ vimshell#get_cur_text()  == '' ? '' : "\<C-w>"
   inoremap <buffer><silent> <Plug>(vimshell_enter)
         \ <C-g>u<C-o>:call vimshell#execute_current_line(1)<CR>
-        " \ <C-g>u<ESC>:<C-u>call vimshell#execute_current_line(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_interrupt)
         \ <C-o>:call <SID>interrupt(1)<CR>
   inoremap <buffer><silent> <Plug>(vimshell_move_previous_window)
@@ -245,6 +244,11 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
   let b:interactive.output_pos = getpos('.')
 
   if !empty(b:vimshell.continuation)
+    if line('.') != line('$')
+      " History execution.
+      call vimshell#int_mappings#_paste_prompt()
+    endif
+
     call vimshell#interactive#execute_pty_inout(a:is_insert)
 
     try
@@ -260,17 +264,15 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
       call vimshell#print_prompt(context)
       call vimshell#start_insert(a:is_insert)
     endtry
+  else
+    if vimshell#check_prompt() && line('.') != line('$')
+      " History execution.
+      call vimshell#mappings#_paste_prompt()
+    endif
 
-    return
-  endif
-
-  if vimshell#check_prompt() && line('.') != line('$')
-    " History execution.
-    call vimshell#mappings#_paste_prompt()
-  endif
-
-  if line('.') == line('$')
-    call s:execute_command_line(a:is_insert, oldpos)
+    if line('.') == line('$')
+      call s:execute_command_line(a:is_insert, oldpos)
+    endif
   endif
 endfunction"}}}
 function! s:execute_command_line(is_insert, oldpos) "{{{
