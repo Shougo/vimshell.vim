@@ -79,6 +79,7 @@ function! s:command.execute(commands, context) "{{{
         \ 'command' : commands[0].args[0],
         \ 'cmdline' : join(commands[0].args),
         \ 'stdout_cache' : '',
+        \ 'stderr_cache' : '',
         \ 'width' : winwidth(0),
         \ 'height' : g:vimshell_scrollback_limit,
         \}
