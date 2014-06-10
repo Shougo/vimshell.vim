@@ -66,7 +66,12 @@ function! s:command.execute(args, context) "{{{
 
   for filename in filenames
     try
-      silent edit +setlocal\ readonly `=filename`
+      let buflisted = buflisted(filename)
+      execute 'silent edit +setlocal\ readonly' fnameescape(filename)
+
+      if !buflisted
+        doautocmd BufRead
+      endif
     catch
       echohl Error | echomsg v:errmsg | echohl None
     endtry

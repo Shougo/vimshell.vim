@@ -43,10 +43,15 @@ function! s:command_vim.execute(args, context) "{{{
   for filename in empty(args) ?
         \ [a:context.fd.stdin] : args
     try
+      let buflisted = buflisted(filename)
       if filename == ''
         silent enew
       else
-        silent edit `=filename`
+        execute 'silent edit' fnameescape(filename)
+      endif
+
+      if !buflisted
+        doautocmd BufRead
       endif
     catch
       echohl Error | echomsg v:errmsg | echohl None
