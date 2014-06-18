@@ -101,7 +101,7 @@ function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
   endif
 
   return unite#start_complete(
-        \ (get(get(b:, 'vimshell', {}), 'continuation') ?
+        \ (exists('b:vimshell') && empty(b:vimshell.continuation) ?
         \   ['vimshell/history', 'vimshell/external_history'] :
         \   ['vimshell/history']),
         \ {
