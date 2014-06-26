@@ -39,7 +39,7 @@ function! s:command.complete(args) "{{{
   endif
 
   " Use unite-ssh function.
-  let _ =  unite#sources#ssh#command_complete_host(
+  let _ =  unite#sources#ssh#complete_host(
         \ arglead, cmdline, len(cmdline)) +
         \ vimshell#complete#helper#files(arglead)
 
