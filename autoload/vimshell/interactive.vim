@@ -294,7 +294,7 @@ function! vimshell#interactive#execute_process_out(is_insert) "{{{
   " Check cache.
   let read = b:interactive.stderr_cache
   if !b:interactive.process.stderr.eof
-    let read .= b:interactive.process.stderr.read(10000, 0)
+    let read .= b:interactive.process.stderr.read(100, 0)
   endif
   call vimshell#interactive#error_buffer(b:interactive.fd, read)
   let b:interactive.stderr_cache = ''
@@ -302,7 +302,7 @@ function! vimshell#interactive#execute_process_out(is_insert) "{{{
   " Check cache.
   let read = b:interactive.stdout_cache
   if !b:interactive.process.stdout.eof
-    let read .= b:interactive.process.stdout.read(10000, 0)
+    let read .= b:interactive.process.stdout.read(100, 0)
   endif
   call vimshell#interactive#print_buffer(b:interactive.fd, read)
   let b:interactive.stdout_cache = ''
@@ -790,12 +790,12 @@ function! s:cache_output(interactive) "{{{
 
   if !a:interactive.process.stdout.eof
     let a:interactive.stdout_cache .=
-          \ a:interactive.process.stdout.read(10000, 0)
+          \ a:interactive.process.stdout.read(100, 0)
   endif
 
   if !a:interactive.process.stderr.eof
     let a:interactive.stderr_cache .=
-          \ a:interactive.process.stderr.read(10000, 0)
+          \ a:interactive.process.stderr.read(100, 0)
   endif
 
   if a:interactive.process.stderr.eof &&
