@@ -54,7 +54,7 @@ endfunction"}}}
 function! vimshell#view#_set_prompt_command(string) "{{{
   if !vimshell#check_prompt()
     " Search prompt.
-    let [lnum, col] = searchpos(
+    let [lnum, _] = searchpos(
           \ vimshell#get_context().prompt_pattern, 'bnW')
   else
     let lnum = '.'
@@ -70,7 +70,7 @@ function! vimshell#view#_get_prompt_command(...) "{{{
 
   if !vimshell#check_prompt()
     " Search prompt.
-    let [lnum, col] = searchpos(
+    let [lnum, _] = searchpos(
           \ vimshell#get_context().prompt_pattern, 'bnW')
   else
     let lnum = '.'
@@ -362,7 +362,7 @@ function! s:get_prompt_linenr() "{{{
     return 0
   endif
 
-  let [line, col] = searchpos(
+  let [line, _] = searchpos(
         \ vimshell#get_context().prompt_pattern, 'nbcW')
   return line
 endfunction"}}}

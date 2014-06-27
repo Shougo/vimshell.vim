@@ -342,14 +342,14 @@ function! vimshell#util#set_variables(variables) "{{{
     let save_value = exists(key) ? eval(key) : ''
 
     let variables_save[key] = save_value
-    execute 'let' key '= value'
+    execute 'let' key '=' string(value)
   endfor
 
   return variables_save
 endfunction"}}}
 function! vimshell#util#restore_variables(variables) "{{{
   for [key, value] in items(a:variables)
-    execute 'let' key '= value'
+    execute 'let' key '=' string(value)
   endfor
 endfunction"}}}
 

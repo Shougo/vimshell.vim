@@ -236,8 +236,6 @@ function! s:create_shell(path, context) "{{{
     let path = vimshell#util#path2project_directory(path)
   endif
 
-  let context = a:context
-
   " Create new buffer.
   let prefix = '[vimshell] - '
   let prefix .= a:context.profile_name
@@ -245,8 +243,7 @@ function! s:create_shell(path, context) "{{{
   let bufname = prefix . postfix
 
   if a:context.split_command != ''
-    let [new_pos, old_pos] =
-          \ vimshell#helpers#split(a:context.split_command)
+    call vimshell#helpers#split(a:context.split_command)
   endif
 
   " Save swapfile option.
@@ -301,8 +298,7 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
     execute bufwinnr(a:bufnr) 'wincmd w'
   else
     if a:context.split_command != ''
-      let [new_pos, old_pos] =
-            \ vimshell#helpers#split(a:context.split_command)
+      call vimshell#helpers#split(a:context.split_command)
     endif
 
     execute 'buffer' a:bufnr

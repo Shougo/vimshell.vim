@@ -40,7 +40,6 @@ function! s:recursive_expand_altercmd(string)
   let abbrev = b:vimshell.altercmd_table[a:string]
   let expanded = {}
   while 1
-    let key = vimproc#parser#split_args(abbrev)[-1]
     if has_key(expanded, abbrev) ||
           \ !has_key(b:vimshell.altercmd_table, abbrev)
       break

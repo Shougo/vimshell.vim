@@ -32,6 +32,7 @@ function! s:command.execute(args, context) "{{{
   " Execute from history.
 
   let histories = vimshell#history#read()
+  let hist = ''
   if empty(a:args) || a:args[0] =~ '^-\?\d\+'
     if empty(a:args)
       let num = -1
@@ -55,7 +56,7 @@ function! s:command.execute(args, context) "{{{
       endif
     endfor
 
-    if !exists('hist')
+    if hist == ''
       " Error.
       call vimshell#error_line(a:context.fd, 'h: Not found in history.')
       return

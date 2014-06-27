@@ -53,6 +53,7 @@ function! s:command.execute(args, context) "{{{
   endif
 
   " Set redirection.
+  let null = ''
   if a:context.fd.stdin == ''
     let stdin = ''
   elseif a:context.fd.stdin == '/dev/null'
@@ -93,7 +94,7 @@ function! s:command.execute(args, context) "{{{
   redraw
   echo ''
 
-  if a:context.fd.stdin == '/dev/null'
+  if null != ''
     call delete(null)
   endif
 

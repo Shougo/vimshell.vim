@@ -45,13 +45,13 @@ function! s:command.execute(args, context) "{{{
       let directory = matchstr(current_dir,
             \ '.*/.*\V' . escape(target, '\') . '\m.*/')
     endif
-  endif
 
-  if directory == ''
-    call vimshell#error_line(a:context.fd,
-          \ printf('%s : Can''t find "%s" directory in "%s"',
-          \ self.name, target, b:vimshell.current_dir))
-    return 0
+    if directory == ''
+      call vimshell#error_line(a:context.fd,
+            \ printf('%s : Can''t find "%s" directory in "%s"',
+            \ self.name, target, b:vimshell.current_dir))
+      return 0
+    endif
   endif
 
   return vimshell#helpers#execute_internal_command('cd',

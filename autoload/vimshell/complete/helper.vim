@@ -337,6 +337,8 @@ function! s:get_glob_files(path, complete_str) "{{{
     endif
     let len_env = len(env_ev)
   else
+    let env = ''
+    let env_ev = ''
     let len_env = 0
   endif
 

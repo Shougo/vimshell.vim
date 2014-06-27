@@ -395,7 +395,7 @@ function! vimshell#interactive#force_exit() "{{{
   endif
 
   " Kill processes.
-  let [cond, status] = s:kill_process(b:interactive)
+  call s:kill_process(b:interactive)
 
   if &filetype !=# 'vimshell'
     syn match   InteractiveMessage   '\*\%(Exit\|Killed\)\*'
@@ -416,7 +416,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
   endif
 
   if get(interactive.process, 'is_valid', 0)
-    let [cond, status] = s:kill_process(interactive)
+    call s:kill_process(interactive)
   endif
   let interactive.process.is_valid = 0
 
@@ -491,12 +491,13 @@ function! vimshell#interactive#read(fd) "{{{
     return @+
   else
     " Read from file.
-    if vimshell#util#is_windows()
+    if !vimshell#util#is_windows()
       let ff = "\<CR>\<LF>"
     else
       let ff = "\<LF>"
-      return join(readfile(a:fd.stdin), ff) . ff
     endif
+
+    return join(readfile(a:fd.stdin), ff) . ff
   endif
 endfunction"}}}
 function! vimshell#interactive#print_buffer(fd, string) "{{{

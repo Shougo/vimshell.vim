@@ -183,9 +183,6 @@ function! vimshell#int_mappings#execute_line(is_insert) "{{{
     call vimshell#interactive#execute_process_out(a:is_insert)
   endif
 
-  " Search prompt.
-  let command = vimshell#interactive#get_cur_line(line('.'))
-
   if line('.') != line('$')
     call vimshell#int_mappings#_paste_prompt()
   endif

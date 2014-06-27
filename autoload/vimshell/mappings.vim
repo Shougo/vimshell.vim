@@ -388,7 +388,7 @@ function! s:next_prompt() "{{{
 endfunction"}}}
 function! s:select_previous_prompt() "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern
-  let [linenr, col] = searchpos(prompt_pattern, 'bWen')
+  let [linenr, _] = searchpos(prompt_pattern, 'ebWn')
   if linenr == 0
     return ''
   endif
@@ -398,7 +398,7 @@ endfunction"}}}
 function! s:select_next_prompt() "{{{
   let prompt_pattern = vimshell#get_user_prompt() != '' ?
         \ vimshell#get_context().prompt_pattern : '^\[%\] '
-  let [linenr, col] = searchpos(prompt_pattern, 'Wen')
+  let [linenr, _] = searchpos(prompt_pattern, 'enW')
   if linenr == 0
     return ''
   endif
@@ -415,16 +415,16 @@ function! s:delete_previous_output() "{{{
   if getline('.') =~ nprompt
     let next_line = line('.')
   elseif vimshell#get_user_prompt() != '' && getline('.') =~ prompt_pattern
-    let [next_line, next_col] = searchpos(nprompt, 'bWn')
+    let [next_line, _] = searchpos(nprompt, 'bWn')
   else
-    let [next_line, next_col] = searchpos(nprompt, 'Wn')
+    let [next_line, _] = searchpos(nprompt, 'Wn')
   endif
   while getline(next_line-1) =~ nprompt
     let next_line -= 1
   endwhile
 
   call cursor(0, 1)
-  let [prev_line, prev_col] = searchpos(pprompt, 'bWn')
+  let [prev_line, _] = searchpos(pprompt, 'bWn')
   if prev_line > 0 && next_line - prev_line > 1
     silent execute printf('%s,%sdelete', prev_line+1, next_line-1)
     call append(line('.')-1, "* Output was deleted *")

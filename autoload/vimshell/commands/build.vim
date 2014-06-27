@@ -29,7 +29,7 @@ let s:command = {
       \ 'description' : 'build [{builder-name}, {args}]',
       \}
 function! s:command.execute(args, context) "{{{
-  let [args, options] = vimshell#parser#getopt(a:args, {
+  let [args, _] = vimshell#parser#getopt(a:args, {
         \ })
 
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]

@@ -67,7 +67,6 @@ function! vimshell#terminal#print(string, is_error) "{{{
   endif
 
   let current_line = getline('.')
-  let cur_text = matchstr(getline('.'), '^.*\%' . col('.') . 'c')
 
   let s:virtual = {
         \ 'lines' : {},
@@ -975,7 +974,7 @@ function! s:control.delete_backword_char() "{{{
       let s:virtual.lines[s:virtual.line] = getline(s:virtual.line)
     endif
 
-    let [line, s:virtual.col] = s:get_virtual_col(s:virtual.line, len(s:virtual.lines[s:virtual.line]))
+    let [_, s:virtual.col] = s:get_virtual_col(s:virtual.line, len(s:virtual.lines[s:virtual.line]))
     return
   endif
 

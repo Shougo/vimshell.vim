@@ -87,6 +87,7 @@ function! s:command.execute(commands, context) "{{{
     call vimshell#interactive#force_exit()
   endif
 
+  let home_save = {}
   if vimshell#util#is_windows() &&
         \ g:vimshell_interactive_cygwin_home != ''
     " Set $HOME.
@@ -115,17 +116,19 @@ function! s:command.execute(commands, context) "{{{
         \ '$GIT_PAGER' : g:vimshell_cat_command,
         \})
 
-  " Initialize.
-  let sub = vimproc#ptyopen(commands, 2)
+  try
+    " Initialize.
+    let sub = vimproc#ptyopen(commands, 2)
 
-  " Restore environment variables.
-  call vimshell#util#restore_variables(environments_save)
+  finally
+    " Restore environment variables.
+    call vimshell#util#restore_variables(environments_save)
 
-  if vimshell#util#is_windows() &&
-        \ g:vimshell_interactive_cygwin_home != ''
-    " Restore $HOME.
-    call vimshell#util#restore_variables(home_save)
-  endif
+    if !empty(home_save)
+      " Restore $HOME.
+      call vimshell#util#restore_variables(home_save)
+    endif
+  endtry
 
   " Set variables.
   let b:interactive = {

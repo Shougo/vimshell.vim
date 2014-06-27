@@ -283,6 +283,7 @@ function! s:print_output(line_num) "{{{
     echo ''
   endif
 
+  let match = -1
   if a:line_num >= 0
     if cnt > a:line_num
       let cnt = a:line_num

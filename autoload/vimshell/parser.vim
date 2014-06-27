@@ -27,8 +27,7 @@ function! vimshell#parser#check_script(script) "{{{
   " Parse check only.
   " Split statements.
   for statement in vimproc#parser#split_statements(a:script)
-    let args = vimproc#parser#split_args(
-          \ vimshell#parser#parse_alias(statement))
+    call vimproc#parser#split_args(vimshell#parser#parse_alias(statement))
   endfor
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context) "{{{
@@ -234,7 +233,7 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
 
   if b:interactive.syntax !=# &filetype
     " Set highlight.
-    let start = searchpos(context.prompt_pattern, 'bWen')[0]
+    let start = searchpos(context.prompt_pattern, 'ebWn')[0]
     if start > 0
       call s:highlight_with(start + 1, printf('"\ze\%(^\[%%\]\|%s\)"',
             \ context.prompt_pattern), b:interactive.syntax)
@@ -365,7 +364,6 @@ function! s:recursive_expand_alias(alias_name, args) "{{{
   let alias = b:vimshell.alias_table[a:alias_name]
   let expanded = {}
   while 1
-    let key = vimproc#parser#split_args(alias)[-1]
     if has_key(expanded, alias) || !has_key(b:vimshell.alias_table, alias)
       break
     endif
