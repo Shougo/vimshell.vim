@@ -245,7 +245,8 @@ g:vimshell_data_directory		*g:vimshell_data_directory*
 		Specify directories to store vimshell configurations.  And
 		history file is saved in this directory.
 
-		Initial value is "expand('~/.cache/vimshell')".
+		Default value is "$XDG_CACHE_DIR/vimshell" or
+		expand("~/.cache/vimshell"); the absolute path of it.
 
 g:vimshell_temporary_directory		*g:vimshell_temporary_directory*
 		Note: It is deprecated name.

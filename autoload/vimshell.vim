@@ -119,7 +119,9 @@ endfunction"}}}
 function! vimshell#get_data_directory() "{{{
   let data_directory = vimshell#util#set_default(
         \ 'g:vimshell_data_directory',
-        \ '~/.cache/vimshell', 'g:vimshell_temporary_directory')
+        \  ($XDG_CACHE_DIR != '' ?
+        \   $XDG_CACHE_DIR . '/vimshell' : '~/.cache/vimshell'),
+        \ 'g:vimshell_temporary_directory')
   let data_directory = vimshell#util#substitute_path_separator(
         \ expand(data_directory))
   if !isdirectory(data_directory) && !vimshell#util#is_sudo()
