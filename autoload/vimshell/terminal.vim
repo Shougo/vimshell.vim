@@ -974,7 +974,8 @@ function! s:control.delete_backword_char() "{{{
       let s:virtual.lines[s:virtual.line] = getline(s:virtual.line)
     endif
 
-    let [_, s:virtual.col] = s:get_virtual_col(s:virtual.line, len(s:virtual.lines[s:virtual.line]))
+    let s:virtual.col = s:get_virtual_col(
+          \ s:virtual.line, len(s:virtual.lines[s:virtual.line]))[1]
     return
   endif
 
