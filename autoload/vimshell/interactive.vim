@@ -43,6 +43,13 @@ augroup vimshell
         \ call s:winleave(expand('<afile>'))
 augroup END
 
+let s:is_insert_char_pre = v:version > 703
+      \ || v:version == 703 && has('patch418')
+if s:is_insert_char_pre
+  autocmd vimshell InsertCharPre *
+        \ call s:enable_auto_complete()
+endif
+
 " Dummy.
 function! vimshell#interactive#init() "{{{
 endfunction"}}}
@@ -667,7 +674,9 @@ function! s:check_all_output(is_hold) "{{{
     call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
   endif
 
-  if exists('b:interactive') && vimshell#get_prompt() != ''
+  if !s:is_insert_char_pre && exists('b:interactive')
+        \ && vimshell#get_prompt() != ''
+    " For old Vim.
     call vimshell#util#enable_auto_complete()
   endif
 
@@ -809,6 +818,11 @@ endfunction"}}}
 function! s:is_skk_enabled() "{{{
   return (exists('b:skk_on') && b:skk_on)
         \ || (exists('*eskk#is_enabled') && eskk#is_enabled())
+endfunction"}}}
+function! s:enable_auto_complete() "{{{
+  if exists('b:interactive')
+    call vimshell#util#enable_auto_complete()
+  endif
 endfunction"}}}
 
 function! s:winenter() "{{{
