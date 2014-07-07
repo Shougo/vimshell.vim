@@ -698,7 +698,7 @@ function! s:check_all_output(is_hold) "{{{
         let is_complete_hold = vimshell#util#is_complete_hold()
         if a:is_hold != is_complete_hold
           setlocal modifiable
-          call feedkeys("a\<BS>", 'n')
+          call feedkeys("]\<BS>", 'n')
         endif
       endif
     endif
@@ -820,7 +820,7 @@ function! s:is_skk_enabled() "{{{
         \ || (exists('*eskk#is_enabled') && eskk#is_enabled())
 endfunction"}}}
 function! s:enable_auto_complete() "{{{
-  if exists('b:interactive')
+  if exists('b:interactive') && v:char != ']'
     call vimshell#util#enable_auto_complete()
   endif
 endfunction"}}}
