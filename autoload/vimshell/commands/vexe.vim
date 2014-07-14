@@ -66,6 +66,7 @@ function! s:command.execute(args, context) "{{{
   if bufnr('%') != bufnr
     call vimshell#next_prompt(a:context)
     noautocmd call vimshell#helpers#restore_pos(pos)
+    doautocmd BufRead
     if options['--insert']
       startinsert
     else
