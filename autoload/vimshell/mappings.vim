@@ -67,11 +67,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_execute_by_background)
         \ :<C-u>call <SID>execute_by_background(0)<CR>
 
-  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_previous_prompt)
-        \ <SID>select_previous_prompt()
-  vnoremap <buffer><silent><expr> <Plug>(vimshell_select_next_prompt)
-        \ <SID>select_next_prompt()
-
   inoremap <buffer><silent><expr> <Plug>(vimshell_command_complete)
         \ pumvisible() ?
         \   "\<C-n>" :
@@ -154,12 +149,6 @@ function! vimshell#mappings#define_default_mappings() "{{{
   nmap <buffer> <C-l> <Plug>(vimshell_clear)
   " Execute background.
   nmap <buffer> <C-z> <Plug>(vimshell_execute_by_background)
-
-  " Visual mode key-mappings.
-  " Move to previous prompt.
-  vmap <buffer> <C-p> <Plug>(vimshell_select_previous_prompt)
-  " Move to next prompt.
-  vmap <buffer> <C-n> <Plug>(vimshell_select_next_prompt)
 
   " Insert mode key-mappings.
   " Execute command.
@@ -385,25 +374,6 @@ function! s:next_prompt() "{{{
       call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
     endif
   endif
-endfunction"}}}
-function! s:select_previous_prompt() "{{{
-  let prompt_pattern = vimshell#get_context().prompt_pattern
-  let linenr = searchpos(prompt_pattern, 'ebW')[0]
-  if linenr == 0
-    return ''
-  endif
-
-  return (line('.') - linenr - 1) . 'k'
-endfunction"}}}
-function! s:select_next_prompt() "{{{
-  let prompt_pattern = vimshell#get_user_prompt() != '' ?
-        \ vimshell#get_context().prompt_pattern : '^\[%\] '
-  let linenr = searchpos(prompt_pattern, 'eW')[0]
-  if linenr == 0
-    return ''
-  endif
-
-  return (linenr - line('.') - 2) . 'j'
 endfunction"}}}
 function! s:delete_previous_output() "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern
