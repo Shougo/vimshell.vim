@@ -355,7 +355,8 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search(vimshell#get_context().prompt_pattern . '.\?', 'bWe')
+    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'bWne')
+    call cursor(pos[0], pos[1])
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
           \ 'str2nr(v:val)'), 'v:val < line(".")'))
@@ -366,7 +367,8 @@ function! s:previous_prompt() "{{{
 endfunction"}}}
 function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
-    call search(vimshell#get_context().prompt_pattern . '.\?', 'We')
+    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'Wne')
+    call cursor(pos[0], pos[1])
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
           \ 'str2nr(v:val)'), 'v:val > line(".")'))
@@ -438,8 +440,8 @@ function! s:move_head() "{{{
   call cursor(0, vimshell#get_prompt_length() + 1)
 endfunction"}}}
 function! s:move_end_argument() "{{{
-  call cursor(0, 1)
-  call search('\\\@<!\s\zs[^[:space:]]*$', '', line('.'))
+  let pos = searchpos('\\\@<!\s\zs[^[:space:]]*$', '', line('.'), 'n')
+  call cursor(0, pos[1])
 endfunction"}}}
 function! s:delete_line() "{{{
   let col = col('.')

@@ -250,7 +250,8 @@ function! vimshell#view#_next_prompt(context, ...) "{{{
   endif
 
   " Search prompt.
-  call search(vimshell#get_context().prompt_pattern.'.\?', 'We')
+  let pos = searchpos(vimshell#get_context().prompt_pattern.'.\?', 'We')
+  call cursor(pos[0], pos[1])
   if is_insert
     if vimshell#view#_get_prompt_command() == ''
       startinsert!
