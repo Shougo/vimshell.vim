@@ -314,6 +314,11 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
   let b:vimshell.cmdline = line
 
   try
+    " Not append history if starts spaces or dups.
+    if line !~ '^\s'
+      call vimshell#history#append(line)
+    endif
+
     let ret = vimshell#parser#eval_script(line, context)
   catch /File ".*" is not found./
     " Command not found.
@@ -341,11 +346,6 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
     call vimshell#start_insert(a:is_insert)
     return
   endtry
-
-  " Not append history if starts spaces or dups.
-  if line !~ '^\s'
-    call vimshell#history#append(line)
-  endif
 
   if ret == 0
     call vimshell#next_prompt(context, a:is_insert)
