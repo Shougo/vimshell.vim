@@ -355,7 +355,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
-    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'bWne')
+    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'bWn')
     call cursor(pos[0], pos[1])
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
@@ -367,7 +367,7 @@ function! s:previous_prompt() "{{{
 endfunction"}}}
 function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
-    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'Wne')
+    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'Wn')
     call cursor(pos[0], pos[1])
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
