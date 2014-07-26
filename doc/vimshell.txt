@@ -351,7 +351,8 @@ g:vimshell_no_save_history_commands
 		This is a dictionary value that has keys of the command name
 		that vimshell doesn't save in history.
 
-		Default value is {'history': 1, 'h': 1, 'histdel': 1}.
+		Default value is
+		{'history' : 1, 'h' : 1, 'histdel' : 1, 'cd' : 1,}.
 
 g:vimshell_scrollback_limit			*g:vimshell_scrollback_limit*
 		This value is the maximum size of command output.  Output
