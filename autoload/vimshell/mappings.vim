@@ -355,8 +355,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 endfunction"}}}
 function! s:previous_prompt() "{{{
   if empty(b:vimshell.continuation)
-    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'bWn')
-    call cursor(pos[0], pos[1])
+    call s:search_prompt('bWn')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
           \ 'str2nr(v:val)'), 'v:val < line(".")'))
@@ -367,14 +366,24 @@ function! s:previous_prompt() "{{{
 endfunction"}}}
 function! s:next_prompt() "{{{
   if empty(b:vimshell.continuation)
-    let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', 'Wn')
-    call cursor(pos[0], pos[1])
+    call s:search_prompt('Wn')
   else
     let prompts = sort(filter(map(keys(b:interactive.prompt_history),
           \ 'str2nr(v:val)'), 'v:val > line(".")'))
     if !empty(prompts)
       call cursor(prompts[0], len(vimshell#interactive#get_prompt()) + 1)
     endif
+  endif
+endfunction"}}}
+function! s:search_prompt(flag) "{{{
+  let col = col('.')
+  call cursor(0, 1)
+  let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', a:flag)
+  if pos[0] != 0
+    call cursor(pos[0], matchend(getline(pos[0]),
+          \ vimshell#get_context().prompt_pattern . '.\?'))
+  else
+    call cursor(0, col)
   endif
 endfunction"}}}
 function! s:delete_previous_output() "{{{
