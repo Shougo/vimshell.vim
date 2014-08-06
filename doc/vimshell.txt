@@ -342,7 +342,6 @@ g:vimshell_popup_height				*g:vimshell_popup_height*
 
 g:vimshell_cd_command				*g:vimshell_cd_command*
 		This is the Ex command to change the current directory.
-		The command must interpret |`=|.
 
 		Default value is "lcd".
 

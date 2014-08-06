@@ -47,7 +47,7 @@ function! s:command.execute(args, context) "{{{
   let [new_pos, old_pos] = vimshell#helpers#split(options['--split'])
 
   try
-    silent edit `=args[0]`
+    silent execute 'edit' fnameescape(args[0])
   catch
     echohl Error | echomsg v:errmsg | echohl None
   endtry
@@ -56,7 +56,7 @@ function! s:command.execute(args, context) "{{{
 
   call vimshell#cd(cwd)
 
-  vertical diffsplit `=a:args[1]`
+  execute 'vertical diffsplit' fnameescape(a:args[1])
 
   noautocmd call vimshell#helpers#restore_pos(old_pos)
 
