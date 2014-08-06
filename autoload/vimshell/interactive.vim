@@ -29,7 +29,6 @@ let s:character_regex = ''
 let s:update_time_save = &updatetime
 
 augroup vimshell
-  autocmd VimEnter * set vb t_vb=
   autocmd VimLeave * call s:vimleave()
   autocmd CursorMovedI *
         \ call s:check_all_output(0)
@@ -698,6 +697,8 @@ function! s:check_all_output(is_hold) "{{{
         let is_complete_hold = vimshell#util#is_complete_hold()
         if a:is_hold != is_complete_hold
           setlocal modifiable
+          " Prevent screen flick
+          set vb t_vb=
           call feedkeys("]\<BS>", 'n')
         endif
       endif
