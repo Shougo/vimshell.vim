@@ -49,6 +49,8 @@ if s:is_insert_char_pre
         \ call s:enable_auto_complete()
 endif
 
+call vimshell#commands#iexe#define()
+
 " Dummy.
 function! vimshell#interactive#init() "{{{
 endfunction"}}}
