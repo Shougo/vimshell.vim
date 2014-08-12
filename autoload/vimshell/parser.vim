@@ -225,6 +225,10 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
     let i += 1
   endwhile
 
+  if !exists('b:vimshell')
+    return
+  endif
+
   " Call postexec hook.
   call vimshell#hook#call('postexec',
         \ context, b:vimshell.continuation.script)
