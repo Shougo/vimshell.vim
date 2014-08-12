@@ -136,7 +136,7 @@ function! vimshell#helpers#restore_pos(pos) "{{{
     execute a:pos[1].'wincmd w'
   endif
 
-  if bufnr('%') !=# a:pos[2]
+  if bufnr('%') !=# a:pos[2] && bufexists(a:pos[2])
     execute 'buffer' a:pos[2]
   endif
 
