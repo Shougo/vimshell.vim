@@ -147,9 +147,11 @@ function! vimshell#interactive#send(expr) "{{{
   let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
 
   if last_interactive_bufnr <= 0
-    let command = input('Please input interpreter command : ',
-          \ get(g:vimshell_interactive_interpreter_commands, &filetype, ''),
-          \ 'customlist,vimshell#helpers#vimshell_execute_complete')
+    let command =
+          \ has_key(g:vimshell_interactive_interpreter_commands, &filetype) ?
+          \ g:vimshell_interactive_interpreter_commands[&filetype] :
+          \ input('Please input interpreter command : ',
+          \ '', 'customlist,vimshell#helpers#vimshell_execute_complete')
     execute 'VimShellInteractive' command
 
     let last_interactive_bufnr = t:vimshell.last_interactive_bufnr
