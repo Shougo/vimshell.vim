@@ -49,7 +49,8 @@ function! s:command.execute(commands, context) "{{{
     return
   endif
 
-  if len(commands[0].args) == 1 && !executable(commands[0].args[0])
+  if len(commands[0].args) == 1
+        \ && (vimshell#util#is_windows() || !executable(commands[0].args[0]))
     let ext = fnamemodify(commands[0].args[0], ':e')
     if has_key(g:vimshell_execute_file_list, ext)
       " Use g:vimshell_execute_file_list
