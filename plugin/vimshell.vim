@@ -140,7 +140,7 @@ command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
       \ vimshell#util#substitute_path_separator(
       \       fnamemodify(bufname('%'), ':p:h')))
 
-command! -nargs=+ -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellExecute
+command! -nargs=* -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellExecute
       \ call s:vimshell_execute(<q-args>)
 command! -nargs=* -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellInteractive
       \ call s:vimshell_interactive(<q-args>)
@@ -175,6 +175,10 @@ function! s:vimshell_execute(args) "{{{
 
   try
     let args = vimproc#parser#split_args(a:args)
+    if empty(args)
+      let args = [vimshell#util#substitute_path_separator(
+            \ fnamemodify(expand('%'), ':p'))]
+    endif
 
     call vimshell#helpers#execute_internal_command('bg', args, context)
   catch

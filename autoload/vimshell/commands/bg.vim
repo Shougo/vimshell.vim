@@ -49,6 +49,15 @@ function! s:command.execute(commands, context) "{{{
     return
   endif
 
+  if len(commands[0].args) == 1 && !executable(commands[0].args[0])
+    let ext = fnamemodify(commands[0].args[0], ':e')
+    if has_key(g:vimshell_execute_file_list, ext)
+      " Use g:vimshell_execute_file_list
+      let commands[0].args =
+            \ [g:vimshell_execute_file_list[ext], commands[0].args[0]]
+    endif
+  endif
+
   " Background execute.
   if exists('b:interactive') &&
         \ !empty(b:interactive.process) && b:interactive.process.is_valid

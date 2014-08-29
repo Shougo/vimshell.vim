@@ -127,11 +127,12 @@ COMMANDS 					*vimshell-commands*
 :VimShellBufferDir [{options}...] [{path}]	*:VimShellBufferDir*
 		Like as |:VimShell|, but move to buffer's directory.
 
-:VimShellExecute [{option}] {command}			*:VimShellExecute*
+:VimShellExecute [{option}] [{command}]			*:VimShellExecute*
 		It does not run vimshell, but launches a terminal program you
 		Specify by {command}, and this program runs in background.
 		You can use vimshell like as GNU screen.
 		{option} is same to |vimshell-internal-bg| options.
+		If omit {command}, current buffer path is used.
 
 :VimShellInteractive [{option}] [{command}]		*:VimShellInteractive*
 		It does not run vimshell, but launches an interpreter program
@@ -1016,6 +1017,8 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		{command}.
 		If you press <C-c> in background buffer, kill {command}
 		execution.
+		If {command} is not executable file,
+		|g:vimshell_execute_file_list| is used.
 		Note: "command &" equals to "bg command"
 >
 		vimshell% ls&
