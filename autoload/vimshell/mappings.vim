@@ -238,6 +238,8 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
       call vimshell#int_mappings#_paste_prompt()
     endif
 
+    call vimshell#util#disable_auto_complete()
+
     call vimshell#interactive#execute_pty_inout(a:is_insert)
 
     try

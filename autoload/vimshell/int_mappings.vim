@@ -178,6 +178,8 @@ function! s:delete_backward_line() "{{{
   return prefix . repeat("\<BS>", len)
 endfunction"}}}
 function! vimshell#int_mappings#execute_line(is_insert) "{{{
+  call vimshell#util#disable_auto_complete()
+
   if !has_key(b:interactive.prompt_history, line('.'))
     " Do update.
     call vimshell#interactive#execute_process_out(a:is_insert)
