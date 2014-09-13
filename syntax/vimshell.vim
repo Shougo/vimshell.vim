@@ -132,5 +132,6 @@ highlight default link vimshellDotFiles Identifier
 highlight default link vimshellError Error
 
 call vimshell#view#_set_highlight()
+call vimshell#terminal#init_highlight()
 
 let b:current_syntax = 'vimshell'

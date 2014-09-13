@@ -38,6 +38,9 @@ function! vimshell#terminal#init() "{{{
         \ 'wrap' : &l:wrap,
         \}
 
+  call vimshell#terminal#init_highlight()
+endfunction"}}}
+function! vimshell#terminal#init_highlight() "{{{
   if s:use_conceal()
     syntax match vimshellEscapeSequenceConceal
           \ contained conceal    '\e\[[0-9;]*m'
