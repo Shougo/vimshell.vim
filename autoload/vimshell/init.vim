@@ -405,6 +405,8 @@ function! s:default_settings() "{{{
   setlocal foldcolumn=0
   setlocal foldmethod=manual
   setlocal winfixheight
+  setlocal noreadonly
+  setlocal iskeyword+=-,+,\\,!,~
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi
@@ -412,11 +414,6 @@ function! s:default_settings() "{{{
   if exists('&colorcolumn')
     setlocal colorcolumn=
   endif
-
-  " For vimshell.
-  setlocal bufhidden=hide
-  setlocal noreadonly
-  setlocal iskeyword+=-,+,\\,!,~
 
   " Set autocommands.
   augroup vimshell
