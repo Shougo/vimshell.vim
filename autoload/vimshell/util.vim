@@ -118,8 +118,8 @@ else
 endif
 
 function! s:buflisted(bufnr) "{{{
-  return exists('t:unite_buffer_dictionary') ?
-        \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
+  return exists('t:tabpagebuffer') ?
+        \ has_key(t:tabpagebuffer, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
 endfunction"}}}
 
@@ -266,8 +266,8 @@ function! vimshell#util#delete_buffer(...) "{{{
   execute 'silent bwipeout!' bufnr
 endfunction"}}}
 function! s:buflisted(bufnr) "{{{
-  return exists('t:unite_buffer_dictionary') ?
-        \ has_key(t:unite_buffer_dictionary, a:bufnr) && buflisted(a:bufnr) :
+  return exists('t:tabpagebuffer') ?
+        \ has_key(t:tabpagebuffer, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
 endfunction"}}}
 

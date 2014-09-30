@@ -100,8 +100,8 @@ function! vimshell#init#_start(path, ...) "{{{
         \ t:vimshell.last_vimshell_bufnr),
         \ "buflisted(v:val) &&
         \  getbufvar(v:val, '&filetype') ==# 'vimshell'")
-    if (!exists('t:unite_buffer_dictionary')
-          \    || has_key(t:unite_buffer_dictionary, bufnr))
+    if (!exists('t:tabpagebuffer')
+          \    || has_key(t:tabpagebuffer, bufnr))
       call s:switch_vimshell(bufnr, context, path)
       return
     endif
