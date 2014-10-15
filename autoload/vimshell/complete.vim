@@ -112,6 +112,9 @@ function! s:get_complete_commands(cur_keyword_str) "{{{
 
   let directories =
         \ vimshell#complete#helper#directories(a:cur_keyword_str)
+  if a:cur_keyword_str =~ '^\$'
+    return directories
+  endif
   if a:cur_keyword_str =~ '^\./'
     for keyword in directories
       let keyword.word = './' . keyword.word

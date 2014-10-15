@@ -230,7 +230,7 @@ function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
   let _ = []
 
   let _ += map(copy(vimshell#complete#helper#environments(
-        \ a:cur_keyword_str)), "'$' . v:val")
+        \ a:cur_keyword_str[1:])), "'$' . v:val")
 
   if a:cur_keyword_str =~ '^$\l'
     let _ += map(keys(b:vimshell.variables), "'$' . v:val")
@@ -248,7 +248,7 @@ function! vimshell#complete#helper#environments(cur_keyword_str) "{{{
   endif
 
   return vimshell#complete#helper#keyword_simple_filter(
-        \ s:envlist, a:cur_keyword_str)
+        \ copy(s:envlist), a:cur_keyword_str)
 endfunction"}}}
 
 function! vimshell#complete#helper#call_omnifunc(omnifunc) "{{{
@@ -332,6 +332,9 @@ function! s:get_glob_files(path, complete_str) "{{{
   if a:complete_str =~ '^\$\h\w*'
     let env = matchstr(a:complete_str, '^\$\h\w*')
     let env_ev = eval(env)
+    if env_ev == ''
+      return []
+    endif
     if vimshell#util#is_windows()
       let env_ev = substitute(env_ev, '\\', '/', 'g')
     endif
