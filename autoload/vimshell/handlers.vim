@@ -78,6 +78,10 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
   endtry
 endfunction"}}}
 function! vimshell#handlers#_on_bufwin_leave() "{{{
+  if expand('<abuf>') != bufnr('%')
+    return
+  endif
+
   if !exists('t:vimshell')
     call vimshell#init#tab_variable()
   endif
