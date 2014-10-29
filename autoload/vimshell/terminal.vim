@@ -26,6 +26,8 @@
 function! vimshell#terminal#init() "{{{
   let b:interactive.terminal = {
         \ 'syntax_names' : {},
+        \ 'syntax_commands' : {},
+        \ 'syntax_highlights' : {},
         \ 'titlestring' : &titlestring,
         \ 'titlestring_save' : &titlestring,
         \ 'save_pos' : getpos('.')[1 : 2],
@@ -47,6 +49,18 @@ function! vimshell#terminal#init_highlight() "{{{
     syntax match vimshellEscapeSequenceMarker
           \ conceal               '\e\[0*m\|\e0m\['
   endif
+
+  if !exists('b:interactive.terminal')
+    return
+  endif
+
+  let terminal = b:interactive.terminal
+  for syntax_name in values(terminal.syntax_names)
+    execute 'syntax region' syntax_name
+          \ terminal.syntax_commands[syntax_name]
+    execute 'highlight' syntax_name
+          \ terminal.syntax_highlights[syntax_name]
+  endfor
 endfunction"}}}
 function! vimshell#terminal#print(string, is_error) "{{{
   if !has_key(b:interactive, 'terminal')
@@ -253,6 +267,8 @@ function! vimshell#terminal#clear_highlight() "{{{
   endfor
 
   let b:interactive.terminal.syntax_names = {}
+  let b:interactive.terminal.syntax_commands = {}
+  let b:interactive.terminal.syntax_highlights = {}
 
   " Restore wrap.
   let &l:wrap = b:interactive.terminal.wrap
@@ -713,7 +729,10 @@ function! s:escape.highlight(matchstr) "{{{
   execute 'syntax region' syntax_name syntax_command
   execute 'highlight' syntax_name highlight
 
-  let b:interactive.terminal.syntax_names[a:matchstr] = syntax_name
+  let terminal = b:interactive.terminal
+  let terminal.syntax_names[a:matchstr] = syntax_name
+  let terminal.syntax_commands[syntax_name] = syntax_command
+  let terminal.syntax_highlights[syntax_name] = highlight
 
   " Note: When use concealed text, wrapped text is wrong...
   setlocal nowrap
