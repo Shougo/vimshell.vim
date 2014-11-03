@@ -111,7 +111,7 @@ COMMANDS 					*vimshell-commands*
 		are up and running.
 
 :VimShellTab [{options}...] [{path}]		*:VimShellTab*
-		It's same as |:VimShellCreate|, but creates a new tab.
+		It's same as |:VimShell|, but creates a new tab.
 
 :VimShellPop [{options}...] [{path}]		*:VimShellPop*
 		Like as |:VimShell|, but this command popups little window.
