@@ -343,7 +343,7 @@ endfunction"}}}
 function! vimshell#interactive#quit_buffer() "{{{
   if get(b:interactive.process, 'is_valid', 0)
     echohl WarningMsg
-    let input = input('Process is running. Force exit? ')
+    let input = input('Process is running. Force exit? [y/N] ')
     echohl None
 
     if input !~? 'y\%[es]'
