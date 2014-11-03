@@ -52,7 +52,7 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
     call vimshell#cd(fnamemodify(b:vimshell.current_dir, ':p'))
 
     " Redraw right prompt.
-    let winwidth = (winwidth(0)+1)/2*2 - 5
+    let winwidth = (vimshell#helpers#get_winwidth()+1)/2*2
     for [line, prompts] in items(b:vimshell.prompts_save)
       if getline(line) =~ '^\[%] .*\S$'
             \ && prompts.winwidth != winwidth

@@ -786,10 +786,10 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
   endif
 
   " Check window size.
-  if winwidth(0) != a:interactive.width
+  if vimshell#helpers#get_winwidth() != a:interactive.width
     " Set new window size.
     call a:interactive.process.set_winsize(
-          \ winwidth(0), g:vimshell_scrollback_limit)
+          \ vimshell#helpers#get_winwidth(), g:vimshell_scrollback_limit)
   endif
 
   if a:bufnr != a:bufnr_save && bufexists(a:bufnr_save)

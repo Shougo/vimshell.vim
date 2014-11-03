@@ -305,7 +305,7 @@ function! s:insert_user_and_right_prompt() "{{{
 
   let user_prompt_last = (user_prompt != '') ?
         \   getline('$') : '[%] '
-  let winwidth = (winwidth(0)+1)/2*2 - 5
+  let winwidth = (vimshell#helpers#get_winwidth()+1)/2*2
   let padding_len =
         \ (len(user_prompt_last)+len(vimshell#get_right_prompt())+1
         \          > winwidth) ?

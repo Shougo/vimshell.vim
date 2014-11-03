@@ -80,7 +80,7 @@ function! s:command.execute(commands, context) "{{{
         \ 'cmdline' : join(commands[0].args),
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'width' : winwidth(0),
+        \ 'width' : vimshell#helpers#get_winwidth(),
         \ 'height' : g:vimshell_scrollback_limit,
         \}
 
@@ -103,9 +103,9 @@ function! s:init(commands, context, options, interactive) "{{{
   " Set environment variables.
   let environments_save = vimshell#util#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0),
+        \ '$TERMCAP' : 'COLUMNS=' . vimshell#helpers#get_winwidth(),
         \ '$VIMSHELL' : 1,
-        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$COLUMNS' : vimshell#helpers#get_winwidth(),
         \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'less',
         \ '$EDITOR' : vimshell#helpers#get_editor_name(),
@@ -127,7 +127,7 @@ function! s:init(commands, context, options, interactive) "{{{
   endif
   call a:interactive.process.stdin.close()
 
-  let a:interactive.width = winwidth(0)
+  let a:interactive.width = vimshell#helpers#get_winwidth()
   let a:interactive.height = g:vimshell_scrollback_limit
 
   let args = ''

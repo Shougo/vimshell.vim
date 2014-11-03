@@ -396,7 +396,7 @@ function! s:initialize_vimshell(path, context) "{{{
         \ 'echoback_linenr' : -1,
         \ 'stdout_cache' : '',
         \ 'stderr_cache' : '',
-        \ 'width' : winwidth(0),
+        \ 'width' : vimshell#helpers#get_winwidth(),
         \ 'height' : g:vimshell_scrollback_limit,
         \ 'hook_functions_table' : {},
         \}

@@ -118,9 +118,9 @@ function! s:init_process(commands, context, options) "{{{
   " Set environment variables.
   let environments_save = vimshell#util#set_variables({
         \ '$TERM' : g:vimshell_environment_term,
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
+        \ '$TERMCAP' : 'COLUMNS=' . vimshell#helpers#get_winwidth(),
         \ '$VIMSHELL' : 1,
-        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$COLUMNS' : vimshell#helpers#get_winwidth(),
         \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$VIMSHELL_TERM' : 'execute',
         \ '$EDITOR' : vimshell#helpers#get_editor_name(),
@@ -152,7 +152,7 @@ function! s:init_process(commands, context, options) "{{{
   let b:interactive.stdout_cache = ''
   let b:interactive.stderr_cache = ''
   let b:interactive.cmdline = join(cmdline, '|')
-  let b:interactive.width = winwidth(0)
+  let b:interactive.width = vimshell#helpers#get_winwidth()
   let b:interactive.height = g:vimshell_scrollback_limit
   let b:interactive.prompt_history = {}
   let b:interactive.echoback_linenr = 0

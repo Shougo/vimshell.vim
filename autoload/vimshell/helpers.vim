@@ -119,7 +119,7 @@ function! vimshell#helpers#split(command) "{{{
   if a:command != ''
     let command =
           \ a:command !=# 'nicely' ? a:command :
-          \ winwidth(0) > 2 * &winwidth ? 'vsplit' : 'split'
+          \ vimshell#helpers#get_winwidth() > 2 * &winwidth ? 'vsplit' : 'split'
     execute command
   endif
 
@@ -193,6 +193,9 @@ function! vimshell#helpers#get_command_path(program) "{{{
     " Not found.
     return ''
   endtry
+endfunction"}}}
+function! vimshell#helpers#get_winwidth() "{{{
+  return winwidth(0) - &l:numberwidth - &l:foldcolumn
 endfunction"}}}
 
 function! vimshell#helpers#set_alias(name, value) "{{{

@@ -73,8 +73,8 @@ function! s:command.execute(args, context) "{{{
 
   " Set environment variables.
   let environments_save = vimshell#util#set_variables({
-        \ '$TERMCAP' : 'COLUMNS=' . winwidth(0)-5,
-        \ '$COLUMNS' : winwidth(0)-5,
+        \ '$TERMCAP' : 'COLUMNS=' . vimshell#helpers#get_winwidth(),
+        \ '$COLUMNS' : vimshell#helpers#get_winwidth(),
         \ '$LINES' : g:vimshell_scrollback_limit,
         \ '$EDITOR' : vimshell#helpers#get_editor_name(),
         \ '$GIT_EDITOR' : vimshell#helpers#get_editor_name(),
