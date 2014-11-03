@@ -184,26 +184,11 @@ function! vimshell#commands#texe#restore_cursor()
 endfunction
 
 function! s:default_settings() "{{{
+  " Common.
+  call vimshell#init#_default_settings()
+
   " Define mappings.
   call vimshell#term_mappings#define_default_mappings()
-
-  " Common.
-  setlocal bufhidden=hide
-  setlocal buftype=nofile
-  setlocal nolist
-  setlocal noswapfile
-  setlocal tabstop=8
-  setlocal foldcolumn=0
-  setlocal foldmethod=manual
-  setlocal omnifunc=
-  setlocal completefunc=
-  if has('conceal')
-    setlocal conceallevel=3
-    setlocal concealcursor=n
-  endif
-  if exists('&colorcolumn')
-    setlocal colorcolumn=
-  endif
 
   " For Terminal
   setlocal nowrap

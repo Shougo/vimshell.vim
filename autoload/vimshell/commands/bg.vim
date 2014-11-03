@@ -150,16 +150,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
   let [new_pos[2], new_pos[3]] = [bufnr('%'), getpos('.')]
 
   " Common.
-  setlocal nolist
-  setlocal buftype=nofile
-  setlocal noswapfile
-  setlocal tabstop=8
-  setlocal foldcolumn=0
-  setlocal foldmethod=manual
-  if has('conceal')
-    setlocal conceallevel=3
-    setlocal concealcursor=n
-  endif
+  call vimshell#init#_default_settings()
 
   " For bg.
   setlocal nomodifiable

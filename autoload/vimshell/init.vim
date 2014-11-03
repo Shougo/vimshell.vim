@@ -218,6 +218,28 @@ function! vimshell#init#_internal_commands(command) "{{{
   return get(internal_commands, a:command, {})
 endfunction"}}}
 
+function! vimshell#init#_default_settings() "{{{
+  " Common.
+  setlocal bufhidden=hide
+  setlocal buftype=nofile
+  setlocal nolist
+  setlocal noswapfile
+  setlocal tabstop=8
+  setlocal foldcolumn=0
+  setlocal foldmethod=manual
+  setlocal winfixheight
+  setlocal noreadonly
+  setlocal iskeyword+=-,+,\\,!,~
+  setlocal textwidth=0
+  if has('conceal')
+    setlocal conceallevel=3
+    setlocal concealcursor=nvi
+  endif
+  if exists('&colorcolumn')
+    setlocal colorcolumn=
+  endif
+endfunction"}}}
+
 function! vimshell#init#tab_variable() "{{{
   let t:vimshell = {
         \ 'last_vimshell_bufnr' : -1,
@@ -397,23 +419,7 @@ endfunction"}}}
 
 function! s:default_settings() "{{{
   " Common.
-  setlocal bufhidden=hide
-  setlocal buftype=nofile
-  setlocal nolist
-  setlocal noswapfile
-  setlocal tabstop=8
-  setlocal foldcolumn=0
-  setlocal foldmethod=manual
-  setlocal winfixheight
-  setlocal noreadonly
-  setlocal iskeyword+=-,+,\\,!,~
-  if has('conceal')
-    setlocal conceallevel=3
-    setlocal concealcursor=nvi
-  endif
-  if exists('&colorcolumn')
-    setlocal colorcolumn=
-  endif
+  call vimshell#init#_default_settings()
 
   " Set autocommands.
   augroup vimshell
