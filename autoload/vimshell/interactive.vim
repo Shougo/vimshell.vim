@@ -40,6 +40,8 @@ augroup vimshell
         \ call s:winenter()
   autocmd BufWinLeave,WinLeave *
         \ call s:winleave(expand('<afile>'))
+  autocmd VimResized *
+        \ call s:resize()
 augroup END
 
 let s:is_insert_char_pre = v:version > 703
@@ -834,6 +836,8 @@ function! s:winenter() "{{{
   if exists('b:interactive')
     call vimshell#terminal#set_title()
   endif
+
+  call s:resize()
 endfunction"}}}
 function! s:winleave(bufname) "{{{
   if !exists('b:interactive')
@@ -857,6 +861,12 @@ function! s:vimleave() "{{{
         \ "getbufvar(v:val, 'interactive')")
     call s:kill_process(interactive)
   endfor
+endfunction"}}}
+function! s:resize() "{{{
+  if exists('b:interactive') && !empty(b:interactive.process)
+    call b:interactive.process.set_winsize(
+          \ vimshell#helpers#get_winwidth(), winheight(0))
+  endif
 endfunction"}}}
 
 function! s:kill_process(interactive) "{{{
