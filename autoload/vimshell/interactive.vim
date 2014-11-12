@@ -865,7 +865,7 @@ endfunction"}}}
 function! s:resize() "{{{
   if exists('b:interactive') && !empty(b:interactive.process)
     call b:interactive.process.set_winsize(
-          \ vimshell#helpers#get_winwidth(), winheight(0))
+          \ vimshell#helpers#get_winwidth(), g:vimshell_scrollback_limit)
   endif
 endfunction"}}}
 
