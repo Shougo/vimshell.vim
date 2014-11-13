@@ -89,7 +89,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert) "{{{
   let in = vimshell#interactive#get_cur_line(line('.'))
   call vimshell#history#append(in)
   if in !~ "\<C-d>$"
-    let in .= "\<LF>"
+    let in .= "\<CR>"
   endif
 
   let b:interactive.prompt_nr = line('.')
