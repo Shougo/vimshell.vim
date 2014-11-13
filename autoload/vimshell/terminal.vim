@@ -47,7 +47,7 @@ function! vimshell#terminal#init_highlight() "{{{
     syntax match vimshellEscapeSequenceConceal
           \ contained conceal    '\e\[[0-9;]*m'
     syntax match vimshellEscapeSequenceMarker
-          \ conceal               '\e\[0*m\|\e0m\['
+          \ conceal               '\e\[0*m\|\e0m\[\|\e]0;'
   endif
 
   if !exists('b:interactive.terminal')
