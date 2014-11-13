@@ -88,7 +88,7 @@ else
   syntax match   vimshellDirectory
         \ '\%(\f\s\?\)\+/\ze\%(\s\|$\)'
   syntax match   vimshellLink
-        \ '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@'
+        \ '\(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+@\ze\(\s\|$\)'
 endif
 
 if has('conceal')
