@@ -42,7 +42,7 @@ syntax match   vimshellString
 syntax match   vimshellError
         \ '!!![^!].*!!!' contains=vimshellErrorHidden
 syntax match   vimshellComment
-      \ '#.*$' contained
+      \ '\s#.*$' contained
 syntax match   vimshellConstants
       \ '[+-]\=\<\d\+\>'
 syntax match   vimshellConstants
@@ -109,7 +109,7 @@ endif
 if has('gui_running')
   highlight vimshellURI gui=UNDERLINE guifg=#6699ff guibg=NONE
 else
-  highlight def link vimshellURI Comment
+  highlight def link vimshellURI Identifier
 endif
 
 highlight default link vimshellPrompt Identifier
@@ -120,14 +120,14 @@ highlight default link vimshellString String
 highlight default link vimshellArguments Type
 highlight default link vimshellConstants Constant
 highlight default link vimshellSpecial PreProc
-highlight default link vimshellVariable Comment
-highlight default link vimshellComment Identifier
+highlight default link vimshellVariable Identifier
+highlight default link vimshellComment Comment
 highlight default link vimshellNormal Normal
 
 highlight default link vimshellCommand Statement
 highlight default link vimshellDirectory Preproc
 highlight default link vimshellSocket Constant
-highlight default link vimshellLink Comment
+highlight default link vimshellLink Identifier
 highlight default link vimshellDotFiles Identifier
 highlight default link vimshellError Error
 
