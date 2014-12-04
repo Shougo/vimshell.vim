@@ -107,7 +107,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
 
   let b:interactive.terminal.is_error = a:is_error
 
-  call s:check_str(a:string)
+  let newstr = s:check_str(a:string)
 
   " Print rest string.
   call s:output_string(newstr)
@@ -264,7 +264,7 @@ function! s:check_str(string) "{{{
         continue
       elseif checkstr !~ '\r\|\n'
         " Incomplete sequence.
-        let b:interactive.terminal.buffer = string[pos:]
+        let b:interactive.terminal.buffer = string[pos :]
         break
       endif"}}}
     elseif has_key(s:control_sequence, char) "{{{
@@ -282,6 +282,8 @@ function! s:check_str(string) "{{{
     let newstr .= char
     let pos += 1
   endwhile
+
+  return newstr
 endfunction "}}}
 function! s:optimized_print(string, is_error) "{{{
   " Strip <CR>.
@@ -1072,11 +1074,12 @@ let s:escape_sequence_match = {
       \ '^\[?\d\+[hl]' : s:escape.ignore,
       \ '^[()][AB012UK]' : s:escape.change_character_set,
       \ '^k.\{-}\e\\' : s:escape.change_title,
-      \ '^][02];.\{-}'."\<C-g>" : s:escape.change_title,
+      \ '^\][02];.\{-}'."\<C-g>" : s:escape.change_title,
       \ '^#\d' : s:escape.ignore,
       \ '^\dn' : s:escape.ignore,
       \ '^\[?1;\d\+0c' : s:escape.ignore,
       \ '^\d q' : s:escape.change_cursor_shape,
+      \ '^\]4;\d\+;rgb:\x\x/\x\x/\x\x\e\\' : s:escape.ignore,
       \}
 let s:escape_sequence_simple_char1 = {
       \ 'N' : s:escape.ignore,
