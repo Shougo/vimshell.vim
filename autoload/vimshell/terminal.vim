@@ -107,6 +107,57 @@ function! vimshell#terminal#print(string, is_error) "{{{
 
   let b:interactive.terminal.is_error = a:is_error
 
+  call s:check_str(a:string)
+
+  " Print rest string.
+  call s:output_string(newstr)
+
+  " Set lines.
+  for linenr in sort(map(keys(s:virtual.lines),
+        \ 'str2nr(v:val)'), 's:sortfunc')
+    call setline(linenr, substitute(
+          \ s:virtual.lines[linenr], '[^!]\zs!\{6}\ze[^!]', '', 'g'))
+  endfor
+
+  call s:set_cursor()
+endfunction"}}}
+function! vimshell#terminal#set_title() "{{{
+  if !has_key(b:interactive, 'terminal')
+    call vimshell#terminal#init()
+  endif
+
+  let &titlestring = b:interactive.terminal.titlestring
+endfunction"}}}
+function! vimshell#terminal#restore_title() "{{{
+  if !has_key(b:interactive, 'terminal')
+    call vimshell#terminal#init()
+  endif
+
+  let &titlestring = b:interactive.terminal.titlestring_save
+endfunction"}}}
+function! vimshell#terminal#clear_highlight() "{{{
+  if !s:use_conceal()
+    return
+  endif
+
+  if !has_key(b:interactive, 'terminal')
+    call vimshell#terminal#init()
+  endif
+
+  for syntax_names in values(b:interactive.terminal.syntax_names)
+    execute 'highlight clear' syntax_names
+    execute 'syntax clear' syntax_names
+  endfor
+
+  let b:interactive.terminal.syntax_names = {}
+  let b:interactive.terminal.syntax_commands = {}
+  let b:interactive.terminal.syntax_highlights = {}
+
+  " Restore wrap.
+  let &l:wrap = b:interactive.terminal.wrap
+endfunction"}}}
+
+function! s:check_str(string) "{{{
   " Optimize checkstr.
   let string = b:interactive.terminal.buffer . a:string
   let b:interactive.terminal.buffer = ''
@@ -231,55 +282,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
     let newstr .= char
     let pos += 1
   endwhile
-
-  " Print rest string.
-  call s:output_string(newstr)
-
-  " Set lines.
-  for linenr in sort(map(keys(s:virtual.lines),
-        \ 'str2nr(v:val)'), 's:sortfunc')
-    call setline(linenr, substitute(
-          \ s:virtual.lines[linenr], '[^!]\zs!\{6}\ze[^!]', '', 'g'))
-  endfor
-
-  call s:set_cursor()
-endfunction"}}}
-function! vimshell#terminal#set_title() "{{{
-  if !has_key(b:interactive, 'terminal')
-    call vimshell#terminal#init()
-  endif
-
-  let &titlestring = b:interactive.terminal.titlestring
-endfunction"}}}
-function! vimshell#terminal#restore_title() "{{{
-  if !has_key(b:interactive, 'terminal')
-    call vimshell#terminal#init()
-  endif
-
-  let &titlestring = b:interactive.terminal.titlestring_save
-endfunction"}}}
-function! vimshell#terminal#clear_highlight() "{{{
-  if !s:use_conceal()
-    return
-  endif
-
-  if !has_key(b:interactive, 'terminal')
-    call vimshell#terminal#init()
-  endif
-
-  for syntax_names in values(b:interactive.terminal.syntax_names)
-    execute 'highlight clear' syntax_names
-    execute 'syntax clear' syntax_names
-  endfor
-
-  let b:interactive.terminal.syntax_names = {}
-  let b:interactive.terminal.syntax_commands = {}
-  let b:interactive.terminal.syntax_highlights = {}
-
-  " Restore wrap.
-  let &l:wrap = b:interactive.terminal.wrap
-endfunction"}}}
-
+endfunction "}}}
 function! s:optimized_print(string, is_error) "{{{
   " Strip <CR>.
   let string = substitute(substitute(
