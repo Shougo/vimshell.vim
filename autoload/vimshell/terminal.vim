@@ -38,6 +38,7 @@ function! vimshell#terminal#init() "{{{
         \ 'current_character_set' : 'United States',
         \ 'is_error' : 0,
         \ 'wrap' : &l:wrap,
+        \ 'buffer' : '',
         \}
 
   call vimshell#terminal#init_highlight()
@@ -92,7 +93,7 @@ function! vimshell#terminal#print(string, is_error) "{{{
         \ }
   let s:virtual.lines = {}
   let [s:virtual.line, s:virtual.col] =
-        \ s:get_virtual_col(line('.'), col('.')-1)
+        \ s:get_virtual_col(line('.'), col('.'))
   if g:vimshell_enable_debug
     echomsg '[s:virtual.line, s:virtual.col] = ' .
           \ string([s:virtual.line, s:virtual.col])
@@ -106,16 +107,17 @@ function! vimshell#terminal#print(string, is_error) "{{{
 
   let b:interactive.terminal.is_error = a:is_error
 
-  let newstr = ''
-  let pos = 0
-
   " Optimize checkstr.
-  let string = a:string
+  let string = b:interactive.terminal.buffer . a:string
+  let b:interactive.terminal.buffer = ''
   while string =~ '\%(\e\[[0-9;]*m\)\{2,}'
     let string = substitute(string,
           \ '\e\[[0-9;]*\zsm\e\[\ze[0-9;]*m', ';', 'g')
   endwhile
+
   let max = len(string)
+  let newstr = ''
+  let pos = 0
 
   while pos < max
     let char = string[pos]
@@ -209,6 +211,10 @@ function! vimshell#terminal#print(string, is_error) "{{{
 
       if matched
         continue
+      elseif checkstr !~ '\r\|\n'
+        " Incomplete sequence.
+        let b:interactive.terminal.buffer = string[pos:]
+        break
       endif"}}}
     elseif has_key(s:control_sequence, char) "{{{
       " Check other pattern.
@@ -494,16 +500,11 @@ function! s:set_screen_string(line, col, string) "{{{
         \ (col > 1 ? current_line[:col-2] : '')
         \ . a:string
         \ . current_line[col+len :]
-  let len2 = s:get_virtual_wcswidth(a:string)
-  let s:virtual.col += len2
-  if col < 1
-    let s:virtual.col += 1
-  endif
 
-  " let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
+  let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
-    echomsg 'current_line = ' . current_line
-    echomsg 'current_line[col:] = ' . current_line[col :]
+    echomsg 'current_line = ' . string(current_line)
+    echomsg 'current_line[col:] = ' . string(current_line[col :])
     echomsg '[old_virt_col, real_col, new_virt_col, string] = ' .
           \ string([a:col, col, s:virtual.col, a:string])
   endif
@@ -554,7 +555,7 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
         let sequence = matchstr(current_line,
               \ '^\e\[[0-9;]*m', real_col)
         let skip_cnt = len(sequence)-1
-        let real_col += len(sequence)
+        let real_col += len(sequence)+1
       else
         let real_col += len(c)
         let col += vimshell#util#wcswidth(c)
@@ -565,16 +566,6 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
         break
       endif
     endfor
-  endif
-
-  let check_col = a:is_virtual ? real_col : col
-  " current_line is too short.
-  if check_col < a:col
-    if a:is_virtual
-      let col += a:col - real_col
-    else
-      let real_col += a:col - col
-    endif
   endif
 
   return (a:is_virtual ? col : real_col)
