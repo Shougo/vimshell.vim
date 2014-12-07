@@ -38,7 +38,7 @@ function! vimshell#init#_start(path, ...) "{{{
   if !vimshell#util#has_vimproc()
     call vimshell#echo_error(v:errmsg)
     call vimshell#echo_error(v:exception)
-    call vimshell#echo_error('Error occured while loading vimproc.')
+    call vimshell#echo_error('Error occurred while loading vimproc.')
     call vimshell#echo_error('Please install vimproc Ver.6.0 or above.')
     return
   elseif vimproc#version() < 600
