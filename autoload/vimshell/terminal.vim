@@ -499,12 +499,12 @@ function! s:set_screen_string(line, col, string) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
 
-  let current_line = s:virtual.lines[line]
   let len = vimshell#util#wcswidth(a:string)
   let s:virtual.lines[line] =
-        \ (col > 1 ? current_line[:col-2] : '')
+        \ (col > 1 ? s:virtual.lines[:col-1] : '')
         \ . a:string
-        \ . current_line[col+len :]
+        \ . s:virtual.lines[col+len :]
+  let current_line = s:virtual.lines[line]
 
   let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
   if g:vimshell_enable_debug
@@ -560,7 +560,7 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
         let sequence = matchstr(current_line,
               \ '^\e\[[0-9;]*m', real_col)
         let skip_cnt = len(sequence)-1
-        let real_col += len(sequence)+1
+        let real_col += len(sequence)
       else
         let real_col += len(c)
         let col += vimshell#util#wcswidth(c)
