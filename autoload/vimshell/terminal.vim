@@ -501,9 +501,9 @@ function! s:set_screen_string(line, col, string) "{{{
 
   let len = vimshell#util#wcswidth(a:string)
   let s:virtual.lines[line] =
-        \ (col > 1 ? s:virtual.lines[:col-1] : '')
+        \ (col > 1 ? s:virtual.lines[line][: col-1] : '')
         \ . a:string
-        \ . s:virtual.lines[col+len :]
+        \ . s:virtual.lines[line][col+len :]
   let current_line = s:virtual.lines[line]
 
   let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
