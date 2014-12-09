@@ -484,10 +484,6 @@ function! s:get_virtual_col(line, col) "{{{
   return [a:line, vimshell#terminal#get_col(
         \ get(s:virtual.lines, a:line, getline(a:line)), -1, -1, a:col, 1)]
 endfunction"}}}
-function! s:get_screen_character(line, col) "{{{
-  let [line, col] = s:get_real_pos(a:line, a:col)
-  return s:virtual.lines[line][col]
-endfunction"}}}
 function! s:set_screen_string(line, col, string) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
