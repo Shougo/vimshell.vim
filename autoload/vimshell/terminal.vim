@@ -304,7 +304,7 @@ function! s:optimized_print(string, is_error) "{{{
 
   call cursor(0, col('$'))
   let [s:virtual.line, s:virtual.col] =
-        \ s:get_virtual_col(line('.'), col('.')-1)
+        \ s:get_virtual_col(line('.'), col('.'))
   call s:set_cursor()
 endfunction"}}}
 function! s:print_with_redraw(is_error, lines) "{{{
@@ -472,7 +472,8 @@ function! s:get_real_pos(line, col) "{{{
     return [a:line, 0]
   endif
 
-  return s:get_col_current_line(a:line, a:col, 0)
+  return [a:line, vimshell#terminal#get_col(
+        \ get(s:virtual.lines, a:line, getline(a:line)), a:col, 0)]
 endfunction"}}}
 function! s:get_virtual_col(line, col) "{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
@@ -480,12 +481,8 @@ function! s:get_virtual_col(line, col) "{{{
     return [a:line, 1]
   endif
 
-  return s:get_col_current_line(a:line, a:col, 1)
-endfunction"}}}
-function! s:get_col_current_line(line, col, is_virtual) "{{{
-  let current_line = get(s:virtual.lines, a:line, getline(a:line))
   return [a:line, vimshell#terminal#get_col(
-        \ current_line, a:col, a:is_virtual)]
+        \ get(s:virtual.lines, a:line, getline(a:line)), a:col, 1)]
 endfunction"}}}
 function! s:get_screen_character(line, col) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
