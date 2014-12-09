@@ -499,7 +499,8 @@ function! s:set_screen_string(line, col, string) "{{{
         \ . s:virtual.lines[line][col+len :]
   let current_line = s:virtual.lines[line]
 
-  let [s:virtual.line, s:virtual.col] = s:get_virtual_col(line, col+len)
+  let s:virtual.col =
+        \ vimshell#terminal#get_col(current_line, col+len, 1)
   if g:vimshell_enable_debug
     echomsg 'current_line = ' . string(current_line)
     echomsg 'current_line[col:] = ' . string(current_line[col :])
