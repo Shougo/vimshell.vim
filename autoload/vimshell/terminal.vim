@@ -491,10 +491,6 @@ function! s:get_screen_character(line, col) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   return s:virtual.lines[line][col]
 endfunction"}}}
-function! s:get_virtual_wcswidth(string) "{{{
-  return vimshell#util#wcswidth(
-        \ substitute(a:string, '\e\[[0-9;]*m', '', 'g'))
-endfunction"}}}
 function! s:set_screen_string(line, col, string) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
