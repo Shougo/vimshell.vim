@@ -473,7 +473,7 @@ function! s:get_real_pos(line, col) "{{{
   endif
 
   return [a:line, vimshell#terminal#get_col(
-        \ get(s:virtual.lines, a:line, getline(a:line)), a:col, 0)]
+        \ get(s:virtual.lines, a:line, getline(a:line)), -1, -1, a:col, 0)]
 endfunction"}}}
 function! s:get_virtual_col(line, col) "{{{
   let current_line = get(s:virtual.lines, a:line, getline(a:line))
@@ -482,7 +482,7 @@ function! s:get_virtual_col(line, col) "{{{
   endif
 
   return [a:line, vimshell#terminal#get_col(
-        \ get(s:virtual.lines, a:line, getline(a:line)), a:col, 1)]
+        \ get(s:virtual.lines, a:line, getline(a:line)), -1, -1, a:col, 1)]
 endfunction"}}}
 function! s:get_screen_character(line, col) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
@@ -500,7 +500,7 @@ function! s:set_screen_string(line, col, string) "{{{
   let current_line = s:virtual.lines[line]
 
   let s:virtual.col =
-        \ vimshell#terminal#get_col(current_line, col+len, 1)
+        \ vimshell#terminal#get_col(current_line, s:virtual.col, col, col+len, 1)
   if g:vimshell_enable_debug
     echomsg 'current_line = ' . string(current_line)
     echomsg 'current_line[col:] = ' . string(current_line[col :])
@@ -521,22 +521,22 @@ function! s:set_screen_pos(line, col) "{{{
           \ repeat(' ', a:col - len(s:virtual.lines[a:line]))
   endif
 endfunction"}}}
-function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
+function! vimshell#terminal#get_col(line, start_virtual, start_real, max_col, is_virtual) "{{{
   " is_virtual -> a:col : real col.
   " not -> a:col : virtual col.
-  let col = 1
-  let real_col = 0
+  let virtual_col = a:start_virtual < 0 ? 1 : a:start_virtual
+  let real_col = a:start_real < 0 ? 0 : a:start_virtual
 
   let current_line = a:line
 
   if current_line !~ '\e\[[0-9;]*m'
     " Optimized.
-    for c in split(current_line[: a:col*3], '\zs')
+    for c in split(current_line[: a:max_col*3], '\zs')
       let real_col += len(c)
-      let col += strwidth(c)
+      let virtual_col += strwidth(c)
 
-      let check_col = a:is_virtual ? real_col : col
-      if check_col > a:col
+      let check_col = a:is_virtual ? real_col : virtual_col
+      if check_col > a:max_col
         break
       endif
     endfor
@@ -557,17 +557,17 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
         let real_col += len(sequence)
       else
         let real_col += len(c)
-        let col += strwidth(c)
+        let virtual_col += strwidth(c)
       endif
 
-      let check_col = a:is_virtual ? real_col : col
-      if check_col > a:col
+      let check_col = a:is_virtual ? real_col : virtual_col
+      if check_col > a:max_col
         break
       endif
     endfor
   endif
 
-  return (a:is_virtual ? col : real_col)
+  return (a:is_virtual ? virtual_col : real_col)
 endfunction"}}}
 
 " Escape sequence functions.
