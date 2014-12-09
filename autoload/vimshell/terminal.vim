@@ -492,7 +492,7 @@ function! s:set_screen_string(line, col, string) "{{{
   let [line, col] = s:get_real_pos(a:line, a:col)
   call s:set_screen_pos(line, col)
 
-  let len = vimshell#util#wcswidth(a:string)
+  let len = strwidth(a:string)
   let s:virtual.lines[line] =
         \ (col > 1 ? s:virtual.lines[line][: col-1] : '')
         \ . a:string
@@ -533,7 +533,7 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
     " Optimized.
     for c in split(current_line[: a:col*3], '\zs')
       let real_col += len(c)
-      let col += vimshell#util#wcswidth(c)
+      let col += strwidth(c)
 
       let check_col = a:is_virtual ? real_col : col
       if check_col > a:col
@@ -557,7 +557,7 @@ function! vimshell#terminal#get_col(line, col, is_virtual) "{{{
         let real_col += len(sequence)
       else
         let real_col += len(c)
-        let col += vimshell#util#wcswidth(c)
+        let col += strwidth(c)
       endif
 
       let check_col = a:is_virtual ? real_col : col

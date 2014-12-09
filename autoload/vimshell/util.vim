@@ -59,63 +59,36 @@ function! vimshell#util#strchars(string) "{{{
   return len(substitute(a:string, '.', 'x', 'g'))
 endfunction"}}}
 
-function! vimshell#util#wcswidth(...) "{{{
-  return call(s:get_prelude().wcswidth, a:000)
-endfunction"}}}
 function! vimshell#util#strwidthpart(...) "{{{
   return call(s:get_prelude().strwidthpart, a:000)
 endfunction"}}}
 function! vimshell#util#strwidthpart_reverse(...) "{{{
   return call(s:get_prelude().strwidthpart_reverse, a:000)
 endfunction"}}}
-if v:version >= 703
-  " Use builtin function.
-  function! vimshell#util#strwidthpart_len(str, width) "{{{
-    let ret = a:str
-    let width = strwidth(a:str)
-    while width > a:width
-      let char = matchstr(ret, '.$')
-      let ret = ret[: -1 - len(char)]
-      let width -= strwidth(char)
-    endwhile
 
-    return width
-  endfunction"}}}
-  function! vimshell#util#strwidthpart_len_reverse(str, width) "{{{
-    let ret = a:str
-    let width = strwidth(a:str)
-    while width > a:width
-      let char = matchstr(ret, '^.')
-      let ret = ret[len(char) :]
-      let width -= strwidth(char)
-    endwhile
+" Use builtin function.
+function! vimshell#util#strwidthpart_len(str, width) "{{{
+  let ret = a:str
+  let width = strwidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '.$')
+    let ret = ret[: -1 - len(char)]
+    let width -= strwidth(char)
+  endwhile
 
-    return width
-  endfunction"}}}
-else
-  function! vimshell#util#strwidthpart_len(str, width) "{{{
-    let ret = a:str
-    let width = vimshell#util#wcswidth(a:str)
-    while width > a:width
-      let char = matchstr(ret, '.$')
-      let ret = ret[: -1 - len(char)]
-      let width -= s:wcwidth(char)
-    endwhile
+  return width
+endfunction"}}}
+function! vimshell#util#strwidthpart_len_reverse(str, width) "{{{
+  let ret = a:str
+  let width = strwidth(a:str)
+  while width > a:width
+    let char = matchstr(ret, '^.')
+    let ret = ret[len(char) :]
+    let width -= strwidth(char)
+  endwhile
 
-    return width
-  endfunction"}}}
-  function! vimshell#util#strwidthpart_len_reverse(str, width) "{{{
-    let ret = a:str
-    let width = vimshell#util#wcswidth(a:str)
-    while width > a:width
-      let char = matchstr(ret, '^.')
-      let ret = ret[len(char) :]
-      let width -= s:wcwidth(char)
-    endwhile
-
-    return width
-  endfunction"}}}
-endif
+  return width
+endfunction"}}}
 
 function! s:buflisted(bufnr) "{{{
   return exists('t:tabpagebuffer') ?
