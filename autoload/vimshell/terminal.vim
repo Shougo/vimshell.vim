@@ -199,6 +199,8 @@ function! s:check_str(string) "{{{
       " Check escape sequence.
       let checkstr = string[pos+1 :]
       if checkstr == ''
+        " Incomplete sequence.
+        let b:interactive.terminal.buffer = string[pos :]
         break
       endif
 
