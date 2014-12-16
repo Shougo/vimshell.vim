@@ -222,7 +222,8 @@ function! vimshell#interactive#send(expr) "{{{
           \ string, "\<LF>", '; ', 'g'), '; $', '', '')
     call vimshell#view#_set_prompt_command(line)
 
-    let line = vimshell#hook#call_filter('preparse', context, line)
+    let line = vimshell#hook#call_filter(
+          \ 'preparse', vimshell#get_context(), line)
     let ret = vimshell#execute_async(line)
 
     if ret == 0
