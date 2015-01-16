@@ -94,9 +94,9 @@ highlight default link vimshrcString String
 highlight default link vimshrcArguments Type
 highlight default link vimshrcConstants Constant
 highlight default link vimshrcSpecial PreProc
-highlight default link vimshrcVariable Comment
-highlight default link vimshrcComment Identifier
-highlight default link vimshrcCommentRegion Identifier
+highlight default link vimshrcVariable Identifier
+highlight default link vimshrcComment Comment
+highlight default link vimshrcCommentRegion Comment
 highlight default link vimshrcNormal Normal
 
 highlight default link vimshrcCommand Statement
