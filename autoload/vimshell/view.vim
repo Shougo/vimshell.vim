@@ -105,7 +105,7 @@ function! vimshell#view#_set_highlight() "{{{
         \ prompt_pattern 'nextgroup=vimshellCommand'
   execute 'syntax match vimshellPrompt'
         \ secondary_prompt_pattern 'nextgroup=vimshellCommand'
-  syntax match   vimshellCommand '\f\+'
+  syntax match   vimshellCommand '\s*\f\+'
         \ nextgroup=vimshellLine contained
   syntax region vimshellLine start='' end='$' keepend contained
         \ contains=vimshellDirectory,vimshellConstants,

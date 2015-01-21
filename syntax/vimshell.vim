@@ -53,8 +53,6 @@ syntax match   vimshellConstants
       \ '[+-]\=\d\+#[-+]\=\w\+\>'
 syntax match   vimshellConstants
       \ '[+-]\=\d\+\.\d\+\([eE][+-]\?\d\+\)\?\>'
-syntax match   vimshellCommand
-      \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+\*[[:blank:]\n]'
 syntax match   vimshellSocket
       \ '\%(^\|\s\)[[:alnum:]_.][[:alnum:]_.-]\+=[[:blank:]\n]'
 syntax match   vimshellDotFiles
@@ -64,15 +62,14 @@ syntax match   vimshellArguments
 syntax match   vimshellQuoted
       \ '\\.' contained
 syntax match   vimshellSpecial
-      \ '[|<>;&;]' contained
+      \ '[<>&]' contained
+syntax match   vimshellSpecial
+      \ '|\|;\|&&' contained nextgroup=vimshellCommand
 syntax match   vimshellVariable
       \ '$\h\w*' contained
 syntax match   vimshellVariable
       \ '$$\h\w*' contained
 syntax region   vimshellVariable  start=+${+ end=+}+ contained
-
-syntax match vimshellCommand '[|;]\s*\f\+'
-      \ contained contains=vimshellSpecial,vimshellArguments
 
 syntax match vimshellURI
       \ '\a\a\+://[[:alnum:];/?:@&=+$,_.~*|()-]\+' containedin=ALL
