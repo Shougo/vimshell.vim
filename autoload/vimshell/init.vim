@@ -60,7 +60,7 @@ function! vimshell#init#_start(path, ...) "{{{
     call vimshell#echo_error(
           \ '[vimshell] Detected autochdir!')
     call vimshell#echo_error(
-          \ '[vimshell] vimshell don''t work if you set autochdir option.')
+          \ '[vimshell] vimshell does''t work if you set autochdir option.')
     return
   endif
   "}}}
