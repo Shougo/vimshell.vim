@@ -156,7 +156,8 @@ COMMANDS 					*vimshell-commands*
 		buffer of vimshell, iexe, texe.  You can control interpreter
 		as if you are using |quickrun|.
 		Cf: |vimshell#interactive#send()|
-		Note: If interpreter is not loaded in the current tab, you
+		Note: If interpreter is not loaded in the current tab,
+		|g:vimshell_interactive_interpreter_commands| is used or you
 		can run interpreter command.
 
 :VimShellSendBuffer {bufname}			*:VimShellSendBuffer*
@@ -421,7 +422,8 @@ g:vimshell_interactive_command_options
 g:vimshell_interactive_interpreter_commands
 		This is a dictionary variable with filetype key and it is
 		assignments of an interpreter name without arguments of
-		|:VimShellInteractive|.
+		|:VimShellInteractive|.  It is also used in
+		|VimShellSendString|.
 
 		Default value is too complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
