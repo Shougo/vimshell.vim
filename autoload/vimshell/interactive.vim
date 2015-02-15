@@ -665,16 +665,12 @@ function! s:check_all_output(is_hold) "{{{
 
   if mode() ==# 'n'
     for bufnr in filter(range(1, bufnr('$')),
-        \ "type(getbufvar(v:val, 'interactive')) == type({})
-        \  && get(get(getbufvar(v:val, 'interactive'),
-        \        'process', {}), 'is_valid', 0)")
+        \ "type(getbufvar(v:val, 'interactive')) == type({})")
       let interactive = getbufvar(bufnr, 'interactive')
       let updated = 1
 
       " Check output.
-      if s:cache_output(interactive)
-        call s:check_output(interactive, bufnr, bufnr('%'))
-      endif
+      call s:check_output(interactive, bufnr, bufnr('%'))
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
@@ -730,7 +726,8 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     return 1
   endif
 
-  if a:interactive.type ==# 'less' || !s:cache_output(a:interactive)
+  if a:interactive.type ==# 'less'
+        \ || (!s:cache_output(a:interactive) && !exists('b:interactive'))
         \ || vimshell#util#is_cmdwin()
         \ || (a:bufnr != a:bufnr_save && bufwinnr(a:bufnr) < 0)
     return
