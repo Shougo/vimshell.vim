@@ -49,6 +49,7 @@ endfunction"}}}
 
 function! s:command.complete(args) "{{{
   if len(a:args) == 1
+        \ && exists('*unite#sources#build#get_builders_name')
     return vimshell#complete#helper#keyword_simple_filter(
           \ unite#sources#build#get_builders_name(), a:args[-1])
   endif
