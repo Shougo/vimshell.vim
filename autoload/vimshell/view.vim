@@ -115,7 +115,7 @@ endfunction"}}}
 function! vimshell#view#_close(buffer_name) "{{{
   let quit_winnr = -1
   if a:buffer_name != ''
-    let quit_winnr = vimshell#util#get_vimshell_winnr(buffer_name)
+    let quit_winnr = vimshell#util#get_vimshell_winnr(a:buffer_name)
   elseif exists('t:vimshell')
     let quit_winnr = bufwinnr(t:vimshell.last_interactive_bufnr)
   endif
