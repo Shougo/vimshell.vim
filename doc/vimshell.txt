@@ -164,6 +164,11 @@ COMMANDS 					*vimshell-commands*
 		Sets background buffer as {bufname}.  When {bufname} isn't
 		showed, it will be opened automatically.
 
+:VimShellClose [{buffer-name}]			*:VimShellClose*
+		Closes the vimshell buffer with {buffer-name}.
+		Note: Closes the last vimshell buffer you used in current tab
+		if you skip specifying {buffer-name}.
+
 ------------------------------------------------------------------------------
 VARIABLES 					*vimshell-variables*
 

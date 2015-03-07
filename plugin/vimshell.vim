@@ -151,6 +151,7 @@ command! -range -nargs=? VimShellSendString
       \ call vimshell#interactive#send_region(<line1>, <line2>, <q-args>)
 command! -complete=buffer -nargs=1 VimShellSendBuffer
       \ call vimshell#interactive#set_send_buffer(<q-args>)
+command! -nargs=? VimShellClose call vimshell#view#_close(<q-args>)
 
 " Plugin keymappings "{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)

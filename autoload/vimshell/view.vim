@@ -113,7 +113,13 @@ function! vimshell#view#_set_highlight() "{{{
         \vimshellVariable,vimshellSpecial,vimshellComment
 endfunction"}}}
 function! vimshell#view#_close(buffer_name) "{{{
-  let quit_winnr = vimshell#util#get_vimshell_winnr(a:buffer_name)
+  let quit_winnr = -1
+  if a:buffer_name != ''
+    let quit_winnr = vimshell#util#get_vimshell_winnr(buffer_name)
+  elseif exists('t:vimshell')
+    let quit_winnr = bufwinnr(t:vimshell.last_interactive_bufnr)
+  endif
+
   if quit_winnr > 0
     " Hide unite buffer.
     silent execute quit_winnr 'wincmd w'
