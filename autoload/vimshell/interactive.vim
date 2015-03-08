@@ -740,6 +740,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
   endif
 
   let pos = getpos('.')
+  let is_last_line = line('.') == line('$')
   if has_key(a:interactive, 'output_pos')
     call setpos('.', a:interactive.output_pos)
   endif
@@ -778,7 +779,8 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     endif
   endif
 
-  if pos != getpos('.') && b:interactive.process.is_valid
+  if !is_last_line && pos != getpos('.')
+        \ && b:interactive.process.is_valid
     call setpos('.', pos)
   endif
 
