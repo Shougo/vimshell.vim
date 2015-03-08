@@ -778,7 +778,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     endif
   endif
 
-  if pos != getpos('.')
+  if pos != getpos('.') && b:interactive.process.is_valid
     call setpos('.', pos)
   endif
 
