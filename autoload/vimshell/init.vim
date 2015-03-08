@@ -429,8 +429,6 @@ function! s:default_settings() "{{{
           \ call vimshell#handlers#_on_bufwin_enter(expand('<abuf>'))
     autocmd BufLeave,BufWinLeave,WinLeave <buffer>
           \ call vimshell#handlers#_on_bufwin_leave()
-    autocmd CursorMoved <buffer>
-          \ call vimshell#interactive#check_current_output()
   augroup end
 
   call vimshell#handlers#_on_bufwin_enter(bufnr('%'))
