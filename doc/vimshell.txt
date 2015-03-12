@@ -145,16 +145,10 @@ COMMANDS 					*vimshell-commands*
 >
 		VimShellInteractive --split='split | resize 20' irb
 <
-:VimShellTerminal [{option}] {command}			*:VimShellTerminal*
-		It does not run vimshell, but same as Emacs's ansi-term,
-		it launches a terminal program you Specify by {command}.
-		{option} is same to |vimshell-internal-texe| options.
-		Note: This is not a completed function.
-
 :[range]VimShellSendString {string}		*:VimShellSendString*
 		It sends selected string to the interpreter in background
-		buffer of vimshell, iexe, texe.  You can control interpreter
-		as if you are using |quickrun|.
+		buffer of vimshell, iexe.  You can control interpreter as if
+		you are using |quickrun|.
 		Cf: |vimshell#interactive#send()|
 		Note: If interpreter is not loaded in the current tab,
 		|g:vimshell_interactive_interpreter_commands| is used or you
@@ -454,14 +448,6 @@ g:vimshell_interactive_echoback_commands
 
 		Default value is complicated, so please refer
 		plugin/vimshell.vim
-
-g:vimshell_terminal_cursor			*g:vimshell_terminal_cursor*
-		It is an assignment of cursor shape |vimshell-internal-texe|
-		uses.  'guicursor' is temporary changed, so this value has
-		effect only on
-		gvim environments.
-
-		Default value is 'i:block-Cursor/lCursor'.
 
 g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
 		This is a dictionary variable with command name key, and when
@@ -866,8 +852,8 @@ vimshell#set_execute_file({exts}, {command})	 *vimshell#set_execute_file()*
 						*vimshell#interactive#send()*
 vimshell#interactive#send({expr})
 		It sends {expr} to the interpreter in background buffer of
-		vimshell, iexe, texe.  You can control interpreter as if you
-		are using |quickrun|.
+		vimshell, iexe.  You can control interpreter as if you are
+		using |quickrun|.
 		{expr} is string or list.
 		Note: If interpreter is not loaded in current tab, you can run
 		interpreter command.
@@ -1030,7 +1016,7 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 >
 		vimshell% ls&
 <
-		Note: iexe, exe, bg, texe and less interpret options changes
+		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
 		
 		--filetype={filetype-name}
@@ -1090,7 +1076,7 @@ exe [{option}...] {command} 			*vimshell-internal-exe*
 		commands.
 		Note: After vimshell Ver.9, exe can read inputs.
 		
-		Note: iexe, exe, bg, texe and less interpret options changes
+		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
 		
 						*vimshell-execute-options*
@@ -1155,7 +1141,7 @@ iexe [{options}...] {command}			*vimshell-internal-iexe*
 		If you execute a process from iexe, this sets "$VIMSHELL" 1.
 		You may want to check it in your shell's rc file.
 
-		Note: iexe, exe, bg, texe and less interpret options to change
+		Note: iexe, exe, bg and less interpret options to change
 		their behaviours.  Refer |vimshell-execute-options|.
 
 		--split={split-command}
@@ -1171,7 +1157,7 @@ less [{options}...] {command}			*vimshell-internal-less*
 		If {command} is not executable command, execute
 		|vimshell-internal-view|.
 		
-		Note: iexe, exe, bg, texe and less interpret options changes
+		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
 
 		--split={split-command}
@@ -1239,20 +1225,7 @@ sudo {command} [{args}]				*vimshell-internal-sudo*
 		http://bitbucket.org/wantora/sudo/wiki/Home
 
 texe [{options}...] {command}			*vimshell-internal-texe*
-		Execute {command} with args.
-		Note: Execute external command forcibly.
-		Different from exe and iexe, it executes terminal command.  This
-		command creates new buffer.
-		Note: Pipe is not supported.
-		
-		Note: This command is under construction.
-		
-		Note: iexe, exe, bg, texe and less interpret options changes
-		the behavior.  Refer to |vimshell-execute-options|.
-
-		--split={split-command}
-		Specify split command.
-		If omit this option, used |g:vimshell_split_command|.
+		Note: This command is deprecated.
 
 time {command}					*vimshell-internal-time*
 		Runs {command} synchronously and shows how long did it take.

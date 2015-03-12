@@ -108,8 +108,6 @@ let g:vimshell_interactive_monochrome_commands =
       \ get(g:, 'vimshell_interactive_monochrome_commands', {})
 
 " For terminal commands.
-let g:vimshell_terminal_cursor =
-      \ get(g:, 'vimshell_terminal_cursor', 'i:block-Cursor/lCursor')
 let g:vimshell_terminal_commands =
       \ get(g:, 'vimshell_terminal_commands', {
       \     'more' : 1, 'screen' : 1, 'tmux' : 1,
