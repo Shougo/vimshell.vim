@@ -510,7 +510,13 @@ function! s:hide() "{{{
   endif
 endfunction"}}}
 function! s:exit() "{{{
+  let context = deepcopy(vimshell#get_context())
+
   call vimshell#interactive#quit_buffer()
+
+  if context.tab
+    tabclose
+  endif
 endfunction"}}}
 function! s:delete_backward_char() "{{{
   if !pumvisible()

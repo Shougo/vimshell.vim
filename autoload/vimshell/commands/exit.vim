@@ -31,9 +31,14 @@ let s:command = {
 function! s:command.execute(args, context) "{{{
   " Exit vimshell.
   if a:context.is_interactive
+    let context = deepcopy(vimshell#get_context())
     call vimshell#util#delete_buffer()
     if winnr('$') != 1
       close
+    endif
+
+    if context.tab
+      tabclose
     endif
   endif
 

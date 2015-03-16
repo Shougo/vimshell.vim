@@ -123,6 +123,7 @@ function! vimshell#init#_context(context) "{{{
     \ 'winwidth' : 0,
     \ 'winminwidth' : 0,
     \ 'project' : 0,
+    \ 'tab' : 0,
     \ 'direction' : '',
     \ 'prompt' : get(g:,
     \      'vimshell_prompt', 'vimshell% '),

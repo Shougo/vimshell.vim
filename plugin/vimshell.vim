@@ -130,7 +130,7 @@ command! -nargs=? -complete=customlist,vimshell#complete VimShellCreate
 command! -nargs=? -complete=customlist,vimshell#complete VimShellPop
       \ call s:call_vimshell({'toggle' : 1, 'popup' : 1}, <q-args>)
 command! -nargs=? -complete=customlist,vimshell#complete VimShellTab
-      \ tabnew | call s:call_vimshell({}, <q-args>)
+      \ tabnew | call s:call_vimshell({'tab' : 1}, <q-args>)
 command! -nargs=? -complete=customlist,vimshell#complete VimShellCurrentDir
       \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
 command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
