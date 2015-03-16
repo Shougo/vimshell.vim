@@ -780,6 +780,7 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
   endif
 
   if !is_last_line && pos != getpos('.')
+        \ && exists('b:interactive')
         \ && b:interactive.process.is_valid
     call setpos('.', pos)
   endif
