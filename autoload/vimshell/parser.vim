@@ -146,7 +146,7 @@ function! vimshell#parser#execute_command(commands, context) "{{{
       if has_key(g:vimshell_terminal_commands, program)
             \ && g:vimshell_terminal_commands[program]
         " Execute terminal commands.
-        return vimshell#helpers#execute_internal_command('texe', commands, context)
+        return vimshell#helpers#execute_internal_command('iexe', commands, context)
       else
         " Execute external commands.
         return vimshell#helpers#execute_internal_command('exe', commands, context)

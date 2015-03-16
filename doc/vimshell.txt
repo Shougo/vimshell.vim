@@ -452,9 +452,7 @@ g:vimshell_interactive_echoback_commands
 g:vimshell_terminal_commands			*g:vimshell_terminal_commands*
 		This is a dictionary variable with command name key, and when
 		you run a command of which value is True, automatically
-		|vimshell-internal-texe| is used.  iexe doesn't echoback when
-		|vimshell-internal-iexe| is running, and otherwise
-		does.
+		|vimshell-internal-iexe| is used.
 
 		Default value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
@@ -1223,9 +1221,6 @@ sudo {command} [{args}]				*vimshell-internal-sudo*
 		http://www.vim.org/scripts/script.php?script_id=729
 		On Windows, "sudo.exe" is necessary.
 		http://bitbucket.org/wantora/sudo/wiki/Home
-
-texe [{options}...] {command}			*vimshell-internal-texe*
-		Note: This command is deprecated.
 
 time {command}					*vimshell-internal-time*
 		Runs {command} synchronously and shows how long did it take.
