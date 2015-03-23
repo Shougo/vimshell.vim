@@ -804,12 +804,12 @@ function! s:cache_output(interactive) "{{{
 
   if !a:interactive.process.stdout.eof
     let a:interactive.stdout_cache .=
-          \ a:interactive.process.stdout.read(100, 0)
+          \ a:interactive.process.stdout.read(1000, 0)
   endif
 
   if !a:interactive.process.stderr.eof
     let a:interactive.stderr_cache .=
-          \ a:interactive.process.stderr.read(100, 0)
+          \ a:interactive.process.stderr.read(1000, 0)
   endif
 
   if a:interactive.process.stderr.eof &&
