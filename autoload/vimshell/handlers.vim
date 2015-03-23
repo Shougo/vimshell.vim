@@ -32,6 +32,11 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
     execute bufwinnr(a:bufnr) 'wincmd w'
   endif
 
+  if !exists('t:vimshell')
+    call vimshell#init#tab_variable()
+  endif
+  let t:vimshell.last_vimshell_bufnr = bufnr('%')
+
   try
     if !exists('b:vimshell')
       return
@@ -76,16 +81,6 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
       execute winnr.'wincmd w'
     endif
   endtry
-endfunction"}}}
-function! vimshell#handlers#_on_bufwin_leave() "{{{
-  if expand('<abuf>') != bufnr('%')
-    return
-  endif
-
-  if !exists('t:vimshell')
-    call vimshell#init#tab_variable()
-  endif
-  let t:vimshell.last_vimshell_bufnr = bufnr('%')
 endfunction"}}}
 
 function! vimshell#handlers#_restore_statusline()  "{{{

@@ -426,10 +426,8 @@ function! s:default_settings() "{{{
   augroup vimshell
     autocmd BufDelete,VimLeavePre <buffer>
           \ call vimshell#interactive#hang_up(expand('<afile>'))
-    autocmd BufEnter,BufWinEnter,WinEnter <buffer>
+    autocmd BufEnter,BufWinEnter,WinEnter,BufRead <buffer>
           \ call vimshell#handlers#_on_bufwin_enter(expand('<abuf>'))
-    autocmd BufLeave,BufWinLeave,WinLeave <buffer>
-          \ call vimshell#handlers#_on_bufwin_leave()
   augroup end
 
   call vimshell#handlers#_on_bufwin_enter(bufnr('%'))
