@@ -1017,14 +1017,6 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
 		
-		--filetype={filetype-name}
-		Changes output buffer 'filetype' to {filetype-name}.
-		If omit the option, filetype will be set "background".
-
-		--split={split-command}
-		Specify split command.
-		If omit this option, used |g:vimshell_split_command|.
-
 build [{builder-name}, [{args}...]]			*vimshell-internal-build*
 		Execute ":Unite build:{builder-name}:{args}".
 		If you omit {builder-name}, detect builder automatically.
@@ -1079,10 +1071,19 @@ exe [{option}...] {command} 			*vimshell-internal-exe*
 		
 						*vimshell-execute-options*
 		--encoding={encoding-name}
-					*vimshell-execute-options-encoding*
 		If different from 'encoding' and {encoding-name}, vimshell will
 		convert encoding automatically.
 		If omit this option, used "char".
+
+		--split={split-command}
+		Specify split command.
+		If omit this option, used |g:vimshell_split_command|.
+
+		--filetype={filetype-name}
+		Changes output buffer 'filetype' to {filetype-name}.
+		If omit the option, filetype will be set "background".
+		Note:  "exe" command uses "--syntax" option instead of
+		"--filetype".
 
 exit 						*vimshell-internal-exit*
 		Exit vimshell buffer.
@@ -1142,10 +1143,6 @@ iexe [{options}...] {command}			*vimshell-internal-iexe*
 		Note: iexe, exe, bg and less interpret options to change
 		their behaviours.  Refer |vimshell-execute-options|.
 
-		--split={split-command}
-		Specifies split command.
-		If you omit this option, this uses |g:vimshell_split_command|.
-
 less [{options}...] {command}			*vimshell-internal-less*
 		Opens new buffer and executes {command} with arguments.
 		Execute external command forcibly.  Vimshell will work like
@@ -1157,10 +1154,6 @@ less [{options}...] {command}			*vimshell-internal-less*
 		
 		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
-
-		--split={split-command}
-		Specify split command.
-		If omit this option, used |g:vimshell_split_command|.
 
 ls [{argument}...]					*vimshell-internal-ls*
 		Execute "ls" external command with args.
