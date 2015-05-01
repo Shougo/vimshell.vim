@@ -168,6 +168,7 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
   endif
 
   let b:vimshell.system_variables['status'] = b:interactive.status
+  let b:interactive.encoding = &encoding
   let ret = b:interactive.status
 
   let statements = b:vimshell.continuation.statements
