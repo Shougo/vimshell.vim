@@ -27,18 +27,17 @@ import re
 from .base import Base
 
 class Source(Base):
-    def __init__(self):
-        Base.__init__(self)
+    def __init__(self, vim):
+        Base.__init__(self, vim)
 
         self.name = 'vimshell'
         self.mark = '[vimshell]'
         self.filetypes = ['vimshell']
 
-    def get_complete_position(self, vim, context):
-        return vim.eval('vimshell#complete#get_keyword_position()')
+    def get_complete_position(self, context):
+        return self.vim.eval('vimshell#complete#get_keyword_position()')
 
-    def gather_candidates(self, vim, context):
-        return vim.eval('vimshell#complete#gather_candidates("'
+    def gather_candidates(self, context):
+        return self.vim.eval('vimshell#complete#gather_candidates("'
                         + str(context['complete_str']) + '")')
-
 
