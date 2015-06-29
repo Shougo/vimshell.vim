@@ -38,6 +38,6 @@ class Source(Base):
         return self.vim.eval('vimshell#complete#get_keyword_position()')
 
     def gather_candidates(self, context):
-        return self.vim.eval('vimshell#complete#gather_candidates("'
-                        + str(context['complete_str']) + '")')
+        return self.vim.eval("vimshell#complete#gather_candidates('"
+                        + str(context['complete_str']) + "')")
 
