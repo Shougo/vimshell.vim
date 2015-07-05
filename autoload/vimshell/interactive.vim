@@ -519,7 +519,13 @@ function! vimshell#interactive#print_buffer(fd, string) "{{{
   endif
 
   if !empty(a:fd) && a:fd.stdout != ''
-    return vimproc#write(a:fd.stdout, a:string, 'a')
+    let mode = 'w'
+    let fd = a:fd.stdout
+    if fd =~ '^>'
+      let mode = 'a'
+      let fd = fd[1:]
+    endif
+    return vimproc#write(fd, a:string, mode)
   endif
 
   " Convert encoding.
@@ -551,7 +557,13 @@ function! vimshell#interactive#error_buffer(fd, string) "{{{
   endif
 
   if !empty(a:fd) && a:fd.stderr != ''
-    return vimproc#write(a:fd.stderr, a:string)
+    let mode = 'w'
+    let fd = a:fd.stderr
+    if fd =~ '^>'
+      let mode = 'a'
+      let fd = fd[1:]
+    endif
+    return vimproc#write(fd, a:string, mode)
   endif
 
   " Convert encoding.
