@@ -268,7 +268,8 @@ g:vimshell_vimshrc_path				*g:vimshell_vimshrc_path*
 		This is similar to .bashrc in bash.  It is convenient when you
 		define aliases.
 
-		Initial Value is "expand('~/.vimshrc')".
+		Initial Value is "expand('~/.vim/vimshrc')" or
+		"expand('~/.vimshrc')".
 
 g:vimshell_escape_colors			*g:vimshell_escape_colors*
 		A list of colors correspond to coloring in escape sequence.
