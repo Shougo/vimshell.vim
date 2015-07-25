@@ -47,7 +47,10 @@ let g:vimshell_max_directory_stack =
 let g:vimshell_vimshrc_path =
       \ substitute(fnamemodify(get(
       \   g:, 'vimshell_vimshrc_path',
-      \  (isdirectory(expand('~/.vim')) ? '~/.vim/vimshrc' : '~/.vimshrc')),
+      \  (isdirectory(expand('~/.vim'))
+      \   && (filereadable(expand('~/.vim/vimshrc'))
+      \       || !filereadable(expand('~/.vimshrc')))
+      \   ? '~/.vim/vimshrc' : '~/.vimshrc')),
       \  ':p'), '\\', '/', 'g')
 let g:vimshell_escape_colors =
       \ get(g:, 'vimshell_escape_colors', [
