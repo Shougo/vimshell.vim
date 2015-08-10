@@ -588,7 +588,7 @@ function! s:interrupt(is_insert) "{{{
   endif
 endfunction"}}}
 function! s:insert_enter() "{{{
-  if !vimshell#check_prompt()
+  if !vimshell#check_prompt() || !empty(b:vimshell.continuation)
     startinsert
     return
   endif
