@@ -791,7 +791,8 @@ function! s:check_output(interactive, bufnr, bufnr_save) "{{{
     endif
   endif
 
-  if !is_last_line && pos != getpos('.')
+  if (!is_last_line || vimshell#interactive#get_cur_text() != '')
+        \ && pos != getpos('.')
         \ && exists('b:interactive')
         \ && b:interactive.process.is_valid
     call setpos('.', pos)
