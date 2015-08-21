@@ -35,6 +35,7 @@ class Source(Base):
         self.name = 'vimshell'
         self.mark = '[vimshell]'
         self.filetypes = ['vimshell']
+        self.is_bytepos = True
 
     def get_complete_position(self, context):
         return self.vim.eval('vimshell#complete#get_keyword_position()')
