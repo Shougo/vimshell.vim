@@ -40,7 +40,10 @@ function! vimshell#parser#eval_script(script, context) "{{{
 
   let i = 0
   while i < max
+    let cwd = getcwd()
     try
+      call vimshell#cd(statements[i].cwd)
+
       let ret =  s:execute_statement(statements[i].statement, a:context)
     catch /^exe: Process started./
       " Change continuation.
@@ -49,6 +52,8 @@ function! vimshell#parser#eval_script(script, context) "{{{
             \ 'script' : a:script,
             \ }
       return 1
+    finally
+      call vimshell#cd(cwd)
     endtry
 
     let condition = statements[i].condition
@@ -208,13 +213,18 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
   let i = 0
 
   while i < max
+    let cwd = getcwd()
     try
+      call vimshell#cd(statements[i].cwd)
+
       let ret = s:execute_statement(statements[i].statement, context)
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation.statements = statements[i : ]
       let b:vimshell.continuation.context = context
       return 1
+    finally
+      call vimshell#cd(cwd)
     endtry
 
     let condition = statements[i].condition
