@@ -101,15 +101,6 @@ function! vimshell#parser#execute_command(commands, context) "{{{
       let args = [program[1:]] + args
     endif
     return vimshell#helpers#execute_internal_command('h', args, context)
-  elseif a:commands[-1].args[-1] =~ '&$'
-    " Convert to internal "bg" command.
-    let commands[-1].args[-1] = commands[-1].args[-1][:-2]
-    if commands[-1].args[-1] == ''
-      " Delete empty arg.
-      call remove(commands[-1].args, -1)
-    endif
-
-    return vimshell#helpers#execute_internal_command('bg', commands, context)
   elseif len(a:commands) > 1
     if a:commands[-1].args[0] == 'less'
       " Execute less(Syntax sugar).
@@ -265,6 +256,16 @@ function! s:execute_statement(statement, context) "{{{
     let fd = { 'stdin' : '', 'stdout' : '', 'stderr' : '' }
     let commands = [ { 'args' :
           \ split(substitute(statement, '^:', 'vexe ', '')), 'fd' : fd } ]
+  elseif statement =~ '&$'
+    " Convert to internal "bg" command.
+    let commands = vimproc#parser#parse_pipe(statement)
+    let commands[-1].args[-1] = commands[-1].args[-1][:-2]
+    if commands[-1].args[-1] == ''
+      " Delete empty arg.
+      call remove(commands[-1].args, -1)
+    endif
+
+    call insert(commands[-1].args, 'bg')
   elseif has_key(internal_commands, program)
         \ && internal_commands[program].kind ==# 'special'
     " Special commands.
