@@ -420,7 +420,7 @@ function! s:insert_last_word() "{{{
   let word = ''
   let histories = vimshell#history#read()
   if !empty(histories)
-    for w in reverse(split(histories[0], '[^\\]\zs\s'))
+    for w in reverse(split(histories[-1], '[^\\]\zs\s'))
       if w =~ '[[:alpha:]_/\\]\{2,}'
         let word = w
         break
