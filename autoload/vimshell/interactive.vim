@@ -667,7 +667,7 @@ function! s:check_all_output(is_hold) "{{{
   let updated = 0
 
   if mode() ==# 'n'
-    for bufnr in filter(map(range(1, winnr('$')), 'winbufnr(v:val)'),
+    for bufnr in filter(range(1, bufnr('$')),
         \ "type(getbufvar(v:val, 'interactive')) == type({})")
       let interactive = getbufvar(bufnr, 'interactive')
       let updated = 1
