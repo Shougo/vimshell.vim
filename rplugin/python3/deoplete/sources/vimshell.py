@@ -38,11 +38,10 @@ class Source(Base):
         self.is_bytepos = True
 
     def get_complete_position(self, context):
-        return self.vim.eval('vimshell#complete#get_keyword_position()')
+        return self.vim.call('vimshell#complete#get_keyword_position')
 
     def gather_candidates(self, context):
-        return self.vim.eval(
-            "vimshell#complete#gather_candidates('{0}')"
-            .format(deoplete.util.escape(context['complete_str'])
-                    ))
+        return self.vim.call(
+            'vimshell#complete#gather_candidates',
+            context['complete_str'])
 
