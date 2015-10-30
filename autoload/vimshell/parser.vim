@@ -229,10 +229,13 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
 
   if b:interactive.syntax !=# &filetype
     " Set highlight.
-    let start = searchpos(context.prompt_pattern, 'bWn')[0]
+    let start = searchpos(
+          \ b:vimshell.context.prompt_pattern, 'bWn')[0]
     if start > 0
-      call s:highlight_with(start + 1, printf('"\ze\%%(^\[%%\]\|%s\)"',
-            \ context.prompt_pattern), b:interactive.syntax)
+      call s:highlight_with(start + 1,
+            \ printf('"\ze\%%(^\[%%\]\|%s\)"',
+            \        b:vimshell.context.prompt_pattern),
+            \ b:interactive.syntax)
     endif
 
     let b:interactive.syntax = &filetype
