@@ -695,7 +695,7 @@ function! s:check_all_output(is_hold) "{{{
     endif
 
     " Ignore key sequences.
-    if mode() ==# 'n'
+    if mode() ==# 'n' && exists('b:interactive')
       call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
     elseif mode() ==# 'i'
       if exists('b:interactive') &&
