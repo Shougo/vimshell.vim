@@ -32,12 +32,11 @@ function! s:command.execute(args, context) "{{{
   " Evaluate arguments.
 
   let line = join(a:args)
-  let context = {
+  let context = vimshell#init#_context({
         \ 'has_head_spaces' : line =~ '^\s\+',
-        \ 'is_interactive' : a:context.is_interactive, 
-        \ 'is_insert' : a:context.is_insert, 
-        \ 'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''}, 
-        \}
+        \ 'is_interactive' : a:context.is_interactive,
+        \ 'is_insert' : a:context.is_insert,
+        \})
 
   try
     call vimshell#parser#eval_script(line, context)
