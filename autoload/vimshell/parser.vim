@@ -31,6 +31,8 @@ function! vimshell#parser#check_script(script) "{{{
   endfor
 endfunction"}}}
 function! vimshell#parser#eval_script(script, context) "{{{
+  let context = vimshell#init#_context(a:context)
+
   " Split statements.
   let statements = vimproc#parser#parse_statements(a:script)
   let max = len(statements)
@@ -41,11 +43,11 @@ function! vimshell#parser#eval_script(script, context) "{{{
   let i = 0
   while i < max
     try
-      let ret =  s:execute_statement(statements[i].statement, a:context)
+      let ret =  s:execute_statement(statements[i].statement, context)
     catch /^exe: Process started./
       " Change continuation.
       let b:vimshell.continuation = {
-            \ 'statements' : statements[i : ], 'context' : a:context,
+            \ 'statements' : statements[i : ], 'context' : context,
             \ 'script' : a:script,
             \ }
       return 1

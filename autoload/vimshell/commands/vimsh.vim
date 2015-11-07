@@ -48,10 +48,9 @@ function! s:command.execute(args, context) "{{{
     return
   endif
 
-  let context = {
+  let context = vimshell#init#_context({
         \  'has_head_spaces' : 0, 'is_interactive' : 0,
-        \  'fd' : { 'stdin' : '', 'stdout': '', 'stderr': ''},
-        \ }
+        \ })
   let i = 0
   let lines = readfile(filename)
   let max = len(lines)
