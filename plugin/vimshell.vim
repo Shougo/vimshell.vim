@@ -251,11 +251,6 @@ function! s:call_vimshell(default, args) "{{{
   call vimshell#init#_start(join(args), options)
 endfunction"}}}
 
-augroup vimshell
-  " Detect vimshell rc file.
-  autocmd BufNewFile,BufRead *.vimsh,.vimshrc set filetype=vimshrc
-augroup END
-
 let &cpo = s:save_cpo
 unlet s:save_cpo
 
