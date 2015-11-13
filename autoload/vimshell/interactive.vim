@@ -702,7 +702,7 @@ function! s:check_all_output(is_hold) "{{{
         call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
       elseif mode() ==# 'i'
         let is_complete_hold = vimshell#util#is_complete_hold()
-        if a:is_hold != is_complete_hold
+        if !is_complete_hold || a:is_hold != is_complete_hold
           setlocal modifiable
           " Prevent screen flick
           set vb t_vb=
