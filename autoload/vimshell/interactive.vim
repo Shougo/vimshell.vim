@@ -107,7 +107,7 @@ function! vimshell#interactive#send_input() "{{{
   call vimshell#interactive#iexe_send_string(input, 1)
 endfunction"}}}
 function! vimshell#interactive#send_char(char) "{{{
-  if !b:interactive.process.is_valid
+  if !s:is_valid(b:interactive)
     return
   endif
 
@@ -246,7 +246,7 @@ function! vimshell#interactive#send_string(...) "{{{
   return call('vimshell#interactive#send', a:000)
 endfunction"}}}
 function! s:iexe_send_string(string, is_insert, linenr) "{{{
-  if !b:interactive.process.is_valid
+  if !s:is_valid(b:interactive)
     return
   endif
 
@@ -299,7 +299,7 @@ function! vimshell#interactive#set_send_buffer(bufname) "{{{
 endfunction"}}}
 
 function! vimshell#interactive#execute_process_out(is_insert) "{{{
-  if !b:interactive.process.is_valid
+  if !s:is_valid(b:interactive)
     return
   endif
 
@@ -343,7 +343,7 @@ function! s:set_output_pos(is_insert) "{{{
 endfunction"}}}
 
 function! vimshell#interactive#quit_buffer() "{{{
-  if get(b:interactive.process, 'is_valid', 0)
+  if !s:is_valid(b:interactive)
     echohl WarningMsg
     let input = input('Process is running. Force exit? [y/N] ')
     echohl None
@@ -366,7 +366,7 @@ function! vimshell#interactive#quit_buffer() "{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#exit() "{{{
-  if !b:interactive.process.is_valid
+  if !s:is_valid(b:interactive)
     return
   endif
 
@@ -402,7 +402,7 @@ function! vimshell#interactive#exit() "{{{
   endif
 endfunction"}}}
 function! vimshell#interactive#force_exit() "{{{
-  if !b:interactive.process.is_valid
+  if !s:is_valid(b:interactive)
     return
   endif
 
@@ -427,7 +427,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
     return
   endif
 
-  if get(interactive.process, 'is_valid', 0)
+  if !s:is_valid(b:interactive)
     call s:kill_process(interactive)
   endif
   let interactive.process.is_valid = 0
@@ -664,16 +664,21 @@ function! s:check_all_output(is_hold) "{{{
     return
   endif
 
+  let interactive = {}
   if mode() ==# 'n'
     for bufnr in filter(range(1, bufnr('$')),
-        \ "type(getbufvar(v:val, 'interactive')) == type({})")
+          \ "s:is_valid(getbufvar(v:val, 'interactive'))")
       " Check output.
       call s:check_output(getbufvar(bufnr, 'interactive'),
             \ bufnr, bufnr('%'))
+      if bufwinnr(bufnr) > 0
+        let interactive = getbufvar(bufnr, 'interactive')
+      endif
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
-    call s:check_output(b:interactive, bufnr('%'), bufnr('%'))
+    let interactive = b:interactive
+    call s:check_output(interactive, bufnr('%'), bufnr('%'))
   endif
 
   if !s:is_insert_char_pre && exists('b:interactive')
@@ -682,9 +687,7 @@ function! s:check_all_output(is_hold) "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if exists('b:interactive') &&
-          \ !empty(b:interactive.process)
-          \ && b:interactive.process.is_valid
+  if s:is_valid(interactive)
     if g:vimshell_interactive_update_time > 0
           \ && &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
@@ -871,6 +874,13 @@ function! s:resize() "{{{
     call b:interactive.process.set_winsize(
           \ vimshell#helpers#get_winwidth(), g:vimshell_scrollback_limit)
   endif
+endfunction"}}}
+
+function! s:is_valid(interactive) "{{{
+  return type(a:interactive) == type({})
+        \ && !empty(a:interactive)
+        \ && !empty(a:interactive.process)
+        \ && a:interactive.process.is_valid
 endfunction"}}}
 
 function! s:kill_process(interactive) "{{{
