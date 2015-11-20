@@ -664,16 +664,12 @@ function! s:check_all_output(is_hold) "{{{
     return
   endif
 
-  let updated = 0
-
   if mode() ==# 'n'
     for bufnr in filter(range(1, bufnr('$')),
         \ "type(getbufvar(v:val, 'interactive')) == type({})")
-      let interactive = getbufvar(bufnr, 'interactive')
-      let updated = 1
-
       " Check output.
-      call s:check_output(interactive, bufnr, bufnr('%'))
+      call s:check_output(getbufvar(bufnr, 'interactive'),
+            \ bufnr, bufnr('%'))
     endfor
   elseif mode() ==# 'i'
         \ && exists('b:interactive') && line('.') == line('$')
@@ -686,7 +682,9 @@ function! s:check_all_output(is_hold) "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if exists('b:interactive') || updated
+  if exists('b:interactive') &&
+          \ !empty(b:interactive.process)
+          \ && b:interactive.process.is_valid
     if g:vimshell_interactive_update_time > 0
           \ && &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
@@ -694,20 +692,15 @@ function! s:check_all_output(is_hold) "{{{
       let &updatetime = g:vimshell_interactive_update_time
     endif
 
-    " Ignore key sequences.
-    if exists('b:interactive') &&
-          \ !empty(b:interactive.process)
-          \ && b:interactive.process.is_valid
-      if mode() ==# 'n'
-        call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
-      elseif mode() ==# 'i'
-        let is_complete_hold = vimshell#util#is_complete_hold()
-        if !is_complete_hold || a:is_hold != is_complete_hold
-          setlocal modifiable
-          " Prevent screen flick
-          set vb t_vb=
-          call feedkeys("]\<BS>", 'n')
-        endif
+    if mode() ==# 'n'
+      call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
+    elseif mode() ==# 'i'
+      let is_complete_hold = vimshell#util#is_complete_hold()
+      if !is_complete_hold || a:is_hold != is_complete_hold
+        setlocal modifiable
+        " Prevent screen flick
+        set vb t_vb=
+        call feedkeys("]\<BS>", 'n')
       endif
     endif
   elseif g:vimshell_interactive_update_time > 0
