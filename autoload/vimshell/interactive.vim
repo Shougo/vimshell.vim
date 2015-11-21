@@ -427,7 +427,7 @@ function! vimshell#interactive#hang_up(afile) "{{{
     return
   endif
 
-  if !s:is_valid(b:interactive)
+  if !s:is_valid(interactive)
     call s:kill_process(interactive)
   endif
   let interactive.process.is_valid = 0
