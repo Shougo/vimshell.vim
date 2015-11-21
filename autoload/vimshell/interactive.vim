@@ -423,13 +423,11 @@ endfunction"}}}
 function! vimshell#interactive#hang_up(afile) "{{{
   let interactive = getbufvar(a:afile, 'interactive')
   let vimshell = getbufvar(a:afile, 'vimshell')
-  if type(interactive) == type('')
+  if !s:is_valid(interactive)
     return
   endif
 
-  if !s:is_valid(interactive)
-    call s:kill_process(interactive)
-  endif
+  call s:kill_process(interactive)
   let interactive.process.is_valid = 0
 
   if interactive.type ==# 'vimshell'
