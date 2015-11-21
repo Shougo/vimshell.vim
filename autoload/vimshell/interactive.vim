@@ -343,7 +343,7 @@ function! s:set_output_pos(is_insert) "{{{
 endfunction"}}}
 
 function! vimshell#interactive#quit_buffer() "{{{
-  if !s:is_valid(b:interactive)
+  if s:is_valid(b:interactive)
     echohl WarningMsg
     let input = input('Process is running. Force exit? [y/N] ')
     echohl None
