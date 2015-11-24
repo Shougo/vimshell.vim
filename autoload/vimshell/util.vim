@@ -250,12 +250,14 @@ function! vimshell#util#glob(pattern, ...) "{{{
     let cwd = getcwd()
     let base = vimshell#util#substitute_path_separator(
           \ fnamemodify(a:pattern, ':h'))
-    execute 'lcd' fnameescape(base)
+    try
+      execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(base)
 
-    let files = map(split(vimshell#util#substitute_path_separator(
-          \ glob('*')), '\n'), "base . '/' . v:val")
-
-    execute 'lcd' fnameescape(cwd)
+      let files = map(split(vimshell#util#substitute_path_separator(
+            \ glob('*')), '\n'), "base . '/' . v:val")
+    finally
+      execute (haslocaldir() ? 'lcd' : 'cd') fnameescape(cwd)
+    endtry
 
     return files
   endif
