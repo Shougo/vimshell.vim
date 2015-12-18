@@ -127,31 +127,45 @@ let g:vimshell_interactive_cygwin_home =
       \ get(g:, 'vimshell_interactive_cygwin_home', '')
 "}}}
 
-command! -nargs=? -complete=customlist,vimshell#complete VimShell
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShell
       \ call s:call_vimshell({}, <q-args>)
-command! -nargs=? -complete=customlist,vimshell#complete VimShellCreate
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShellCreate
       \ call s:call_vimshell({'create' : 1}, <q-args>)
-command! -nargs=? -complete=customlist,vimshell#complete VimShellPop
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShellPop
       \ call s:call_vimshell({'toggle' : 1, 'popup' : 1}, <q-args>)
-command! -nargs=? -complete=customlist,vimshell#complete VimShellTab
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShellTab
       \ tabnew | call s:call_vimshell({'tab' : 1}, <q-args>)
-command! -nargs=? -complete=customlist,vimshell#complete VimShellCurrentDir
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShellCurrentDir
       \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
-command! -nargs=? -complete=customlist,vimshell#complete VimShellBufferDir
+command! -nargs=? -bar -complete=customlist,vimshell#complete
+      \ VimShellBufferDir
       \ call s:call_vimshell({}, <q-args> . ' ' .
       \ vimshell#util#substitute_path_separator(
       \       fnamemodify(bufname('%'), ':p:h')))
 
-command! -nargs=* -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellExecute
+command! -nargs=* -bar
+      \ -complete=customlist,vimshell#helpers#vimshell_execute_complete
+      \ VimShellExecute
       \ call s:vimshell_execute(<q-args>)
-command! -nargs=* -complete=customlist,vimshell#helpers#vimshell_execute_complete VimShellInteractive
+command! -nargs=* -bar
+      \ -complete=customlist,vimshell#helpers#vimshell_execute_complete
+      \ VimShellInteractive
       \ call s:vimshell_interactive(<q-args>)
 
-command! -range -nargs=? VimShellSendString
+command! -range -bar -nargs=?
+      \ VimShellSendString
       \ call vimshell#interactive#send_region(<line1>, <line2>, <q-args>)
-command! -complete=buffer -nargs=1 VimShellSendBuffer
+command! -bar -complete=buffer -nargs=1
+      \ VimShellSendBuffer
       \ call vimshell#interactive#set_send_buffer(<q-args>)
-command! -nargs=? VimShellClose call vimshell#view#_close(<q-args>)
+command! -nargs=? -bar
+      \ VimShellClose
+      \ call vimshell#view#_close(<q-args>)
 
 " Plugin keymappings "{{{
 nnoremap <silent> <Plug>(vimshell_split_switch)
