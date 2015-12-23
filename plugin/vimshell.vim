@@ -127,37 +127,37 @@ let g:vimshell_interactive_cygwin_home =
       \ get(g:, 'vimshell_interactive_cygwin_home', '')
 "}}}
 
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShell
       \ call s:call_vimshell({}, <q-args>)
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShellCreate
       \ call s:call_vimshell({'create' : 1}, <q-args>)
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShellPop
       \ call s:call_vimshell({'toggle' : 1, 'popup' : 1}, <q-args>)
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShellTab
       \ tabnew | call s:call_vimshell({'tab' : 1}, <q-args>)
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShellCurrentDir
       \ call s:call_vimshell({}, <q-args> . ' ' . getcwd())
-command! -nargs=? -bar -complete=customlist,vimshell#complete
+command! -nargs=? -complete=customlist,vimshell#complete
       \ VimShellBufferDir
       \ call s:call_vimshell({}, <q-args> . ' ' .
       \ vimshell#util#substitute_path_separator(
       \       fnamemodify(bufname('%'), ':p:h')))
 
-command! -nargs=* -bar
+command! -nargs=*
       \ -complete=customlist,vimshell#helpers#vimshell_execute_complete
       \ VimShellExecute
       \ call s:vimshell_execute(<q-args>)
-command! -nargs=* -bar
+command! -nargs=*
       \ -complete=customlist,vimshell#helpers#vimshell_execute_complete
       \ VimShellInteractive
       \ call s:vimshell_interactive(<q-args>)
 
-command! -range -bar -nargs=?
+command! -range -nargs=?
       \ VimShellSendString
       \ call vimshell#interactive#send_region(<line1>, <line2>, <q-args>)
 command! -bar -complete=buffer -nargs=1
