@@ -52,6 +52,8 @@ function! vimshell#mappings#define_default_mappings() "{{{
         \ :<C-u>call <SID>hangup(0)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_interrupt)
         \ :<C-u>call <SID>interrupt(0)<CR>
+  inoremap <buffer><silent> <Plug>(vimshell_send_eof)
+        \ <C-v><C-d><C-o>:call vimshell#execute_current_line(1)<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_enter)
         \ :<C-u>call <SID>insert_enter()<CR>
   nnoremap <buffer><silent> <Plug>(vimshell_insert_head)
@@ -184,6 +186,7 @@ function! vimshell#mappings#define_default_mappings() "{{{
   imap <buffer> <C-t> <Plug>(vimshell_insert_last_word)
   " Interrupt.
   imap <buffer> <C-c> <Plug>(vimshell_interrupt)
+  imap <buffer> <C-d> <Plug>(vimshell_send_eof)
   " Delete char.
   imap <buffer> <C-h>    <Plug>(vimshell_delete_backward_char)
   imap <buffer> <BS>     <Plug>(vimshell_delete_backward_char)

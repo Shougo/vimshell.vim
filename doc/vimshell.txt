@@ -563,6 +563,9 @@ Normal mode key mappings.
 <Plug>(vimshell_interrupt)			*<Plug>(vimshell_interrupt)*
 		Send interrupt.
 
+<Plug>(vimshell_send_eof)			*<Plug>(vimshell_send_eof)*
+		Send EOF.
+
 <Plug>(vimshell_insert_head)			*<Plug>(vimshell_insert_head)*
 					*<Plug>(vimshell_insert_enter)*
 <Plug>(vimshell_insert_enter)
@@ -699,6 +702,7 @@ Insert mode default key mappings.
 	(other)		<Plug>(vimshell_push_current_line)
 <C-t>			<Plug>(vimshell_insert_last_word)
 <C-c>			<Plug>(vimshell_interrupt)
+<C-d>			<Plug>(vimshell_send_eof)
 <C-h>			<Plug>(vimshell_delete_backward_char)
 <BS>			<Plug>(vimshell_delete_backward_char)
 <C-k>			<Plug>(vimshell_delete_forward_line)
