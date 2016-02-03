@@ -679,6 +679,7 @@ function! s:check_all_output(is_hold) "{{{
     elseif mode() ==# 'i'
       let is_complete_hold = vimshell#util#is_complete_hold()
       if a:is_hold != is_complete_hold
+            \ || !has('gui_running') || has('nvim')
         setlocal modifiable
         " Prevent screen flick
         set vb t_vb=
