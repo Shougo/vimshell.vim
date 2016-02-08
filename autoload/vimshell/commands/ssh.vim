@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'external',
       \ 'description' : 'ssh {hostname}',
       \}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   if !exists('*unite#get_all_sources')
         \ || empty(unite#get_all_sources('ssh'))
     return []
@@ -41,6 +41,6 @@ function! s:command.complete(args) "{{{
         \ arglead, cmdline, len(cmdline))
 endfunction"}}}
 
-function! vimshell#commands#ssh#define()
+function! vimshell#commands#ssh#define() abort
   return s:command
 endfunction

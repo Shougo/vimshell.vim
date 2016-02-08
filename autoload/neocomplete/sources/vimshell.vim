@@ -26,7 +26,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplete#sources#vimshell#define() "{{{
+function! neocomplete#sources#vimshell#define() abort "{{{
   return s:source
 endfunction"}}}
 
@@ -40,11 +40,11 @@ let s:source = {
       \ 'sorters' : [],
       \}
 
-function! s:source.get_complete_position(context) "{{{
+function! s:source.get_complete_position(context) abort "{{{
   return vimshell#complete#get_keyword_position()
 endfunction"}}}
 
-function! s:source.gather_candidates(context) "{{{
+function! s:source.gather_candidates(context) abort "{{{
   return vimshell#complete#gather_candidates(a:context.complete_str)
 endfunction"}}}
 

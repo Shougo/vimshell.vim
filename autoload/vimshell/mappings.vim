@@ -24,7 +24,7 @@
 "=============================================================================
 
 " Define default mappings.
-function! vimshell#mappings#define_default_mappings() "{{{
+function! vimshell#mappings#define_default_mappings() abort "{{{
   " Plugin keymappings "{{{
   nnoremap <buffer><silent> <Plug>(vimshell_enter)
         \ :<C-u>call vimshell#execute_current_line(0)<CR><ESC>
@@ -193,12 +193,12 @@ function! vimshell#mappings#define_default_mappings() "{{{
   " Delete line.
   imap <buffer> <C-k>     <Plug>(vimshell_delete_forward_line)
 endfunction"}}}
-function! vimshell#mappings#smart_map(vimshell_map, execute_map)
+function! vimshell#mappings#smart_map(vimshell_map, execute_map) abort
   return empty(b:vimshell.continuation) ? a:vimshell_map : a:execute_map
 endfunction
 
 " VimShell key-mappings functions.
-function! s:push_current_line() "{{{
+function! s:push_current_line() abort "{{{
   " Check current line.
   if !vimshell#check_prompt()
     return
@@ -217,7 +217,7 @@ function! s:push_current_line() "{{{
 
   call vimshell#view#_simple_insert()
 endfunction"}}}
-function! s:push_and_execute(command) "{{{
+function! s:push_and_execute(command) abort "{{{
   " Check current line.
   if !vimshell#check_prompt()
     return
@@ -231,7 +231,7 @@ function! s:push_and_execute(command) "{{{
   call vimshell#mappings#execute_line(1)
 endfunction"}}}
 
-function! vimshell#mappings#execute_line(is_insert) "{{{
+function! vimshell#mappings#execute_line(is_insert) abort "{{{
   let oldpos = getpos('.')
   let b:interactive.output_pos = getpos('.')
 
@@ -269,7 +269,7 @@ function! vimshell#mappings#execute_line(is_insert) "{{{
     endif
   endif
 endfunction"}}}
-function! s:execute_command_line(is_insert, oldpos) "{{{
+function! s:execute_command_line(is_insert, oldpos) abort "{{{
   " Get command line.
   let line = vimshell#view#_get_prompt_command()
   let context = {
@@ -358,7 +358,7 @@ function! s:execute_command_line(is_insert, oldpos) "{{{
 
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! s:previous_prompt() "{{{
+function! s:previous_prompt() abort "{{{
   if empty(b:vimshell.continuation)
     call s:search_prompt('bWn')
   else
@@ -369,7 +369,7 @@ function! s:previous_prompt() "{{{
     endif
   endif
 endfunction"}}}
-function! s:next_prompt() "{{{
+function! s:next_prompt() abort "{{{
   if empty(b:vimshell.continuation)
     call s:search_prompt('Wn')
   else
@@ -380,7 +380,7 @@ function! s:next_prompt() "{{{
     endif
   endif
 endfunction"}}}
-function! s:search_prompt(flag) "{{{
+function! s:search_prompt(flag) abort "{{{
   let col = col('.')
   call cursor(0, 1)
   let pos = searchpos(vimshell#get_context().prompt_pattern . '.\?', a:flag)
@@ -391,7 +391,7 @@ function! s:search_prompt(flag) "{{{
     call cursor(0, col)
   endif
 endfunction"}}}
-function! s:delete_previous_output() "{{{
+function! s:delete_previous_output() abort "{{{
   let prompt_pattern = vimshell#get_context().prompt_pattern
   let nprompt = vimshell#get_user_prompt() != '' ?
         \ '^\[%\] ' : prompt_pattern
@@ -419,7 +419,7 @@ function! s:delete_previous_output() "{{{
 
   call vimshell#terminal#clear_highlight()
 endfunction"}}}
-function! s:insert_last_word() "{{{
+function! s:insert_last_word() abort "{{{
   let word = ''
   let histories = vimshell#history#read()
   if !empty(histories)
@@ -433,7 +433,7 @@ function! s:insert_last_word() "{{{
   call setline(line('.'), getline('.') . word)
   startinsert!
 endfunction"}}}
-function! vimshell#mappings#_paste_prompt() "{{{
+function! vimshell#mappings#_paste_prompt() abort "{{{
   if !empty(b:vimshell.continuation)
     return vimshell#int_mappings#_paste_prompt()
   endif
@@ -449,7 +449,7 @@ function! vimshell#mappings#_paste_prompt() "{{{
   " Set prompt line.
   call vimshell#view#_set_prompt_command(command)
 endfunction"}}}
-function! s:move_head() "{{{
+function! s:move_head() abort "{{{
   if !vimshell#check_prompt()
     normal! ^
     return
@@ -457,11 +457,11 @@ function! s:move_head() "{{{
 
   call cursor(0, vimshell#get_prompt_length() + 1)
 endfunction"}}}
-function! s:move_end_argument() "{{{
+function! s:move_end_argument() abort "{{{
   let pos = searchpos('\\\@<!\s\zs[^[:space:]]*$', '', line('.'), 'n')
   call cursor(0, pos[1])
 endfunction"}}}
-function! s:delete_line() "{{{
+function! s:delete_line() abort "{{{
   let col = col('.')
   let mcol = col('$')
   call setline(line('.'), vimshell#get_prompt() . getline('.')[col :])
@@ -470,7 +470,7 @@ function! s:delete_line() "{{{
     startinsert!
   endif
 endfunction"}}}
-function! s:clear(is_insert) "{{{
+function! s:clear(is_insert) abort "{{{
   if vimshell#is_interactive()
     return vimshell#int_mappings#clear()
   endif
@@ -493,7 +493,7 @@ function! s:clear(is_insert) "{{{
 
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! s:expand_wildcard() "{{{
+function! s:expand_wildcard() abort "{{{
   " Wildcard.
   if empty(vimshell#helpers#get_current_args())
     return ''
@@ -504,7 +504,7 @@ function! s:expand_wildcard() "{{{
   return (pumvisible() ? "\<C-e>" : '')
         \ . repeat("\<BS>", len(wildcard)) . join(expanded)
 endfunction"}}}
-function! s:hide() "{{{
+function! s:hide() abort "{{{
   " Switch buffer.
   if winnr('$') != 1
     close
@@ -512,7 +512,7 @@ function! s:hide() "{{{
     call vimshell#util#alternate_buffer()
   endif
 endfunction"}}}
-function! s:exit() "{{{
+function! s:exit() abort "{{{
   let context = deepcopy(vimshell#get_context())
 
   call vimshell#interactive#quit_buffer()
@@ -521,7 +521,7 @@ function! s:exit() "{{{
     tabclose
   endif
 endfunction"}}}
-function! s:delete_backward_char() "{{{
+function! s:delete_backward_char() abort "{{{
   if !pumvisible()
     let prefix = ''
   elseif vimshell#util#is_auto_select()
@@ -538,14 +538,14 @@ function! s:delete_backward_char() "{{{
     return prefix
   endif
 endfunction"}}}
-function! s:delete_another_backward_char() "{{{
+function! s:delete_another_backward_char() abort "{{{
   return vimshell#get_cur_text() != '' ?
         \ s:delete_backward_char() :
         \ winnr('$') != 1 ?
         \ "\<ESC>:close\<CR>" :
         \ "\<ESC>:buffer #\<CR>"
 endfunction"}}}
-function! s:delete_backward_line() "{{{
+function! s:delete_backward_line() abort "{{{
   if !pumvisible()
     let prefix = ''
   elseif vimshell#util#is_auto_select()
@@ -558,7 +558,7 @@ function! s:delete_backward_line() "{{{
 
   return prefix . repeat("\<BS>", len)
 endfunction"}}}
-function! s:hangup(is_insert) "{{{
+function! s:hangup(is_insert) abort "{{{
   if empty(b:vimshell.continuation)
     call vimshell#print_prompt()
     call vimshell#start_insert(a:is_insert)
@@ -578,7 +578,7 @@ function! s:hangup(is_insert) "{{{
   call vimshell#print_prompt(context)
   call vimshell#start_insert(a:is_insert)
 endfunction"}}}
-function! s:interrupt(is_insert) "{{{
+function! s:interrupt(is_insert) abort "{{{
   if empty(b:vimshell.continuation)
     call vimshell#print_prompt()
     call vimshell#start_insert(a:is_insert)
@@ -590,7 +590,7 @@ function! s:interrupt(is_insert) "{{{
     stopinsert
   endif
 endfunction"}}}
-function! s:insert_enter() "{{{
+function! s:insert_enter() abort "{{{
   if !vimshell#check_prompt() || !empty(b:vimshell.continuation)
     startinsert
     return
@@ -615,7 +615,7 @@ function! s:insert_enter() "{{{
 
   startinsert
 endfunction"}}}
-function! s:insert_head() "{{{
+function! s:insert_head() abort "{{{
   if !empty(b:vimshell.continuation)
     return vimshell#int_mappings#_insert_head()
   endif
@@ -623,7 +623,7 @@ function! s:insert_head() "{{{
   call cursor(0, 1)
   call s:insert_enter()
 endfunction"}}}
-function! s:append_enter() "{{{
+function! s:append_enter() abort "{{{
   if vimshell#helpers#check_cursor_is_end()
     call s:append_end()
   else
@@ -631,11 +631,11 @@ function! s:append_enter() "{{{
     call s:insert_enter()
   endif
 endfunction"}}}
-function! s:append_end() "{{{
+function! s:append_end() abort "{{{
   call s:insert_enter()
   startinsert!
 endfunction"}}}
-function! s:execute_by_background(is_insert) "{{{
+function! s:execute_by_background(is_insert) abort "{{{
   if empty(b:vimshell.continuation)
     return
   endif
@@ -663,7 +663,7 @@ function! s:execute_by_background(is_insert) "{{{
   call vimshell#commands#iexe#init(context, interactive,
         \ new_pos, old_pos, a:is_insert)
 endfunction"}}}
-function! s:start_history_complete() "{{{
+function! s:start_history_complete() abort "{{{
   return exists('*neocomplete#start_manual_complete') ?
         \ neocomplete#start_manual_complete('vimshell/history') :
         \ ''

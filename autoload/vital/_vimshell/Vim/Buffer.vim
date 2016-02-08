@@ -1,20 +1,20 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! s:_vital_loaded(V)
+function! s:_vital_loaded(V) abort
   let s:V = a:V
   let s:P = s:V.import('Prelude')
 endfunction
 
-function! s:_vital_depends()
+function! s:_vital_depends() abort
   return ['Prelude']
 endfunction
 
-function! s:is_cmdwin()
+function! s:is_cmdwin() abort
   return bufname('%') ==# '[Command Line]'
 endfunction
 
-function! s:open(buffer, opener)
+function! s:open(buffer, opener) abort
   let save_wildignore = &wildignore
   let &wildignore = ''
   try
@@ -43,7 +43,7 @@ function! s:open(buffer, opener)
 endfunction
 
 " Get selected text in visual mode.
-function! s:get_selected_text()
+function! s:get_selected_text() abort
     let save_z = getreg('z', 1)
     let save_z_type = getregtype('z')
 

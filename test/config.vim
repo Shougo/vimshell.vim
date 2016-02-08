@@ -1,7 +1,7 @@
 let s:suite = themis#suite('parser')
 let s:assert = themis#helper('assert')
 
-function! s:suite.prompt()
+function! s:suite.prompt() abort
   let g:vimshell_prompt = "'% ' "
   let g:vimshell_secondary_prompt = 'aaa '
   VimShellCreate -toggle
@@ -17,7 +17,7 @@ function! s:suite.prompt()
   let g:vimshell_user_prompt = ""
 endfunction
 
-function! s:suite.options()
+function! s:suite.options() abort
   VimShellCreate -toggle -prompt=foo\ bar
   call s:assert.equals(vimshell#get_prompt(), 'foo bar')
   VimShellCreate -toggle

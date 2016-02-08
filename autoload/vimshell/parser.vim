@@ -23,14 +23,14 @@
 " }}}
 "=============================================================================
 
-function! vimshell#parser#check_script(script) "{{{
+function! vimshell#parser#check_script(script) abort "{{{
   " Parse check only.
   " Split statements.
   for statement in vimproc#parser#split_statements(a:script)
     call vimproc#parser#split_args(vimshell#parser#parse_alias(statement))
   endfor
 endfunction"}}}
-function! vimshell#parser#eval_script(script, context) "{{{
+function! vimshell#parser#eval_script(script, context) abort "{{{
   let context = vimshell#init#_context(a:context)
 
   " Split statements.
@@ -67,7 +67,7 @@ function! vimshell#parser#eval_script(script, context) "{{{
 
   return 0
 endfunction"}}}
-function! vimshell#parser#execute_command(commands, context) "{{{
+function! vimshell#parser#execute_command(commands, context) abort "{{{
   if empty(a:commands)
     return 0
   endif
@@ -148,7 +148,7 @@ function! vimshell#parser#execute_command(commands, context) "{{{
   endif"}}}
 endfunction
 "}}}
-function! vimshell#parser#execute_continuation(is_insert) "{{{
+function! vimshell#parser#execute_continuation(is_insert) abort "{{{
   " Execute pipe.
   call vimshell#interactive#execute_process_out(a:is_insert)
 
@@ -246,7 +246,7 @@ function! vimshell#parser#execute_continuation(is_insert) "{{{
   call vimshell#next_prompt(context, a:is_insert)
 endfunction
 "}}}
-function! s:execute_statement(statement, context) "{{{
+function! s:execute_statement(statement, context) abort "{{{
   let statement = vimshell#parser#parse_alias(a:statement)
 
   " Call preexec filter.
@@ -285,7 +285,7 @@ endfunction
 "}}}
 
 " Parse helper.
-function! vimshell#parser#parse_alias(statement) "{{{
+function! vimshell#parser#parse_alias(statement) abort "{{{
   let statement = s:parse_galias(a:statement)
   let program = matchstr(statement, vimshell#helpers#get_program_pattern())
   if statement != '' && program  == ''
@@ -302,7 +302,7 @@ function! vimshell#parser#parse_alias(statement) "{{{
 
   return statement
 endfunction"}}}
-function! vimshell#parser#parse_program(statement) "{{{
+function! vimshell#parser#parse_program(statement) abort "{{{
   " Get program.
   let program = matchstr(a:statement, vimshell#helpers#get_program_pattern())
   if program  == ''
@@ -318,7 +318,7 @@ function! vimshell#parser#parse_program(statement) "{{{
 
   return program
 endfunction"}}}
-function! s:parse_galias(script) "{{{
+function! s:parse_galias(script) abort "{{{
   if !exists('b:vimshell')
     return a:script
   endif
@@ -370,7 +370,7 @@ function! s:parse_galias(script) "{{{
 
   return join(args)
 endfunction"}}}
-function! s:recursive_expand_alias(alias_name, args) "{{{
+function! s:recursive_expand_alias(alias_name, args) abort "{{{
   " Recursive expand alias.
   let alias = b:vimshell.alias_table[a:alias_name]
   let expanded = {}
@@ -422,11 +422,11 @@ function! s:recursive_expand_alias(alias_name, args) "{{{
 endfunction"}}}
 
 " Misc.
-function! vimshell#parser#check_wildcard() "{{{
+function! vimshell#parser#check_wildcard() abort "{{{
   let args = vimshell#helpers#get_current_args()
   return !empty(args) && args[-1] =~ '[[*?]\|^\\[()|]'
 endfunction"}}}
-function! vimshell#parser#getopt(args, optsyntax, ...) "{{{
+function! vimshell#parser#getopt(args, optsyntax, ...) abort "{{{
   let default_values = get(a:000, 0, {})
 
   " Initialize.
@@ -488,7 +488,7 @@ function! vimshell#parser#getopt(args, optsyntax, ...) "{{{
 
   return [args, options]
 endfunction"}}}
-function! s:highlight_with(start, end, syntax) "{{{
+function! s:highlight_with(start, end, syntax) abort "{{{
   let cnt = get(b:, 'highlight_count', 0)
   if globpath(&runtimepath, 'syntax/' . a:syntax . '.vim') == ''
     return

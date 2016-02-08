@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'repeat {cnt} {command}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Repeat command.
 
   if len(a:args) < 2 || a:args[0] !~ '\d\+'
@@ -47,6 +47,6 @@ function! s:command.execute(args, context) "{{{
   endwhile
 endfunction"}}}
 
-function! vimshell#commands#repeat#define()
+function! vimshell#commands#repeat#define() abort
   return s:command
 endfunction

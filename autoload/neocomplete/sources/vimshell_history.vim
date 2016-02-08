@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! neocomplete#sources#vimshell_history#define() "{{{
+function! neocomplete#sources#vimshell_history#define() abort "{{{
   return s:source
 endfunction "}}}
 
@@ -37,14 +37,14 @@ let s:source = {
       \ 'mark' : '[history]',
       \ }
 
-function! s:source.hooks.on_post_filter(context) "{{{
+function! s:source.hooks.on_post_filter(context) abort "{{{
   for candidate in a:context.candidates
     let candidate.abbr =
           \ substitute(candidate.word, '\s\+$', '>-', '')
   endfor
 endfunction"}}}
 
-function! s:source.get_complete_position(context) "{{{
+function! s:source.get_complete_position(context) abort "{{{
   if neocomplete#is_auto_complete() || !vimshell#check_prompt()
     return -1
   endif
@@ -52,7 +52,7 @@ function! s:source.get_complete_position(context) "{{{
   return vimshell#get_prompt_length()
 endfunction "}}}
 
-function! s:source.gather_candidates(context) "{{{
+function! s:source.gather_candidates(context) abort "{{{
   return filter(reverse(vimshell#history#read()),
         \ 'stridx(v:val, a:context.complete_str) >= 0')
 endfunction "}}}

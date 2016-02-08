@@ -26,7 +26,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! neocomplcache#sources#vimshell_complete#define() "{{{
+function! neocomplcache#sources#vimshell_complete#define() abort "{{{
   return s:source
 endfunction"}}}
 
@@ -40,11 +40,11 @@ let s:source = {
       \ 'sorters' : [],
       \}
 
-function! s:source.get_keyword_pos(cur_text) "{{{
+function! s:source.get_keyword_pos(cur_text) abort "{{{
   return vimshell#complete#get_keyword_position()
 endfunction"}}}
 
-function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) "{{{
+function! s:source.get_complete_words(cur_keyword_pos, cur_keyword_str) abort "{{{
   return vimshell#complete#gather_candidates(a:cur_keyword_str)
 endfunction"}}}
 

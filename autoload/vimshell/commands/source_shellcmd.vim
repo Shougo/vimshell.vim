@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'source shellcmd...',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   if len(a:args) < 1
     return
   endif
@@ -55,6 +55,6 @@ function! s:command.execute(args, context) "{{{
   call vimshell#util#set_variables(variables)
 endfunction"}}}
 
-function! vimshell#commands#source_shellcmd#define()
+function! vimshell#commands#source_shellcmd#define() abort
   return s:command
 endfunction

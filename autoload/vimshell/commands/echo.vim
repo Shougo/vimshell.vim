@@ -28,11 +28,11 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'echo [{argument}...]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Echo arguments.
   call vimshell#print(a:context.fd, join(a:args) . "\n")
 endfunction"}}}
 
-function! vimshell#commands#echo#define()
+function! vimshell#commands#echo#define() abort
   return s:command
 endfunction

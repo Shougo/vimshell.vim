@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'source files...',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   if len(a:args) < 1
     return
   endif
@@ -39,6 +39,6 @@ function! s:command.execute(args, context) "{{{
   endfor
 endfunction"}}}
 
-function! vimshell#commands#source#define()
+function! vimshell#commands#source#define() abort
   return s:command
 endfunction

@@ -24,7 +24,7 @@
 "=============================================================================
 
 " Complete function. This provides simple file completion.
-function! vimshell#complete#start() "{{{
+function! vimshell#complete#start() abort "{{{
   if &l:omnifunc == ''
     setlocal omnifunc=vimshell#complete#omnifunc
   endif
@@ -33,7 +33,7 @@ function! vimshell#complete#start() "{{{
   return ''
 endfunction"}}}
 
-function! vimshell#complete#omnifunc(findstart, base) "{{{
+function! vimshell#complete#omnifunc(findstart, base) abort "{{{
   if a:findstart
     return vimshell#complete#get_keyword_position()
   else
@@ -41,7 +41,7 @@ function! vimshell#complete#omnifunc(findstart, base) "{{{
   endif
 endfunction"}}}
 
-function! vimshell#complete#get_keyword_position() "{{{
+function! vimshell#complete#get_keyword_position() abort "{{{
   if !vimshell#check_prompt() || !empty(b:vimshell.continuation)
     " Ignore.
     return -1
@@ -76,7 +76,7 @@ function! vimshell#complete#get_keyword_position() "{{{
   return pos
 endfunction"}}}
 
-function! vimshell#complete#gather_candidates(complete_str) "{{{
+function! vimshell#complete#gather_candidates(complete_str) abort "{{{
   let cur_text = vimshell#get_cur_text()
 
   try
@@ -104,7 +104,7 @@ function! vimshell#complete#gather_candidates(complete_str) "{{{
   return s:get_omni_list(_)
 endfunction"}}}
 
-function! s:get_complete_commands(cur_keyword_str) "{{{
+function! s:get_complete_commands(cur_keyword_str) abort "{{{
   if a:cur_keyword_str =~ '/'
     " Filename completion.
     return vimshell#complete#helper#files(a:cur_keyword_str)
@@ -133,7 +133,7 @@ function! s:get_complete_commands(cur_keyword_str) "{{{
   return _
 endfunction"}}}
 
-function! s:get_complete_args(cur_keyword_str, args) "{{{
+function! s:get_complete_args(cur_keyword_str, args) abort "{{{
   " Get command name.
   let command = fnamemodify(a:args[0], ':t:r')
 
@@ -142,7 +142,7 @@ function! s:get_complete_args(cur_keyword_str, args) "{{{
   return vimshell#complete#helper#args(command, a:args[1:])
 endfunction"}}}
 
-function! s:get_omni_list(list) "{{{
+function! s:get_omni_list(list) abort "{{{
   let omni_list = []
 
   " Convert string list.

@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'open {filename}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Open file.
 
   call vimshell#open(join(a:args))
@@ -36,6 +36,6 @@ function! s:command.execute(args, context) "{{{
   return
 endfunction"}}}
 
-function! vimshell#commands#open#define()
+function! vimshell#commands#open#define() abort
   return s:command
 endfunction

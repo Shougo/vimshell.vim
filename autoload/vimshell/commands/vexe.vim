@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'vexe {expression}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Execute vim command.
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'noarg' : ['--insert'],
@@ -78,6 +78,6 @@ function! s:command.execute(args, context) "{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#vexe#define()
+function! vimshell#commands#vexe#define() abort
   return s:command
 endfunction

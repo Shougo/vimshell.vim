@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimsh [{filename}]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Create new vimshell or execute script.
   if empty(a:args)
     let bufnr = bufnr('%')
@@ -84,6 +84,6 @@ function! s:command.execute(args, context) "{{{
   endwhile
 endfunction"}}}
 
-function! vimshell#commands#vimsh#define()
+function! vimshell#commands#vimsh#define() abort
   return s:command
 endfunction

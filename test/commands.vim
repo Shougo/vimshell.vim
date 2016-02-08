@@ -1,7 +1,7 @@
 let s:suite = themis#suite('parser')
 let s:assert = themis#helper('assert')
 
-function! s:suite.internal()
+function! s:suite.internal() abort
   VimShellCreate
 
   let $FOO = ''

@@ -29,7 +29,7 @@ let s:doc_dict = {
       \ 'rank' : 10,
       \ 'filetypes' : { 'vimshell' : 1 },
       \ }
-function! s:doc_dict.search(cur_text) "{{{
+function! s:doc_dict.search(cur_text) abort "{{{
   " Get command name.
   try
     let args = vimshell#helpers#get_current_args(vimshell#get_cur_text())
@@ -66,17 +66,17 @@ function! s:doc_dict.search(cur_text) "{{{
 endfunction"}}}
 "}}}
 
-function! vimshell#help#init() "{{{
+function! vimshell#help#init() abort "{{{
   if exists('g:loaded_echodoc') && g:loaded_echodoc
     call echodoc#register('vimshell', s:doc_dict)
   endif
 
   call s:load_cached_doc()
 endfunction"}}}
-function! vimshell#help#get_cached_doc() "{{{
+function! vimshell#help#get_cached_doc() abort "{{{
   return s:cached_doc
 endfunction"}}}
-function! vimshell#help#set_cached_doc(cache) "{{{
+function! vimshell#help#set_cached_doc(cache) abort "{{{
   if vimshell#util#is_sudo()
     return
   endif
@@ -86,7 +86,7 @@ function! vimshell#help#set_cached_doc(cache) "{{{
   call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), doc_path)
 endfunction"}}}
 
-function! s:load_cached_doc() "{{{
+function! s:load_cached_doc() abort "{{{
   let s:cached_doc = {}
   if vimshell#util#is_sudo()
     return

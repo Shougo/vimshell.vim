@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'ls [{argument}...]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Check ls command.
   if !executable('ls')
     call vimshell#error_line(a:context.fd,
@@ -47,6 +47,6 @@ function! s:command.execute(args, context) "{{{
   call vimshell#helpers#execute_internal_command('exe', arguments, a:context)
 endfunction"}}}
 
-function! vimshell#commands#ls#define()
+function! vimshell#commands#ls#define() abort
   return s:command
 endfunction

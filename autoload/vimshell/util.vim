@@ -25,49 +25,49 @@
 
 let s:V = vital#of('vimshell')
 
-function! vimshell#util#get_vital() "{{{
+function! vimshell#util#get_vital() abort "{{{
   return s:V
 endfunction"}}}
-function! s:get_prelude() "{{{
+function! s:get_prelude() abort "{{{
   if !exists('s:Prelude')
     let s:Prelude = vimshell#util#get_vital().import('Prelude')
   endif
   return s:Prelude
 endfunction"}}}
-function! s:get_list() "{{{
+function! s:get_list() abort "{{{
   if !exists('s:List')
     let s:List = vimshell#util#get_vital().import('Data.List')
   endif
   return s:List
 endfunction"}}}
-function! s:get_process() "{{{
+function! s:get_process() abort "{{{
   if !exists('s:Process')
     let s:Process = vimshell#util#get_vital().import('Process')
   endif
   return s:Process
 endfunction"}}}
 
-function! vimshell#util#truncate_smart(...) "{{{
+function! vimshell#util#truncate_smart(...) abort "{{{
   return call(s:get_prelude().truncate_smart, a:000)
 endfunction"}}}
 
-function! vimshell#util#truncate(...) "{{{
+function! vimshell#util#truncate(...) abort "{{{
   return call(s:get_prelude().truncate, a:000)
 endfunction"}}}
 
-function! vimshell#util#strchars(string) "{{{
+function! vimshell#util#strchars(string) abort "{{{
   return len(substitute(a:string, '.', 'x', 'g'))
 endfunction"}}}
 
-function! vimshell#util#strwidthpart(...) "{{{
+function! vimshell#util#strwidthpart(...) abort "{{{
   return call(s:get_prelude().strwidthpart, a:000)
 endfunction"}}}
-function! vimshell#util#strwidthpart_reverse(...) "{{{
+function! vimshell#util#strwidthpart_reverse(...) abort "{{{
   return call(s:get_prelude().strwidthpart_reverse, a:000)
 endfunction"}}}
 
 " Use builtin function.
-function! vimshell#util#strwidthpart_len(str, width) "{{{
+function! vimshell#util#strwidthpart_len(str, width) abort "{{{
   let ret = a:str
   let width = strwidth(a:str)
   while width > a:width
@@ -78,7 +78,7 @@ function! vimshell#util#strwidthpart_len(str, width) "{{{
 
   return width
 endfunction"}}}
-function! vimshell#util#strwidthpart_len_reverse(str, width) "{{{
+function! vimshell#util#strwidthpart_len_reverse(str, width) abort "{{{
   let ret = a:str
   let width = strwidth(a:str)
   while width > a:width
@@ -90,20 +90,20 @@ function! vimshell#util#strwidthpart_len_reverse(str, width) "{{{
   return width
 endfunction"}}}
 
-function! s:buflisted(bufnr) "{{{
+function! s:buflisted(bufnr) abort "{{{
   return exists('t:tabpagebuffer') ?
         \ has_key(t:tabpagebuffer, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
 endfunction"}}}
 
-function! vimshell#util#expand(path) "{{{
+function! vimshell#util#expand(path) abort "{{{
   return s:get_prelude().substitute_path_separator(
         \ (a:path =~ '^\~') ? substitute(a:path, '^\~', expand('~'), '') :
         \ (a:path =~ '^\$\h\w*') ? substitute(a:path,
         \               '^\$\h\w*', '\=eval(submatch(0))', '') :
         \ a:path)
 endfunction"}}}
-function! vimshell#util#set_default(var, val, ...) "{{{
+function! vimshell#util#set_default(var, val, ...) abort "{{{
   if !exists(a:var) || type({a:var}) != type(a:val)
     let alternate_var = get(a:000, 0, '')
 
@@ -113,43 +113,43 @@ function! vimshell#util#set_default(var, val, ...) "{{{
 
   return {a:var}
 endfunction"}}}
-function! vimshell#util#set_default_dictionary_helper(variable, keys, value) "{{{
+function! vimshell#util#set_default_dictionary_helper(variable, keys, value) abort "{{{
   for key in split(a:keys, '\s*,\s*')
     if !has_key(a:variable, key)
       let a:variable[key] = a:value
     endif
   endfor
 endfunction"}}}
-function! vimshell#util#set_dictionary_helper(variable, keys, value) "{{{
+function! vimshell#util#set_dictionary_helper(variable, keys, value) abort "{{{
   for key in split(a:keys, '\s*,\s*')
     let a:variable[key] = a:value
   endfor
 endfunction"}}}
 
-function! vimshell#util#substitute_path_separator(...) "{{{
+function! vimshell#util#substitute_path_separator(...) abort "{{{
   return call(s:get_prelude().substitute_path_separator, a:000)
 endfunction"}}}
-function! vimshell#util#is_windows(...) "{{{
+function! vimshell#util#is_windows(...) abort "{{{
   return call(s:get_prelude().is_windows, a:000)
 endfunction"}}}
-function! vimshell#util#escape_file_searching(...) "{{{
+function! vimshell#util#escape_file_searching(...) abort "{{{
   return call(s:get_prelude().escape_file_searching, a:000)
 endfunction"}}}
-function! vimshell#util#sort_by(...) "{{{
+function! vimshell#util#sort_by(...) abort "{{{
   return call(s:get_list().sort_by, a:000)
 endfunction"}}}
-function! vimshell#util#uniq(...) "{{{
+function! vimshell#util#uniq(...) abort "{{{
   return call(s:get_list().uniq, a:000)
 endfunction"}}}
-function! vimshell#util#uniq_by(...) "{{{
+function! vimshell#util#uniq_by(...) abort "{{{
   return call(s:get_list().uniq_by, a:000)
 endfunction"}}}
 
-function! vimshell#util#has_vimproc(...) "{{{
+function! vimshell#util#has_vimproc(...) abort "{{{
   return call(s:get_process().has_vimproc, a:000)
 endfunction"}}}
 
-function! vimshell#util#input_yesno(message) "{{{
+function! vimshell#util#input_yesno(message) abort "{{{
   let yesno = input(a:message . ' [yes/no]: ')
   while yesno !~? '^\%(y\%[es]\|n\%[o]\)$'
     redraw
@@ -166,39 +166,39 @@ function! vimshell#util#input_yesno(message) "{{{
   return yesno =~? 'y\%[es]'
 endfunction"}}}
 
-function! vimshell#util#is_cmdwin() "{{{
+function! vimshell#util#is_cmdwin() abort "{{{
   return bufname('%') ==# '[Command Line]'
 endfunction"}}}
 
-function! vimshell#util#is_auto_select() "{{{
+function! vimshell#util#is_auto_select() abort "{{{
   return get(g:, 'neocomplcache_enable_auto_select', 0)
         \ || get(g:, 'neocomplete#enable_auto_select', 0)
         \ || &completeopt =~# 'noinsert'
 endfunction"}}}
 
-function! vimshell#util#is_complete_hold() "{{{
+function! vimshell#util#is_complete_hold() abort "{{{
   return (get(g:, 'neocomplcache_enable_cursor_hold_i', 0)
         \ && !get(g:, 'neocomplcache_enable_insert_char_pre', 0)) ||
         \ get(g:, 'neocomplete#enable_cursor_hold_i', 0)
 endfunction"}}}
 
-function! vimshell#util#is_auto_delimiter() "{{{
+function! vimshell#util#is_auto_delimiter() abort "{{{
   return get(g:, 'neocomplcache_enable_auto_delimiter', 0) ||
         \ get(g:, 'neocomplete#enable_auto_delimiter', 0)
 endfunction"}}}
 
 " Sudo check.
-function! vimshell#util#is_sudo() "{{{
+function! vimshell#util#is_sudo() abort "{{{
   return $SUDO_USER != '' && $USER !=# $SUDO_USER
       \ && $HOME !=# expand('~'.$USER)
       \ && $HOME ==# expand('~'.$SUDO_USER)
 endfunction"}}}
 
-function! vimshell#util#path2project_directory(...)
+function! vimshell#util#path2project_directory(...) abort
   return call(s:get_prelude().path2project_directory, a:000)
 endfunction
 
-function! vimshell#util#enable_auto_complete() "{{{
+function! vimshell#util#enable_auto_complete() abort "{{{
   if exists(':NeoCompleteUnlock')
     NeoCompleteUnlock
   endif
@@ -206,7 +206,7 @@ function! vimshell#util#enable_auto_complete() "{{{
     NeoComplcacheUnLock
   endif
 endfunction"}}}
-function! vimshell#util#disable_auto_complete() "{{{
+function! vimshell#util#disable_auto_complete() abort "{{{
   " Skip next auto completion.
   if exists(':NeoCompleteLock')
     NeoCompleteLock
@@ -216,7 +216,7 @@ function! vimshell#util#disable_auto_complete() "{{{
   endif
 endfunction"}}}
 
-function! vimshell#util#alternate_buffer() "{{{
+function! vimshell#util#alternate_buffer() abort "{{{
   if bufnr('%') != bufnr('#') && s:buflisted(bufnr('#'))
     buffer #
     return
@@ -233,18 +233,18 @@ function! vimshell#util#alternate_buffer() "{{{
   execute 'buffer' ((current < len(listed_buffer) / 2) ?
         \ listed_buffer[current+1] : listed_buffer[current-1])
 endfunction"}}}
-function! vimshell#util#delete_buffer(...) "{{{
+function! vimshell#util#delete_buffer(...) abort "{{{
   let bufnr = get(a:000, 0, bufnr('%'))
   call vimshell#util#alternate_buffer()
   execute 'silent bwipeout!' bufnr
 endfunction"}}}
-function! s:buflisted(bufnr) "{{{
+function! s:buflisted(bufnr) abort "{{{
   return exists('t:tabpagebuffer') ?
         \ has_key(t:tabpagebuffer, a:bufnr) && buflisted(a:bufnr) :
         \ buflisted(a:bufnr)
 endfunction"}}}
 
-function! vimshell#util#glob(pattern, ...) "{{{
+function! vimshell#util#glob(pattern, ...) abort "{{{
   if a:pattern =~ "'"
     " Use glob('*').
     let cwd = getcwd()
@@ -279,7 +279,7 @@ function! vimshell#util#glob(pattern, ...) "{{{
     return split(vimshell#util#substitute_path_separator(glob(glob)), '\n')
   endif
 endfunction"}}}
-function! vimshell#util#get_vimshell_winnr(buffer_name) "{{{
+function! vimshell#util#get_vimshell_winnr(buffer_name) abort "{{{
   for winnr in filter(range(1, winnr('$')),
         \ "getbufvar(winbufnr(v:val), '&filetype') ==# 'vimshell'")
     let buffer_context = get(getbufvar(
@@ -293,25 +293,25 @@ function! vimshell#util#get_vimshell_winnr(buffer_name) "{{{
   return -1
 endfunction"}}}
 
-function! vimshell#util#head_match(checkstr, headstr) "{{{
+function! vimshell#util#head_match(checkstr, headstr) abort "{{{
   return stridx(a:checkstr, a:headstr) == 0
 endfunction"}}}
-function! vimshell#util#tail_match(checkstr, tailstr) "{{{
+function! vimshell#util#tail_match(checkstr, tailstr) abort "{{{
   return a:tailstr == '' || a:checkstr ==# a:tailstr
         \|| a:checkstr[: -len(a:tailstr)-1] ==# a:tailstr
 endfunction"}}}
-function! vimshell#util#resolve(filename) "{{{
+function! vimshell#util#resolve(filename) abort "{{{
   return ((vimshell#util#is_windows() && fnamemodify(a:filename, ':e') ==? 'LNK')
         \  || getftype(a:filename) ==# 'link') ?
         \ substitute(resolve(a:filename), '\\', '/', 'g') : a:filename
 endfunction"}}}
-function! vimshell#util#escape_match(str) "{{{
+function! vimshell#util#escape_match(str) abort "{{{
   return escape(a:str, '~" \.^$[]')
 endfunction"}}}
-function! vimshell#util#system(...) "{{{
+function! vimshell#util#system(...) abort "{{{
   return call(s:get_process().system, a:000)
 endfunction"}}}
-function! vimshell#util#set_variables(variables) "{{{
+function! vimshell#util#set_variables(variables) abort "{{{
   let variables_save = {}
   for [key, value] in items(a:variables)
     let save_value = exists(key) ? eval(key) : ''
@@ -322,7 +322,7 @@ function! vimshell#util#set_variables(variables) "{{{
 
   return variables_save
 endfunction"}}}
-function! vimshell#util#restore_variables(variables) "{{{
+function! vimshell#util#restore_variables(variables) abort "{{{
   for [key, value] in items(a:variables)
     execute 'let' key '=' string(value)
   endfor

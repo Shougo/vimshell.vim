@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gendoc {command} {args}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Generate cached doc.
 
   if empty(a:args)
@@ -46,6 +46,6 @@ function! s:command.execute(args, context) "{{{
   call vimshell#help#set_cached_doc(cached_doc)
 endfunction"}}}
 
-function! vimshell#commands#gendoc#define()
+function! vimshell#commands#gendoc#define() abort
   return s:command
 endfunction

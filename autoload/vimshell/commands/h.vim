@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'h [{pattern}]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Execute from history.
 
   let histories = vimshell#history#read()
@@ -79,6 +79,6 @@ function! s:command.execute(args, context) "{{{
   endtry
 endfunction"}}}
 
-function! vimshell#commands#h#define()
+function! vimshell#commands#h#define() abort
   return s:command
 endfunction

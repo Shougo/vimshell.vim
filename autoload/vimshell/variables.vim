@@ -26,14 +26,14 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! vimshell#variables#internal_commands() "{{{
+function! vimshell#variables#internal_commands() abort "{{{
   if !exists('s:internal_commands')
     let s:internal_commands = {}
   endif
 
   return s:internal_commands
 endfunction"}}}
-function! vimshell#variables#options() "{{{
+function! vimshell#variables#options() abort "{{{
   if !exists('s:vimshell_options')
     let s:vimshell_options = [
           \ '-buffer-name=', '-toggle', '-create',

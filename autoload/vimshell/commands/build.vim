@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'build [{builder-name}, {args}]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let args = vimshell#parser#getopt(a:args, {})[0]
 
   let old_pos = [ tabpagenr(), winnr(), bufnr('%'), getpos('.')]
@@ -47,7 +47,7 @@ function! s:command.execute(args, context) "{{{
   endif
 endfunction"}}}
 
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   if len(a:args) == 1
         \ && exists('*unite#sources#build#get_builders_name')
     return vimshell#complete#helper#keyword_simple_filter(
@@ -57,6 +57,6 @@ function! s:command.complete(args) "{{{
   return []
 endfunction"}}}
 
-function! vimshell#commands#build#define()
+function! vimshell#commands#build#define() abort
   return s:command
 endfunction

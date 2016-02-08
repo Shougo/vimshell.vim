@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! unite#sources#vimshell_history#define() "{{{
+function! unite#sources#vimshell_history#define() abort "{{{
   return s:source
 endfunction "}}}
 
@@ -39,13 +39,13 @@ let s:source = {
 
 let s:current_histories = []
 
-function! s:source.hooks.on_init(args, context) "{{{
+function! s:source.hooks.on_init(args, context) abort "{{{
   call unite#sources#vimshell_history#_change_histories(
         \ vimshell#history#read())
   let a:context.source__cur_keyword_pos = vimshell#get_prompt_length()
   let a:context.source__history_path = vimshell#history#get_history_path()
 endfunction"}}}
-function! s:source.hooks.on_syntax(args, context) "{{{
+function! s:source.hooks.on_syntax(args, context) abort "{{{
   let save_current_syntax = get(b:, 'current_syntax', '')
   unlet! b:current_syntax
 
@@ -58,7 +58,7 @@ function! s:source.hooks.on_syntax(args, context) "{{{
     let b:current_syntax = save_current_syntax
   endtry
 endfunction"}}}
-function! s:source.hooks.on_close(args, context) "{{{
+function! s:source.hooks.on_close(args, context) abort "{{{
   let a:context.source__cur_keyword_pos = vimshell#get_prompt_length()
   if vimshell#history#read(a:context.source__history_path)
         \ !=# s:current_histories
@@ -66,7 +66,7 @@ function! s:source.hooks.on_close(args, context) "{{{
           \ a:context.source__history_path)
   endif
 endfunction"}}}
-function! s:source.hooks.on_post_filter(args, context) "{{{
+function! s:source.hooks.on_post_filter(args, context) abort "{{{
   let cnt = 0
 
   for candidate in a:context.candidates
@@ -84,12 +84,12 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
   endfor
 endfunction"}}}
 
-function! s:source.gather_candidates(args, context) "{{{
+function! s:source.gather_candidates(args, context) abort "{{{
   return reverse(map(copy(s:current_histories),
         \ "{ 'word' : v:val,  }"))
 endfunction "}}}
 
-function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
+function! unite#sources#vimshell_history#start_complete(is_insert) abort "{{{
   if !exists(':Unite')
     call vimshell#echo_error('unite.vim is not installed.')
     call vimshell#echo_error('Please install unite.vim Ver.1.5 or above.')
@@ -110,7 +110,7 @@ function! unite#sources#vimshell_history#start_complete(is_insert) "{{{
         \ })
 endfunction "}}}
 
-function! unite#sources#vimshell_history#_change_histories(histories) "{{{
+function! unite#sources#vimshell_history#_change_histories(histories) abort "{{{
   let s:current_histories = a:histories
 endfunction "}}}
 

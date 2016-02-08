@@ -30,7 +30,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'bg [{option}...] {command}',
       \}
-function! s:command.execute(commands, context) "{{{
+function! s:command.execute(commands, context) abort "{{{
   " Execute command in background.
   if empty(a:commands)
     return
@@ -120,15 +120,15 @@ function! s:command.execute(commands, context) "{{{
 
   return vimshell#commands#bg#init(a:commands, a:context, options, interactive)
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! vimshell#commands#bg#define()
+function! vimshell#commands#bg#define() abort
   return s:command
 endfunction
 
-function! vimshell#commands#bg#init(commands, context, options, interactive) "{{{
+function! vimshell#commands#bg#init(commands, context, options, interactive) abort "{{{
   " Save current directiory.
   let cwd = getcwd()
 
@@ -199,7 +199,7 @@ function! vimshell#commands#bg#init(commands, context, options, interactive) "{{
   endif
 endfunction"}}}
 
-function! s:on_execute() "{{{
+function! s:on_execute() abort "{{{
   setlocal modifiable
   echo 'Running command.'
   call vimshell#interactive#execute_process_out(mode() ==# 'i')
@@ -207,12 +207,12 @@ function! s:on_execute() "{{{
   echo ''
   setlocal nomodifiable
 endfunction"}}}
-function! s:on_exit() "{{{
+function! s:on_exit() abort "{{{
   if !b:interactive.process.is_valid
     call vimshell#util#delete_buffer()
   endif
 endfunction "}}}
-function! s:event_bufwin_enter() "{{{
+function! s:event_bufwin_enter() abort "{{{
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi

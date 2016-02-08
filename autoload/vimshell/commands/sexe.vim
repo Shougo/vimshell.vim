@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'sexe {command}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let [args, options] = vimshell#parser#getopt(a:args, 
         \{ 'arg=' : ['--encoding']
         \})
@@ -103,6 +103,6 @@ function! s:command.execute(args, context) "{{{
   return
 endfunction"}}}
 
-function! vimshell#commands#sexe#define()
+function! vimshell#commands#sexe#define() abort
   return s:command
 endfunction

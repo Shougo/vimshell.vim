@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#commands#sudo#define()
+function! vimshell#commands#sudo#define() abort
   return s:command
 endfunction
 
@@ -33,11 +33,11 @@ let s:command = {
       \ 'description' : 'sudo {command}',
       \}
 
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Execute GUI program.
   if empty(a:args)
     call vimshell#error_line(

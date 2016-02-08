@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'eval {expression}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Evaluate arguments.
 
   let line = join(a:args)
@@ -47,6 +47,6 @@ function! s:command.execute(args, context) "{{{
   endtry
 endfunction"}}}
 
-function! vimshell#commands#eval#define()
+function! vimshell#commands#eval#define() abort
   return s:command
 endfunction

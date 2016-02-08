@@ -179,7 +179,7 @@ nnoremap <silent> <Plug>(vimshell_create)
 "}}}
 
 " Command functions:
-function! s:vimshell_execute(args) "{{{
+function! s:vimshell_execute(args) abort "{{{
   let context = {
         \ 'has_head_spaces' : 0,
         \ 'is_interactive' : 0,
@@ -204,7 +204,7 @@ function! s:vimshell_execute(args) "{{{
     return
   endtry
 endfunction"}}}
-function! s:vimshell_interactive(args) "{{{
+function! s:vimshell_interactive(args) abort "{{{
   if a:args == ''
     call vimshell#commands#iexe#define()
 
@@ -242,7 +242,7 @@ function! s:vimshell_interactive(args) "{{{
   endtry
 endfunction"}}}
 
-function! s:call_vimshell(default, args) "{{{
+function! s:call_vimshell(default, args) abort "{{{
   let args = []
   let options = a:default
   for arg in split(a:args, '\%(\\\@<!\s\)\+')

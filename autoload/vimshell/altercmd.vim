@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#altercmd#define(original, alternative) "{{{
+function! vimshell#altercmd#define(original, alternative) abort "{{{
   execute 'inoreabbrev <buffer><expr>' a:original
         \ '(join(vimshell#helpers#get_current_args()) ==# "' . a:original  . '") &&'
         \ 'empty(b:vimshell.continuation) ?'
@@ -31,11 +31,11 @@ function! vimshell#altercmd#define(original, alternative) "{{{
   let b:vimshell.altercmd_table[a:original] = a:alternative
 endfunction"}}}
 
-function! s:SID_PREFIX()
+function! s:SID_PREFIX() abort
   return matchstr(expand('<sfile>'), '<SNR>\d\+_\zeSID_PREFIX$')
 endfunction
 
-function! s:recursive_expand_altercmd(string)
+function! s:recursive_expand_altercmd(string) abort
   " Recursive expand altercmd.
   let abbrev = b:vimshell.altercmd_table[a:string]
   let expanded = {}

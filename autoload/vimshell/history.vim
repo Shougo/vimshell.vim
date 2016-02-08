@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#history#append(command) "{{{
+function! vimshell#history#append(command) abort "{{{
   " Reduce blanks.
   let command = substitute(a:command, '\s\+', ' ', 'g')
 
@@ -66,7 +66,7 @@ function! vimshell#history#append(command) "{{{
 
   call vimshell#history#write(histories)
 endfunction"}}}
-function! vimshell#history#read(...) "{{{
+function! vimshell#history#read(...) abort "{{{
   if vimshell#util#is_sudo()
     return []
   endif
@@ -75,7 +75,7 @@ function! vimshell#history#read(...) "{{{
   return filereadable(history_path) ?
         \ readfile(history_path) : []
 endfunction"}}}
-function! vimshell#history#write(list, ...) "{{{
+function! vimshell#history#write(list, ...) abort "{{{
   if vimshell#util#is_sudo()
     return []
   endif
@@ -86,7 +86,7 @@ function! vimshell#history#write(list, ...) "{{{
   call writefile(a:list, history_path)
 endfunction"}}}
 
-function! vimshell#history#get_history_path() "{{{
+function! vimshell#history#get_history_path() abort "{{{
   if &filetype ==# 'vimshell' &&
         \ (empty(b:vimshell.continuation) || !vimshell#check_prompt())
     let history_path = vimshell#get_data_directory() . '/command-history'

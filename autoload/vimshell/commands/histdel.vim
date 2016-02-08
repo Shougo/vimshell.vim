@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'histdel {history-number}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Delete from history.
 
   if empty(a:args)
@@ -62,6 +62,6 @@ function! s:command.execute(args, context) "{{{
   call vimshell#history#write(new_hist)
 endfunction"}}}
 
-function! vimshell#commands#histdel#define()
+function! vimshell#commands#histdel#define() abort
   return s:command
 endfunction

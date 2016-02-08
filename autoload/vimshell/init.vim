@@ -33,7 +33,7 @@ let g:vimshell_enable_start_insert =
 
 let s:manager = vimshell#util#get_vital().import('Vim.Buffer')
 
-function! vimshell#init#_start(path, ...) "{{{
+function! vimshell#init#_start(path, ...) abort "{{{
   " Check vimproc. "{{{
   if !vimshell#util#has_vimproc()
     call vimshell#echo_error(v:errmsg)
@@ -111,7 +111,7 @@ function! vimshell#init#_start(path, ...) "{{{
   call s:create_shell(path, context)
 endfunction"}}}
 
-function! vimshell#init#_context(context) "{{{
+function! vimshell#init#_context(context) abort "{{{
   let default_context = {
     \ 'buffer_name' : 'default',
     \ 'quit' : 0,
@@ -185,7 +185,7 @@ function! vimshell#init#_context(context) "{{{
   return context
 endfunction"}}}
 
-function! vimshell#init#_internal_commands(command) "{{{
+function! vimshell#init#_internal_commands(command) abort "{{{
   " Initialize internal commands table.
   let internal_commands = vimshell#variables#internal_commands()
 
@@ -219,7 +219,7 @@ function! vimshell#init#_internal_commands(command) "{{{
   return get(internal_commands, a:command, {})
 endfunction"}}}
 
-function! vimshell#init#_default_settings() "{{{
+function! vimshell#init#_default_settings() abort "{{{
   " Common.
   setlocal bufhidden=hide
   setlocal buftype=nofile
@@ -241,14 +241,14 @@ function! vimshell#init#_default_settings() "{{{
   endif
 endfunction"}}}
 
-function! vimshell#init#tab_variable() "{{{
+function! vimshell#init#tab_variable() abort "{{{
   let t:vimshell = {
         \ 'last_vimshell_bufnr' : -1,
         \ 'last_interactive_bufnr' : -1,
         \ }
 endfunction"}}}
 
-function! s:create_shell(path, context) "{{{
+function! s:create_shell(path, context) abort "{{{
   let path = a:path
   if path == ''
     " Use current directory.
@@ -316,7 +316,7 @@ function! s:create_shell(path, context) "{{{
   endif"}}}
 endfunction"}}}
 
-function! s:switch_vimshell(bufnr, context, path) "{{{
+function! s:switch_vimshell(bufnr, context, path) abort "{{{
   if bufwinnr(a:bufnr) > 0
     execute bufwinnr(a:bufnr) 'wincmd w'
   else
@@ -353,7 +353,7 @@ function! s:switch_vimshell(bufnr, context, path) "{{{
   endif
 endfunction"}}}
 
-function! s:initialize_vimshell(path, context) "{{{
+function! s:initialize_vimshell(path, context) abort "{{{
   " Load history.
   let g:vimshell#hist_buffer = vimshell#history#read()
 
@@ -418,7 +418,7 @@ function! s:initialize_vimshell(path, context) "{{{
   call vimshell#handlers#_restore_statusline()
 endfunction"}}}
 
-function! s:default_settings() "{{{
+function! s:default_settings() abort "{{{
   " Common.
   call vimshell#init#_default_settings()
 
@@ -435,7 +435,7 @@ function! s:default_settings() "{{{
   " Define mappings.
   call vimshell#mappings#define_default_mappings()
 endfunction"}}}
-function! s:get_postfix(prefix, is_create) "{{{
+function! s:get_postfix(prefix, is_create) abort "{{{
   let buffers = get(a:000, 0, range(1, bufnr('$')))
   let buflist = vimshell#util#sort_by(filter(map(buffers,
         \ 'bufname(v:val)'), 'stridx(v:val, a:prefix) >= 0'),

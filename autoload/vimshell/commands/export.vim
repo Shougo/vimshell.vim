@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'export {variable-name}={value} ...',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Make directory and change the working directory.
   if empty(a:args)
     " Print environment variables.
@@ -51,10 +51,10 @@ function! s:command.execute(args, context) "{{{
     execute printf('let $%s = %s', varname, string(arg[len(varname)+1:]))
   endfor
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return vimshell#complete#helper#environments(get(a:args, -1, ''))
 endfunction"}}}
 
-function! vimshell#commands#export#define()
+function! vimshell#commands#export#define() abort
   return s:command
 endfunction

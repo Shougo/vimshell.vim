@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'external',
       \ 'description' : 'scp {src} {dest}',
       \}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   let arglead = get(a:args, -1, '')
   let cmdline = join(a:args)
   let cursorpos = len(cmdline)
@@ -54,6 +54,6 @@ function! s:command.complete(args) "{{{
   return _
 endfunction"}}}
 
-function! vimshell#commands#scp#define()
+function! vimshell#commands#scp#define() abort
   return s:command
 endfunction

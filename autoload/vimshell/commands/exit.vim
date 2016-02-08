@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'exit',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Exit vimshell.
   if a:context.is_interactive
     let context = deepcopy(vimshell#get_context())
@@ -45,6 +45,6 @@ function! s:command.execute(args, context) "{{{
   stopinsert
 endfunction"}}}
 
-function! vimshell#commands#exit#define()
+function! vimshell#commands#exit#define() abort
   return s:command
 endfunction

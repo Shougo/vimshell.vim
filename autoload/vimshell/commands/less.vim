@@ -30,7 +30,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'less [{option}...] {command}',
       \}
-function! s:command.execute(commands, context) "{{{
+function! s:command.execute(commands, context) abort "{{{
   " Execute command in background.
   if empty(a:commands)
     return
@@ -86,15 +86,15 @@ function! s:command.execute(commands, context) "{{{
 
   return s:init(a:commands, a:context, options, interactive)
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! vimshell#commands#less#define()
+function! vimshell#commands#less#define() abort
   return s:command
 endfunction
 
-function! s:init(commands, context, options, interactive) "{{{
+function! s:init(commands, context, options, interactive) abort "{{{
   " Save current directiory.
   let cwd = getcwd()
 
@@ -221,32 +221,32 @@ function! s:init(commands, context, options, interactive) "{{{
   endif
 endfunction"}}}
 
-function! s:next_line() "{{{
+function! s:next_line() abort "{{{
   if line('.') == line('$')
     call s:print_output(2)
   endif
 
   call cursor(line('.')+1, 0)
 endfunction "}}}
-function! s:next_screen() "{{{
+function! s:next_screen() abort "{{{
   if line('.') == line('$')
     call s:print_output(winheight(0))
   else
     execute "normal! \<C-f>"
   endif
 endfunction "}}}
-function! s:next_half_screen() "{{{
+function! s:next_half_screen() abort "{{{
   if line('.') == line('$')
     call s:print_output(winheight(0)/2)
   else
     execute "normal! \<C-d>"
   endif
 endfunction "}}}
-function! s:last_screen() "{{{
+function! s:last_screen() abort "{{{
   call s:print_output(-1)
 endfunction "}}}
 
-function! s:print_output(line_num) "{{{
+function! s:print_output(line_num) abort "{{{
   setlocal modifiable
 
   call cursor(line('$'), 0)

@@ -28,16 +28,16 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'gexe {command}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let command = join(a:args)
   let command = vimproc#util#iconv(command, &encoding, 'char')
 
   call vimproc#system_gui(command)
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return vimshell#complete#helper#command_args(a:args)
 endfunction"}}}
 
-function! vimshell#commands#gexe#define()
+function! vimshell#commands#gexe#define() abort
   return s:command
 endfunction

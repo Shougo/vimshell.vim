@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'special',
       \ 'description' : 'galias {global-alias-name} = {command}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let args = join(a:args)
   
   if empty(a:args)
@@ -59,6 +59,6 @@ function! s:command.execute(args, context) "{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#galias#define()
+function! vimshell#commands#galias#define() abort
   return s:command
 endfunction

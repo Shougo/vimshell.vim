@@ -28,10 +28,10 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'nop',
       \}
-function! s:command.execute(args, context)
+function! s:command.execute(args, context) abort
   " No operation.
 endfunction
 
-function! vimshell#commands#nop#define()
+function! vimshell#commands#nop#define() abort
   return s:command
 endfunction

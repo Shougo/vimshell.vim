@@ -28,7 +28,7 @@ let s:command_vim = {
       \ 'kind' : 'internal',
       \ 'description' : 'vim [{filename}]',
       \}
-function! s:command_vim.execute(args, context) "{{{
+function! s:command_vim.execute(args, context) abort "{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
@@ -72,7 +72,7 @@ function! s:command_vim.execute(args, context) "{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#vim#define()
+function! vimshell#commands#vim#define() abort
   let s:command_vi = deepcopy(s:command_vim)
   let s:command_vi.name = 'vi'
   let s:command_vi.description = 'vi [{filename}]'

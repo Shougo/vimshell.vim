@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'shell',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Starts shell in terminal.
   if g:vimshell_use_terminal_command == ''
     call vimshell#error_line(a:context.fd,
@@ -40,6 +40,6 @@ function! s:command.execute(args, context) "{{{
         \ g:vimshell_use_terminal_command, &shell))
 endfunction"}}}
 
-function! vimshell#commands#shell#define()
+function! vimshell#commands#shell#define() abort
   return s:command
 endfunction

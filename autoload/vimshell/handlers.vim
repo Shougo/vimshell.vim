@@ -26,7 +26,7 @@
 let s:save_cpo = &cpo
 set cpo&vim
 
-function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
+function! vimshell#handlers#_on_bufwin_enter(bufnr) abort "{{{
   if a:bufnr != bufnr('%') && bufwinnr(a:bufnr) > 0
     let winnr = winnr()
     execute bufwinnr(a:bufnr) 'wincmd w'
@@ -83,7 +83,7 @@ function! vimshell#handlers#_on_bufwin_enter(bufnr) "{{{
   endtry
 endfunction"}}}
 
-function! vimshell#handlers#_restore_statusline()  "{{{
+function! vimshell#handlers#_restore_statusline() abort  "{{{
   if &filetype !=# 'vimshell' || !g:vimshell_force_overwrite_statusline
     return
   endif

@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'time {command}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Repeat command.
 
   if len(a:args) < 1
@@ -47,6 +47,6 @@ function! s:command.execute(args, context) "{{{
   call vimshell#print(a:context.fd, printf('time = %s', reltimestr(reltime(start))))
 endfunction"}}}
 
-function! vimshell#commands#time#define()
+function! vimshell#commands#time#define() abort
   return s:command
 endfunction

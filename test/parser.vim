@@ -1,7 +1,7 @@
 let s:suite = themis#suite('parser')
 let s:assert = themis#helper('assert')
 
-function! s:suite.alias()
+function! s:suite.alias() abort
   VimShellCreate
   call vimshell#set_alias('l2', 'll')
   call vimshell#set_alias('ll', 'ls -l')
@@ -10,7 +10,7 @@ function! s:suite.alias()
   VimShellCreate -toggle
 endfunction
 
-function! s:suite.getopt()
+function! s:suite.getopt() abort
   call s:assert.equals(vimshell#parser#getopt(['foo', 'bar'], {
           \ 'noarg' : ['--insert'],
           \ }), [['foo', 'bar'], {}])

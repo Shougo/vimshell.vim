@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'vimdiff {filename1} {filename2}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let [args, options] = vimshell#parser#getopt(a:args, {
         \ 'arg=' : ['--split'],
         \ }, {
@@ -67,6 +67,6 @@ function! s:command.execute(args, context) "{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#vimdiff#define()
+function! vimshell#commands#vimdiff#define() abort
   return s:command
 endfunction

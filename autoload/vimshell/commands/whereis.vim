@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'whereis command',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   if empty(a:args)
     return
   endif
@@ -37,7 +37,7 @@ function! s:command.execute(args, context) "{{{
     call vimshell#print_line(a:context.fd, arg)
   endfor
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   if len(a:args) == 1
     return vimshell#complete#helper#executables(a:args[-1])
   endif
@@ -45,6 +45,6 @@ function! s:command.complete(args) "{{{
   return []
 endfunction"}}}
 
-function! vimshell#commands#whereis#define()
+function! vimshell#commands#whereis#define() abort
   return s:command
 endfunction

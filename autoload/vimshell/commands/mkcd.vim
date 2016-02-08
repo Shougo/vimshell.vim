@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'mkcd {directory-name}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Make directory and change the working directory.
 
   if empty(a:args)
@@ -53,6 +53,6 @@ function! s:command.execute(args, context) "{{{
   return vimshell#helpers#execute_internal_command('cd', a:args, a:context)
 endfunction"}}}
 
-function! vimshell#commands#mkcd#define()
+function! vimshell#commands#mkcd#define() abort
   return s:command
 endfunction

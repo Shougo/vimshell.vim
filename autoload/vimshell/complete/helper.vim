@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#complete#helper#files(cur_keyword_str, ...) "{{{
+function! vimshell#complete#helper#files(cur_keyword_str, ...) abort "{{{
   " vimshell#complete#helper#files(cur_keyword_str [, path])
 
   if a:0 > 1
@@ -52,7 +52,7 @@ function! vimshell#complete#helper#files(cur_keyword_str, ...) "{{{
 
   return list
 endfunction"}}}
-function! vimshell#complete#helper#directories(cur_keyword_str) "{{{
+function! vimshell#complete#helper#directories(cur_keyword_str) abort "{{{
   let ret = []
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str),
         \ 'isdirectory(v:val.orig) ||
@@ -66,7 +66,7 @@ function! vimshell#complete#helper#directories(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#cdpath_directories(cur_keyword_str) "{{{
+function! vimshell#complete#helper#cdpath_directories(cur_keyword_str) abort "{{{
   " Check dup.
   let check = {}
   for keyword in filter(vimshell#complete#helper#files(a:cur_keyword_str, &cdpath),
@@ -88,7 +88,7 @@ function! vimshell#complete#helper#cdpath_directories(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#directory_stack(cur_keyword_str) "{{{
+function! vimshell#complete#helper#directory_stack(cur_keyword_str) abort "{{{
   if !exists('b:vimshell')
     return []
   endif
@@ -104,7 +104,7 @@ function! vimshell#complete#helper#directory_stack(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#aliases(cur_keyword_str) "{{{
+function! vimshell#complete#helper#aliases(cur_keyword_str) abort "{{{
   if !exists('b:vimshell')
     return []
   endif
@@ -129,7 +129,7 @@ function! vimshell#complete#helper#aliases(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#internals(cur_keyword_str) "{{{
+function! vimshell#complete#helper#internals(cur_keyword_str) abort "{{{
   let commands = vimshell#available_commands(a:cur_keyword_str)
   let ret = []
   for keyword in vimshell#complete#helper#keyword_simple_filter(
@@ -140,7 +140,7 @@ function! vimshell#complete#helper#internals(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#executables(cur_keyword_str, ...) "{{{
+function! vimshell#complete#helper#executables(cur_keyword_str, ...) abort "{{{
   if a:cur_keyword_str =~ '[/\\]'
     let files = vimshell#complete#helper#files(a:cur_keyword_str)
   else
@@ -178,7 +178,7 @@ function! vimshell#complete#helper#executables(cur_keyword_str, ...) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#buffers(cur_keyword_str) "{{{
+function! vimshell#complete#helper#buffers(cur_keyword_str) abort "{{{
   let ret = []
   let bufnumber = 1
   while bufnumber <= bufnr('$')
@@ -194,7 +194,7 @@ function! vimshell#complete#helper#buffers(cur_keyword_str) "{{{
 
   return ret
 endfunction"}}}
-function! vimshell#complete#helper#args(command, args) "{{{
+function! vimshell#complete#helper#args(command, args) abort "{{{
   let commands = vimshell#available_commands(a:command)
 
   " Get complete words.
@@ -216,7 +216,7 @@ function! vimshell#complete#helper#args(command, args) "{{{
 
   return complete_words
 endfunction"}}}
-function! vimshell#complete#helper#command_args(args) "{{{
+function! vimshell#complete#helper#command_args(args) abort "{{{
   " command args...
   if len(a:args) == 1
     " Commands.
@@ -226,7 +226,7 @@ function! vimshell#complete#helper#command_args(args) "{{{
     return vimshell#complete#helper#args(a:args[0], a:args[1:])
   endif
 endfunction"}}}
-function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
+function! vimshell#complete#helper#variables(cur_keyword_str) abort "{{{
   let _ = []
 
   let _ += map(copy(vimshell#complete#helper#environments(
@@ -240,7 +240,7 @@ function! vimshell#complete#helper#variables(cur_keyword_str) "{{{
 
   return vimshell#complete#helper#keyword_simple_filter(_, a:cur_keyword_str)
 endfunction"}}}
-function! vimshell#complete#helper#environments(cur_keyword_str) "{{{
+function! vimshell#complete#helper#environments(cur_keyword_str) abort "{{{
   if !exists('s:envlist')
     " Get environment variables list.
     let s:envlist = map(split(system('set'), '\n'),
@@ -251,21 +251,21 @@ function! vimshell#complete#helper#environments(cur_keyword_str) "{{{
         \ copy(s:envlist), a:cur_keyword_str)
 endfunction"}}}
 
-function! vimshell#complete#helper#call_omnifunc(omnifunc) "{{{
+function! vimshell#complete#helper#call_omnifunc(omnifunc) abort "{{{
   " Set complete function.
   let &l:omnifunc = a:omnifunc
 
   return "\<C-x>\<C-o>\<C-p>"
 endfunction"}}}
-function! vimshell#complete#helper#restore_omnifunc(omnifunc) "{{{
+function! vimshell#complete#helper#restore_omnifunc(omnifunc) abort "{{{
   if &l:omnifunc !=# a:omnifunc
     let &l:omnifunc = a:omnifunc
   endif
 endfunction"}}}
-function! vimshell#complete#helper#compare_rank(i1, i2) "{{{
+function! vimshell#complete#helper#compare_rank(i1, i2) abort "{{{
   return a:i1.rank < a:i2.rank ? 1 : a:i1.rank == a:i2.rank ? 0 : -1
 endfunction"}}}
-function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str) "{{{
+function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str) abort "{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
   if &ignorecase
     let expr = printf('stridx(tolower(v:val.word), %s) == 0',
@@ -277,7 +277,7 @@ function! vimshell#complete#helper#keyword_filter(list, cur_keyword_str) "{{{
 
   return filter(a:list, expr)
 endfunction"}}}
-function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) "{{{
+function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) abort "{{{
   let cur_keyword = substitute(a:cur_keyword_str, '\\\zs.', '\0', 'g')
   let expr = &ignorecase ?
         \ printf('stridx(tolower(v:val), %s) == 0',
@@ -288,7 +288,7 @@ function! vimshell#complete#helper#keyword_simple_filter(list, cur_keyword_str) 
   return filter(a:list, expr)
 endfunction"}}}
 
-function! vimshell#complete#helper#get_files(path, complete_str) "{{{
+function! vimshell#complete#helper#get_files(path, complete_str) abort "{{{
   let candidates = s:get_glob_files(a:path, a:complete_str)
   if a:path == ''
     let candidates = vimshell#complete#helper#keyword_filter(
@@ -300,7 +300,7 @@ function! vimshell#complete#helper#get_files(path, complete_str) "{{{
         \   '!v:val.action__is_directory'))
 endfunction"}}}
 
-function! s:get_glob_files(path, complete_str) "{{{
+function! s:get_glob_files(path, complete_str) abort "{{{
   let path = ',,' . substitute(a:path, '\.\%(,\|$\)\|,,', '', 'g')
 
   let complete_str = vimshell#util#substitute_path_separator(

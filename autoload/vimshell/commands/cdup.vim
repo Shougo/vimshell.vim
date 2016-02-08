@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'cdup {ancestor-directory-name}',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Move to parent directory.
 
   if empty(a:args)
@@ -58,10 +58,10 @@ function! s:command.execute(args, context) "{{{
         \ [directory], a:context)
 endfunction"}}}
 
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   return split(b:vimshell.current_dir, '/')
 endfunction"}}}
 
-function! vimshell#commands#cdup#define()
+function! vimshell#commands#cdup#define() abort
   return s:command
 endfunction

@@ -28,13 +28,13 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'clear',
       \}
-function! s:command.execute(args, context)
+function! s:command.execute(args, context) abort
   " Clean up the screen.
   % delete _
 
   call vimshell#terminal#clear_highlight()
 endfunction
 
-function! vimshell#commands#clear#define()
+function! vimshell#commands#clear#define() abort
   return s:command
 endfunction

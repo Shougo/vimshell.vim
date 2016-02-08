@@ -31,7 +31,7 @@ call unite#util#set_default('g:unite_source_vimshell_external_history_path',
       \)
 "}}}
 
-function! unite#sources#vimshell_external_history#define() "{{{
+function! unite#sources#vimshell_external_history#define() abort "{{{
   return s:source
 endfunction "}}}
 
@@ -45,7 +45,7 @@ let s:source = {
       \ 'filters' : ['matcher_default', 'sorter_nothing', 'converter_default'],
       \ }
 
-function! s:source.hooks.on_init(args, context) "{{{
+function! s:source.hooks.on_init(args, context) abort "{{{
   let a:context.source__current_histories = filereadable(
         \ g:unite_source_vimshell_external_history_path) ?
         \ readfile(g:unite_source_vimshell_external_history_path) : []
@@ -54,7 +54,7 @@ function! s:source.hooks.on_init(args, context) "{{{
         \"^\\%(\\d\\+/\\)\\+[:[:digit:]; ]\\+\\|^[:[:digit:]; ]\\+", "", "g")')
   let a:context.source__cur_keyword_pos = vimshell#get_prompt_length()
 endfunction"}}}
-function! s:source.hooks.on_syntax(args, context) "{{{
+function! s:source.hooks.on_syntax(args, context) abort "{{{
   let save_current_syntax = get(b:, 'current_syntax', '')
   unlet! b:current_syntax
 
@@ -67,7 +67,7 @@ function! s:source.hooks.on_syntax(args, context) "{{{
     let b:current_syntax = save_current_syntax
   endtry
 endfunction"}}}
-function! s:source.hooks.on_post_filter(args, context) "{{{
+function! s:source.hooks.on_post_filter(args, context) abort "{{{
   let a:context.candidates = vimshell#util#uniq_by(
         \ a:context.candidates, 'v:val.word')
 
@@ -91,7 +91,7 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
   return a:context.candidates
 endfunction"}}}
 
-function! s:source.gather_candidates(args, context) "{{{
+function! s:source.gather_candidates(args, context) abort "{{{
   return map(reverse(copy(a:context.source__current_histories)),
         \ '{ "word" : v:val }')
 endfunction "}}}

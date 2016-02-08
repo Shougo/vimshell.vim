@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'history [{search-string}]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   let histories = vimshell#history#read()
 
   let arguments = join(a:args, ' ')
@@ -68,6 +68,6 @@ function! s:command.execute(args, context) "{{{
   endfor
 endfunction"}}}
 
-function! vimshell#commands#history#define()
+function! vimshell#commands#history#define() abort
   return s:command
 endfunction

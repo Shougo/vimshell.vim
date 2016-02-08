@@ -26,7 +26,7 @@
 let s:script_path = expand('<sfile>:p:h')
       \ .'/vimshell_zsh_complete/complete.zsh'
 
-function! unite#sources#vimshell_zsh_complete#define() "{{{
+function! unite#sources#vimshell_zsh_complete#define() abort "{{{
   return (executable('zsh') && !vimshell#util#is_windows()) ?
         \ s:source : {}
 endfunction "}}}
@@ -39,7 +39,7 @@ let s:source = {
       \ 'is_listed' : 0,
       \ }
 
-function! s:source.hooks.on_init(args, context) "{{{
+function! s:source.hooks.on_init(args, context) abort "{{{
   let a:context.source__input = vimshell#get_cur_text()
 
   try
@@ -61,7 +61,7 @@ function! s:source.hooks.on_init(args, context) "{{{
 
   let a:context.source__cur_keyword_pos = pos
 endfunction"}}}
-function! s:source.hooks.on_syntax(args, context) "{{{
+function! s:source.hooks.on_syntax(args, context) abort "{{{
   syntax match uniteSource__VimshellZshCompleteDescriptionLine / -- .*$/
         \ contained containedin=uniteSource__VimshellZshComplete
   syntax match uniteSource__VimshellZshCompleteDescription /.*$/
@@ -71,12 +71,12 @@ function! s:source.hooks.on_syntax(args, context) "{{{
   highlight default link uniteSource__VimshellZshCompleteMarker Special
   highlight default link uniteSource__VimshellZshCompleteDescription Comment
 endfunction"}}}
-function! s:source.hooks.on_close(args, context) "{{{
+function! s:source.hooks.on_close(args, context) abort "{{{
   if has_key(a:context, 'source__proc')
     call a:context.source__proc.waitpid()
   endif
 endfunction"}}}
-function! s:source.hooks.on_post_filter(args, context) "{{{
+function! s:source.hooks.on_post_filter(args, context) abort "{{{
   for candidate in a:context.candidates
     let candidate.kind = 'completion'
     let candidate.action__complete_word = candidate.word
@@ -84,7 +84,7 @@ function! s:source.hooks.on_post_filter(args, context) "{{{
           \ a:context.source__cur_keyword_pos
   endfor
 endfunction"}}}
-function! s:source.gather_candidates(args, context) "{{{
+function! s:source.gather_candidates(args, context) abort "{{{
   let a:context.source__proc = vimproc#plineopen3('zsh -i -f', 1)
 
   call a:context.source__proc.stdin.write(
@@ -96,7 +96,7 @@ function! s:source.gather_candidates(args, context) "{{{
   return []
 endfunction "}}}
 
-function! s:source.async_gather_candidates(args, context) "{{{
+function! s:source.async_gather_candidates(args, context) abort "{{{
   if !has_key(a:context, 'source__proc')
     return []
   endif
@@ -127,7 +127,7 @@ function! s:source.async_gather_candidates(args, context) "{{{
   return s:convert_lines(lines)
 endfunction "}}}
 
-function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
+function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) abort "{{{
   if !exists(':Unite')
     call vimshell#echo_error('unite.vim is not installed.')
     call vimshell#echo_error(
@@ -158,7 +158,7 @@ function! unite#sources#vimshell_zsh_complete#start_complete(is_insert) "{{{
         \ })
 endfunction "}}}
 
-function! s:convert_lines(lines)
+function! s:convert_lines(lines) abort
   let _ = []
   for line in filter(copy(a:lines),
         \ "v:val !~ '\\r' && v:val !~ '^% '")

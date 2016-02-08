@@ -28,12 +28,12 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'pwd',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Print the working directory.
 
   call vimshell#print_line(a:context.fd, getcwd())
 endfunction"}}}
 
-function! vimshell#commands#pwd#define()
+function! vimshell#commands#pwd#define() abort
   return s:command
 endfunction

@@ -30,7 +30,7 @@ let s:command = {
       \ 'kind' : 'execute',
       \ 'description' : 'iexe [{options}...] {command}',
       \}
-function! s:command.execute(commands, context) "{{{
+function! s:command.execute(commands, context) abort "{{{
   " Interactive execute command.
   if empty(a:commands)
     return
@@ -177,7 +177,7 @@ function! s:command.execute(commands, context) "{{{
     call vimshell#view#_simple_insert()
   endif
 endfunction"}}}
-function! s:command.complete(args) "{{{
+function! s:command.complete(args) abort "{{{
   if len(a:args) == 1
     return vimshell#complete#helper#executables(a:args[-1])
   elseif vimshell#util#is_windows() &&
@@ -189,7 +189,7 @@ function! s:command.complete(args) "{{{
   return vimshell#complete#helper#args(a:args[1], a:args[2:])
 endfunction"}}}
 
-function! vimshell#commands#iexe#define()
+function! vimshell#commands#iexe#define() abort
   return s:command
 endfunction
 
@@ -269,7 +269,7 @@ call vimshell#util#set_default_dictionary_helper(
       \ g:vimshell_interactive_monochrome_commands, 'earthquake', '1')
 "}}}
 
-function! s:default_settings() "{{{
+function! s:default_settings() abort "{{{
   " Common.
   call vimshell#init#_default_settings()
 
@@ -277,7 +277,7 @@ function! s:default_settings() "{{{
   call vimshell#int_mappings#define_default_mappings()
 endfunction"}}}
 
-function! s:default_syntax() "{{{
+function! s:default_syntax() abort "{{{
   " Set syntax.
   syntax match InteractiveError
       \ '!!![^!].*!!!' contains=InteractiveErrorHidden
@@ -294,7 +294,7 @@ function! s:default_syntax() "{{{
   endif
 endfunction"}}}
 
-function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert) "{{{
+function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is_insert) abort "{{{
   " Save current directiory.
   let cwd = getcwd()
 
@@ -339,7 +339,7 @@ function! vimshell#commands#iexe#init(context, interactive, new_pos, old_pos, is
   endif
 endfunction"}}}
 
-function! s:event_bufwin_enter() "{{{
+function! s:event_bufwin_enter() abort "{{{
   if has('conceal')
     setlocal conceallevel=3
     setlocal concealcursor=nvi

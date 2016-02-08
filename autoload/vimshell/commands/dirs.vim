@@ -28,7 +28,7 @@ let s:command = {
       \ 'kind' : 'internal',
       \ 'description' : 'dirs [{max}]',
       \}
-function! s:command.execute(args, context) "{{{
+function! s:command.execute(args, context) abort "{{{
   " Print directory stack.
 
   let cnt = 0
@@ -55,6 +55,6 @@ function! s:command.execute(args, context) "{{{
   endwhile
 endfunction"}}}
 
-function! vimshell#commands#dirs#define()
+function! vimshell#commands#dirs#define() abort
   return s:command
 endfunction

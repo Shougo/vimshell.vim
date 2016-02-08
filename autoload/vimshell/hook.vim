@@ -23,7 +23,7 @@
 " }}}
 "=============================================================================
 
-function! vimshell#hook#call(hook_point, context, args) "{{{
+function! vimshell#hook#call(hook_point, context, args) abort "{{{
   " There are cases when this variable doesn't
   " exist
   " USE: 'b:interactive.is_close_immediately = 1' to replicate
@@ -47,7 +47,7 @@ function! vimshell#hook#call(hook_point, context, args) "{{{
     call call(table[key], [a:args, context], {})
   endfor
 endfunction"}}}
-function! vimshell#hook#call_filter(hook_point, context, cmdline) "{{{
+function! vimshell#hook#call_filter(hook_point, context, cmdline) abort "{{{
   if !exists('b:interactive') || !a:context.is_interactive
         \ || !has_key(b:interactive.hook_functions_table, a:hook_point)
     return a:cmdline
@@ -71,7 +71,7 @@ function! vimshell#hook#call_filter(hook_point, context, cmdline) "{{{
 
   return cmdline
 endfunction"}}}
-function! vimshell#hook#set(hook_point, func_list) "{{{
+function! vimshell#hook#set(hook_point, func_list) abort "{{{
   if !exists('b:interactive')
     return
   endif
@@ -88,14 +88,14 @@ function! vimshell#hook#set(hook_point, func_list) "{{{
     let cnt += 1
   endfor
 endfunction"}}}
-function! vimshell#hook#get(hook_point) "{{{
+function! vimshell#hook#get(hook_point) abort "{{{
   if !exists('b:interactive')
     return
   endif
 
   return get(b:interactive.hook_functions_table, a:hook_point, {})
 endfunction"}}}
-function! vimshell#hook#add(hook_point, hook_name, func) "{{{
+function! vimshell#hook#add(hook_point, hook_name, func) abort "{{{
   if !exists('b:interactive')
     return
   endif
@@ -106,7 +106,7 @@ function! vimshell#hook#add(hook_point, hook_name, func) "{{{
 
   let b:interactive.hook_functions_table[a:hook_point][a:hook_name] = a:func
 endfunction"}}}
-function! vimshell#hook#remove(hook_point, hook_name) "{{{
+function! vimshell#hook#remove(hook_point, hook_name) abort "{{{
   if !exists('b:interactive')
     return
   endif
