@@ -682,7 +682,7 @@ function! s:check_all_output(is_hold) abort "{{{
             \ || !has('gui_running') || has('nvim')
         setlocal modifiable
         " Prevent screen flick
-        set vb t_vb=
+        set novisualbell t_vb=
         call feedkeys("]\<BS>", 'n')
       endif
     endif
