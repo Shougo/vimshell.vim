@@ -31,13 +31,16 @@ function! vimshell#helpers#get_editor_name() abort "{{{
     " Set editor command.
     let g:vimshell_editor_command = g:vimshell_cat_command
 
-    if has('clientserver') && (has('gui_running') || has('gui'))
+    if (has('nvim') && executable('nvr'))
+          \ || (has('clientserver') && (has('gui_running') || has('gui')))
       if has('gui_macvim')
         " MacVim check.
-        if executable('/Applications/MacVim.app/Contents/MacOS/Vim')
-          let progname = 'Applications/MacVim.app/Contents/MacOS/Vim'
-        elseif executable(expand('~/Applications/MacVim.app/Contents/MacOS/Vim'))
-          let progname = expand('~/Applications/MacVim.app/Contents/MacOS/Vim')
+        let macvim1 = '/Applications/MacVim.app/Contents/MacOS/Vim'
+        let macvim2 = expand('~/Applications/MacVim.app/Contents/MacOS/Vim')
+        if executable(macvim1)
+          let progname = macvim1
+        elseif executable(macvim2)
+          let progname = macvim2
         else
           echoerr 'You installed MacVim in not default directory!'.
                 \ ' You must set g:vimshell_editor_command manually.'
@@ -46,13 +49,18 @@ function! vimshell#helpers#get_editor_name() abort "{{{
 
         let progname = '/Applications/MacVim.app/Contents/MacOS/Vim'
       else
-        let progname = has('gui_running') ? v:progname : 'vim'
+        let progname = has('nvim') ? 'nvr' :
+              \ has('gui_running') ? v:progname : 'vim'
       endif
 
-      let progname .= ' -g'
+      if !has('nvim')
+        let progname .= ' -g'
+      endif
 
-      let g:vimshell_editor_command = printf('%s %s --remote-tab-wait-silent',
-            \ progname, (v:servername == '' ? '' : ' --servername='.v:servername))
+      let g:vimshell_editor_command =
+            \ printf('%s %s --remote-tab-wait-silent',
+            \ progname, (v:servername == '' ? '' :
+            \            ' --servername='.v:servername))
     endif
   endif
 
