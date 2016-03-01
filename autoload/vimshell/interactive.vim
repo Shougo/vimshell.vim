@@ -682,7 +682,12 @@ function! s:check_all_output(is_hold) abort "{{{
             \ || !has('gui_running') || has('nvim')
         setlocal modifiable
         " Prevent screen flick
-        set novisualbell t_vb=
+        if has('nvim')
+          " In neovim, t_vb does not work
+          set novisualbell t_vb=
+        else
+          set visualbell t_vb=
+        endif
         call feedkeys("]\<BS>", 'n')
       endif
     endif
