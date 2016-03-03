@@ -653,9 +653,9 @@ Insert mode key mappings.
 		Execute vimshell history by unite interface.
 		Note: To use it, you must install |unite.vim| plugin.
 
-				*i_<Plug>(vimshell_history_neocomplete)*
-<Plug>(vimshell_history_neocomplete)
-		Execute vimshell history by neocomplete interface.
+				*i_<Plug>(vimshell_history_complete)*
+<Plug>(vimshell_history_complete)
+		Execute vimshell history by the completion interface.
 		Note: To use it, you must install |neocomplete| plugin.
 
 					*vimshell_default_key_mappings*
@@ -692,8 +692,8 @@ Insert mode default key mappings.
 --------		-----------------------------
 <CR>			<Plug>(vimshell_enter)
 <C-l>			<Plug>(vimshell_history_unite)
-<C-p>/<Up>		<Plug>(vimshell_history_neocomplete)
-<C-n>/<Down>		<Plug>(vimshell_history_neocomplete)
+<C-p>/<Up>		<Plug>(vimshell_history_complete)
+<C-n>/<Down>		<Plug>(vimshell_history_complete)
 <TAB>			<Plug>(vimshell_command_complete)
 <C-a>			<Plug>(vimshell_move_head)
 <C-u>			<Plug>(vimshell_delete_backward_line)
@@ -1592,10 +1592,9 @@ dynamically instead of it.
 
 Q: I want to execute history by completion interface.
 
-A: You can use |<Plug>(vimshell_history_neocomplete)| mapping.
-Note: |neocomplete| is required.
+A: You can use |<Plug>(vimshell_history_complete)| mapping.
 >
-	imap <buffer><C-g> <Plug>(vimshell_history_neocomplete)
+	imap <buffer><C-g> <Plug>(vimshell_history_complete)
 <
 Q: vimshell does not use escape sequence color.
 

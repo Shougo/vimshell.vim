@@ -111,8 +111,8 @@ function! vimshell#mappings#define_default_mappings() abort "{{{
         \ <ESC>:call <SID>hide()<CR>
   inoremap <expr><buffer><silent> <Plug>(vimshell_history_unite)
         \ unite#sources#vimshell_history#start_complete(!0)
-  inoremap <expr><buffer><silent> <Plug>(vimshell_history_neocomplete)
-        \ neocomplete#start_manual_complete('vimshell/history')
+  inoremap <expr><buffer><silent> <Plug>(vimshell_history_complete)
+        \ s:start_history_complete()
   "}}}
 
   if get(g:, 'vimshell_no_default_keymappings', 0)
