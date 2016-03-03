@@ -656,7 +656,8 @@ Insert mode key mappings.
 				*i_<Plug>(vimshell_history_complete)*
 <Plug>(vimshell_history_complete)
 		Execute vimshell history by the completion interface.
-		Note: To use it, you must install |neocomplete| plugin.
+		Note: To use it, you must install |neocomplete| or |deoplete|
+		plugin.
 
 					*vimshell_default_key_mappings*
 Normal mode default key mappings.
