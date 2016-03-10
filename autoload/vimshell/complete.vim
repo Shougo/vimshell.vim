@@ -85,6 +85,10 @@ function! vimshell#complete#gather_candidates(complete_str) abort "{{{
     return []
   endtry
 
+  if a:complete_str =~ '\*'
+    return []
+  endif
+
   if empty(args)
     let args = ['']
   endif
