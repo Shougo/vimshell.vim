@@ -23,9 +23,10 @@
 " }}}
 "=============================================================================
 
-let s:V = vital#of('vimshell')
-
 function! vimshell#util#get_vital() abort "{{{
+  if !exists('s:V')
+    let s:V = vital#of('vimshell')
+  endif
   return s:V
 endfunction"}}}
 function! s:get_prelude() abort "{{{
