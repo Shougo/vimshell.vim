@@ -46,24 +46,27 @@ function! s:get_process() abort "{{{
   endif
   return s:Process
 endfunction"}}}
+function! s:get_string() abort "{{{
+  if !exists('s:String')
+    let s:String = vimshell#util#get_vital().import('Data.String')
+  endif
+  return s:String
+endfunction"}}}
 
 function! vimshell#util#truncate_smart(...) abort "{{{
-  return call(s:get_prelude().truncate_smart, a:000)
+  return call(s:get_string().truncate_skipping, a:000)
 endfunction"}}}
-
 function! vimshell#util#truncate(...) abort "{{{
-  return call(s:get_prelude().truncate, a:000)
+  return call(s:get_string().truncate, a:000)
 endfunction"}}}
-
 function! vimshell#util#strchars(string) abort "{{{
-  return len(substitute(a:string, '.', 'x', 'g'))
+  return call(s:get_string().strchars, a:000)
 endfunction"}}}
-
 function! vimshell#util#strwidthpart(...) abort "{{{
-  return call(s:get_prelude().strwidthpart, a:000)
+  return call(s:get_string().strwidthpart, a:000)
 endfunction"}}}
 function! vimshell#util#strwidthpart_reverse(...) abort "{{{
-  return call(s:get_prelude().strwidthpart_reverse, a:000)
+  return call(s:get_string().strwidthpart_reverse, a:000)
 endfunction"}}}
 
 " Use builtin function.
