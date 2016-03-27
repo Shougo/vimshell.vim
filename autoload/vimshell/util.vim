@@ -25,7 +25,7 @@
 
 function! vimshell#util#get_vital() abort "{{{
   if !exists('s:V')
-    let s:V = vital#of('vimshell')
+    let s:V = vital#vimshell#of()
   endif
   return s:V
 endfunction"}}}
