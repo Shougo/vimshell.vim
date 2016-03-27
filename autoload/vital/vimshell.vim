@@ -127,8 +127,10 @@ endfunction
 let s:Vital.search = s:_function('s:search')
 
 function! s:_self_vital_files() abort
-  let base = s:vital_base_dir . '/*/**/*.vim'
-  return split(glob(base, 1), "\n")
+  let builtin = printf('%s/__%s__/', s:vital_base_dir, s:plugin_name)
+  let installed = printf('%s/_%s/', s:vital_base_dir, s:plugin_name)
+  let base = builtin . ',' . installed
+  return split(globpath(base, '**/*.vim', 1), "\n")
 endfunction
 
 function! s:_global_vital_files() abort
@@ -195,12 +197,13 @@ function! s:_get_latest_module(name) abort
 endfunction
 
 function! s:_module_sid(name) abort
-  let module_rel_path = 'autoload/vital/__latest__/' . substitute(a:name, '\.', '/', 'g') . '.vim'
-  let module_full_path = s:_unify_path(get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 0), "\n"), 0, ''))
+  let module_path = substitute(a:name, '\.', '/', 'g') . '.vim'
+  let module_rel_path = 'autoload/vital/__*__/' . module_path
+  let module_full_path = s:_unify_path(get(split(globpath(s:_module_sid_base_dir(), module_rel_path, 1), "\n"), 0, ''))
   if !filereadable(module_full_path)
     throw 'vital: module not found: ' . a:name
   endif
-  let p = substitute(module_rel_path, '/', '[/\\\\]\\+', 'g')
+  let p = substitute('autoload/vital/__\w\+__/' . module_path, '/', '[/\\\\]\\+', 'g')
   let sid = s:_sid(module_full_path, p)
   if !sid
     call s:_source(module_full_path)
