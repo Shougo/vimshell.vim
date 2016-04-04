@@ -60,7 +60,7 @@ endfunction"}}}
 function! vimshell#util#truncate(...) abort "{{{
   return call(s:get_string().truncate, a:000)
 endfunction"}}}
-function! vimshell#util#strchars(string) abort "{{{
+function! vimshell#util#strchars(...) abort "{{{
   return call(s:get_string().strchars, a:000)
 endfunction"}}}
 function! vimshell#util#strwidthpart(...) abort "{{{
