@@ -32,8 +32,6 @@ augroup vimshell
   autocmd VimLeave * call s:vimleave()
   autocmd CursorMovedI *
         \ call s:check_all_output(0)
-  autocmd CursorHold,CursorHoldI *
-        \ call s:check_all_output(1)
   autocmd BufWinEnter,WinEnter *
         \ call s:winenter()
   autocmd BufWinLeave,WinLeave *
@@ -47,6 +45,20 @@ let s:is_insert_char_pre = v:version > 703
 if s:is_insert_char_pre
   autocmd vimshell InsertCharPre *
         \ call s:enable_auto_complete()
+endif
+if !has('timers')
+  autocmd vimshell CursorHold,CursorHoldI *
+        \ call s:check_all_output(1)
+else
+  function! s:timer_handler(timer) abort "{{{
+    call s:check_all_output(0)
+  endfunction"}}}
+  if !exists('s:timer')
+    let s:timer = timer_start(g:vimshell_interactive_update_time,
+          \ function('s:timer_handler'), {'repeat': -1})
+    autocmd vimshell VimLeavePre *
+          \ call timer_stop(s:timer)
+  endif
 endif
 
 call vimshell#commands#iexe#define()
@@ -667,7 +679,7 @@ function! s:check_all_output(is_hold) abort "{{{
   endif
 
   if s:is_valid(interactive)
-    if g:vimshell_interactive_update_time > 0
+    if !has('timers') && g:vimshell_interactive_update_time > 0
           \ && &updatetime > g:vimshell_interactive_update_time
       " Change updatetime.
       let s:update_time_save = &updatetime
@@ -691,7 +703,7 @@ function! s:check_all_output(is_hold) abort "{{{
         call feedkeys("]\<BS>", 'n')
       endif
     endif
-  elseif g:vimshell_interactive_update_time > 0
+  elseif !has('timers') && g:vimshell_interactive_update_time > 0
         \ && &updatetime == g:vimshell_interactive_update_time
         \ && &filetype !=# 'unite'
     " Restore updatetime.

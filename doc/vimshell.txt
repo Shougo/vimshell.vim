@@ -401,8 +401,8 @@ g:vimshell_interactive_no_save_history_commands
 g:vimshell_interactive_update_time
 		When |vimshell-internal-iexe| is in Insert mode, this value
 		controls the timing of auto update.
-		|vimshell-internal-iexe| changes 'updatetime' based on this
-		value.
+		Note: |vimshell-internal-iexe| changes 'updatetime' based on
+		this value if Vim does not support |+timers|.
 		If it is 0, this feature is disabled.
 
 		Default value is 200.
