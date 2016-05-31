@@ -678,36 +678,9 @@ function! s:check_all_output(is_hold) abort "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if s:is_valid(interactive)
-    if !has('timers') && g:vimshell_interactive_update_time > 0
-          \ && &updatetime > g:vimshell_interactive_update_time
-      " Change updatetime.
-      let s:update_time_save = &updatetime
-      let &updatetime = g:vimshell_interactive_update_time
-    endif
-
-    if mode() ==# 'n'
-      call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
-    elseif mode() ==# 'i'
-      let is_complete_hold = vimshell#util#is_complete_hold()
-      if a:is_hold != is_complete_hold
-            \ || !has('gui_running') || has('nvim')
-        setlocal modifiable
-        " Prevent screen flick
-        if has('nvim')
-          " In neovim, t_vb does not work
-          set novisualbell t_vb=
-        else
-          set visualbell t_vb=
-        endif
-        call feedkeys("]\<BS>", 'n')
-      endif
-    endif
-  elseif !has('timers') && g:vimshell_interactive_update_time > 0
-        \ && &updatetime == g:vimshell_interactive_update_time
-        \ && &filetype !=# 'unite'
-    " Restore updatetime.
-    let &updatetime = s:update_time_save
+  if has('timers')
+  else
+    call s:dummy_output(interactive, a:is_hold)
   endif
 endfunction"}}}
 function! s:check_output(interactive, bufnr, bufnr_save) abort "{{{
@@ -833,6 +806,39 @@ endfunction"}}}
 function! s:enable_auto_complete() abort "{{{
   if exists('b:interactive') && v:char != ']'
     call vimshell#util#enable_auto_complete()
+  endif
+endfunction"}}}
+function! s:dummy_output(interactive, is_hold) abort "{{{
+  if s:is_valid(a:interactive)
+    if g:vimshell_interactive_update_time > 0
+          \ && &updatetime > g:vimshell_interactive_update_time
+      " Change updatetime.
+      let s:update_time_save = &updatetime
+      let &updatetime = g:vimshell_interactive_update_time
+    endif
+
+    if mode() ==# 'n'
+      call feedkeys("g\<ESC>" . (v:count > 0 ? v:count : ''), 'n')
+    elseif mode() ==# 'i'
+      let is_complete_hold = vimshell#util#is_complete_hold()
+      if a:is_hold != is_complete_hold
+            \ || !has('gui_running') || has('nvim')
+        setlocal modifiable
+        " Prevent screen flick
+        if has('nvim')
+          " In neovim, t_vb does not work
+          set novisualbell t_vb=
+        else
+          set visualbell t_vb=
+        endif
+        call feedkeys("]\<BS>", 'n')
+      endif
+    endif
+  elseif g:vimshell_interactive_update_time > 0
+        \ && &updatetime == g:vimshell_interactive_update_time
+        \ && &filetype !=# 'unite'
+    " Restore updatetime.
+    let &updatetime = s:update_time_save
   endif
 endfunction"}}}
 
