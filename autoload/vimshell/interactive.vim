@@ -49,16 +49,6 @@ endif
 if !has('timers')
   autocmd vimshell CursorHold,CursorHoldI *
         \ call s:check_all_output(1)
-else
-  function! s:timer_handler(timer) abort "{{{
-    call s:check_all_output(0)
-  endfunction"}}}
-  if !exists('s:timer')
-    let s:timer = timer_start(g:vimshell_interactive_update_time,
-          \ function('s:timer_handler'), {'repeat': -1})
-    autocmd vimshell VimLeavePre *
-          \ call timer_stop(s:timer)
-  endif
 endif
 
 call vimshell#commands#iexe#define()
@@ -314,6 +304,8 @@ function! vimshell#interactive#execute_process_out(is_insert) abort "{{{
   if !s:is_valid(b:interactive)
     return
   endif
+
+  call s:timer_start()
 
   " Check cache.
   let read = b:interactive.stderr_cache
@@ -679,6 +671,9 @@ function! s:check_all_output(is_hold) abort "{{{
   endif
 
   if has('timers')
+    if !s:is_valid(interactive)
+      call s:timer_stop()
+    endif
   else
     call s:dummy_output(interactive, a:is_hold)
   endif
@@ -841,10 +836,29 @@ function! s:dummy_output(interactive, is_hold) abort "{{{
     let &updatetime = s:update_time_save
   endif
 endfunction"}}}
+function! s:timer_handler(timer) abort "{{{
+  call s:check_all_output(0)
+endfunction"}}}
+function! s:timer_start() abort "{{{
+  if !exists('s:timer')
+    let s:timer = timer_start(g:vimshell_interactive_update_time,
+          \ function('s:timer_handler'), {'repeat': -1})
+    autocmd vimshell VimLeavePre * call s:timer_stop()
+  endif
+endfunction"}}}
+function! s:timer_stop() abort "{{{
+  if exists('s:timer')
+    call timer_stop(s:timer)
+    unlet s:timer
+  endif
+endfunction"}}}
 
 function! s:winenter() abort "{{{
   if exists('b:interactive')
     call vimshell#terminal#set_title()
+    if s:is_valid(b:interactive)
+      call s:timer_start()
+    endif
   endif
 
   call s:resize()
