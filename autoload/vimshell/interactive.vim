@@ -95,6 +95,7 @@ function! vimshell#interactive#execute_pty_inout(is_insert) abort "{{{
   let b:interactive.prompt_nr = line('.')
 
   call s:iexe_send_string(in, a:is_insert, line('.'))
+  call s:timer_start()
 endfunction"}}}
 function! vimshell#interactive#iexe_send_string(string, is_insert, ...) abort "{{{
   let linenr = get(a:000, 0, line('$'))

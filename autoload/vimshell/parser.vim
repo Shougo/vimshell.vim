@@ -50,6 +50,7 @@ function! vimshell#parser#eval_script(script, context) abort "{{{
             \ 'statements' : statements[i : ], 'context' : context,
             \ 'script' : a:script,
             \ }
+      call vimshell#interactive#execute_process_out(0)
       return 1
     endtry
 
