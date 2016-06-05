@@ -95,7 +95,6 @@ function! vimshell#interactive#execute_pty_inout(is_insert) abort "{{{
   let b:interactive.prompt_nr = line('.')
 
   call s:iexe_send_string(in, a:is_insert, line('.'))
-  call s:timer_start()
 endfunction"}}}
 function! vimshell#interactive#iexe_send_string(string, is_insert, ...) abort "{{{
   let linenr = get(a:000, 0, line('$'))
@@ -651,7 +650,7 @@ function! s:check_all_output(is_hold) abort "{{{
   let interactive = {}
   if mode() ==# 'n'
     for bufnr in filter(range(1, bufnr('$')),
-          \ "s:is_valid(getbufvar(v:val, 'interactive'))")
+          \ "type(getbufvar(v:val, 'interactive')) == type({})")
       " Check output.
       call s:check_output(getbufvar(bufnr, 'interactive'),
             \ bufnr, bufnr('%'))
@@ -671,10 +670,9 @@ function! s:check_all_output(is_hold) abort "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if has('timers')
-    if !s:is_valid(interactive)
-      call s:timer_stop()
-    endif
+  if has('timers') && empty(filter(range(1, bufnr('$')),
+          \ "s:is_valid(getbufvar(v:val, 'interactive'))"))
+    call s:timer_stop()
   else
     call s:dummy_output(interactive, a:is_hold)
   endif
@@ -857,7 +855,7 @@ endfunction"}}}
 function! s:winenter() abort "{{{
   if exists('b:interactive')
     call vimshell#terminal#set_title()
-    if s:is_valid(b:interactive)
+    if !exists('b:vimshell') || !empty('b:vimshell.continuation')
       call s:timer_start()
     endif
   endif
