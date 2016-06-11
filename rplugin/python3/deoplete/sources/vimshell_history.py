@@ -37,10 +37,10 @@ class Source(Base):
         self.filetypes = ['vimshell']
         self.is_bytepos = True
         self.rank = 500
+        self.max_pattern_length = -1
 
     def get_complete_position(self, context):
-        if context['event'] != 'Manual' or not self.vim.call(
-                'vimshell#check_prompt'):
+        if not self.vim.call('vimshell#check_prompt'):
             return -1
         return self.vim.call('vimshell#get_prompt_length')
 
