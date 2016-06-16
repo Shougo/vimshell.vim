@@ -670,9 +670,14 @@ function! s:check_all_output(is_hold) abort "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if has('timers') && empty(filter(range(1, bufnr('$')),
+  if has('timers')
+    let check_interactive = empty(filter(range(1, bufnr('$')),
           \ "s:is_valid(getbufvar(v:val, 'interactive'))"))
-    call s:timer_stop()
+    if check_interactive
+          \ && (!exists('b:interactive') || (exists('b:vimshell')
+          \     && empty(b:vimshell.continuation)))
+      call s:timer_stop()
+    endif
   else
     call s:dummy_output(interactive, a:is_hold)
   endif
@@ -855,7 +860,7 @@ endfunction"}}}
 function! s:winenter() abort "{{{
   if exists('b:interactive')
     call vimshell#terminal#set_title()
-    if !exists('b:vimshell') || !empty('b:vimshell.continuation')
+    if !exists('b:vimshell') || !empty(b:vimshell.continuation)
       call s:timer_start()
     endif
   endif
