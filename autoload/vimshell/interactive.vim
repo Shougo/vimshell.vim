@@ -845,7 +845,8 @@ function! s:timer_handler(timer) abort "{{{
 endfunction"}}}
 function! s:timer_start() abort "{{{
   if !exists('s:timer') && has('timers')
-    let s:timer = timer_start(g:vimshell_interactive_update_time,
+    let s:timer = timer_start((g:vimshell_interactive_update_time > 0 ?
+          \ g:vimshell_interactive_update_time : &updatetime),
           \ function('s:timer_handler'), {'repeat': -1})
     autocmd vimshell VimLeavePre * call s:timer_stop()
   endif
