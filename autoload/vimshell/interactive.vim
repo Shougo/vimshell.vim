@@ -46,7 +46,9 @@ if s:is_insert_char_pre
   autocmd vimshell InsertCharPre *
         \ call s:enable_auto_complete()
 endif
-if !has('timers')
+
+let s:use_timer = has('timers')
+if s:use_timer
   autocmd vimshell CursorHold,CursorHoldI *
         \ call s:check_all_output(1)
 endif
@@ -670,15 +672,7 @@ function! s:check_all_output(is_hold) abort "{{{
     call vimshell#util#enable_auto_complete()
   endif
 
-  if has('timers')
-    let check_interactive = empty(filter(range(1, bufnr('$')),
-          \ "s:is_valid(getbufvar(v:val, 'interactive'))"))
-    if check_interactive
-          \ && (!exists('b:interactive') || (exists('b:vimshell')
-          \     && empty(b:vimshell.continuation)))
-      call s:timer_stop()
-    endif
-  else
+  if !s:use_timer
     call s:dummy_output(interactive, a:is_hold)
   endif
 endfunction"}}}
@@ -844,7 +838,7 @@ function! s:timer_handler(timer) abort "{{{
   call s:check_all_output(0)
 endfunction"}}}
 function! s:timer_start() abort "{{{
-  if !exists('s:timer') && has('timers')
+  if !exists('s:timer') && s:use_timer
     let s:timer = timer_start((g:vimshell_interactive_update_time > 0 ?
           \ g:vimshell_interactive_update_time : &updatetime),
           \ function('s:timer_handler'), {'repeat': -1})
@@ -864,6 +858,14 @@ function! s:winenter() abort "{{{
     if !exists('b:vimshell') || !empty(b:vimshell.continuation)
       call s:timer_start()
     endif
+  endif
+
+  let check_interactive = empty(filter(range(1, bufnr('$')),
+        \ "s:is_valid(getbufvar(v:val, 'interactive'))"))
+  if check_interactive
+        \ && (!exists('b:interactive') || (exists('b:vimshell')
+        \     && empty(b:vimshell.continuation)))
+    call s:timer_stop()
   endif
 
   call s:resize()
