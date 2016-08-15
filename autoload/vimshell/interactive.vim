@@ -48,7 +48,7 @@ if s:is_insert_char_pre
 endif
 
 let s:use_timer = has('timers')
-if s:use_timer
+if !s:use_timer
   autocmd vimshell CursorHold,CursorHoldI *
         \ call s:check_all_output(1)
 endif
