@@ -326,7 +326,6 @@ function! s:print_with_redraw(is_error, lines) abort "{{{
 
     for l in ls
       call setline('.', l)
-      sleep 1m
       redraw
     endfor
 
