@@ -119,8 +119,8 @@ endfunction"}}}
 function! vimshell#get_data_directory() abort "{{{
   let data_directory = vimshell#util#set_default(
         \ 'g:vimshell_data_directory',
-        \  ($XDG_CACHE_HOME != '' ?
-        \   $XDG_CACHE_HOME . '/vimshell' : '~/.cache/vimshell'),
+        \  (exists('$XDG_DATA_HOME') ?
+        \   $XDG_DATA_HOME . '/vimshell' : '~/.local/share/vimshell'),
         \ 'g:vimshell_temporary_directory')
   let data_directory = vimshell#util#substitute_path_separator(
         \ expand(data_directory))

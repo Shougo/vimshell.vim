@@ -83,7 +83,8 @@ function! vimshell#help#set_cached_doc(cache) abort "{{{
 
   let s:cached_doc = a:cache
   let doc_path = vimshell#get_data_directory() .'/cached-doc'
-  call writefile(values(map(deepcopy(s:cached_doc), 'v:key."!!!".v:val')), doc_path)
+  call writefile(values(map(deepcopy(s:cached_doc),
+        \ 'v:key."!!!".v:val')), doc_path)
 endfunction"}}}
 
 function! s:load_cached_doc() abort "{{{
