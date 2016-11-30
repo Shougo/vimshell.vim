@@ -27,6 +27,7 @@
 
 let s:character_regex = ''
 let s:update_time_save = &updatetime
+let s:READ_SIZE = 10000
 
 augroup vimshell
   autocmd VimLeave * call s:vimleave()
@@ -312,7 +313,7 @@ function! vimshell#interactive#execute_process_out(is_insert) abort "{{{
   " Check cache.
   let read = b:interactive.stderr_cache
   if !b:interactive.process.stderr.eof
-    let read .= b:interactive.process.stderr.read(-1, 0)
+    let read .= b:interactive.process.stderr.read(s:READ_SIZE, 0)
   endif
   call vimshell#interactive#error_buffer(b:interactive.fd, read)
   let b:interactive.stderr_cache = ''
@@ -320,7 +321,7 @@ function! vimshell#interactive#execute_process_out(is_insert) abort "{{{
   " Check cache.
   let read = b:interactive.stdout_cache
   if !b:interactive.process.stdout.eof
-    let read .= b:interactive.process.stdout.read(-1, 0)
+    let read .= b:interactive.process.stdout.read(s:READ_SIZE, 0)
   endif
   call vimshell#interactive#print_buffer(b:interactive.fd, read)
   let b:interactive.stdout_cache = ''
@@ -776,12 +777,12 @@ function! s:cache_output(interactive) abort "{{{
 
   if !a:interactive.process.stdout.eof
     let a:interactive.stdout_cache .=
-          \ a:interactive.process.stdout.read(-1, 0)
+          \ a:interactive.process.stdout.read(s:READ_SIZE, 0)
   endif
 
   if !a:interactive.process.stderr.eof
     let a:interactive.stderr_cache .=
-          \ a:interactive.process.stderr.read(-1, 0)
+          \ a:interactive.process.stderr.read(s:READ_SIZE, 0)
   endif
 
   if a:interactive.process.stderr.eof &&
