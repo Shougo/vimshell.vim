@@ -4,6 +4,8 @@ For information, check [doc/vimshell.txt](doc/vimshell.txt).
 
 **Note**: Active developement on vimshell.vim has stopped. The only future changes will be bug fixes.
 
+You should use [Deol.nvim](https://github.com/Shougo/deol.nvim) instead.
+
 ## Resources
 
 - [Code @ HootSuite | VimShell](http://code.hootsuite.com/vimshell/)
