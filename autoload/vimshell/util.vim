@@ -318,7 +318,7 @@ endfunction"}}}
 function! vimshell#util#set_variables(variables) abort "{{{
   let variables_save = {}
   for [key, value] in items(a:variables)
-    let save_value = exists(key) ? eval(key) : ''
+    let save_value = exists(key) ? ['exist', eval(key)] : ['not-exist']
 
     let variables_save[key] = save_value
     execute 'let' key '=' string(value)
@@ -327,8 +327,14 @@ function! vimshell#util#set_variables(variables) abort "{{{
   return variables_save
 endfunction"}}}
 function! vimshell#util#restore_variables(variables) abort "{{{
-  for [key, value] in items(a:variables)
-    execute 'let' key '=' string(value)
+  for [key, values] in items(a:variables)
+    if values[0] == 'exist'
+      execute 'let' key '=' string(values[1])
+    elseif values[0] == 'not-exist'
+      execute 'unlet' key
+    else
+      throw 'Must not happen'
+    endif
   endfor
 endfunction"}}}
 
