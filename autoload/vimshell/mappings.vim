@@ -665,8 +665,8 @@ function! s:execute_by_background(is_insert) abort "{{{
 endfunction"}}}
 function! s:start_history_complete() abort "{{{
   return
-        \ exists('*deoplete#mappings#manual_complete') ?
-        \ deoplete#mappings#manual_complete('vimshell_history') :
+        \ exists('*deoplete#manual_complete') ?
+        \ deoplete#manual_complete('vimshell_history') :
         \ exists('*neocomplete#start_manual_complete') ?
         \ neocomplete#start_manual_complete('vimshell/history') :
         \ ''
