@@ -941,7 +941,7 @@ OPTIONS 					*vimshell-options*
 
 						*vimshell-options-user-prompt*
 		-user-prompt={user-prompt}
-		Specify secondary prompt string.  If omit it,
+		Specify user prompt string.  If omit it,
 		|g:vimshell_user_prompt| is used.
 
 						*vimshell-options-right-prompt*
