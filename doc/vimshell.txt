@@ -45,7 +45,7 @@ Create plugin		|vimshell-create-plugin|
 FAQ			|vimshell-faq|
 
 ==============================================================================
-INTRODUCTION						*vimshell-introduction*
+INTRODUCTION					*vimshell-introduction*
 
 *vimshell* is an extreme shell that doesn't depend on external shells but is
 written completely in pure Vim script.  To be honest the implementation is not
@@ -498,7 +498,7 @@ g:vimshell_interactive_monochrome_commands
 		Default value is complicated, so please refer
 		autoload/vimshell/commands/iexe.vim.
 
-				*g:unite_source_vimshell_external_history_path*
+			*g:unite_source_vimshell_external_history_path*
 g:unite_source_vimshell_external_history_path
 		It is assignment of a history file that
 		|vimshell/external_history| source recognizes.
@@ -929,7 +929,7 @@ OPTIONS 					*vimshell-options*
 		Specify prompt expression.  If omit it,
 		|g:vimshell_prompt_expr| is used.
 
-						*vimshell-options-prompt_pattern*
+					*vimshell-options-prompt_pattern*
 		-prompt_pattern={expr}
 		Specify prompt pattern.  If omit it,
 		|g:vimshell_prompt_pattern| is used.
@@ -944,7 +944,7 @@ OPTIONS 					*vimshell-options*
 		Specify user prompt string.  If omit it,
 		|g:vimshell_user_prompt| is used.
 
-						*vimshell-options-right-prompt*
+					*vimshell-options-right-prompt*
 		-right-prompt={right-prompt}
 		Specify right prompt string.  If omit it,
 		|g:vimshell_right_prompt| is used.
@@ -997,10 +997,10 @@ EXAMPLES						*vimshell-examples*
 	endfunction
 <
 ==============================================================================
-INTERNAL COMMANDS					*vimshell-internal-commands*
+INTERNAL COMMANDS				*vimshell-internal-commands*
 
-The internal commands are internal commands in other shells.  The arguments are
-split by vimshell.
+The internal commands are internal commands in other shells.  The arguments
+are split by vimshell.
 
 Note: The internal commands do not supports pipeline.
 If you use pipe, vimshell execute external command forcibly.  So following
@@ -1023,7 +1023,7 @@ bg [{option}...] {command}				*vimshell-internal-bg*
 		Note: iexe, exe, bg and less interpret options changes
 		the behavior.  Refer to |vimshell-execute-options|.
 		
-build [{builder-name}, [{args}...]]			*vimshell-internal-build*
+build [{builder-name}, [{args}...]]		*vimshell-internal-build*
 		Execute ":Unite build:{builder-name}:{args}".
 		If you omit {builder-name}, detect builder automatically.
 
@@ -1045,10 +1045,10 @@ cdup {parent-directory-name}			*vimshell-internal-cdup*
 		It omit arguments, change the current directory to the parent
 		directory.
 
-clear 							*vimshell-internal-clear*
+clear 						*vimshell-internal-clear*
 		Clear display.
 
-dirs [{max}]						*vimshell-internal-dirs*
+dirs [{max}]					*vimshell-internal-dirs*
 		Print directory stack items to {max} .
 		If omit {max}, used 10.
 		If press <Enter> in directory stack, change the directory.
@@ -1062,12 +1062,13 @@ eval {expression}				*vimshell-internal-eval*
 						*vimshell-internal-export*
 export [{variable-name}={value} , ...]
 		Change {variable-name} environment variable to {value}.
-		If the arguments is empty, print current environment variables.
+		If the arguments is empty, print current environment
+		variables.
 		You can use this command like other shells.
 
 exe [{option}...] {command} 			*vimshell-internal-exe*
-		Execute {command} with arguments.  Execute the external command
-		forcibly.
+		Execute {command} with arguments.  Execute the external
+		command forcibly.
 		Note: While executing commands, cannot execute other
 		commands.
 		Note: After vimshell Ver.9, exe can read inputs.
@@ -1077,8 +1078,8 @@ exe [{option}...] {command} 			*vimshell-internal-exe*
 		
 						*vimshell-execute-options*
 		--encoding={encoding-name}
-		If different from 'encoding' and {encoding-name}, vimshell will
-		convert encoding automatically.
+		If different from 'encoding' and {encoding-name}, vimshell
+		will convert encoding automatically.
 		If omit this option, used "char".
 
 		--split={split-command}
@@ -1125,8 +1126,8 @@ h [{pattern}]						*vimshell-internal-h*
 		vimshell% !ls        # Execute "ls" matched command.
 <
 histdel {history-number}			*vimshell-internal-histdel*
-		Deletes {history-number} history.  You can check history number
-		using |vimshell-internal-history| command.
+		Deletes {history-number} history.  You can check history
+		number using |vimshell-internal-history| command.
 
 history [{search-string}]			*vimshell-internal-history*
 		Print directory stack {search-string} items.
@@ -1281,8 +1282,8 @@ alias {alias-name} = {command}			*vimshell-special-alias*
 <
 galias {global-alias-name} = {command}
 						*vimshell-internal-galias*
-		Defines global alias.  Vimshell replaces {global-alias-name} as
-		{command}.  Different from |vimshell-special-alias|, global
+		Defines global alias.  Vimshell replaces {global-alias-name}
+		as {command}.  Different from |vimshell-special-alias|, global
 		alias in arguments is expanded.  This feature is like to zsh
 		global alias.
 		
